@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "190251764983",
+    "project_id": "sapura-580e1",
+    "storage_bucket": "sapura-580e1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:190251764983:android:ee442f199b3726d6dc57f2",
+        "android_client_info": {
+          "package_name": "com.univrse.progrid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9eRmRwCLBrW_2ZguWziaH_syiXdjnV6Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
