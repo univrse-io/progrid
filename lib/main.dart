@@ -1,7 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/themes.dart';
+
+import 'package:progrid/services/auth.dart';
+import 'package:progrid/services/themes.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MainApp());
 }
 
@@ -14,26 +19,6 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: GlobalThemeData.lightThemeData,
       home: const AuthPage(),
-    );
-  }
-}
-
-class AuthPage extends StatelessWidget {
-  const AuthPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Single Icon Page'),
-      ),
-      body: const Center(
-        child: Icon(
-          Icons.home,
-          size: 100.0,
-          color: Colors.blue,
-        ),
-      ),
     );
   }
 }
