@@ -1,16 +1,23 @@
-# progrid
+# Progrid Geo Monitoring System (Sapura)
 
-A new Flutter project.
+This first phase of Progrid's application development is designed for Sapura Towers; 616 towers across Malaysia and 11 monitoring teams. In-development is a basic Firebase authentication system for said teams to track their visits to each tower over a 7-month period.
 
-## Getting Started
+__Modules__:
+    - Firebase User Authentication
+    - Firebase Database for Credentials Storage (User Types)
+    - Firebase Storage (Photo Uploads)
 
-This project is a starting point for a Flutter application.
+Database/Storage Flow:
+__User Information: Authentication data for the monitoring teams.
+__Tower Data: Information on each tower, its status, and the teams visiting.
+__Media: Two pictures per sign-in and sign-out event to Firebase Storage.
 
-A few resources to get you started if this is your first Flutter project:
+__Requires__:
+    - Flutter 3.24.x(stable) or higher
+    - Dart 3.5.4 or higher
+    - The Connected Firebase Account
+    - Compatible Mobile Device or Emulator for Testing
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+** If you'd like to contribute to the project, please fork this repository, create a branch, and submit a pull request.
+** todo: create license
