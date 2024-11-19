@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'package:progrid/components/my_alert.dart';
 import 'package:progrid/components/my_button.dart';
+import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
+import 'package:progrid/services/auth.dart';
 
 class LoginPage extends StatefulWidget {
   // toggle to register page
@@ -22,21 +26,65 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   // login user
-  void login() async {
-    // TODO: show loading circle
-    if (mounted) {
-
-    }
+  Future<void> login() async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: MyLoadingIndicator(),
+      ),
+    );
 
     // try to sign in
     try {
-      // call Firebase API instance login
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-      print("User Logged In Successfully");
-    } on FirebaseAuthException {
-      // show error to user
+      // await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
 
+      final UserCredential credentials =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
+      final user = credentials.user;
+
+      if (mounted) Navigator.pop(context);
+
+      // TODO: streamline below
+      // fetch user data from firestore
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+
+        final userData = userDoc.data() as Map<String, dynamic>;
+        UserInformation userInformation = UserInformation(
+          id: user.uid,
+          email: user.email!,
+          userType: userData['userType']!,
+        );
+
+        print("User ID: ${userInformation.id}");
+        print("User Email: ${userInformation.email}");
+        print("User Type: ${userInformation.userType}");
+      } else {
+        // should not happen
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => const MyAlert(
+              title: "User Data Error",
+              content: "No user data found in Firestore.",
+            ),
+          );
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      print("Error: ${e.message}");
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => MyAlert(
+            title: "Login Error",
+            content: e.message ?? "An unknown error occurred.",
+          ),
+        );
+      }
       _passwordController.clear();
+    } finally {
+      if (mounted) Navigator.pop(context);
     }
   }
 
