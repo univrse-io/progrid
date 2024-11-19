@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'package:progrid/components/my_alert.dart';
 import 'package:progrid/components/my_button.dart';
+import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -23,23 +26,61 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController = TextEditingController();
 
   // register user
-  void register() async {
-    // TODO: show loading circle
-    if (mounted) {
-      
-    }
+  Future<void> register() async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: MyLoadingIndicator(),
+      ),
+    );
 
     // make sure passwords match
     if (_passwordController.text != _confirmPasswordController.text) {
-      // display to user, passwords dont match
-    } else {
-      // create the user
-      try {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
-      } on FirebaseAuthException {
-        // show error to user
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) => const MyAlert(
+          title: "Registration Error",
+          content: "Passwords Don't Match",
+        ),
+      );
+      return;
+    }
 
-      }
+    // create the user
+    try {
+      UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      Navigator.pop(context);
+      String userId = credentials.user!.uid;
+
+      // save user data to firestore database
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'email': _emailController.text,
+        'uid': userId,
+        'type': 'engineer',
+      });
+
+      showDialog(
+        context: context,
+        builder: (context) => const MyAlert(
+          title: "Registration Successful",
+          content: "User Registered and Data Saved to Firestore",
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => MyAlert(
+          title: "Registration Error",
+          content: e.message ?? "An unknown error occurred.",
+        ),
+      );
+    } finally {
+      Navigator.pop(context);
     }
   }
 
@@ -48,6 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
+        minimum: const EdgeInsets.all(20),
         child: Center(
           child: Container(
             width: 350,
@@ -69,12 +111,10 @@ class _RegisterPageState extends State<RegisterPage> {
               children: [
                 // welcome text
                 const Text(
-                  'Register here!',
+                  'Register Here!',
                   style: TextStyle(fontSize: 18),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
 
                 // email textfield
                 MyTextField(
@@ -82,9 +122,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   obscureText: false,
                   controller: _emailController,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
 
                 // password textfield
                 MyTextField(
@@ -92,9 +130,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   obscureText: true,
                   controller: _passwordController,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
 
                 // confirm password textfield
                 MyTextField(
@@ -102,9 +138,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   obscureText: true,
                   controller: _confirmPasswordController,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
 
                 // log in button
                 MyButton(
@@ -112,9 +146,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   text: 'Register',
                   height: 40,
                 ),
-                const SizedBox(
-                  height: 14,
-                ),
+                const SizedBox(height: 14),
 
                 // link to login page
                 Row(

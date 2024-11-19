@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'package:progrid/components/my_alert.dart';
 import 'package:progrid/components/my_button.dart';
+import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
 
 class LoginPage extends StatefulWidget {
@@ -22,21 +24,32 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   // login user
-  void login() async {
-    // TODO: show loading circle
-    if (mounted) {
-
-    }
+  Future<void> login() async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: MyLoadingIndicator(),
+      ),
+    );
 
     // try to sign in
     try {
-      // call Firebase API instance login
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text);
       print("User Logged In Successfully");
-    } on FirebaseAuthException {
-      // show error to user
 
+    } on FirebaseAuthException catch (e) {
+      print("Error: ${e.message}");
+      showDialog(
+          context: context,
+          builder: (context) => MyAlert(
+            title: "Login Error",
+            content: e.message ?? "An unknown error occurred.",
+          ),
+        );
       _passwordController.clear();
+      
+    } finally {
+      Navigator.pop(context);
     }
   }
 

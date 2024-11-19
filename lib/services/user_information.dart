@@ -1,0 +1,1 @@
+// stores logged in user information globally
