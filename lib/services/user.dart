@@ -21,10 +21,12 @@ class UserInformation {
     this.userType = userType;
   }
 
-  void reset() {
+  void logout() {
     userId  = 'undefined';
     email = 'undefined';
     userType = 'undefined';
+    
+    FirebaseAuth.instance.signOut();
   }
 
   // fetches user information from database given auth user

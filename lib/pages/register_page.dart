@@ -63,8 +63,11 @@ class _RegisterPageState extends State<RegisterPage> {
         'uid': userId,
         'userType': 'engineer',
       });
+
+      if (mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       if (mounted) {
+        Navigator.pop(context);
         showDialog(
           context: context,
           builder: (context) => MyAlert(
@@ -73,8 +76,6 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         );
       }
-    } finally {
-      if (mounted) Navigator.pop(context);
     }
   }
 

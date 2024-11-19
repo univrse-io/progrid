@@ -39,10 +39,12 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
-
+      if (mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       print("Error: ${e.message}");
+
       if (mounted) {
+        Navigator.pop(context);
         showDialog(
           context: context,
           builder: (context) => MyAlert(
@@ -52,8 +54,6 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
       _passwordController.clear();
-    } finally {
-      if (mounted) Navigator.pop(context);
     }
   }
 

@@ -1,21 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'package:progrid/components/my_button.dart';
-import 'package:progrid/services/user_info.dart';
+import 'package:progrid/services/user.dart';
 
 // Standard Engineer Home Page
-class EngineerHomePage extends StatefulWidget {
+class EngineerHomePage extends StatelessWidget {
   const EngineerHomePage({super.key});
-
-  @override
-  State<EngineerHomePage> createState() => _EngineerHomePageState();
-}
-
-class _EngineerHomePageState extends State<EngineerHomePage> {
-  void logout() {
-    UserInformation().reset();
-    FirebaseAuth.instance.signOut();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,27 +13,32 @@ class _EngineerHomePageState extends State<EngineerHomePage> {
 
     return Scaffold(
       body: SafeArea(
+        minimum: const EdgeInsets.all(40),
         child: Center(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text("Engineer Home Page"),
-            const SizedBox(height: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Engineer Home Page",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
 
-            Text("User ID: ${userInformation.userId}"),
-            Text("Email: ${userInformation.email}"),
-            Text("User Type: ${userInformation.userType}"),
+              Text("User ID: ${userInformation.userId}"),
+              Text("Email: ${userInformation.email}"),
+              Text("User Type: ${userInformation.userType}"),
 
-            const SizedBox(height: 10),
+              const SizedBox(height: 20),
 
-            // logout button
-            MyButton(
-              onTap: logout,
-              text: "Logout",
-            )
-          ],
-        )),
+              // logout button
+              MyButton(
+                onTap: UserInformation().logout,
+                text: "Logout",
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

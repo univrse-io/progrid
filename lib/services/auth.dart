@@ -5,7 +5,8 @@ import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/pages/engineer/home_page.dart';
 import 'package:progrid/pages/login_page.dart';
 import 'package:progrid/pages/register_page.dart';
-import 'package:progrid/services/user_info.dart';
+import 'package:progrid/pages/sapura/home_page.dart';
+import 'package:progrid/services/user.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -31,14 +32,6 @@ class _AuthPageState extends State<AuthPage> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => const MyLoadingIndicator(),
-        );
-      }
-
       try {
         // reload user auth
         await user.reload();
@@ -47,8 +40,6 @@ class _AuthPageState extends State<AuthPage> {
         await UserInformation().fetchUserInfo(user);
       } catch (e) {
         print("Error during auto-login: $e");
-      } finally {
-        if (mounted) Navigator.pop(context);
       }
     });
   }
@@ -80,8 +71,15 @@ class _AuthPageState extends State<AuthPage> {
                   return const Center(
                     child: Text("Failed to load user information."),
                   );
-                } else {
-                  return const EngineerHomePage();
+                }
+
+                switch (UserInformation().userType) {
+                  case 'engineer':
+                    return const EngineerHomePage();
+                  case 'sapura':
+                    return const SapuraHomePage();
+                  default:
+                    throw Exception("Could not Determine User Type");
                 }
               },
             );
