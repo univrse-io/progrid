@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -6,43 +5,7 @@ import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/pages/engineer/home_page.dart';
 import 'package:progrid/pages/login_page.dart';
 import 'package:progrid/pages/register_page.dart';
-
-// stores currently logged-in user information
-class UserInformation {
-  String id;
-  String email;
-  String userType;
-
-  UserInformation({
-    required this.id,
-    required this.email,
-    required this.userType,
-  });
-
-  Future<void> fetchUserInfo() async {
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(id).get();
-
-    if (userDoc.exists) {
-      final data = userDoc.data()!;
-      email = data['email'] ?? '';
-      userType = data['userType'] ?? 'default';
-    }
-  }
-
-  // update user info (restrictive)
-  void updateUserInfo(String userType) {
-    this.userType = userType;
-  }
-
-  // create instance from firebaseauth
-  factory UserInformation.fromFirebaseAuthUser(User user) {
-    return UserInformation(
-      id: user.uid,
-      email: user.email!,
-      userType: 'undefined',
-    );
-  }
-}
+import 'package:progrid/services/user_info.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -52,7 +15,6 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  UserInformation? userInformation;
   bool onLoginPage = true;
 
   void togglePages() {
@@ -61,8 +23,12 @@ class _AuthPageState extends State<AuthPage> {
     });
   }
 
-  Future<void> _autoLogin() async {
+  Future<void> _fetchAndLogin() async {
     User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return;
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (mounted) {
@@ -74,16 +40,15 @@ class _AuthPageState extends State<AuthPage> {
       }
 
       try {
-        if (user != null) {
-          // refresh user token
-          await user.reload();
-        }
+        // reload user auth
+        await user.reload();
+
+        // fetch user information from firestore here
+        await UserInformation().fetchUserInfo(user);
       } catch (e) {
         print("Error during auto-login: $e");
       } finally {
-        if (mounted) {
-          Navigator.pop(context);
-        }
+        if (mounted) Navigator.pop(context);
       }
     });
   }
@@ -93,7 +58,7 @@ class _AuthPageState extends State<AuthPage> {
     super.initState();
 
     // attempt autologin on app start
-    _autoLogin();
+    _fetchAndLogin();
   }
 
   @override
@@ -106,9 +71,19 @@ class _AuthPageState extends State<AuthPage> {
 
           // user has already logged in
           if (user != null) {
-            // TODO: Implement multiple home pages
-            return const Scaffold(
-              body: EngineerHomePage(),
+            return FutureBuilder(
+              future: UserInformation().fetchUserInfo(user),
+              builder: (context, AsyncSnapshot<void> fetchSnapshot) {
+                if (fetchSnapshot.connectionState == ConnectionState.waiting) {
+                  return const MyLoadingIndicator();
+                } else if (fetchSnapshot.hasError) {
+                  return const Center(
+                    child: Text("Failed to load user information."),
+                  );
+                } else {
+                  return const EngineerHomePage();
+                }
+              },
             );
           }
 
