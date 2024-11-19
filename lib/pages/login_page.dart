@@ -117,9 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                   'Welcome Back!',
                   style: TextStyle(fontSize: 18),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
 
                 // username textfield
                 MyTextField(
@@ -127,9 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: false,
                   controller: _emailController,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
 
                 // password textfield
                 MyTextField(
@@ -137,9 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: true,
                   controller: _passwordController,
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
 
                 // log in button
                 MyButton(
@@ -147,9 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                   text: 'Log In',
                   height: 40,
                 ),
-                const SizedBox(
-                  height: 14,
-                ),
+                const SizedBox(height: 14),
 
                 // link to register page
                 Row(
