@@ -20,31 +20,5 @@ class MyLoadingIndicator extends StatelessWidget {
         )
       ],
     );
-
-    // return Stack(
-    //   children: [
-    //     // fullscreen barrier
-    //     ModalBarrier(
-    //       color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
-    //       dismissible: false,
-    //     ),
-
-    //     // animated loader
-    //     AnimatedOpacity(
-    //       opacity: 1.0,
-    //       duration: const Duration(milliseconds: 300),
-    //       child: Center(
-    //         child: SizedBox(
-    //           width:40.0,
-    //           height: 40.0,
-    //           child: CircularProgressIndicator(
-    //             color: Theme.of(context).colorScheme.primary,
-    //             strokeWidth: 4.0,
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
   }
 }

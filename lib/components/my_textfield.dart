@@ -35,7 +35,7 @@ class MyTextField extends StatelessWidget {
           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
           fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 14),
+        contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 14),
       ),
     );
   }

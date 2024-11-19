@@ -77,15 +77,19 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // welcome text
-                const Text(
-                  'Welcome Back!',
-                  style: TextStyle(fontSize: 18),
+                Text(
+                  'Welcome Back!\nGlad to see you again.',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
 
                 // email textfield
                 MyTextField(
-                  hintText: 'email',
+                  hintText: 'Email',
                   obscureText: false,
                   controller: _emailController,
                 ),
@@ -93,19 +97,46 @@ class _LoginPageState extends State<LoginPage> {
 
                 // password textfield
                 MyTextField(
-                  hintText: 'password',
+                  hintText: 'Password',
                   obscureText: true,
                   controller: _passwordController,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 7),
+
+                // forgot password?
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                        );
+                      },
+                      child: Text(
+                        "Forgot Password?",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          decoration: TextDecoration.underline,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
 
                 // log in button
                 MyButton(
                   onTap: login,
                   text: 'Log In',
-                  height: 40,
+                  height: 45,
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
 
                 // link to register page
                 Row(
@@ -131,27 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                     )
                   ],
                 ),
-                const SizedBox(height: 7),
-
-                // forgot password?
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                      );
-                    },
-                    child: Text(
-                      "Forgot Password?",
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                )
+                const SizedBox(height: 2),
               ],
             ),
           ),

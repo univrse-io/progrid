@@ -67,6 +67,7 @@ class _AuthPageState extends State<AuthPage> {
               future: UserInformation().fetchUserInfo(user),
               builder: (context, AsyncSnapshot<void> fetchSnapshot) {
                 if (fetchSnapshot.connectionState == ConnectionState.waiting) {
+                  // TODO: resolve this loading buffer screen
                   return const MyLoadingIndicator();
                 } else if (fetchSnapshot.hasError) {
                   return const Center(
@@ -74,7 +75,7 @@ class _AuthPageState extends State<AuthPage> {
                   );
                 }
 
-                // switch for different UI flows/user type
+                // switch for different UI flows/user types
                 switch (UserInformation().userType) {
                   case 'engineer':
                     return const EngineerHomePage();

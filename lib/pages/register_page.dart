@@ -93,15 +93,19 @@ class _RegisterPageState extends State<RegisterPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // welcome text
-                const Text(
-                  'Register Here!',
-                  style: TextStyle(fontSize: 18),
+                Text(
+                  'Welcome!\nCreate an Account.',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 const SizedBox(height: 10),
 
                 // email textfield
                 MyTextField(
-                  hintText: 'email',
+                  hintText: 'Email',
                   obscureText: false,
                   controller: _emailController,
                 ),
@@ -109,7 +113,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 // password textfield
                 MyTextField(
-                  hintText: 'password',
+                  hintText: 'Password',
                   obscureText: true,
                   controller: _passwordController,
                 ),
@@ -117,17 +121,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 // confirm password textfield
                 MyTextField(
-                  hintText: 'confirm password',
+                  hintText: 'Confirm Password',
                   obscureText: true,
                   controller: _confirmPasswordController,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 24),
 
-                // log in button
+                // register button
                 MyButton(
                   onTap: register,
                   text: 'Register',
-                  height: 40,
+                  height: 45,
                 ),
                 const SizedBox(height: 14),
 

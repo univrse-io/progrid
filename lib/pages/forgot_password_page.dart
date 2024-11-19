@@ -60,15 +60,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // forgot password text
-                const Text(
-                  'Forgot Password',
-                  style: TextStyle(fontSize: 18),
+                Text(
+                  'Forgot Password?',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 14),
 
                 // email field
                 MyTextField(
-                  hintText: 'email',
+                  hintText: 'Email',
                   obscureText: false,
                   controller: _emailController,
                 ),
@@ -78,7 +82,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 MyButton(
                   onTap: forgotPassword,
                   text: 'Confirm',
-                  height: 40,
+                  height: 45,
                 ),
                 const SizedBox(height: 14),
 
@@ -92,6 +96,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       "Go Back",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontSize: 13,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
