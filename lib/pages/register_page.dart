@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:progrid/components/alert.dart';
 
-import 'package:progrid/components/my_alert.dart';
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
@@ -37,13 +37,7 @@ class _RegisterPageState extends State<RegisterPage> {
     // make sure passwords match
     if (_passwordController.text != _confirmPasswordController.text) {
       Navigator.pop(context);
-      showDialog(
-        context: context,
-        builder: (context) => const MyAlert(
-          title: "Registration Error",
-          content: "Passwords Don't Match",
-        ),
-      );
+      displayMessage("passwords don't match", context);
       return;
     }
 
@@ -68,13 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         Navigator.pop(context);
-        showDialog(
-          context: context,
-          builder: (context) => MyAlert(
-            title: "Registration Error",
-            content: e.message ?? "An unknown error occurred.",
-          ),
-        );
+        displayMessage(e.code, context);
       }
     }
   }

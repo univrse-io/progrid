@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:progrid/components/alert.dart';
 
-import 'package:progrid/components/my_alert.dart';
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
@@ -45,13 +45,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (mounted) {
         Navigator.pop(context);
-        showDialog(
-          context: context,
-          builder: (context) => MyAlert(
-            title: "Login Error",
-            content: e.message ?? "An unknown error occurred.",
-          ),
-        );
+        displayMessage(e.code, context);
       }
       _passwordController.clear();
     }
