@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:progrid/components/my_loader.dart';
+import 'package:progrid/pages/admin/home_page.dart';
 import 'package:progrid/pages/engineer/home_page.dart';
 import 'package:progrid/pages/login_page.dart';
 import 'package:progrid/pages/register_page.dart';
@@ -73,11 +74,14 @@ class _AuthPageState extends State<AuthPage> {
                   );
                 }
 
+                // switch for different UI flows/user type
                 switch (UserInformation().userType) {
                   case 'engineer':
                     return const EngineerHomePage();
                   case 'sapura':
                     return const SapuraHomePage();
+                  case 'admin':
+                    return const AdminHomePage();
                   default:
                     throw Exception("Could not Determine User Type");
                 }

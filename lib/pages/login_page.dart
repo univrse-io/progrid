@@ -5,6 +5,7 @@ import 'package:progrid/components/alert.dart';
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
+import 'package:progrid/pages/forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   // toggle to register page
@@ -82,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 10),
 
-                // username textfield
+                // email textfield
                 MyTextField(
                   hintText: 'email',
                   obscureText: false,
@@ -104,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                   text: 'Log In',
                   height: 40,
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 18),
 
                 // link to register page
                 Row(
@@ -113,6 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                     Text(
                       "Not a member? ",
                       style: TextStyle(
+                        fontSize: 14,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
@@ -121,12 +123,34 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text(
                         "Register Now",
                         style: TextStyle(
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     )
                   ],
+                ),
+                const SizedBox(height: 7),
+
+                // forgot password?
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                      );
+                    },
+                    child: Text(
+                      "Forgot Password?",
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
                 )
               ],
             ),
