@@ -67,8 +67,13 @@ class _AuthPageState extends State<AuthPage> {
               future: UserInformation().fetchUserInfo(user),
               builder: (context, AsyncSnapshot<void> fetchSnapshot) {
                 if (fetchSnapshot.connectionState == ConnectionState.waiting) {
-                  // TODO: resolve this loading buffer screen
+
+                  // TODO: resolve this double buffer screen
+                  // issue: firebase auth and database fetching are run separately and asynchronously
+                  // should be run consecutively, fetch done after login
+                  // solution: login() should call fetchuserinfo?
                   return const MyLoadingIndicator();
+
                 } else if (fetchSnapshot.hasError) {
                   return const Center(
                     child: Text("Failed to load user information."),
