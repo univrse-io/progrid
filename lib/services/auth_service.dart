@@ -47,15 +47,6 @@ class _AuthServiceState extends State<AuthService> {
     if (user == null) return;
 
     try {
-      // if (mounted) {
-      //   showDialog(
-      //     context: context,
-      //     builder: (context) => const Center(
-      //       child: MyLoadingIndicator(),
-      //     ),
-      //   );
-      // }
-
       // reload local user cache
       await user.reload();
       // if (mounted) Navigator.pop(context);
@@ -73,33 +64,26 @@ class _AuthServiceState extends State<AuthService> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // streambuilder listens to auth state at all times
-      body: StreamBuilder(
+      body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          final user = FirebaseAuth.instance.currentUser;
+          final user = snapshot.data;
 
           if (user != null) {
-            // then, wait for database fetching to complete before moving to main UI
-            return FutureBuilder(
+            // wait for database fetching to complete
+            return FutureBuilder<void>(
               future: _fetchFromDatabase(user),
-              builder: (context, AsyncSnapshot<void> fetchSnapshot) {
+              builder: (context, fetchSnapshot) {
                 if (fetchSnapshot.connectionState == ConnectionState.waiting) {
-                  // TODO: resolve this double buffer screen
-                  // issue: firebase auth and database fetching are run separately and asynchronously
-                  // should be run consecutively, fetch done after login
-                  // solution: login() should call fetchuserinfo?
-                  
-                  // still fetching from database
+                  // wait for data to fetch
                   return const MyLoadingIndicator();
                 } else if (fetchSnapshot.hasError) {
                   return const Center(
-                    // TODO: implement better user feedback here
                     child: Text("Failed to fetch data from database"),
                   );
                 }
 
-                // on successful load, navigate to designated page based on user type
+                // successful data load, navigate based on user type
                 switch (UserInformation().userType) {
                   case 'engineer':
                     return const EngineerHomePage();
