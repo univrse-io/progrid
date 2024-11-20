@@ -38,11 +38,9 @@ class Tower {
   Future<void> fetchTickets() async {
     try {
       final inspectionsSnapshot = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('inspections').get();
-
       final issuesSnapshot = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').get();
 
       inspections = inspectionsSnapshot.docs.map((doc) => InspectionTicket.fromMap(doc.data())).toList();
-
       issues = issuesSnapshot.docs.map((doc) => IssueTicket.fromMap(doc.data())).toList();
     } catch (e) {
       print("Error fetching tickets for tower $towerId: $e");

@@ -6,6 +6,7 @@ import 'package:progrid/services/objects/user.dart';
 class EngineerHomePage extends StatelessWidget {
   const EngineerHomePage({super.key});
 
+  // TODO: should list building be moved to towerservice class? for modularity
   Widget _buildTowersList() {
     var towers = TowerService().getTowers();
 
@@ -34,7 +35,7 @@ class EngineerHomePage extends StatelessWidget {
               ],
             ),
             onTap: () {
-              // TODO: navigate to tower page
+              // TODO: implement navigate to tower page
             },
           ),
         );

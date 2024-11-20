@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/pages/admin/home_page.dart';
+import 'package:progrid/pages/debug/home_page.dart';
 import 'package:progrid/pages/engineer/home_page.dart';
 import 'package:progrid/pages/login_page.dart';
 import 'package:progrid/pages/register_page.dart';
@@ -91,6 +92,8 @@ class _AuthServiceState extends State<AuthService> {
                     return const SapuraHomePage();
                   case 'admin':
                     return const AdminHomePage();
+                  case 'debug':
+                    return const DebugHomePage();
                   default:
                     throw Exception("Could not Determine User Type");
                 }
