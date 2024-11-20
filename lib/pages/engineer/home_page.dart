@@ -45,7 +45,6 @@ class EngineerHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userInformation = UserInformation(); // user information singleton
-    final userInformation = UserInformation(); // user information singleton
 
     return Scaffold(
       body: SafeArea(
