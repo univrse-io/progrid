@@ -1,0 +1,35 @@
+Proposed Database Structure:
+users (Collection)
+  ├─ {userID} (Document)
+      ├─ username: String
+      ├─ email: String
+      ├─ password: String
+      ├─ profilePicture: String
+      ├─ phoneNumber: String
+      ├─ alternateEmail: String
+      ├─ role: String
+      ├─ team: String
+      ├─ lastLogin: Timestamp
+
+towers (Collection)
+  ├─ {towerID} (Document)
+      ├─ siteID: String
+      ├─ towerName: String
+      ├─ towerAddress: String
+      ├─ latLong?: GeoPoint
+      ├─ status: String
+      ├─ notes: String
+      ├─ inspection_tickets (Subcollection)
+            ├─ {ticketID} (Document)
+                ├─ dateTime: Timestamp
+                ├─ inspectorID: String (Reference to a user document)
+                ├─ photos: Array<String> (URLs)
+                ├─ notes: String
+      ├─ issues_tickets (Subcollection)
+            ├─ {ticketID} (Document)
+		        ├─ tags: Array<String> (e.g., ["permit", "logistics", "site key", "special access", "hazard", "fsc"])
+                ├─ dateTime: Timestamp
+                ├─ reporterID: String (Reference to a user document)
+                ├─ status: String (e.g., "open", "resolved")
+                ├─ description: String
+                ├─ priority: String (e.g., "high", "low")

@@ -57,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
+        minimum: const EdgeInsets.all(20),
         child: Center(
           child: Container(
             width: 350,

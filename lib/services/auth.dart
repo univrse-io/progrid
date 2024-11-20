@@ -7,7 +7,7 @@ import 'package:progrid/pages/engineer/home_page.dart';
 import 'package:progrid/pages/login_page.dart';
 import 'package:progrid/pages/register_page.dart';
 import 'package:progrid/pages/sapura/home_page.dart';
-import 'package:progrid/services/user.dart';
+import 'package:progrid/services/objects/user.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});

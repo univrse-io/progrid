@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:progrid/components/my_button.dart';
-import 'package:progrid/services/user.dart';
+import 'package:progrid/services/objects/user.dart';
 
 // Standard Engineer Home Page
 class EngineerHomePage extends StatelessWidget {
