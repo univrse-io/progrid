@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/services/objects/tower.dart';
 import 'package:progrid/services/objects/user.dart';
@@ -45,6 +44,7 @@ class EngineerHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userInformation = UserInformation(); // user information singleton
     final userInformation = UserInformation(); // user information singleton
 
     return Scaffold(
