@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:progrid/components/alert.dart';
 
 import 'package:progrid/components/my_button.dart';
-import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -27,16 +26,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // register user
   Future<void> register() async {
-    showDialog(
-      context: context,
-      builder: (context) => const Center(
-        child: MyLoadingIndicator(),
-      ),
-    );
-
     // make sure passwords match
     if (_passwordController.text != _confirmPasswordController.text) {
-      Navigator.pop(context);
       displayMessage("passwords don't match", context);
       return;
     }
@@ -47,8 +38,6 @@ class _RegisterPageState extends State<RegisterPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-
-      if (mounted) Navigator.pop(context);
       String userId = credentials.user!.uid;
 
       // save user data to firestore database
@@ -57,11 +46,8 @@ class _RegisterPageState extends State<RegisterPage> {
         'uid': userId,
         'userType': 'engineer',
       });
-
-      if (mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       if (mounted) {
-        Navigator.pop(context);
         displayMessage(e.code, context);
       }
     }

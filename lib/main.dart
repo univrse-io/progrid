@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'package:progrid/services/auth.dart';
+import 'package:progrid/services/auth_service.dart';
 import 'package:progrid/services/themes.dart';
 
 void main() async {
@@ -18,7 +18,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: GlobalThemeData.lightThemeData,
-      home: const AuthPage(),
+      home: const AuthService(),
     );
   }
 }

@@ -37,25 +37,13 @@ class Tower {
   // fetch associated tickets (both inspections and issues)
   Future<void> fetchTickets() async {
     try {
-      final inspectionsSnapshot = await FirebaseFirestore.instance
-          .collection('towers')
-          .doc(towerId)
-          .collection('inspections')
-          .get();
-      
-      final issuesSnapshot = await FirebaseFirestore.instance
-          .collection('towers')
-          .doc(towerId)
-          .collection('issues')
-          .get();
+      final inspectionsSnapshot = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('inspections').get();
 
-      inspections = inspectionsSnapshot.docs
-          .map((doc) => InspectionTicket.fromMap(doc.data()))
-          .toList();
+      final issuesSnapshot = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').get();
 
-      issues = issuesSnapshot.docs
-          .map((doc) => IssueTicket.fromMap(doc.data()))
-          .toList();
+      inspections = inspectionsSnapshot.docs.map((doc) => InspectionTicket.fromMap(doc.data())).toList();
+
+      issues = issuesSnapshot.docs.map((doc) => IssueTicket.fromMap(doc.data())).toList();
     } catch (e) {
       print("Error fetching tickets for tower $towerId: $e");
     }
@@ -76,6 +64,7 @@ class TowerService {
   // should be run on app start, or a page refresh
   Future<void> fetchTowers() async {
     try {
+      towers = [];
       final snapshot = await FirebaseFirestore.instance.collection('towers').get();
 
       // fetch each tower and its associated tickets

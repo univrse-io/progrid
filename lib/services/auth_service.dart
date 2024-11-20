@@ -7,80 +7,99 @@ import 'package:progrid/pages/engineer/home_page.dart';
 import 'package:progrid/pages/login_page.dart';
 import 'package:progrid/pages/register_page.dart';
 import 'package:progrid/pages/sapura/home_page.dart';
+import 'package:progrid/services/objects/tower.dart';
 import 'package:progrid/services/objects/user.dart';
 
-class AuthPage extends StatefulWidget {
-  const AuthPage({super.key});
+// the 'AuthService' class always runs in the background
+// uses a streambuilder to monitor firebaseauth state, useful for login and logout from any location in the application
+// the entire app is run on a scaffold on this page
+
+class AuthService extends StatefulWidget {
+  const AuthService({super.key});
 
   @override
-  State<AuthPage> createState() => _AuthPageState();
+  State<AuthService> createState() => _AuthServiceState();
 }
 
-class _AuthPageState extends State<AuthPage> {
+class _AuthServiceState extends State<AuthService> {
   bool onLoginPage = true;
 
-  void togglePages() {
+  void toggleLoginPage() {
     setState(() {
       onLoginPage = !onLoginPage;
     });
   }
 
-  Future<void> _fetchAndLogin() async {
+  // fetch relevant database information
+  Future<void> _fetchFromDatabase(User user) async {
+    try {
+      // call singletons
+      await UserInformation().fetchUserInfo(user);
+      await TowerService().fetchTowers();
+    } catch (e) {
+      print("Error Fetching Information: $e");
+    }
+  }
+
+  Future<void> _autoLogin() async {
     User? user = FirebaseAuth.instance.currentUser;
 
-    if (user == null) {
-      return;
+    if (user == null) return;
+
+    try {
+      // if (mounted) {
+      //   showDialog(
+      //     context: context,
+      //     builder: (context) => const Center(
+      //       child: MyLoadingIndicator(),
+      //     ),
+      //   );
+      // }
+
+      // reload local user cache
+      await user.reload();
+      // if (mounted) Navigator.pop(context);
+    } catch (e) {
+      print("Error during AutoLogin: $e");
     }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      try {
-        // reload user auth
-        await user.reload();
-
-        // fetch user information from firestore here
-        await UserInformation().fetchUserInfo(user);
-      } catch (e) {
-        print("Error during auto-login: $e");
-      }
-    });
   }
 
   @override
   void initState() {
     super.initState();
-
-    // attempt autologin on app start
-    _fetchAndLogin();
+    _autoLogin();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // streambuilder listens to auth state at all times
       body: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           final user = FirebaseAuth.instance.currentUser;
 
-          // user has already logged in
           if (user != null) {
+            // then, wait for database fetching to complete before moving to main UI
             return FutureBuilder(
-              future: UserInformation().fetchUserInfo(user),
+              future: _fetchFromDatabase(user),
               builder: (context, AsyncSnapshot<void> fetchSnapshot) {
                 if (fetchSnapshot.connectionState == ConnectionState.waiting) {
-
                   // TODO: resolve this double buffer screen
                   // issue: firebase auth and database fetching are run separately and asynchronously
                   // should be run consecutively, fetch done after login
                   // solution: login() should call fetchuserinfo?
+                  
+                  // still fetching from database
                   return const MyLoadingIndicator();
-
                 } else if (fetchSnapshot.hasError) {
                   return const Center(
-                    child: Text("Failed to load user information."),
+                    // TODO: implement better user feedback here
+                    child: Text("Failed to fetch data from database"),
                   );
                 }
 
-                // switch for different UI flows/user types
+                // on successful load, navigate to designated page based on user type
                 switch (UserInformation().userType) {
                   case 'engineer':
                     return const EngineerHomePage();
@@ -95,14 +114,14 @@ class _AuthPageState extends State<AuthPage> {
             );
           }
 
-          // user not logged in
+          // case that user is not logged in
           return Scaffold(
             body: onLoginPage
                 ? LoginPage(
-                    onTapSwitchPage: togglePages,
+                    onTapSwitchPage: toggleLoginPage,
                   )
                 : RegisterPage(
-                    onTapSwitchPage: togglePages,
+                    onTapSwitchPage: toggleLoginPage,
                   ),
           );
         },

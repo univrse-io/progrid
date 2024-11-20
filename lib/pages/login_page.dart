@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:progrid/components/alert.dart';
 
 import 'package:progrid/components/my_button.dart';
-import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
 import 'package:progrid/pages/forgot_password_page.dart';
 
@@ -26,13 +25,6 @@ class _LoginPageState extends State<LoginPage> {
 
   // login user
   Future<void> login() async {
-    showDialog(
-      context: context,
-      builder: (context) => const Center(
-        child: MyLoadingIndicator(),
-      ),
-    );
-
     // try to sign in
     try {
       // firebase auth
@@ -40,14 +32,10 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
-      if (mounted) Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       print("Error: ${e.message}");
 
-      if (mounted) {
-        Navigator.pop(context);
-        displayMessage(e.code, context);
-      }
+      if (mounted) displayMessage(e.code, context);
       _passwordController.clear();
     }
   }
