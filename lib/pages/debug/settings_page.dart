@@ -48,6 +48,7 @@ class _SettingsPageState extends State<SettingsPage> {
       userProvider.phone = _phoneController.text.trim();
       userProvider.altEmail = _altEmailController.text.trim();
       // TODO: create setter functions for above
+      // should call notify listeners after updating
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Information updated successfully!')),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+// I combined the model and provider into a single class as there should only be a single user logged in at any time
 class UserProvider extends ChangeNotifier {
   User? _user;
   User? get user => _user;
@@ -26,6 +27,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // called on login
   void setUser(User? user) {
     _user = user;
     notifyListeners();
