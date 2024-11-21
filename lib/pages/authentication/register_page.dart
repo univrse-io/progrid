@@ -25,7 +25,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController = TextEditingController();
 
   // register user
-  Future<void> register() async {
+  Future<void> _register() async {
     // make sure passwords match
     if (_passwordController.text != _confirmPasswordController.text) {
       displayMessage("passwords don't match", context);
@@ -42,9 +42,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
       // save user data to firestore database
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
-        'email': _emailController.text,
-        'uid': userId,
-        'userType': 'engineer',
+        'email': _emailController.text.trim(),
+        'phone': 'Not Set',
+        'altEmail': 'Not Set',
+        'role': 'debug',
+        'lastLogin': Timestamp.now(),
       });
     } on FirebaseAuthException catch (e) {
       if (mounted) {
@@ -115,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 // register button
                 MyButton(
-                  onTap: register,
+                  onTap: _register,
                   text: 'Register',
                   height: 45,
                 ),

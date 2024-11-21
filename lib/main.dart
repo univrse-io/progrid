@@ -1,8 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:progrid/models/tower_provider.dart';
 
-import 'package:progrid/services/auth_service.dart';
+import 'package:progrid/models/user_provider.dart';
+import 'package:progrid/services/auth_wrapper.dart';
 import 'package:progrid/services/themes.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,10 +18,16 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: GlobalThemeData.lightThemeData,
-      home: const AuthService(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => TowersProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: true,
+        theme: GlobalThemeData.lightThemeData,
+        home: const AuthWrapper(),
+      ),
     );
   }
 }

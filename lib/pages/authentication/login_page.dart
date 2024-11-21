@@ -1,10 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_alert.dart';
 
+import 'package:progrid/components/my_alert.dart';
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_textfield.dart';
-import 'package:progrid/pages/forgot_password_page.dart';
+import 'package:progrid/pages/authentication/forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   // toggle to register page
@@ -24,14 +25,19 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   // login user
-  Future<void> login() async {
+  Future<void> _login() async {
     // try to sign in
     try {
       // firebase auth
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential credentials = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
+      String userId = credentials.user!.uid;
+
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'lastLogin': Timestamp.now(), // update last login
+      });
     } on FirebaseAuthException catch (e) {
       print("Error: ${e.message}");
 
@@ -121,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // log in button
                 MyButton(
-                  onTap: login,
+                  onTap: _login,
                   text: 'Log In',
                   height: 45,
                 ),
