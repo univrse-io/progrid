@@ -12,10 +12,11 @@ class HomePage extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context);
 
     return SafeArea(
-      minimum: const EdgeInsets.all(40),
+      minimum: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const SizedBox(height: 32),
           const Text(
             "Developer Home Page",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),

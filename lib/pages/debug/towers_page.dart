@@ -13,10 +13,11 @@ class TowersPage extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        minimum: const EdgeInsets.all(16),
+        minimum: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 20),
             const Text(
               "Towers List",
               style: TextStyle(
