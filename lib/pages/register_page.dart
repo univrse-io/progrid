@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/components/my_alert.dart';
@@ -25,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController = TextEditingController();
 
   // register user
-  Future<void> register() async {
+  Future<void> _register() async {
     // make sure passwords match
     if (_passwordController.text != _confirmPasswordController.text) {
       displayMessage("passwords don't match", context);
@@ -34,18 +33,23 @@ class _RegisterPageState extends State<RegisterPage> {
 
     // create the user
     try {
-      UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      String userId = credentials.user!.uid;
 
-      // save user data to firestore database
-      await FirebaseFirestore.instance.collection('users').doc(userId).set({
-        'email': _emailController.text,
-        'uid': userId,
-        'userType': 'engineer',
-      });
+      // UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      //   email: _emailController.text.trim(),
+      //   password: _passwordController.text.trim(),
+      // );
+      // String userId = credentials.user!.uid;
+
+      // // save user data to firestore database
+      // await FirebaseFirestore.instance.collection('users').doc(userId).set({
+      //   'email': _emailController.text,
+      //   'uid': userId,
+      //   'userType': 'engineer',
+      // });
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         displayMessage(e.code, context);
@@ -115,7 +119,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 // register button
                 MyButton(
-                  onTap: register,
+                  onTap: _register,
                   text: 'Register',
                   height: 45,
                 ),

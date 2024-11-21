@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   // login user
-  Future<void> login() async {
+  Future<void> _login() async {
     // try to sign in
     try {
       // firebase auth
@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // log in button
                 MyButton(
-                  onTap: login,
+                  onTap: _login,
                   text: 'Log In',
                   height: 45,
                 ),

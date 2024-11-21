@@ -72,4 +72,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'sapura-580e1.firebasestorage.app',
     iosBundleId: 'com.univrse.progrid',
   );
+
 }

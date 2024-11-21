@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/models/tower.dart';
-import 'package:progrid/models/user_information.dart';
+import 'package:progrid/models/user_provider.dart';
+import 'package:provider/provider.dart';
 
 // Server-Side Debug Interface
 class DebugHomePage extends StatelessWidget {
@@ -9,7 +11,7 @@ class DebugHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userInformation = UserInformation();
+    final userProvider = Provider.of<UserProvider>(context);
     var towers = TowerService().getTowers();
 
     return Scaffold(
@@ -24,9 +26,7 @@ class DebugHomePage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            Text("User ID: ${userInformation.userId}"),
-            Text("Email: ${userInformation.email}"),
-            Text("User Type: ${userInformation.userType}"),
+            Text("Email: ${userProvider.user?.email ?? "No Email"}"),
 
             const SizedBox(height: 20),
 
@@ -66,16 +66,9 @@ class DebugHomePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // create tower
-            MyButton(
-              onTap: () {}, 
-              text: 'New Tower',
-            ),
-            const SizedBox(height: 10),
-
             // logout button
             MyButton(
-              onTap: UserInformation().logout,
+              onTap: FirebaseAuth.instance.signOut,
               text: "Logout",
             ),
           ],
