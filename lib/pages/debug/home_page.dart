@@ -26,7 +26,9 @@ class DebugHomePage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            Text("Email: ${userProvider.user?.email ?? "No Email"}"),
+            Text("UserID: ${userProvider.userId}"),
+            Text("Email: ${userProvider.email}"),
+            Text("Typpe: ${userProvider.userType}"),
 
             const SizedBox(height: 20),
 

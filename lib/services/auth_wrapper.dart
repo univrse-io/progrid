@@ -25,36 +25,66 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   // fetch from database
+  Future<void> _fetchFromDatabase(User user) async {
+    try {
+      await Provider.of<UserProvider>(context, listen: false).fetchUserInfo(user);
+    } catch (e) {
+      print("Error Fetching Information: $e");
+    }
+  }
 
   // autologin
+  Future<void> _autoLogin() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    try {
+      // reload user cache
+      await user.reload();
+    } catch (e) {
+      print("Error during AutoLogin: $e");
+    }
+  }
 
   // init
+  @override
+  void initState() {
+    super.initState();
+    _autoLogin();
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const MyLoadingIndicator();
-        }
-
         final user = snapshot.data;
 
         if (user != null) {
-          // Update the user in the provider after the frame has been built
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            final userProvider = Provider.of<UserProvider>(context, listen: false);
-            userProvider.setUser(user);
-          });
+          return FutureBuilder(
+            future: _fetchFromDatabase(user),
+            builder: (context, fetchSnapshot) {
+              if (fetchSnapshot.connectionState == ConnectionState.waiting) {
+                return const MyLoadingIndicator();
+              } 
 
-          return const DebugHomePage();
+              // successful data load
+              // update user after frame built
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) {
+                  final userProvider = Provider.of<UserProvider>(context, listen: false);
+                  userProvider.setUser(user);
+                },
+              );
+
+              // TODO: implement multi user type fallback
+              return const DebugHomePage();
+            },
+          );
         }
 
-        // Show Login or Register page
-        return _onLoginPage 
-            ? LoginPage(onTapSwitchPage: _toggleLoginPage)
-            : RegisterPage(onTapSwitchPage: _toggleLoginPage);
+        return _onLoginPage ? LoginPage(onTapSwitchPage: _toggleLoginPage) : RegisterPage(onTapSwitchPage: _toggleLoginPage);
       },
     );
   }

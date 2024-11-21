@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/components/my_alert.dart';
@@ -33,23 +34,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
     // create the user
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+      String userId = credentials.user!.uid;
 
-      // UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      //   email: _emailController.text.trim(),
-      //   password: _passwordController.text.trim(),
-      // );
-      // String userId = credentials.user!.uid;
-
-      // // save user data to firestore database
-      // await FirebaseFirestore.instance.collection('users').doc(userId).set({
-      //   'email': _emailController.text,
-      //   'uid': userId,
-      //   'userType': 'engineer',
-      // });
+      // save user data to firestore database
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'email': _emailController.text.trim(),
+        'userType': 'debug',
+      });
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         displayMessage(e.code, context);
