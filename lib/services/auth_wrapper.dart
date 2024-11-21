@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:progrid/models/tower_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:progrid/components/my_loader.dart';
@@ -28,6 +29,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Future<void> _fetchFromDatabase(User user) async {
     try {
       await Provider.of<UserProvider>(context, listen: false).fetchUserInfoFromDatabase(user);
+      if (!mounted) return;
+
+      await Provider.of<TowersProvider>(context, listen: false).fetchTowers();
     } catch (e) {
       print("Error Fetching Information: $e");
     }

@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:progrid/models/tower_provider.dart';
 
 import 'package:progrid/models/user_provider.dart';
 import 'package:progrid/services/auth_wrapper.dart';
@@ -17,10 +18,13 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => UserProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => TowersProvider()),
+      ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: true,
         theme: GlobalThemeData.lightThemeData,
         home: const AuthWrapper(),
       ),
