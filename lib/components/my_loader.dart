@@ -9,7 +9,7 @@ class MyLoadingIndicator extends StatelessWidget {
       children: [
         // fullscreen backdrop
         Container(
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.surface.withOpacity(1),
           width: double.infinity,
           height: double.infinity,
         ),

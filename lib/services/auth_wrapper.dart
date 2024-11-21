@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/models/user_provider.dart';
-import 'package:progrid/pages/debug/home_page.dart';
-import 'package:progrid/pages/login_page.dart';
-import 'package:progrid/pages/register_page.dart';
-import 'package:provider/provider.dart';
+import 'package:progrid/pages/base_page.dart';
+import 'package:progrid/pages/authentication/login_page.dart';
+import 'package:progrid/pages/authentication/register_page.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -27,7 +27,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   // fetch from database
   Future<void> _fetchFromDatabase(User user) async {
     try {
-      await Provider.of<UserProvider>(context, listen: false).fetchUserInfo(user);
+      await Provider.of<UserProvider>(context, listen: false).fetchUserInfoFromDatabase(user);
     } catch (e) {
       print("Error Fetching Information: $e");
     }
@@ -67,7 +67,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
             builder: (context, fetchSnapshot) {
               if (fetchSnapshot.connectionState == ConnectionState.waiting) {
                 return const MyLoadingIndicator();
-              } 
+              }
 
               // successful data load
               // update user after frame built
@@ -78,13 +78,21 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 },
               );
 
-              // TODO: implement multi user type fallback
-              return const DebugHomePage();
+              // multi user type fallback
+              switch (Provider.of<UserProvider>(context, listen: false).role) {
+                case 'debug':
+                  return const BasePage();
+                default:
+                  return const Center(child: Text("Placeholder Page"));
+              }
             },
           );
         }
 
-        return _onLoginPage ? LoginPage(onTapSwitchPage: _toggleLoginPage) : RegisterPage(onTapSwitchPage: _toggleLoginPage);
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          body: _onLoginPage ? LoginPage(onTapSwitchPage: _toggleLoginPage) : RegisterPage(onTapSwitchPage: _toggleLoginPage),
+        );
       },
     );
   }

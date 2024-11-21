@@ -1,54 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_alert.dart';
 
+import 'package:progrid/components/my_alert.dart';
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_textfield.dart';
+import 'package:progrid/pages/authentication/forgot_password_page.dart';
 
-class RegisterPage extends StatefulWidget {
-  // toggle to login page
+class LoginPage extends StatefulWidget {
+  // toggle to register page
   final void Function()? onTapSwitchPage;
 
-  const RegisterPage({
+  const LoginPage({
     super.key,
     required this.onTapSwitchPage,
   });
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
 
-  // register user
-  Future<void> _register() async {
-    // make sure passwords match
-    if (_passwordController.text != _confirmPasswordController.text) {
-      displayMessage("passwords don't match", context);
-      return;
-    }
-
-    // create the user
+  // login user
+  Future<void> _login() async {
+    // try to sign in
     try {
-      UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+      // firebase auth
+      UserCredential credentials = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
       );
       String userId = credentials.user!.uid;
 
-      // save user data to firestore database
-      await FirebaseFirestore.instance.collection('users').doc(userId).set({
-        'email': _emailController.text.trim(),
-        'userType': 'debug',
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'lastLogin': Timestamp.now(), // update last login
       });
     } on FirebaseAuthException catch (e) {
-      if (mounted) {
-        displayMessage(e.code, context);
-      }
+      print("Error: ${e.message}");
+
+      if (mounted) displayMessage(e.code, context);
+      _passwordController.clear();
     }
   }
 
@@ -79,14 +73,14 @@ class _RegisterPageState extends State<RegisterPage> {
               children: [
                 // welcome text
                 Text(
-                  'Welcome!\nCreate an Account.',
+                  'Welcome Back!\nGlad to see you again.',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
 
                 // email textfield
                 MyTextField(
@@ -102,39 +96,60 @@ class _RegisterPageState extends State<RegisterPage> {
                   obscureText: true,
                   controller: _passwordController,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 7),
 
-                // confirm password textfield
-                MyTextField(
-                  hintText: 'Confirm Password',
-                  obscureText: true,
-                  controller: _confirmPasswordController,
+                // forgot password?
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                        );
+                      },
+                      child: Text(
+                        "Forgot Password?",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          decoration: TextDecoration.underline,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 14),
 
-                // register button
+                // log in button
                 MyButton(
-                  onTap: _register,
-                  text: 'Register',
+                  onTap: _login,
+                  text: 'Log In',
                   height: 45,
                 ),
                 const SizedBox(height: 14),
 
-                // link to login page
+                // link to register page
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Have an account? ",
+                      "Not a member? ",
                       style: TextStyle(
+                        fontSize: 14,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     GestureDetector(
                       onTap: widget.onTapSwitchPage,
                       child: Text(
-                        "Login Now",
+                        "Register Now",
                         style: TextStyle(
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -142,6 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     )
                   ],
                 ),
+                const SizedBox(height: 2),
               ],
             ),
           ),

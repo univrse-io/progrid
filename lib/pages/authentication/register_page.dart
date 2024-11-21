@@ -1,42 +1,57 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/components/my_alert.dart';
 
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_textfield.dart';
-import 'package:progrid/pages/forgot_password_page.dart';
 
-class LoginPage extends StatefulWidget {
-  // toggle to register page
+class RegisterPage extends StatefulWidget {
+  // toggle to login page
   final void Function()? onTapSwitchPage;
 
-  const LoginPage({
+  const RegisterPage({
     super.key,
     required this.onTapSwitchPage,
   });
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
-  // login user
-  Future<void> _login() async {
-    // try to sign in
+  // register user
+  Future<void> _register() async {
+    // make sure passwords match
+    if (_passwordController.text != _confirmPasswordController.text) {
+      displayMessage("passwords don't match", context);
+      return;
+    }
+
+    // create the user
     try {
-      // firebase auth
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+      UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
-    } on FirebaseAuthException catch (e) {
-      print("Error: ${e.message}");
+      String userId = credentials.user!.uid;
 
-      if (mounted) displayMessage(e.code, context);
-      _passwordController.clear();
+      // save user data to firestore database
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'email': _emailController.text.trim(),
+        'phone': 'Not Set',
+        'altEmail': 'Not Set',
+        'role': 'debug',
+        'lastLogin': Timestamp.now(),
+      });
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        displayMessage(e.code, context);
+      }
     }
   }
 
@@ -67,14 +82,14 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 // welcome text
                 Text(
-                  'Welcome Back!\nGlad to see you again.',
+                  'Welcome!\nCreate an Account.',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
 
                 // email textfield
                 MyTextField(
@@ -90,60 +105,39 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: true,
                   controller: _passwordController,
                 ),
-                const SizedBox(height: 7),
+                const SizedBox(height: 10),
 
-                // forgot password?
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                        );
-                      },
-                      child: Text(
-                        "Forgot Password?",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          decoration: TextDecoration.underline,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                      ),
-                    ),
-                  ),
+                // confirm password textfield
+                MyTextField(
+                  hintText: 'Confirm Password',
+                  obscureText: true,
+                  controller: _confirmPasswordController,
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 24),
 
-                // log in button
+                // register button
                 MyButton(
-                  onTap: _login,
-                  text: 'Log In',
+                  onTap: _register,
+                  text: 'Register',
                   height: 45,
                 ),
                 const SizedBox(height: 14),
 
-                // link to register page
+                // link to login page
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Not a member? ",
+                      "Have an account? ",
                       style: TextStyle(
-                        fontSize: 14,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     GestureDetector(
                       onTap: widget.onTapSwitchPage,
                       child: Text(
-                        "Register Now",
+                        "Login Now",
                         style: TextStyle(
-                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -151,7 +145,6 @@ class _LoginPageState extends State<LoginPage> {
                     )
                   ],
                 ),
-                const SizedBox(height: 2),
               ],
             ),
           ),

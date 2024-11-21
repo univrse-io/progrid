@@ -7,22 +7,20 @@ class UserProvider extends ChangeNotifier {
   User? get user => _user;
 
   // implement other user information here
-  // firestore document id = user id
   String userId = 'undefined';
   String email = 'undefined';
-  String userType = 'undefined';
-
-  void updateUserInfo(String id, String email, String userType) {
-    userId = id;
-    this.email = email;
-    this.userType = userType;
-    notifyListeners();
-  }
+  String phone = 'undefined';
+  String altEmail = 'undefined';
+  String role = 'undefined';
+  Timestamp? lastLogin; // tbf
 
   void logout() {
-    userId  = 'undefined';
+    userId = 'undefined';
     email = 'undefined';
-    userType = 'undefined';
+    phone = 'undefined';
+    altEmail = 'undefined';
+    role = 'undefined';
+    lastLogin = null;
 
     FirebaseAuth.instance.signOut();
     notifyListeners();
@@ -33,17 +31,22 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // fetch user information from database given auth user
-  Future<void> fetchUserInfo(User user) async {
+  // fetch user information from database given an auth user
+  Future<void> fetchUserInfoFromDatabase(User user) async {
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
       DocumentSnapshot userDoc = await firestore.collection('users').doc(user.uid).get();
 
       if (userDoc.exists) {
         Map<String, dynamic> data = userDoc.data() as Map<String, dynamic>;
-        String userType = data['userType'];
 
-        updateUserInfo(user.uid, user.email ?? '', userType);
+        userId = userDoc.id;
+        email = data['email'] ?? 'undefined';
+        phone = data['phone'] ?? 'undefined';
+        altEmail = data['altEmail'] ?? 'undefined';
+        role = data['role'] ?? 'undefined';
+        lastLogin = data['lastLogin'] ?? 'undefined';
+
       } else {
         throw Exception("User Document does not Exist");
       }
