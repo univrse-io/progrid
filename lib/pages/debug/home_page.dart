@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:progrid/components/my_button.dart';
-import 'package:progrid/services/objects/tower.dart';
-import 'package:progrid/services/objects/user.dart';
+import 'package:progrid/models/tower.dart';
+import 'package:progrid/models/user_information.dart';
 
 // Server-Side Debug Interface
 class DebugHomePage extends StatelessWidget {

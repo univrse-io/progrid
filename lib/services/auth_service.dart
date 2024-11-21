@@ -8,8 +8,8 @@ import 'package:progrid/pages/engineer/home_page.dart';
 import 'package:progrid/pages/login_page.dart';
 import 'package:progrid/pages/register_page.dart';
 import 'package:progrid/pages/sapura/home_page.dart';
-import 'package:progrid/services/objects/tower.dart';
-import 'package:progrid/services/objects/user.dart';
+import 'package:progrid/models/tower.dart';
+import 'package:progrid/models/user_information.dart';
 
 // the 'AuthService' class always runs in the background
 // uses a streambuilder to monitor firebaseauth state, useful for login and logout from any location in the application

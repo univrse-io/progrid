@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:progrid/services/objects/inspection_ticket.dart';
-import 'package:progrid/services/objects/issue_ticket.dart';
+import 'package:progrid/models/inspection_ticket.dart';
+import 'package:progrid/models/issue_ticket.dart';
 
 class Tower {
   String towerId;

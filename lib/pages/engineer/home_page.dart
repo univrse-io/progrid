@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:progrid/components/my_button.dart';
-import 'package:progrid/services/objects/tower.dart';
-import 'package:progrid/services/objects/user.dart';
+import 'package:progrid/models/tower.dart';
+import 'package:progrid/models/user_information.dart';
 
 class EngineerHomePage extends StatelessWidget {
   const EngineerHomePage({super.key});
 
-  // TODO: should list building be moved to towerservice class? for modularity
+  // TODO: should list building be moved to own towerservice class? for modularity
   Widget _buildTowersList() {
     var towers = TowerService().getTowers();
 
@@ -35,7 +35,7 @@ class EngineerHomePage extends StatelessWidget {
               ],
             ),
             onTap: () {
-              // TODO: implement navigate to tower page
+              // TODO: implement tower page
             },
           ),
         );
