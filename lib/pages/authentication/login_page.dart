@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:progrid/components/my_alert.dart';
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_textfield.dart';
@@ -29,11 +28,12 @@ class _LoginPageState extends State<LoginPage> {
     // try to sign in
     try {
       // firebase auth
-      UserCredential credentials = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final credentials =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
-      String userId = credentials.user!.uid;
+      final userId = credentials.user!.uid;
 
       await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'lastLogin': Timestamp.now(), // update last login
@@ -85,7 +85,6 @@ class _LoginPageState extends State<LoginPage> {
                 // email textfield
                 MyTextField(
                   hintText: 'Email',
-                  obscureText: false,
                   controller: _emailController,
                 ),
                 const SizedBox(height: 10),
@@ -107,7 +106,8 @@ class _LoginPageState extends State<LoginPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const ForgotPasswordPage()),
                         );
                       },
                       child: Text(
@@ -129,7 +129,6 @@ class _LoginPageState extends State<LoginPage> {
                 MyButton(
                   onTap: _login,
                   text: 'Log In',
-                  height: 45,
                 ),
                 const SizedBox(height: 14),
 

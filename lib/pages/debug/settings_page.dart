@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_textfield.dart';
 import 'package:progrid/models/user_provider.dart';
-
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -106,7 +105,6 @@ class _SettingsPageState extends State<SettingsPage> {
             MyButton(
               text: 'Save Changes',
               onTap: _updateUserInfo,
-              height: 45,
             ),
             const SizedBox(height: 10),
 
@@ -114,7 +112,6 @@ class _SettingsPageState extends State<SettingsPage> {
             MyButton(
               text: 'Logout',
               onTap: userProvider.logout,
-              height: 45,
             ),
           ],
         ),

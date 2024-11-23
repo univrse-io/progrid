@@ -36,19 +36,18 @@ class UserProvider extends ChangeNotifier {
   // fetch user information from database given an auth user
   Future<void> fetchUserInfoFromDatabase(User user) async {
     try {
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      DocumentSnapshot userDoc = await firestore.collection('users').doc(user.uid).get();
+      final firestore = FirebaseFirestore.instance;
+      final userDoc = await firestore.collection('users').doc(user.uid).get();
 
       if (userDoc.exists) {
-        Map<String, dynamic> data = userDoc.data() as Map<String, dynamic>;
+        final data = userDoc.data()!;
 
         userId = userDoc.id;
-        email = data['email'] ?? 'undefined';
-        phone = data['phone'] ?? 'undefined';
-        altEmail = data['altEmail'] ?? 'undefined';
-        role = data['role'] ?? 'undefined';
-        lastLogin = data['lastLogin'] ?? 'undefined';
-
+        email = data['email'] as String? ?? 'undefined';
+        phone = data['phone'] as String? ?? 'undefined';
+        altEmail = data['altEmail'] as String? ?? 'undefined';
+        role = data['role'] as String? ?? 'undefined';
+        lastLogin = data['lastLogin'] as Timestamp?;
       } else {
         throw Exception("User Document does not Exist");
       }

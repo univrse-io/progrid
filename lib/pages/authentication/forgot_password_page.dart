@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:progrid/components/my_alert.dart';
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_textfield.dart';
@@ -17,7 +16,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   // forgot password
   Future<void> forgotPassword() async {
-    String email = _emailController.text.trim();
+    final String email = _emailController.text.trim();
 
     if (email.isEmpty) {
       displayMessage("Please Enter an Email Address", context);
@@ -74,7 +73,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 // email field
                 MyTextField(
                   hintText: 'Email',
-                  obscureText: false,
                   controller: _emailController,
                 ),
                 const SizedBox(height: 10),
@@ -83,7 +81,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 MyButton(
                   onTap: forgotPassword,
                   text: 'Confirm',
-                  height: 45,
                 ),
                 const SizedBox(height: 14),
 

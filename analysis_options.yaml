@@ -1,7 +1,1 @@
-analyzer:
-  errors:
-    avoid_print: ignore
-include: package:flutter_lints/flutter.yaml
-
-linter:
-  rules:
+include: package:lint/casual.yaml

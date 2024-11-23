@@ -21,13 +21,13 @@ class Tower {
   });
 
   factory Tower.fetchTowerInfoFromDatabase(DocumentSnapshot doc) {
-    var data = doc.data() as Map<String, dynamic>;
+    final data = doc.data()! as Map<String, dynamic>;
     return Tower(
       towerId: doc.id,
-      name: data['name'] ?? 'undefined',
-      address: data['address'] ?? 'undefined',
-      status: data['status'] ?? 'undefined',
-      notes: data['notes'] ?? 'NaN',
+      name: data['name'] as String? ?? 'undefined',
+      address: data['address'] as String? ?? 'undefined',
+      status: data['status'] as String? ?? 'undefined',
+      notes: data['notes'] as String? ?? 'NaN',
     );
   }
 }
@@ -40,11 +40,12 @@ class TowersProvider extends ChangeNotifier {
   Future<void> fetchTowers() async {
     try {
       towers = []; // reset list
-      final snapshot = await FirebaseFirestore.instance.collection('towers').get();
+      final snapshot =
+          await FirebaseFirestore.instance.collection('towers').get();
 
       // fetch each tower
-      for (var doc in snapshot.docs) {
-        Tower tower = Tower.fetchTowerInfoFromDatabase(doc);
+      for (final doc in snapshot.docs) {
+        final Tower tower = Tower.fetchTowerInfoFromDatabase(doc);
         towers.add(tower);
       }
       notifyListeners();
@@ -62,7 +63,7 @@ class TowersProvider extends ChangeNotifier {
     return ListView.builder(
       itemCount: towers.length,
       itemBuilder: (context, index) {
-        var tower = towers[index];
+        final tower = towers[index];
 
         return GestureDetector(
           onTap: () {
@@ -91,7 +92,9 @@ class TowersProvider extends ChangeNotifier {
                               height: 16,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: tower.status == 'active' ? Colors.green : Colors.red,
+                                color: tower.status == 'active'
+                                    ? Colors.green
+                                    : Colors.red,
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -107,9 +110,12 @@ class TowersProvider extends ChangeNotifier {
                         const SizedBox(height: 4),
 
                         // tower id and address
-                        Text(tower.address, style: const TextStyle(fontSize: 16)),
+                        Text(tower.address,
+                            style: const TextStyle(fontSize: 16)),
                         const SizedBox(height: 3),
-                        Text(tower.towerId, style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+                        Text(tower.towerId,
+                            style: const TextStyle(
+                                fontSize: 16, fontStyle: FontStyle.italic)),
                       ],
                     ),
                   ),

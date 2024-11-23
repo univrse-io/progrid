@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/components/my_alert.dart';
-
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_textfield.dart';
 
@@ -20,9 +19,9 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   // register user
   Future<void> _register() async {
@@ -34,11 +33,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
     // create the user
     try {
-      UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final UserCredential credentials =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      String userId = credentials.user!.uid;
+      final String userId = credentials.user!.uid;
 
       // save user data to firestore database
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
@@ -94,7 +94,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 // email textfield
                 MyTextField(
                   hintText: 'Email',
-                  obscureText: false,
                   controller: _emailController,
                 ),
                 const SizedBox(height: 10),
@@ -119,7 +118,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 MyButton(
                   onTap: _register,
                   text: 'Register',
-                  height: 45,
                 ),
                 const SizedBox(height: 14),
 
