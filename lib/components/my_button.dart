@@ -12,7 +12,7 @@ class MyButton extends StatelessWidget {
     required this.onTap,
     required this.text,
     this.width,
-    this.height,
+    this.height = 45, // default
   });
 
   @override

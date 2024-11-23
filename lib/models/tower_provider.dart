@@ -47,6 +47,7 @@ class TowersProvider extends ChangeNotifier {
         Tower tower = Tower.fetchTowerInfoFromDatabase(doc);
         towers.add(tower);
       }
+      notifyListeners();
     } catch (e) {
       print("Error Fetching Towers: $e");
     }
@@ -55,7 +56,7 @@ class TowersProvider extends ChangeNotifier {
   // returns a formatted widget list of towers
   Widget buildTowersList(BuildContext context) {
     if (towers.isEmpty) {
-      return const Center(child: CircularProgressIndicator()); 
+      return const Center(child: CircularProgressIndicator());
     }
 
     return ListView.builder(
@@ -63,33 +64,63 @@ class TowersProvider extends ChangeNotifier {
       itemBuilder: (context, index) {
         var tower = towers[index];
 
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Tower ID: ${tower.towerId}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+        return GestureDetector(
+          onTap: () {
+            // TODO: navigate to dedicated tower page
+            print("Tapped on tower: ${tower.name}");
+          },
+          child: Card(
+            margin: const EdgeInsets.symmetric(vertical: 4),
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: SafeArea(
+              minimum: const EdgeInsets.all(15),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 70,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 16,
+                              height: 16,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: tower.status == 'active' ? Colors.green : Colors.red,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              tower.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+
+                        // tower id and address
+                        Text(tower.address, style: const TextStyle(fontSize: 16)),
+                        const SizedBox(height: 3),
+                        Text(tower.towerId, style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Text('Name: ${tower.name}', style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 8),
-                Text('Address: ${tower.address}', style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 8),
-                Text('Status: ${tower.status}', style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 8),
-                Text('Notes: ${tower.notes}', style: const TextStyle(fontSize: 16)),
-              ],
+                  const Expanded(
+                      flex: 10,
+                      child: Icon(
+                        Icons.arrow_right,
+                        size: 44,
+                      )),
+                ],
+              ),
             ),
           ),
         );

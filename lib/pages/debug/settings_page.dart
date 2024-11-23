@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/components/my_button.dart';
+import 'package:progrid/components/my_textfield.dart';
 import 'package:progrid/models/user_provider.dart';
 
 import 'package:provider/provider.dart';
@@ -65,48 +66,55 @@ class _SettingsPageState extends State<SettingsPage> {
     final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SafeArea(
+        minimum: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 32),
             const Text(
-              'Edit Profile',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              "Settings",
+              style: TextStyle(
+                fontSize: 22,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
+
+            const Text(
+              "Edit Profile",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 10),
 
             // phone field
-            TextField(
+            MyTextField(
               controller: _phoneController,
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
-                border: OutlineInputBorder(),
-              ),
+              hintText: 'Phone Number',
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
             // alternate email field
-            TextField(
+            MyTextField(
               controller: _altEmailController,
-              decoration: const InputDecoration(
-                labelText: 'Alternate Email',
-                border: OutlineInputBorder(),
-              ),
+              hintText: 'Alternate Email',
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
             MyButton(
               text: 'Save Changes',
               onTap: _updateUserInfo,
+              height: 45,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 
             // logout
             MyButton(
               text: 'Logout',
               onTap: userProvider.logout,
+              height: 45,
             ),
           ],
         ),
