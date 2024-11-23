@@ -25,7 +25,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TowersProvider()),
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: true,
+        title: 'Progrid',
         theme: GlobalThemeData.lightThemeData,
         home: const AuthWrapper(),
       ),
