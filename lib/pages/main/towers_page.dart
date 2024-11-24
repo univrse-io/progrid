@@ -1,135 +1,184 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_loader.dart';
+import 'package:progrid/components/my_textfield.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:provider/provider.dart';
 
-class TowersPage extends StatelessWidget {
+class TowersPage extends StatefulWidget {
   const TowersPage({super.key});
+
+  @override
+  State<TowersPage> createState() => _TowersPageState();
+}
+
+class _TowersPageState extends State<TowersPage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
+
+  // filter towers list
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query.toLowerCase();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final towersProvider = Provider.of<TowersProvider>(context);
 
+    // filter towers based on search query (name, address, region, or id)
+    final List<Tower> towers = towersProvider.towers
+        .where((tower) => tower.name.toLowerCase().contains(_searchQuery) || 
+            tower.address.toLowerCase().contains(_searchQuery) ||
+            tower.region.toLowerCase().contains(_searchQuery) ||
+            tower.owner.toLowerCase().contains(_searchQuery) ||
+            tower.id.toLowerCase().contains(_searchQuery))
+        .toList();
+
     return Scaffold(
       body: SafeArea(
-        minimum: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            const Text(
-              "Query Towers",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
+        minimum: const EdgeInsets.symmetric(horizontal: 30),
+        child: RefreshIndicator(
+          // refresh towers list on pull-down
+          onRefresh: () => towersProvider.fetchTowers(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 30),
+              const Text(
+                "Query Towers",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22,
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
-            // refresh button (to be replaced with downward gesture)
-            MyButton(
-              text: "Refresh Towers",
-              onTap: towersProvider.fetchTowers,
-            ),
-            const SizedBox(height: 20),
-
-            const Text(
-              "   we found...",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.italic,
-                fontSize: 14,
+              // TODO: implement search bar
+              MyTextField(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+                hintText: 'enter id, name, address, region, etc...',
               ),
-            ),
-            const SizedBox(height: 4),
+              const SizedBox(height: 10),
 
-            // towers list (important)
-            Expanded(
-              child: towersProvider.towers.isEmpty
-                  ? const Center(child: MyLoadingIndicator())
-                  : ListView.builder(
-                      itemCount: towersProvider.towers.length,
-                      itemBuilder: (context, index) {
-                        final tower = towersProvider.towers[index];
-                        return GestureDetector(
-                          onTap: () {
-                            // TODO: navigate to dedicated tower page
-                            print("Tapped on tower: ${tower.id}");
-                          },
-                          child: Card(
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: SafeArea(
-                              minimum: EdgeInsets.all(10),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 70,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              width: 16,
-                                              height: 16,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: tower.status == 'active'
-                                                    ? Colors.green
+              const Text(
+                "  we found...",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 6),
+
+              // towers list (important)
+              Expanded(
+                child: towers.isEmpty
+                    ? const Center(child: MyLoadingIndicator())
+                    : ListView.builder(
+                        itemCount: towers.length,
+                        itemBuilder: (context, index) {
+                          final tower = towers[index];
+                          return GestureDetector(
+                            onTap: () {
+                              // TODO: navigate to dedicated tower page
+                              print("Tapped on tower: ${tower.id}");
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: SafeArea(
+                                minimum: EdgeInsets.all(12),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 70,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 17,
+                                                height: 17,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: tower.status == 'active' 
+                                                    ? Colors.green 
                                                     : Colors.red,
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              tower.name,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18,
+                                              const SizedBox(width: 7),
+                                              Text(
+                                                tower.id,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 4),
-
-                                        // tower id and address
-                                        Text(
-                                          tower.address,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                        const SizedBox(height: 3),
-                                        Text(
-                                          tower.id,
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontStyle: FontStyle.italic,
+                                            ],
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(height: 4),
+
+                                          // tower name and other details
+                                          Text(
+                                            tower.name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(height: 3),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                tower.owner,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold
+                                                ),
+                                              ),
+                                              Text(
+                                                ",",
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold
+                                                ),
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Text(
+                                                tower.region,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontStyle: FontStyle.italic,
+                                                  fontWeight: FontWeight.normal
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 10,
-                                    child: Icon(
-                                      Icons.arrow_right,
-                                      size: 44,
-                                    ),
-                                  )
-                                ],
+                                    Expanded(
+                                      flex: 10,
+                                      child: Icon(
+                                        Icons.arrow_right,
+                                        size: 44,
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
-          ],
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );
