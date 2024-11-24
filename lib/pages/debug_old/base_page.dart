@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/pages/debug/home_page.dart';
-import 'package:progrid/pages/debug/settings_page.dart';
-import 'package:progrid/pages/debug/towers_page.dart';
+import 'package:progrid/pages/debug_old/home_page.dart';
+import 'package:progrid/pages/debug_old/settings_page.dart';
+import 'package:progrid/pages/debug_old/towers_page.dart';
 
 class BasePage extends StatefulWidget {
   const BasePage({super.key});
