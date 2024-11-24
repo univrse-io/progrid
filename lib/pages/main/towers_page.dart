@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
 import 'package:progrid/models/tower_provider.dart';
+import 'package:progrid/services/themes.dart';
 import 'package:provider/provider.dart';
 
 class TowersPage extends StatefulWidget {
@@ -102,38 +104,41 @@ class _TowersPageState extends State<TowersPage> {
                                         children: [
                                           Row(
                                             children: [
+                                              // completion status indicator
                                               Container(
-                                                width: 17,
-                                                height: 17,
+                                                width: 14,
+                                                height: 14,
                                                 decoration: BoxDecoration(
                                                   shape: BoxShape.circle,
                                                   color: tower.status == 'active' 
-                                                    ? Colors.green 
-                                                    : Colors.red,
+                                                    ? AppColors.green 
+                                                    : AppColors.red,
                                                 ),
                                               ),
                                               const SizedBox(width: 7),
+                                              // tower id
                                               Text(
                                                 tower.id,
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
+                                                  fontSize: 15,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(height: 4),
+                                          const SizedBox(height: 0),
 
-                                          // tower name and other details
+                                          // tower name
                                           Text(
                                             tower.name,
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                           ),
-                                          const SizedBox(height: 3),
+                                          const SizedBox(height: 0),
                                           Row(
                                             children: [
+                                              // tower owner
                                               Text(
                                                 tower.owner,
                                                 style: const TextStyle(
@@ -149,6 +154,7 @@ class _TowersPageState extends State<TowersPage> {
                                                 ),
                                               ),
                                               const SizedBox(width: 5),
+                                              // tower region
                                               Text(
                                                 tower.region,
                                                 style: const TextStyle(
@@ -166,7 +172,7 @@ class _TowersPageState extends State<TowersPage> {
                                       flex: 10,
                                       child: Icon(
                                         Icons.arrow_right,
-                                        size: 44,
+                                        size: 38,
                                       ),
                                     )
                                   ],
@@ -177,6 +183,14 @@ class _TowersPageState extends State<TowersPage> {
                         },
                       ),
               ),
+              const SizedBox(height: 10),
+              Center(child: const Text("or...", style: TextStyle(fontWeight: FontWeight.bold, ),)),
+              const SizedBox(height: 10),
+              MyButton(
+                text: "Use My Location",
+                onTap: () {}, // TODO: implement geolocation in new page
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
