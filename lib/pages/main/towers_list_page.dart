@@ -25,7 +25,7 @@ class _TowersListPageState extends State<TowersListPage> {
       _searchQuery = query.toLowerCase();
     });
   }
-
+  
   @override
   Widget build(BuildContext context) {
     final towersProvider = Provider.of<TowersProvider>(context);
@@ -47,14 +47,11 @@ class _TowersListPageState extends State<TowersListPage> {
         leading: IconButton(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
           icon: Icon(Icons.arrow_back, size: 34),
-          onPressed: () => userProvider.logout,
+          onPressed: () => userProvider.logout(),
         ),
         title: Text(
           'Query Towers',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 23
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
         ),
       ),
       body: SafeArea(

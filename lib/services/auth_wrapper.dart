@@ -24,14 +24,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
     });
   }
 
-  // fetch from database
+  // fetch user data from database
   Future<void> _fetchFromDatabase(User user) async {
     try {
-      await Provider.of<UserProvider>(context, listen: false)
-          .fetchUserInfoFromDatabase(user);
+      await Provider.of<UserProvider>(context, listen: false).fetchUserInfoFromDatabase(user);
       if (!mounted) return;
 
-      await Provider.of<TowersProvider>(context, listen: false).fetchTowers();
+      // this should be detached from any kind of auth process,
+      // await Provider.of<TowersProvider>(context, listen: false).fetchTowers();
     } catch (e) {
       print("Error Fetching Information: $e");
     }
@@ -55,6 +55,11 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
+
+    // load towers list
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<TowersProvider>(context, listen: false).fetchTowers();
+    });
     _autoLogin();
   }
 
@@ -77,17 +82,15 @@ class _AuthWrapperState extends State<AuthWrapper> {
               // update user after frame built
               WidgetsBinding.instance.addPostFrameCallback(
                 (_) {
-                  final userProvider =
-                      Provider.of<UserProvider>(context, listen: false);
-                  userProvider.setUser(user);
+                  final userProvider = Provider.of<UserProvider>(context, listen: false);
+                  userProvider.setUser(user); // this should set to 'null' if user is signed out
                 },
               );
 
               // multi user type fallback
               switch (Provider.of<UserProvider>(context, listen: false).role) {
                 case 'debug':
-                return const TowersListPage();
-                  // return const BasePage();
+                  return const TowersListPage();
                 default:
                   return const Center(child: Text("Placeholder Page"));
               }
@@ -97,9 +100,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          body: _onLoginPage
-              ? LoginPage(onTapSwitchPage: _toggleLoginPage)
-              : RegisterPage(onTapSwitchPage: _toggleLoginPage),
+          body: _onLoginPage ? LoginPage(onTapSwitchPage: _toggleLoginPage) : RegisterPage(onTapSwitchPage: _toggleLoginPage),
         );
       },
     );

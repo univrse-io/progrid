@@ -15,16 +15,22 @@ class UserProvider extends ChangeNotifier {
   String role = 'undefined';
   Timestamp? lastLogin; // tbf
 
-  void logout() {
-    userId = 'undefined';
-    email = 'undefined';
-    phone = 'undefined';
-    altEmail = 'undefined';
-    role = 'undefined';
-    lastLogin = null;
+  Future<void> logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      _user = null; // reset firebase user reference
 
-    FirebaseAuth.instance.signOut();
-    notifyListeners();
+      userId = 'undefined';
+      email = 'undefined';
+      phone = 'undefined';
+      altEmail = 'undefined';
+      role = 'undefined';
+      lastLogin = null;
+
+      notifyListeners();
+    } catch (e) {
+      print("Error during logout: $e");
+    }
   }
 
   // called on login
