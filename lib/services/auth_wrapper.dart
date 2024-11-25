@@ -5,7 +5,7 @@ import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/models/user_provider.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
-import 'package:progrid/pages/main/home_page.dart';
+import 'package:progrid/pages/home_page.dart';
 import 'package:provider/provider.dart';
 
 class AuthWrapper extends StatefulWidget {
