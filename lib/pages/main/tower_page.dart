@@ -31,10 +31,9 @@ class _TowerPageState extends State<TowerPage> {
       // use appbar for back buttons
       appBar: AppBar(
         leading: IconButton(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
           icon: Icon(Icons.arrow_back, size: 34),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
