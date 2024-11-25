@@ -24,7 +24,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     });
   }
 
-  // fetch user data from database
+  // fetch from database
   Future<void> _fetchFromDatabase(User user) async {
     try {
       await Provider.of<UserProvider>(context, listen: false).fetchUserInfoFromDatabase(user);
