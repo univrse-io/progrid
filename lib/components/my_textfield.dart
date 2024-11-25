@@ -1,26 +1,34 @@
 import 'package:flutter/material.dart';
 
 class MyTextField extends StatelessWidget {
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String? hintText;
   final bool obscureText;
   final ValueChanged<String>? onChanged;
+  final Icon? icon;
+  final bool? enabled;
 
   const MyTextField({
     super.key,
-    required this.controller,
-    required this.hintText,
+    this.controller,
+    this.hintText,
     this.obscureText = false,
     this.onChanged,
+    this.icon,
+    this.enabled,
   });
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController effectiveController = controller ?? TextEditingController();
+
     return TextField(
       obscureText: obscureText,
-      controller: controller,
+      controller: effectiveController,
       onChanged: onChanged,
+      enabled: enabled,
       decoration: InputDecoration(
+        prefixIcon: icon,
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
             width: 1.5,
