@@ -5,7 +5,7 @@ import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/models/user_provider.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
-import 'package:progrid/pages/main/towers_page.dart';
+import 'package:progrid/pages/main/towers_list_page.dart';
 import 'package:provider/provider.dart';
 
 class AuthWrapper extends StatefulWidget {
@@ -86,7 +86,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
               // multi user type fallback
               switch (Provider.of<UserProvider>(context, listen: false).role) {
                 case 'debug':
-                return const TowersPage();
+                return const TowersListPage();
                   // return const BasePage();
                 default:
                   return const Center(child: Text("Placeholder Page"));

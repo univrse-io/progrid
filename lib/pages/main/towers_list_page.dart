@@ -3,17 +3,18 @@ import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
 import 'package:progrid/models/tower_provider.dart';
+import 'package:progrid/pages/main/tower_page.dart';
 import 'package:progrid/services/themes.dart';
 import 'package:provider/provider.dart';
 
-class TowersPage extends StatefulWidget {
-  const TowersPage({super.key});
+class TowersListPage extends StatefulWidget {
+  const TowersListPage({super.key});
 
   @override
-  State<TowersPage> createState() => _TowersPageState();
+  State<TowersListPage> createState() => _TowersListPageState();
 }
 
-class _TowersPageState extends State<TowersPage> {
+class _TowersListPageState extends State<TowersListPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
 
@@ -30,7 +31,8 @@ class _TowersPageState extends State<TowersPage> {
 
     // filter towers based on search query (name, address, region, or id)
     final List<Tower> towers = towersProvider.towers
-        .where((tower) => tower.name.toLowerCase().contains(_searchQuery) || 
+        .where((tower) =>
+            tower.name.toLowerCase().contains(_searchQuery) ||
             tower.address.toLowerCase().contains(_searchQuery) ||
             tower.region.toLowerCase().contains(_searchQuery) ||
             tower.owner.toLowerCase().contains(_searchQuery) ||
@@ -39,7 +41,7 @@ class _TowersPageState extends State<TowersPage> {
 
     return Scaffold(
       body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 30),
+        minimum: const EdgeInsets.symmetric(horizontal: 25),
         child: RefreshIndicator(
           // refresh towers list on pull-down
           onRefresh: () => towersProvider.fetchTowers(),
@@ -54,25 +56,15 @@ class _TowersPageState extends State<TowersPage> {
                   fontSize: 22,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
 
-              // TODO: implement search bar
+              // search bar
               MyTextField(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
                 hintText: 'enter id, name, address, region, etc...',
               ),
               const SizedBox(height: 10),
-
-              const Text(
-                "  we found...",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 6),
 
               // towers list (important)
               Expanded(
@@ -83,9 +75,16 @@ class _TowersPageState extends State<TowersPage> {
                         itemBuilder: (context, index) {
                           final tower = towers[index];
                           return GestureDetector(
-                            onTap: () {
+                            onTap: () async {
                               // TODO: navigate to dedicated tower page
                               print("Tapped on tower: ${tower.id}");
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TowerPage(tower: tower),
+                                ),
+                              );
                             },
                             child: Card(
                               margin: const EdgeInsets.symmetric(vertical: 4),
@@ -110,9 +109,7 @@ class _TowersPageState extends State<TowersPage> {
                                                 height: 14,
                                                 decoration: BoxDecoration(
                                                   shape: BoxShape.circle,
-                                                  color: tower.status == 'active' 
-                                                    ? AppColors.green 
-                                                    : AppColors.red,
+                                                  color: tower.status == 'active' ? AppColors.green : AppColors.red,
                                                 ),
                                               ),
                                               const SizedBox(width: 7),
@@ -141,27 +138,18 @@ class _TowersPageState extends State<TowersPage> {
                                               // tower owner
                                               Text(
                                                 tower.owner,
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold
-                                                ),
+                                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                                               ),
                                               Text(
                                                 ",",
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold
-                                                ),
+                                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                                               ),
-                                              const SizedBox(width: 5),
+                                              const SizedBox(width: 4),
                                               // tower region
                                               Text(
                                                 tower.region,
-                                                style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontStyle: FontStyle.italic,
-                                                  fontWeight: FontWeight.normal
-                                                ),
+                                                style:
+                                                    const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
                                               )
                                             ],
                                           ),
@@ -184,7 +172,13 @@ class _TowersPageState extends State<TowersPage> {
                       ),
               ),
               const SizedBox(height: 10),
-              Center(child: const Text("or...", style: TextStyle(fontWeight: FontWeight.bold, ),)),
+              Center(
+                  child: const Text(
+                "or...",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              )),
               const SizedBox(height: 10),
               MyButton(
                 text: "Use My Location",

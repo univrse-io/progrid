@@ -22,7 +22,7 @@ class GlobalThemeData {
       onSecondary: Colors.white,
       error: AppColors.red,
     ),
-    fontFamily: GoogleFonts.notoSans().fontFamily,
+    fontFamily: GoogleFonts.roboto().fontFamily,
     visualDensity: VisualDensity.adaptivePlatformDensity,
     textTheme: const TextTheme(
       bodyMedium: TextStyle(fontSize: 14),
@@ -39,7 +39,7 @@ class GlobalThemeData {
       surface: Colors.grey[900]!,
       error: Colors.red,
     ),
-    fontFamily: GoogleFonts.notoSans().fontFamily,
+    fontFamily: GoogleFonts.roboto().fontFamily,
     visualDensity: VisualDensity.adaptivePlatformDensity,
     textTheme: const TextTheme(
       bodyMedium: TextStyle(fontSize: 14),
