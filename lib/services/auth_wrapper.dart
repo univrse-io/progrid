@@ -86,7 +86,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
               // multi user type fallback
               switch (Provider.of<UserProvider>(context, listen: false).role) {
-                case 'debug':
+                case 'basic':
                   return HomePage();
                 default:
                   return const Center(child: Text("Placeholder Page"));

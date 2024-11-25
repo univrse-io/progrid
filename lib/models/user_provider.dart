@@ -10,10 +10,10 @@ class UserProvider extends ChangeNotifier {
   // implement other user information here
   String userId = 'undefined';
   String email = 'undefined';
+  String name = 'undefined';
   String phone = 'undefined';
-  String altEmail = 'undefined';
   String role = 'undefined';
-  Timestamp? lastLogin; // tbf
+  Timestamp? lastLogin;
 
   Future<void> logout() async {
     try {
@@ -22,8 +22,8 @@ class UserProvider extends ChangeNotifier {
 
       userId = 'undefined';
       email = 'undefined';
+      name = 'undefined';
       phone = 'undefined';
-      altEmail = 'undefined';
       role = 'undefined';
       lastLogin = null;
 
@@ -50,8 +50,8 @@ class UserProvider extends ChangeNotifier {
 
         userId = userDoc.id;
         email = data['email'] as String? ?? 'undefined';
+        name = data['name'] as String? ?? 'undefined';
         phone = data['phone'] as String? ?? 'undefined';
-        altEmail = data['altEmail'] as String? ?? 'undefined';
         role = data['role'] as String? ?? 'undefined';
         lastLogin = data['lastLogin'] as Timestamp?;
       } else {

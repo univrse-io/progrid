@@ -20,6 +20,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
+  final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -33,19 +34,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
     // create the user
     try {
-      final UserCredential credentials =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
       final String userId = credentials.user!.uid;
 
-      // save user data to firestore database
+      // save fields to firestore database
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'email': _emailController.text.trim(),
-        'phone': 'Not Set',
-        'altEmail': 'Not Set',
-        'role': 'debug',
+        'name': _nameController.text,
+        'phone': 'not set',
+        'role': 'basic',
         'lastLogin': Timestamp.now(),
       });
     } on FirebaseAuthException catch (e) {
@@ -95,6 +95,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 MyTextField(
                   hintText: 'Email',
                   controller: _emailController,
+                ),
+                const SizedBox(height: 10),
+
+                // name textfield
+                MyTextField(
+                  hintText: 'Your Name',
+                  controller: _nameController,
                 ),
                 const SizedBox(height: 10),
 

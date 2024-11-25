@@ -42,7 +42,8 @@ class HomePage extends StatelessWidget {
               child: Container(),
             ),
             Text(
-              "Welcome! '${userProvider.userId}'",
+              "Welcome! '${userProvider.name}'",
+              style: TextStyle(fontSize: 17),
             ),
             const SizedBox(height: 4),
             const Text(
