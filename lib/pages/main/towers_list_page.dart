@@ -3,6 +3,7 @@ import 'package:progrid/components/my_button.dart';
 import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/components/my_textfield.dart';
 import 'package:progrid/models/tower_provider.dart';
+import 'package:progrid/models/user_provider.dart';
 import 'package:progrid/pages/main/tower_page.dart';
 import 'package:progrid/services/themes.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,7 @@ class _TowersListPageState extends State<TowersListPage> {
   @override
   Widget build(BuildContext context) {
     final towersProvider = Provider.of<TowersProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context);
 
     // filter towers based on search query (name, address, region, or id)
     final List<Tower> towers = towersProvider.towers
@@ -40,6 +42,21 @@ class _TowersListPageState extends State<TowersListPage> {
         .toList();
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        leading: IconButton(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+          icon: Icon(Icons.arrow_back, size: 34),
+          onPressed: () => userProvider.logout,
+        ),
+        title: Text(
+          'Query Towers',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 23
+          ),
+        ),
+      ),
       body: SafeArea(
         minimum: const EdgeInsets.symmetric(horizontal: 25),
         child: RefreshIndicator(
@@ -48,14 +65,14 @@ class _TowersListPageState extends State<TowersListPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 30),
-              const Text(
-                "Query Towers",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                ),
-              ),
+              // const SizedBox(height: 30),
+              // const Text(
+              //   "Query Towers",
+              //   style: TextStyle(
+              //     fontWeight: FontWeight.bold,
+              //     fontSize: 22,
+              //   ),
+              // ),
               const SizedBox(height: 12),
 
               // search bar
@@ -76,13 +93,12 @@ class _TowersListPageState extends State<TowersListPage> {
                           final tower = towers[index];
                           return GestureDetector(
                             onTap: () async {
-                              // TODO: navigate to dedicated tower page
                               print("Tapped on tower: ${tower.id}");
-
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => TowerPage(tower: tower),
+                                  // pass ID
+                                  builder: (context) => TowerPage(towerId: tower.id),
                                 ),
                               );
                             },
@@ -182,7 +198,7 @@ class _TowersListPageState extends State<TowersListPage> {
               const SizedBox(height: 10),
               MyButton(
                 text: "Use My Location",
-                onTap: () {}, // TODO: implement geolocation in new page
+                onTap: () {}, // TODO: implement geolocation search in new page
               ),
               const SizedBox(height: 20),
             ],
