@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/widgets/my_alert.dart';
 
 class RegisterPage extends StatefulWidget {
   // toggle to login page
@@ -26,7 +25,9 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _register() async {
     // make sure passwords match
     if (_passwordController.text != _confirmPasswordController.text) {
-      displayMessage("passwords don't match", context);
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(title: Text("passwords don't match")));
       return;
     }
 
@@ -49,7 +50,8 @@ class _RegisterPageState extends State<RegisterPage> {
       });
     } on FirebaseAuthException catch (e) {
       if (mounted) {
-        displayMessage(e.code, context);
+        showDialog(
+            context: context, builder: (_) => AlertDialog(title: Text(e.code)));
       }
     }
   }

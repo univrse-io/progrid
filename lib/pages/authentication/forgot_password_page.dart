@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/widgets/my_alert.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -17,7 +16,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     final String email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      displayMessage("Please Enter an Email Address", context);
+      showDialog(
+          context: context,
+          builder: (_) =>
+              AlertDialog(title: Text("Please Enter an Email Address")));
       return;
     }
 
@@ -26,10 +28,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
       if (mounted) {
         Navigator.pop(context);
-        displayMessage("Password reset email sent. Check your inbox", context);
+        showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+                title: Text("Password reset email sent. Check your inbox")));
       }
     } on FirebaseAuthException catch (e) {
-      if (mounted) displayMessage(e.message!, context);
+      if (mounted)
+        showDialog(
+            context: context,
+            builder: (_) => AlertDialog(title: Text(e.message!)));
     }
   }
 

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/pages/authentication/forgot_password_page.dart';
-import 'package:progrid/widgets/my_alert.dart';
 
 class LoginPage extends StatefulWidget {
   // toggle to register page
@@ -39,7 +38,9 @@ class _LoginPageState extends State<LoginPage> {
     } on FirebaseAuthException catch (e) {
       print("Error: ${e.message}");
 
-      if (mounted) displayMessage(e.code, context);
+      if (mounted)
+        showDialog(
+            context: context, builder: (_) => AlertDialog(title: Text(e.code)));
       _passwordController.clear();
     }
   }
