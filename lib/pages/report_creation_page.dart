@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_button.dart';
-import 'package:progrid/components/my_textfield.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/models/user_provider.dart';
+import 'package:progrid/widgets/my_button.dart';
+import 'package:progrid/widgets/my_textfield.dart';
 import 'package:provider/provider.dart';
 
 class ReportCreationPage extends StatefulWidget {

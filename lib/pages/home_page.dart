@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_button.dart';
 import 'package:progrid/models/user_provider.dart';
 import 'package:progrid/pages/towers_list_page.dart';
+import 'package:progrid/widgets/my_button.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -48,10 +48,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 4),
             const Text(
               'Query Database',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold
-              ),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 

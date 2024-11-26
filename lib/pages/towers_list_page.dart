@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_button.dart';
-import 'package:progrid/components/my_loader.dart';
-import 'package:progrid/components/my_textfield.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/services/themes.dart';
+import 'package:progrid/widgets/my_button.dart';
+import 'package:progrid/widgets/my_loader.dart';
+import 'package:progrid/widgets/my_textfield.dart';
 import 'package:provider/provider.dart';
 
 class TowersListPage extends StatefulWidget {
@@ -81,7 +81,7 @@ class _TowersListPageState extends State<TowersListPage> {
                 child: towers.isEmpty
                     ? const Center(child: MyLoadingIndicator())
                     : Scrollbar(
-                      child: ListView.builder(
+                        child: ListView.builder(
                           itemCount: towers.length,
                           itemBuilder: (context, index) {
                             final tower = towers[index];
@@ -91,14 +91,15 @@ class _TowersListPageState extends State<TowersListPage> {
                                 Navigator.push(
                                   context,
                                   PageRouteBuilder(
-                                    pageBuilder: (_, __, ___) => TowerPage(towerId: tower.id),
-                                    transitionsBuilder: (_, animation, __, child) {
-                                          return FadeTransition(
-                                            opacity: animation,
-                                            child: child,
-                                          );
-                                    }
-                                  ),
+                                      pageBuilder: (_, __, ___) =>
+                                          TowerPage(towerId: tower.id),
+                                      transitionsBuilder:
+                                          (_, animation, __, child) {
+                                        return FadeTransition(
+                                          opacity: animation,
+                                          child: child,
+                                        );
+                                      }),
                                 );
                               },
                               child: Hero(
@@ -106,7 +107,8 @@ class _TowersListPageState extends State<TowersListPage> {
                                 child: Material(
                                   color: Colors.transparent,
                                   child: Card(
-                                    margin: const EdgeInsets.symmetric(vertical: 4),
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 4),
                                     elevation: 5,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -118,7 +120,8 @@ class _TowersListPageState extends State<TowersListPage> {
                                           Expanded(
                                             flex: 70,
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Row(
                                                   children: [
@@ -128,7 +131,10 @@ class _TowersListPageState extends State<TowersListPage> {
                                                       height: 14,
                                                       decoration: BoxDecoration(
                                                         shape: BoxShape.circle,
-                                                        color: tower.status == 'active' ? AppColors.green : AppColors.red,
+                                                        color: tower.status ==
+                                                                'active'
+                                                            ? AppColors.green
+                                                            : AppColors.red,
                                                       ),
                                                     ),
                                                     const SizedBox(width: 7),
@@ -136,20 +142,25 @@ class _TowersListPageState extends State<TowersListPage> {
                                                     Text(
                                                       tower.id,
                                                       style: const TextStyle(
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         fontSize: 15,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                                 const SizedBox(height: 0),
-                                                        
+
                                                 // tower name
                                                 Text(
                                                   tower.name,
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                                 const SizedBox(height: 0),
                                                 Row(
@@ -157,18 +168,28 @@ class _TowersListPageState extends State<TowersListPage> {
                                                     // tower owner
                                                     Text(
                                                       tower.owner,
-                                                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                      style: const TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.bold),
                                                     ),
                                                     Text(
                                                       ",",
-                                                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                      style: const TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight:
+                                                              FontWeight.bold),
                                                     ),
                                                     const SizedBox(width: 4),
                                                     // tower region
                                                     Text(
                                                       tower.region,
-                                                      style:
-                                                          const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
+                                                      style: const TextStyle(
+                                                          fontSize: 15,
+                                                          fontStyle:
+                                                              FontStyle.italic,
+                                                          fontWeight: FontWeight
+                                                              .normal),
                                                     ),
 
                                                     // debug
@@ -198,7 +219,7 @@ class _TowersListPageState extends State<TowersListPage> {
                             );
                           },
                         ),
-                    ),
+                      ),
               ),
               const SizedBox(height: 10),
               Center(

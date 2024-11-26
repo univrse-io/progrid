@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_alert.dart';
-import 'package:progrid/components/my_button.dart';
-import 'package:progrid/components/my_textfield.dart';
 import 'package:progrid/pages/authentication/forgot_password_page.dart';
+import 'package:progrid/widgets/my_alert.dart';
+import 'package:progrid/widgets/my_button.dart';
+import 'package:progrid/widgets/my_textfield.dart';
 
 class LoginPage extends StatefulWidget {
   // toggle to register page

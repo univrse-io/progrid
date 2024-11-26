@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_alert.dart';
-import 'package:progrid/components/my_button.dart';
-import 'package:progrid/components/my_textfield.dart';
+import 'package:progrid/widgets/my_alert.dart';
+import 'package:progrid/widgets/my_button.dart';
+import 'package:progrid/widgets/my_textfield.dart';
 
 class RegisterPage extends StatefulWidget {
   // toggle to login page
@@ -34,7 +34,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
     // create the user
     try {
-      final UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final UserCredential credentials =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );

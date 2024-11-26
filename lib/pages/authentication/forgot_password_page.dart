@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_alert.dart';
-import 'package:progrid/components/my_button.dart';
-import 'package:progrid/components/my_textfield.dart';
+import 'package:progrid/widgets/my_alert.dart';
+import 'package:progrid/widgets/my_button.dart';
+import 'package:progrid/widgets/my_textfield.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});

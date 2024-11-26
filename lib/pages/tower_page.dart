@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:progrid/components/my_button.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/pages/report_creation_page.dart';
 import 'package:progrid/services/themes.dart';
+import 'package:progrid/widgets/my_button.dart';
 import 'package:provider/provider.dart';
 
 class TowerPage extends StatefulWidget {
@@ -101,10 +101,13 @@ class _TowerPageState extends State<TowerPage> {
                     ),
                     const SizedBox(width: 5),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 2),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(24),
-                        color: selectedTower.status == 'Surveyed' ? AppColors.green : AppColors.red,
+                        color: selectedTower.status == 'Surveyed'
+                            ? AppColors.green
+                            : AppColors.red,
                       ),
                       child: Text(
                         selectedTower.status,
@@ -167,11 +170,10 @@ class _TowerPageState extends State<TowerPage> {
                 ),
                 GestureDetector(
                   onTap: () => Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => ReportCreationPage(towerId: selectedTower.id)
-                    )
-                  ),
+                      context,
+                      PageRouteBuilder(
+                          pageBuilder: (_, __, ___) =>
+                              ReportCreationPage(towerId: selectedTower.id))),
                   child: Text(
                     'Create New Report',
                     style: TextStyle(
@@ -183,12 +185,15 @@ class _TowerPageState extends State<TowerPage> {
                 ),
                 const SizedBox(height: 5),
                 // reports list
-                Expanded( // TODO: fix overflow issues
+                Expanded(
+                  // TODO: fix overflow issues
                   child: selectedTower.reports.isEmpty
                       ? Center(
                           child: Text(
                           "...",
-                          style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontSize: 14),
                         ))
                       : ListView.builder(
                           itemCount: selectedTower.reports.length,
@@ -197,17 +202,19 @@ class _TowerPageState extends State<TowerPage> {
                             return Card(
                               margin: const EdgeInsets.symmetric(vertical: 4),
                               elevation: 5,
-                                shape: RoundedRectangleBorder(
+                              shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: SafeArea(
                                 minimum: EdgeInsets.all(12),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     // left side
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         // report id
                                         Text(
@@ -222,14 +229,15 @@ class _TowerPageState extends State<TowerPage> {
 
                                     // right side
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
                                         Text(
-                                          DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
+                                          DateFormat('dd/MM/yy')
+                                              .format(report.dateTime.toDate()),
                                           style: TextStyle(fontSize: 15),
                                         ),
                                         const SizedBox(height: 10),
-
                                         Icon(
                                           Icons.arrow_right,
                                           size: 36,

@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_loader.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/models/user_provider.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
 import 'package:progrid/pages/home_page.dart';
+import 'package:progrid/widgets/my_loader.dart';
 import 'package:provider/provider.dart';
 
 class AuthWrapper extends StatefulWidget {
@@ -27,7 +27,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
   // fetch from database
   Future<void> _fetchFromDatabase(User user) async {
     try {
-      await Provider.of<UserProvider>(context, listen: false).fetchUserInfoFromDatabase(user);
+      await Provider.of<UserProvider>(context, listen: false)
+          .fetchUserInfoFromDatabase(user);
     } catch (e) {
       print("Error Fetching Information: $e");
     }
@@ -79,8 +80,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
               // update user after frame built
               WidgetsBinding.instance.addPostFrameCallback(
                 (_) {
-                  final userProvider = Provider.of<UserProvider>(context, listen: false);
-                  userProvider.setUser(user); // this should set to 'null' if user is signed out
+                  final userProvider =
+                      Provider.of<UserProvider>(context, listen: false);
+                  userProvider.setUser(
+                      user); // this should set to 'null' if user is signed out
                 },
               );
 
@@ -97,7 +100,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          body: _onLoginPage ? LoginPage(onTapSwitchPage: _toggleLoginPage) : RegisterPage(onTapSwitchPage: _toggleLoginPage),
+          body: _onLoginPage
+              ? LoginPage(onTapSwitchPage: _toggleLoginPage)
+              : RegisterPage(onTapSwitchPage: _toggleLoginPage),
         );
       },
     );
