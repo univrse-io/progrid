@@ -5,7 +5,6 @@ import 'package:progrid/models/user_provider.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
 import 'package:progrid/pages/home_page.dart';
-import 'package:progrid/widgets/my_loader.dart';
 import 'package:provider/provider.dart';
 
 class AuthWrapper extends StatefulWidget {
@@ -73,7 +72,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
             future: _fetchFromDatabase(user),
             builder: (context, fetchSnapshot) {
               if (fetchSnapshot.connectionState == ConnectionState.waiting) {
-                return const MyLoadingIndicator();
+                return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()));
               }
 
               // successful data load
@@ -99,7 +99,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
         }
 
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surface,
           body: _onLoginPage
               ? LoginPage(onTapSwitchPage: _toggleLoginPage)
               : RegisterPage(onTapSwitchPage: _toggleLoginPage),

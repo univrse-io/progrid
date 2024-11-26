@@ -3,7 +3,6 @@ import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:progrid/widgets/my_button.dart';
-import 'package:progrid/widgets/my_loader.dart';
 import 'package:provider/provider.dart';
 
 class TowersListPage extends StatefulWidget {
@@ -79,7 +78,7 @@ class _TowersListPageState extends State<TowersListPage> {
               // towers list (important)
               Expanded(
                 child: towers.isEmpty
-                    ? const Center(child: MyLoadingIndicator())
+                    ? const Center(child: CircularProgressIndicator())
                     : Scrollbar(
                         child: ListView.builder(
                           itemCount: towers.length,
