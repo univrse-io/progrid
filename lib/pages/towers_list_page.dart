@@ -4,7 +4,6 @@ import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:progrid/widgets/my_button.dart';
 import 'package:progrid/widgets/my_loader.dart';
-import 'package:progrid/widgets/my_textfield.dart';
 import 'package:provider/provider.dart';
 
 class TowersListPage extends StatefulWidget {
@@ -67,10 +66,11 @@ class _TowersListPageState extends State<TowersListPage> {
                 tag: 'openList',
                 child: Material(
                   color: Colors.transparent,
-                  child: MyTextField(
+                  child: TextField(
                     controller: _searchController,
                     onChanged: _onSearchChanged,
-                    hintText: 'enter id, name, address, region, etc...',
+                    decoration: InputDecoration(
+                        hintText: 'enter id, name, address, region, etc...'),
                   ),
                 ),
               ),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:progrid/pages/authentication/forgot_password_page.dart';
 import 'package:progrid/widgets/my_alert.dart';
 import 'package:progrid/widgets/my_button.dart';
-import 'package:progrid/widgets/my_textfield.dart';
 
 class LoginPage extends StatefulWidget {
   // toggle to register page
@@ -81,18 +80,14 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 12),
-
-                // email textfield
-                MyTextField(
-                  hintText: 'Email',
+                TextField(
                   controller: _emailController,
+                  decoration: InputDecoration(hintText: 'Email'),
                 ),
                 const SizedBox(height: 10),
-
-                // password textfield
-                MyTextField(
-                  hintText: 'Password',
+                TextField(
                   obscureText: true,
+                  decoration: InputDecoration(hintText: 'Password'),
                   controller: _passwordController,
                 ),
                 const SizedBox(height: 7),

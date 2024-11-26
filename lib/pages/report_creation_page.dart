@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/models/user_provider.dart';
 import 'package:progrid/widgets/my_button.dart';
-import 'package:progrid/widgets/my_textfield.dart';
 import 'package:provider/provider.dart';
 
 class ReportCreationPage extends StatefulWidget {
@@ -75,9 +74,9 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
         child: Column(
           children: [
             // Notes
-            MyTextField(
+            TextField(
               controller: _notesController,
-              hintText: "Notes",
+              decoration: InputDecoration(hintText: 'Notes'),
             ),
             const SizedBox(height: 20),
 

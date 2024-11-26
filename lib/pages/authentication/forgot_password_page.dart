@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/widgets/my_alert.dart';
 import 'package:progrid/widgets/my_button.dart';
-import 'package:progrid/widgets/my_textfield.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -12,7 +11,7 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final TextEditingController _emailController = TextEditingController();
+  final _emailController = TextEditingController();
 
   // forgot password
   Future<void> forgotPassword() async {
@@ -69,11 +68,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                 ),
                 const SizedBox(height: 14),
-
-                // email field
-                MyTextField(
-                  hintText: 'Email',
+                TextField(
                   controller: _emailController,
+                  decoration: InputDecoration(hintText: 'Email'),
                 ),
                 const SizedBox(height: 10),
 

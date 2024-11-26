@@ -11,25 +11,44 @@ class AppColors {
 }
 
 final lightTheme = ThemeData(
-  brightness: Brightness.light,
-  primaryColor: Colors.grey[800],
-  colorScheme: ColorScheme.light(
-    primary: AppColors.onSurface,
-    secondary: AppColors.secondary,
-    onSecondary: Colors.white,
-    error: AppColors.red,
-  ),
-  fontFamily: GoogleFonts.roboto().fontFamily,
-);
+    brightness: Brightness.light,
+    primaryColor: Colors.grey[800],
+    colorScheme: ColorScheme.light(
+      primary: AppColors.onSurface,
+      secondary: AppColors.secondary,
+      onSecondary: Colors.white,
+      error: AppColors.red,
+    ),
+    fontFamily: GoogleFonts.roboto().fontFamily,
+    inputDecorationTheme: InputDecorationTheme(
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.black26),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 14),
+    ));
 
 final darkTheme = ThemeData(
-  brightness: Brightness.dark,
-  primaryColor: Colors.grey[300],
-  colorScheme: ColorScheme.dark(
-    primary: Colors.grey[300]!,
-    secondary: Colors.grey[500]!,
-    surface: Colors.grey[900]!,
-    error: Colors.red,
-  ),
-  fontFamily: GoogleFonts.roboto().fontFamily,
-);
+    brightness: Brightness.dark,
+    primaryColor: Colors.grey[300],
+    colorScheme: ColorScheme.dark(
+      primary: Colors.grey[300]!,
+      secondary: Colors.grey[500]!,
+      surface: Colors.grey[900]!,
+      error: Colors.red,
+    ),
+    fontFamily: GoogleFonts.roboto().fontFamily,
+    inputDecorationTheme: InputDecorationTheme(
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.white24),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.white),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 14),
+    ));

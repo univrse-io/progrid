@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/widgets/my_alert.dart';
 import 'package:progrid/widgets/my_button.dart';
-import 'package:progrid/widgets/my_textfield.dart';
 
 class RegisterPage extends StatefulWidget {
   // toggle to login page
@@ -91,33 +90,25 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // email textfield
-                MyTextField(
-                  hintText: 'Email',
+                TextField(
                   controller: _emailController,
+                  decoration: InputDecoration(hintText: 'Email'),
                 ),
                 const SizedBox(height: 10),
-
-                // name textfield
-                MyTextField(
-                  hintText: 'Full Name',
+                TextField(
                   controller: _nameController,
+                  decoration: InputDecoration(hintText: 'Full Name'),
                 ),
                 const SizedBox(height: 10),
-
-                // password textfield
-                MyTextField(
-                  hintText: 'Password',
-                  obscureText: true,
+                TextField(
                   controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(hintText: 'Password'),
                 ),
                 const SizedBox(height: 10),
-
-                // confirm password textfield
-                MyTextField(
-                  hintText: 'Confirm Password',
+                TextField(
                   obscureText: true,
+                  decoration: InputDecoration(hintText: 'Confirm Password'),
                   controller: _confirmPasswordController,
                 ),
                 const SizedBox(height: 24),

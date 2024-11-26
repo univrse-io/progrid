@@ -17,18 +17,15 @@ class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => TowersProvider()),
-      ],
-      child: MaterialApp(
-        title: 'Progrid',
-        debugShowCheckedModeBanner: false,
-        theme: lightTheme,
-        home: const AuthWrapper(),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => TowersProvider()),
+        ],
+        child: MaterialApp(
+          title: 'Progrid',
+          theme: lightTheme,
+          home: const AuthWrapper(),
+        ),
+      );
 }
