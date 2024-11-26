@@ -51,7 +51,7 @@ class _TowerPageState extends State<TowerPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 5),
-                
+
                 // tower name
                 Text(
                   selectedTower.name,
@@ -62,7 +62,7 @@ class _TowerPageState extends State<TowerPage> {
                   ),
                 ),
                 const SizedBox(height: 5),
-          
+
                 // tower geopoint
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -85,7 +85,7 @@ class _TowerPageState extends State<TowerPage> {
                   ],
                 ),
                 const SizedBox(height: 8),
-          
+
                 // tower status
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -116,7 +116,7 @@ class _TowerPageState extends State<TowerPage> {
                   ],
                 ),
                 const SizedBox(height: 25),
-          
+
                 SizedBox(
                   width: double.infinity,
                   height: 1,
@@ -125,7 +125,7 @@ class _TowerPageState extends State<TowerPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-          
+
                 Row(
                   children: [
                     const Text(
@@ -145,7 +145,7 @@ class _TowerPageState extends State<TowerPage> {
                   ],
                 ),
                 const SizedBox(height: 0),
-          
+
                 // site address
                 _buildDetailRow('Address:', selectedTower.address),
                 // site region
@@ -155,7 +155,7 @@ class _TowerPageState extends State<TowerPage> {
                 // site owner
                 _buildDetailRow('Owner:', selectedTower.owner),
                 const SizedBox(height: 20),
-          
+
                 const Text(
                   'All Site Reports',
                   style: TextStyle(
@@ -163,18 +163,41 @@ class _TowerPageState extends State<TowerPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  'Create New Report',
-                  style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontStyle: FontStyle.italic,
-                      fontSize: 15,
-                      color: Theme.of(context).colorScheme.secondary),
+                GestureDetector(
+                  child: Text(
+                    'Create New Report',
+                    style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontStyle: FontStyle.italic,
+                        fontSize: 15,
+                        color: Theme.of(context).colorScheme.secondary),
+                  ),
                 ),
                 const SizedBox(height: 5),
+                // reports list
                 Expanded(
-                  child: Column(), // TODO: implement site reports
-                ),
+                    child: selectedTower.reports.isEmpty
+                        ? Center(child: Text("...", style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),))
+                        : ListView.builder(
+                            itemCount: selectedTower.reports.length,
+                            itemBuilder: (context, index) {
+                              final report = selectedTower.reports[index];
+                              return ListTile(
+                                title: Text('Report by ${report.authorId}'),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Date: ${report.dateTime.toDate()}'),
+                                    SizedBox(height: 4),
+                                    Text('Notes: ${report.notes}'),
+                                  ],
+                                ),
+                                onTap: () {
+                                  // TODO: implement detailed report viewer
+                                },
+                              );
+                            },
+                          )),
                 MyButton(text: "View Issues", onTap: () {} // TODO: implement site issues,
                     ),
                 const SizedBox(height: 20),
@@ -210,6 +233,7 @@ class _TowerPageState extends State<TowerPage> {
 
           // content (potentially multiline)
           Expanded(
+            flex: 20,
             child: Text(
               content,
               style: TextStyle(

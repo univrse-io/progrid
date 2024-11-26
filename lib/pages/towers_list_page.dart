@@ -164,7 +164,12 @@ class _TowersListPageState extends State<TowersListPage> {
                                                       tower.region,
                                                       style:
                                                           const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
-                                                    )
+                                                    ),
+                                                    Text(
+                                                      tower.reports.length.toString(),
+                                                      style:
+                                                          const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
+                                                    ),
                                                   ],
                                                 ),
                                               ],
