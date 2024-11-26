@@ -29,6 +29,14 @@ final lightTheme = ThemeData(
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+          borderRadius: BorderRadius.circular(10),
+        ),
         contentPadding:
             const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
     filledButtonTheme: FilledButtonThemeData(
@@ -55,6 +63,14 @@ final darkTheme = ThemeData(
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.white),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
           borderRadius: BorderRadius.circular(10),
         ),
         contentPadding:
