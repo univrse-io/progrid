@@ -35,149 +35,152 @@ class _TowerPageState extends State<TowerPage> {
           icon: Icon(Icons.arrow_back, size: 34),
           onPressed: () => Navigator.pop(context),
         ),
+        title: Text(
+          selectedTower.id,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+        ),
       ),
-      body: SafeArea(
-        minimum: EdgeInsets.symmetric(horizontal: 25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // tower id
-            Text(
-              selectedTower.id,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-
-            // tower name
-            Text(
-              selectedTower.name,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 5),
-
-            // tower geopoint
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: Hero(
+        // TODO: fix expanded transition overflow
+        tag: 'item ${selectedTower.id}',
+        child: Material(
+          color: Colors.transparent,
+          child: SafeArea(
+            minimum: EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const SizedBox(height: 5),
+                
+                // tower name
                 Text(
-                  'LatLong:',
+                  selectedTower.name,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 17,
+                    fontSize: 32,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(width: 5),
-                Text(
-                  // :)
-                  '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
-                  style: TextStyle(
-                    fontSize: 17,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            // tower status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Status:',
-                  style: TextStyle(
-                    fontStyle: FontStyle.italic,
-                    fontSize: 17,
-                  ),
-                ),
-                const SizedBox(width: 5),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    color: selectedTower.status == 'Surveyed' ? AppColors.green : AppColors.red,
-                  ),
-                  child: Text(
-                    selectedTower.status,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.surface,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
+                const SizedBox(height: 5),
+          
+                // tower geopoint
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'LatLong:',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    const SizedBox(width: 5),
+                    Text(
+                      // :)
+                      '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
+                      style: TextStyle(
+                        fontSize: 17,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+          
+                // tower status
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Status:',
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        color: selectedTower.status == 'Surveyed' ? AppColors.green : AppColors.red,
+                      ),
+                      child: Text(
+                        selectedTower.status,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 25),
+          
+                SizedBox(
+                  width: double.infinity,
+                  height: 1,
+                  child: Container(
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 25),
-
-            SizedBox(
-              width: double.infinity,
-              height: 1,
-              child: Container(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            Row(
-              children: [
+                const SizedBox(height: 20),
+          
+                Row(
+                  children: [
+                    const Text(
+                      'Site Details',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    IconButton(
+                      icon: Icon(Icons.edit_note, size: 34),
+                      onPressed: () {
+                        // TODO: implement engineer-side site editing
+                      },
+                    )
+                  ],
+                ),
+                const SizedBox(height: 0),
+          
+                // site address
+                _buildDetailRow('Address:', selectedTower.address),
+                // site region
+                _buildDetailRow('Region:', selectedTower.region),
+                // site type
+                _buildDetailRow('Type:', selectedTower.type),
+                // site owner
+                _buildDetailRow('Owner:', selectedTower.owner),
+                const SizedBox(height: 20),
+          
                 const Text(
-                  'Site Details',
+                  'All Site Reports',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(width: 5),
-                IconButton(
-                  icon: Icon(Icons.edit_note, size: 34),
-                  onPressed: () {
-                    // TODO: implement engineer-side site editing
-                  },
-                )
+                Text(
+                  'Create New Report',
+                  style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      fontStyle: FontStyle.italic,
+                      fontSize: 15,
+                      color: Theme.of(context).colorScheme.secondary),
+                ),
+                const SizedBox(height: 5),
+                Expanded(
+                  child: Column(), // TODO: implement site reports
+                ),
+                MyButton(text: "View Issues", onTap: () {} // TODO: implement site issues,
+                    ),
+                const SizedBox(height: 20),
               ],
             ),
-            const SizedBox(height: 0),
-
-            // site address
-            _buildDetailRow('Address:', selectedTower.address),
-            // site region
-            _buildDetailRow('Region:', selectedTower.region),
-            // site type
-            _buildDetailRow('Type:', selectedTower.type),
-            // site owner
-            _buildDetailRow('Owner:', selectedTower.owner),
-            const SizedBox(height: 20),
-
-            const Text(
-              'All Site Reports',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'Create New Report',
-              style: TextStyle(
-                  decoration: TextDecoration.underline,
-                  fontStyle: FontStyle.italic,
-                  fontSize: 15,
-                  color: Theme.of(context).colorScheme.secondary),
-            ),
-            const SizedBox(height: 5),
-            Expanded(
-              child: Column(), // TODO: implement site reports
-            ),
-            MyButton(text: "View Issues", onTap: () {} // TODO: implement site issues,
-                ),
-            const SizedBox(height: 20),
-          ],
+          ),
         ),
       ),
     );

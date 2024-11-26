@@ -96,84 +96,90 @@ class _TowersListPageState extends State<TowersListPage> {
                                   ),
                                 );
                               },
-                              child: Card(
-                                margin: const EdgeInsets.symmetric(vertical: 4),
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: SafeArea(
-                                  minimum: EdgeInsets.all(12),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 70,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
+                              child: Hero(
+                                tag: 'item ${tower.id}',
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: Card(
+                                    margin: const EdgeInsets.symmetric(vertical: 4),
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: SafeArea(
+                                      minimum: EdgeInsets.all(12),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 70,
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                // completion status indicator
-                                                Container(
-                                                  width: 14,
-                                                  height: 14,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: tower.status == 'active' ? AppColors.green : AppColors.red,
-                                                  ),
+                                                Row(
+                                                  children: [
+                                                    // completion status indicator
+                                                    Container(
+                                                      width: 14,
+                                                      height: 14,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: tower.status == 'active' ? AppColors.green : AppColors.red,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 7),
+                                                    // tower id
+                                                    Text(
+                                                      tower.id,
+                                                      style: const TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 15,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                const SizedBox(width: 7),
-                                                // tower id
+                                                const SizedBox(height: 0),
+                                                        
+                                                // tower name
                                                 Text(
-                                                  tower.id,
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                  ),
+                                                  tower.name,
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                                ),
+                                                const SizedBox(height: 0),
+                                                Row(
+                                                  children: [
+                                                    // tower owner
+                                                    Text(
+                                                      tower.owner,
+                                                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                    ),
+                                                    Text(
+                                                      ",",
+                                                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    // tower region
+                                                    Text(
+                                                      tower.region,
+                                                      style:
+                                                          const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
+                                                    )
+                                                  ],
                                                 ),
                                               ],
                                             ),
-                                            const SizedBox(height: 0),
-                      
-                                            // tower name
-                                            Text(
-                                              tower.name,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                          ),
+                                          Expanded(
+                                            flex: 10,
+                                            child: Icon(
+                                              Icons.arrow_right,
+                                              size: 38,
                                             ),
-                                            const SizedBox(height: 0),
-                                            Row(
-                                              children: [
-                                                // tower owner
-                                                Text(
-                                                  tower.owner,
-                                                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  ",",
-                                                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                                                ),
-                                                const SizedBox(width: 4),
-                                                // tower region
-                                                Text(
-                                                  tower.region,
-                                                  style:
-                                                      const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
-                                                )
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                          )
+                                        ],
                                       ),
-                                      Expanded(
-                                        flex: 10,
-                                        child: Icon(
-                                          Icons.arrow_right,
-                                          size: 38,
-                                        ),
-                                      )
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
