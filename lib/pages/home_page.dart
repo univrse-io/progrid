@@ -23,11 +23,6 @@ class HomePage extends StatelessWidget {
             icon: Icon(Icons.person, size: 34),
             onPressed: () {}, // TODO: implement profile page
           ),
-          IconButton(
-            padding: EdgeInsets.only(right: 20, top: 15),
-            icon: Icon(Icons.settings, size: 34),
-            onPressed: () {}, // TODO: implement settings page
-          ),
         ],
       ),
       body: SafeArea(

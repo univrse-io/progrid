@@ -25,6 +25,7 @@ class MainApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Progrid',
           theme: lightTheme,
+          darkTheme: darkTheme,
           home: const AuthWrapper(),
         ),
       );
