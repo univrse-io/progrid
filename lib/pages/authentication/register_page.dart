@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/widgets/my_alert.dart';
-import 'package:progrid/widgets/my_button.dart';
 
 class RegisterPage extends StatefulWidget {
   // toggle to login page
@@ -112,12 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   controller: _confirmPasswordController,
                 ),
                 const SizedBox(height: 24),
-
-                // register button
-                MyButton(
-                  onTap: _register,
-                  text: 'Register',
-                ),
+                FilledButton(onPressed: _register, child: Text('Register')),
                 const SizedBox(height: 14),
 
                 // link to login page

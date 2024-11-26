@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/pages/report_creation_page.dart';
 import 'package:progrid/utils/themes.dart';
-import 'package:progrid/widgets/my_button.dart';
 import 'package:provider/provider.dart';
 
 class TowerPage extends StatefulWidget {
@@ -251,11 +250,8 @@ class _TowerPageState extends State<TowerPage> {
                           },
                         ),
                 ),
-                // TODO: implement site issues,
-                MyButton(
-                  text: "View Issues",
-                  onTap: () {},
-                ),
+                // TODO: implement site issues
+                FilledButton(onPressed: () {}, child: Text("View Issues")),
                 const SizedBox(height: 20),
               ],
             ),

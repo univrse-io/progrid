@@ -15,21 +15,28 @@ final lightTheme = ThemeData(
     primaryColor: Colors.grey[800],
     colorScheme: ColorScheme.light(
       primary: AppColors.onSurface,
+      onSecondaryContainer: Colors.white,
       secondary: AppColors.secondary,
       onSecondary: Colors.white,
       error: AppColors.red,
     ),
     fontFamily: GoogleFonts.roboto().fontFamily,
     inputDecorationTheme: InputDecorationTheme(
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.black26),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 14),
-    ));
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.black26),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
+    filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+            textStyle: TextStyle(fontWeight: FontWeight.w600),
+            minimumSize: Size.fromHeight(45),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)))));
 
 final darkTheme = ThemeData(
     brightness: Brightness.dark,
@@ -42,13 +49,19 @@ final darkTheme = ThemeData(
     ),
     fontFamily: GoogleFonts.roboto().fontFamily,
     inputDecorationTheme: InputDecorationTheme(
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.white24),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.white),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 14),
-    ));
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white24),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
+    filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+            textStyle: TextStyle(fontWeight: FontWeight.w600),
+            minimumSize: Size.fromHeight(45),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)))));

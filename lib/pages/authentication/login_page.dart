@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/pages/authentication/forgot_password_page.dart';
 import 'package:progrid/widgets/my_alert.dart';
-import 'package:progrid/widgets/my_button.dart';
 
 class LoginPage extends StatefulWidget {
   // toggle to register page
@@ -119,12 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 14),
-
-                // log in button
-                MyButton(
-                  onTap: _login,
-                  text: 'Log In',
-                ),
+                FilledButton(onPressed: _login, child: Text('Login')),
                 const SizedBox(height: 14),
 
                 // link to register page

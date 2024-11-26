@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:progrid/models/user_provider.dart';
 import 'package:progrid/pages/towers_list_page.dart';
-import 'package:progrid/widgets/my_button.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -57,9 +56,9 @@ class HomePage extends StatelessWidget {
               tag: 'openList',
               child: Material(
                 color: Colors.transparent,
-                child: MyButton(
-                  text: 'Open List',
-                  onTap: () {
+                child: FilledButton(
+                  child: Text('Open List'),
+                  onPressed: () {
                     Navigator.push(
                       context,
                       PageRouteBuilder(

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/models/user_provider.dart';
-import 'package:progrid/widgets/my_button.dart';
 import 'package:provider/provider.dart';
 
 class ReportCreationPage extends StatefulWidget {
@@ -79,14 +78,12 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
               decoration: InputDecoration(hintText: 'Notes'),
             ),
             const SizedBox(height: 20),
-
-            // Submit
-            MyButton(
-              onTap: () {
+            FilledButton(
+              onPressed: () {
                 _createReport();
                 Navigator.pop(context);
               },
-              text: "Create Report",
+              child: Text("Create Report"),
             )
           ],
         ),

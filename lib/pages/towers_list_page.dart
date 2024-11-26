@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/utils/themes.dart';
-import 'package:progrid/widgets/my_button.dart';
 import 'package:provider/provider.dart';
 
 class TowersListPage extends StatefulWidget {
@@ -229,10 +228,8 @@ class _TowersListPageState extends State<TowersListPage> {
                 ),
               )),
               const SizedBox(height: 10),
-              MyButton(
-                text: "Use My Location",
-                onTap: () {}, // TODO: implement geolocation search in new page
-              ),
+              // TODO: implement geolocation search in new page
+              FilledButton(onPressed: () {}, child: Text("Use My Location")),
               const SizedBox(height: 20),
             ],
           ),

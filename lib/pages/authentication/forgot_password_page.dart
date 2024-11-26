@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/widgets/my_alert.dart';
-import 'package:progrid/widgets/my_button.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -73,12 +72,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   decoration: InputDecoration(hintText: 'Email'),
                 ),
                 const SizedBox(height: 10),
-
-                // confirm button
-                MyButton(
-                  onTap: forgotPassword,
-                  text: 'Confirm',
-                ),
+                FilledButton(onPressed: forgotPassword, child: Text('Confirm')),
                 const SizedBox(height: 14),
 
                 // back link
