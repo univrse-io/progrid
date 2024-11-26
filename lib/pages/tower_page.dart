@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:progrid/components/my_button.dart';
 import 'package:progrid/models/tower_provider.dart';
+import 'package:progrid/pages/report_creation_page.dart';
 import 'package:progrid/services/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +17,7 @@ class TowerPage extends StatefulWidget {
 }
 
 class _TowerPageState extends State<TowerPage> {
-  late Tower selectedTower; // instancing might cause problems
+  late Tower selectedTower; // TODO: instancing might cause update problems
 
   @override
   Widget build(BuildContext context) {
@@ -164,6 +166,12 @@ class _TowerPageState extends State<TowerPage> {
                   ),
                 ),
                 GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => ReportCreationPage(towerId: selectedTower.id)
+                    )
+                  ),
                   child: Text(
                     'Create New Report',
                     style: TextStyle(
@@ -175,31 +183,71 @@ class _TowerPageState extends State<TowerPage> {
                 ),
                 const SizedBox(height: 5),
                 // reports list
-                Expanded(
-                    child: selectedTower.reports.isEmpty
-                        ? Center(child: Text("...", style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),))
-                        : ListView.builder(
-                            itemCount: selectedTower.reports.length,
-                            itemBuilder: (context, index) {
-                              final report = selectedTower.reports[index];
-                              return ListTile(
-                                title: Text('Report by ${report.authorId}'),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                Expanded( // TODO: fix overflow issues
+                  child: selectedTower.reports.isEmpty
+                      ? Center(
+                          child: Text(
+                          "...",
+                          style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
+                        ))
+                      : ListView.builder(
+                          itemCount: selectedTower.reports.length,
+                          itemBuilder: (context, index) {
+                            final report = selectedTower.reports[index];
+                            return Card(
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: SafeArea(
+                                minimum: EdgeInsets.all(12),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Date: ${report.dateTime.toDate()}'),
-                                    SizedBox(height: 4),
-                                    Text('Notes: ${report.notes}'),
+                                    // left side
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // report id
+                                        Text(
+                                          report.id,
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          report.authorId,
+                                        ),
+                                      ],
+                                    ),
+
+                                    // right side
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                        const SizedBox(height: 10),
+
+                                        Icon(
+                                          Icons.arrow_right,
+                                          size: 36,
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                                onTap: () {
-                                  // TODO: implement detailed report viewer
-                                },
-                              );
-                            },
-                          )),
-                MyButton(text: "View Issues", onTap: () {} // TODO: implement site issues,
-                    ),
+                              ),
+                            );
+                          },
+                        ),
+                ),
+                // TODO: implement site issues,
+                MyButton(
+                  text: "View Issues",
+                  onTap: () {},
+                ),
                 const SizedBox(height: 20),
               ],
             ),

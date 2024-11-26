@@ -58,11 +58,7 @@ class Tower {
 
     // fetch reports
     final List<Report> reports = [];
-    final reportSnapshot = await FirebaseFirestore.instance
-        .collection('towers')
-        .doc(doc.id)
-        .collection('reports')
-        .get();
+    final reportSnapshot = await FirebaseFirestore.instance.collection('towers').doc(doc.id).collection('reports').get();
 
     for (final reportDoc in reportSnapshot.docs) {
       final report = Report.fetchFromDatabase(reportDoc);
@@ -94,13 +90,14 @@ class Report {
 
   // constructor
   Report({
-    required this.id,
+    this.id = '', // will be filled when created in firestore
     required this.dateTime,
     required this.authorId,
     // this.pictures = const [], // default empty
     this.notes = 'no notes', // default
   });
 
+  // factory builder, get from database
   factory Report.fetchFromDatabase(DocumentSnapshot doc) {
     final data = doc.data()! as Map<String, dynamic>;
 
@@ -110,6 +107,55 @@ class Report {
       authorId: data['authorId'] as String,
       // pictures: data['pictures'] != null ? data['pictures'] as List<String> : [],
       notes: data['notes'] as String? ?? 'no notes',
+    );
+  }
+
+  // save report to firestore given tower id
+  Future<void> saveToDatabase(String towerId) async {
+    try {
+      final reference = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('reports').add({
+        'dateTime': dateTime,
+        'authorId': authorId,
+        'notes': notes,
+      });
+
+      id = reference.id;
+    } catch (e) {
+      print("Error saving report: $e");
+    }
+  }
+}
+
+// Issue Model
+class Issue {
+  String id;
+  String status;
+  Timestamp dateTime;
+  String authorId;
+  String description;
+  List<String> tags;
+
+  // constructor
+  Issue({
+    required this.id,
+    required this.status,
+    required this.dateTime,
+    required this.authorId,
+    this.description = 'no description',
+    this.tags = const [],
+  });
+
+  // factory builder, get from database
+  factory Issue.fetchFromDatabase(DocumentSnapshot doc) {
+    final data = doc.data()! as Map<String, dynamic>;
+
+    return Issue(
+      id: doc.id,
+      status: data['status'] as String,
+      dateTime: data['dateTime'] as Timestamp,
+      authorId: data['authorId'] as String,
+      description: data['description'] as String? ?? 'no description',
+      tags: data['tags'] != null ? List<String>.from(data['tags'] as List<dynamic>) : [],
     );
   }
 }

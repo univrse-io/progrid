@@ -57,7 +57,7 @@ class HomePage extends StatelessWidget {
 
             // search button
             Hero(
-              tag: 'searchBar',
+              tag: 'openList',
               child: Material(
                 color: Colors.transparent,
                 child: MyButton(

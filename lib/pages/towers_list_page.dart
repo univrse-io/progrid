@@ -64,7 +64,7 @@ class _TowersListPageState extends State<TowersListPage> {
 
               // search bar
               Hero(
-                tag: 'searchBar',
+                tag: 'openList',
                 child: Material(
                   color: Colors.transparent,
                   child: MyTextField(
@@ -90,9 +90,14 @@ class _TowersListPageState extends State<TowersListPage> {
                                 print("Tapped on tower: ${tower.id}");
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                    // pass ID
-                                    builder: (context) => TowerPage(towerId: tower.id),
+                                  PageRouteBuilder(
+                                    pageBuilder: (_, __, ___) => TowerPage(towerId: tower.id),
+                                    transitionsBuilder: (_, animation, __, child) {
+                                          return FadeTransition(
+                                            opacity: animation,
+                                            child: child,
+                                          );
+                                    }
                                   ),
                                 );
                               },
@@ -165,11 +170,13 @@ class _TowersListPageState extends State<TowersListPage> {
                                                       style:
                                                           const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
                                                     ),
-                                                    Text(
-                                                      tower.reports.length.toString(),
-                                                      style:
-                                                          const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
-                                                    ),
+
+                                                    // debug
+                                                    // Text(
+                                                    //   tower.reports.length.toString(),
+                                                    //   style:
+                                                    //       const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
+                                                    // ),
                                                   ],
                                                 ),
                                               ],
