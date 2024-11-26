@@ -4,7 +4,7 @@ import 'package:progrid/firebase_options.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/models/user_provider.dart';
 import 'package:progrid/services/auth_wrapper.dart';
-import 'package:progrid/services/themes.dart';
+import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -26,7 +26,7 @@ class MainApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Progrid',
         debugShowCheckedModeBanner: false,
-        theme: GlobalThemeData.lightThemeData,
+        theme: lightTheme,
         home: const AuthWrapper(),
       ),
     );
