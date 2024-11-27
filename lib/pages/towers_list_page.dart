@@ -39,11 +39,6 @@ class _TowersListPageState extends State<TowersListPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        leading: IconButton(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          icon: Icon(Icons.arrow_back, size: 34),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: Text(
           'Query Towers',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),

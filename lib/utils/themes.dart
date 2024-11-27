@@ -23,6 +23,9 @@ final lightTheme = ThemeData(
       error: AppColors.red,
     ),
     fontFamily: GoogleFonts.roboto().fontFamily,
+    actionIconTheme: ActionIconThemeData(
+      backButtonIconBuilder: (context) => Icon(Icons.arrow_back, size: 34),
+    ),
     inputDecorationTheme: InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.black26),

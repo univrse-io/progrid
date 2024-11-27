@@ -14,11 +14,6 @@ class TowerPage extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
         // use appbar for back buttons
         appBar: AppBar(
-          leading: IconButton(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-            icon: Icon(Icons.arrow_back, size: 34),
-            onPressed: () => Navigator.pop(context),
-          ),
           title: Text(
             tower.id,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),

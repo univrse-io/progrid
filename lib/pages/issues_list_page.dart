@@ -30,11 +30,6 @@ class _IssuesListPageState extends State<IssuesListPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        leading: IconButton(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          icon: Icon(Icons.arrow_back, size: 34),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: Text(
           widget.towerId,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
@@ -79,10 +74,11 @@ class _IssuesListPageState extends State<IssuesListPage> {
                 itemCount: selectedTower.issues.length,
                 itemBuilder: (context, index) {
                   final issue = selectedTower.issues[index];
-              
+
                   // tags
-                  final String tagsDisplay = issue.tags.join(', '); // no null check needed
-              
+                  final String tagsDisplay =
+                      issue.tags.join(', '); // no null check needed
+
                   return GestureDetector(
                     onTap: () {
                       // TODO: implement view individual issue page
@@ -111,11 +107,13 @@ class _IssuesListPageState extends State<IssuesListPage> {
                                         height: 14,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: issue.status == 'resolved' ? AppColors.green : AppColors.red,
+                                          color: issue.status == 'resolved'
+                                              ? AppColors.green
+                                              : AppColors.red,
                                         ),
                                       ),
                                       const SizedBox(width: 7),
-              
+
                                       // issue id
                                       Text(
                                         issue.id,
@@ -126,7 +124,7 @@ class _IssuesListPageState extends State<IssuesListPage> {
                                       )
                                     ],
                                   ),
-              
+
                                   // issue tag
                                   Text(
                                     tagsDisplay,
@@ -141,21 +139,27 @@ class _IssuesListPageState extends State<IssuesListPage> {
                                       Text(
                                         issue.authorName,
                                         style: TextStyle(
-                                          color: Theme.of(context).colorScheme.secondary,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
                                         ', ',
                                         style: TextStyle(
-                                          color: Theme.of(context).colorScheme.secondary,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
                                         '${issue.status[0].toUpperCase()}${issue.status.substring(1)}',
                                         style: TextStyle(
-                                          color: Theme.of(context).colorScheme.secondary,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
                                         ),
                                       ),
                                     ],
@@ -163,7 +167,7 @@ class _IssuesListPageState extends State<IssuesListPage> {
                                 ],
                               ),
                             ),
-              
+
                             // right
                             Expanded(
                               flex: 20,
@@ -172,7 +176,8 @@ class _IssuesListPageState extends State<IssuesListPage> {
                                 children: [
                                   // date time
                                   Text(
-                                    DateFormat('dd/MM/yy').format(issue.dateTime.toDate()),
+                                    DateFormat('dd/MM/yy')
+                                        .format(issue.dateTime.toDate()),
                                     style: TextStyle(
                                       fontSize: 15,
                                     ),

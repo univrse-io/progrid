@@ -68,11 +68,6 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-          icon: Icon(Icons.arrow_back, size: 34),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: Text(
           widget.towerId, // replace with instancing?
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
@@ -86,7 +81,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
             Expanded(
               child: Container(
                 height: 150,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Theme.of(context).colorScheme.tertiary,
@@ -105,7 +101,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
                 maxLength: _maxNotesLength,
-                buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
+                buildCounter: (context,
+                    {required currentLength, maxLength, required isFocused}) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 4.0),
                     child: Text(
@@ -120,7 +117,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                 decoration: InputDecoration(
                   hintText: 'Notes',
                   alignLabelWithHint: true,
-                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                  hintStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
                   contentPadding: EdgeInsets.all(12),
                 ),
               ),
