@@ -21,10 +21,31 @@ class TowersProvider extends ChangeNotifier {
       print("Error Fetching Towers: $e");
     }
   }
+
+  // TODO: is this the best implementation? need review
+  void updateTower(Tower updatedTower) {
+    final index = towers.indexWhere((tower) => tower.id == updatedTower.id);
+    if (index != -1) {
+      towers[index] = updatedTower;
+      notifyListeners();
+    }
+  }
+
+  Future<void> addIssueToTower(String towerId, Issue issue) async {
+    final tower = towers.firstWhere((tower) => tower.id == towerId);
+    await tower.addIssue(issue);
+    notifyListeners();
+  }
+
+  Future<void> removeIssueFromTower(String towerId, Issue issue) async {
+    final tower = towers.firstWhere((tower) => tower.id == towerId);
+    await tower.removeIssue(issue);
+    notifyListeners();
+  }
 }
 
 // Tower Model
-class Tower {
+class Tower extends ChangeNotifier {
   String id;
   String name;
   String region;
@@ -37,6 +58,7 @@ class Tower {
 
   // TODO: implement ticket objects (inspection and issues)
   List<Report> reports;
+  List<Issue> issues;
 
   // constructor
   Tower({
@@ -50,7 +72,30 @@ class Tower {
     this.status = 'undefined',
     this.notes = 'no notes',
     this.reports = const [],
+    this.issues = const [],
   });
+
+  // update status, save to database
+  Future<void> updateStatus(String status) async {
+    this.status = status;
+    await FirebaseFirestore.instance.collection('towers').doc(id).update({
+      'status': status,
+    });
+  }
+
+  // add an issue, save to database
+  Future<void> addIssue(Issue issue) async {
+    issues.add(issue);
+    await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issue.id).set(issue.toMap());
+    TowersProvider().notifyListeners();
+  }
+
+  // remove issue, save to database
+  Future<void> removeIssue(Issue issue) async {
+    issues.remove(issue);
+    await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issue.id).delete();
+    TowersProvider().notifyListeners();
+  }
 
   // given a tower document, fetch from database
   static Future<Tower> fetchFromDatabase(DocumentSnapshot doc) async {
@@ -58,11 +103,18 @@ class Tower {
 
     // fetch reports
     final List<Report> reports = [];
+    final List<Issue> issues = [];
     final reportSnapshot = await FirebaseFirestore.instance.collection('towers').doc(doc.id).collection('reports').get();
+    final issueSnapshot = await FirebaseFirestore.instance.collection('towers').doc(doc.id).collection('issues').get();
 
     for (final reportDoc in reportSnapshot.docs) {
       final report = Report.fetchFromDatabase(reportDoc);
       reports.add(report);
+    }
+
+    for (final issueDoc in issueSnapshot.docs) {
+      final issue = Issue.fetchFromDatabase(issueDoc);
+      issues.add(issue);
     }
 
     return Tower(
@@ -76,6 +128,7 @@ class Tower {
       status: data['status'] as String? ?? 'undefined',
       notes: data['notes'] as String? ?? 'no notes',
       reports: reports,
+      issues: issues,
     );
   }
 }
@@ -96,6 +149,15 @@ class Report {
     // this.pictures = const [], // default empty
     this.notes = 'no notes', // default
   });
+
+  // format for database
+  Map<String, dynamic> toMap() {
+    return {
+      'dateTime': dateTime,
+      'authorId': authorId,
+      'notes': notes,
+    };
+  }
 
   // factory builder, get from database
   factory Report.fetchFromDatabase(DocumentSnapshot doc) {
@@ -119,7 +181,7 @@ class Report {
         'notes': notes,
       });
 
-      id = reference.id;
+      id = reference.id; // unique ID, replace?
     } catch (e) {
       print("Error saving report: $e");
     }
@@ -145,6 +207,17 @@ class Issue {
     this.tags = const [],
   });
 
+  // format for database
+  Map<String, dynamic> toMap() {
+    return {
+      'status': status,
+      'dateTime': dateTime,
+      'authorId': authorId,
+      'description': description,
+      'tags': tags,
+    };
+  }
+
   // factory builder, get from database
   factory Issue.fetchFromDatabase(DocumentSnapshot doc) {
     final data = doc.data()! as Map<String, dynamic>;
@@ -157,5 +230,10 @@ class Issue {
       description: data['description'] as String? ?? 'no description',
       tags: data['tags'] != null ? List<String>.from(data['tags'] as List<dynamic>) : [],
     );
+  }
+
+  // update issue details
+  Future<void> updateDetails(String towerId) async {
+    await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').doc(id).update(toMap());
   }
 }

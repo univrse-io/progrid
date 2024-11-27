@@ -27,7 +27,7 @@ class _TowersListPageState extends State<TowersListPage> {
     final towersProvider = Provider.of<TowersProvider>(context);
 
     // filter towers based on search query (name, address, region, or id)
-    final List<Tower> towers = towersProvider.towers
+    final List<Tower> filteredTowers = towersProvider.towers
         .where((tower) =>
             tower.name.toLowerCase().contains(_searchQuery) ||
             tower.address.toLowerCase().contains(_searchQuery) ||
@@ -76,13 +76,13 @@ class _TowersListPageState extends State<TowersListPage> {
 
               // towers list (important)
               Expanded(
-                child: towers.isEmpty
+                child: filteredTowers.isEmpty
                     ? const Center(child: CircularProgressIndicator())
                     : Scrollbar(
                         child: ListView.builder(
-                          itemCount: towers.length,
+                          itemCount: filteredTowers.length,
                           itemBuilder: (context, index) {
-                            final tower = towers[index];
+                            final tower = filteredTowers[index];
                             return GestureDetector(
                               onTap: () async {
                                 print("Tapped on tower: ${tower.id}");
@@ -105,8 +105,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                 child: Material(
                                   color: Colors.transparent,
                                   child: Card(
-                                    margin:
-                                        const EdgeInsets.symmetric(vertical: 4),
+                                    margin: const EdgeInsets.symmetric(vertical: 4),
                                     elevation: 5,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -140,14 +139,12 @@ class _TowersListPageState extends State<TowersListPage> {
                                                     Text(
                                                       tower.id,
                                                       style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                        fontWeight: FontWeight.bold,
                                                         fontSize: 15,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                                const SizedBox(height: 0),
 
                                                 // tower name
                                                 Text(

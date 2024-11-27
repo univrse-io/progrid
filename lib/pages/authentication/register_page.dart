@@ -89,23 +89,35 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _emailController,
-                    decoration: InputDecoration(hintText: 'Email'),
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _nameController,
-                    decoration: InputDecoration(hintText: 'Full Name'),
+                    decoration: InputDecoration(
+                      hintText: 'Full Name',
+                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(hintText: 'Password'),
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     obscureText: true,
-                    decoration: InputDecoration(hintText: 'Confirm Password'),
+                    decoration: InputDecoration(
+                      hintText: 'Confirm Password',
+                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                    ),
                     controller: _confirmPasswordController,
                     validator: (value) => _passwordController.text != value
                         ? "Passwords don't match"
