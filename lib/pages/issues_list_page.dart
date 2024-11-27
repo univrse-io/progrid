@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
@@ -80,9 +81,7 @@ class _IssuesListPageState extends State<IssuesListPage> {
                   final issue = selectedTower.issues[index];
               
                   // tags
-                  final String tagsDisplay = issue.tags.length == 1 
-                      ? 'Access' 
-                      : issue.tags.join(', ');
+                  final String tagsDisplay = issue.tags.join(', '); // no null check needed
               
                   return GestureDetector(
                     onTap: () {
@@ -135,6 +134,31 @@ class _IssuesListPageState extends State<IssuesListPage> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20,
                                     ),
+                                  ),
+
+                                  Row(
+                                    children: [
+                                      Text(
+                                        issue.authorName,
+                                        style: TextStyle(
+                                          color: Theme.of(context).colorScheme.secondary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        ', ',
+                                        style: TextStyle(
+                                          color: Theme.of(context).colorScheme.secondary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${issue.status[0].toUpperCase()}${issue.status.substring(1)}',
+                                        style: TextStyle(
+                                          color: Theme.of(context).colorScheme.secondary,
+                                        ),
+                                      ),
+                                    ],
                                   )
                                 ],
                               ),
@@ -143,7 +167,23 @@ class _IssuesListPageState extends State<IssuesListPage> {
                             // right
                             Expanded(
                               flex: 20,
-                              child: Column(),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  // date time
+                                  Text(
+                                    DateFormat('dd/MM/yy').format(issue.dateTime.toDate()),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Icon(
+                                    Icons.arrow_right,
+                                    size: 36,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),

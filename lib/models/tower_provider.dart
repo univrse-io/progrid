@@ -31,12 +31,21 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
+  // add a report to a tower
+  void addReportToTower(String towerId, Report report) {
+    final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
+    tower.addReport(report);
+    notifyListeners();
+  }
+
+  // add an issue to a tower
   Future<void> addIssueToTower(String towerId, Issue issue) async {
     final tower = towers.firstWhere((tower) => tower.id == towerId);
     await tower.addIssue(issue);
     notifyListeners();
   }
 
+  // remove an issue from a tower
   Future<void> removeIssueFromTower(String towerId, Issue issue) async {
     final tower = towers.firstWhere((tower) => tower.id == towerId);
     await tower.removeIssue(issue);
@@ -56,7 +65,6 @@ class Tower extends ChangeNotifier {
   String status;
   String notes;
 
-  // TODO: implement ticket objects (inspection and issues)
   List<Report> reports;
   List<Issue> issues;
 
@@ -75,47 +83,13 @@ class Tower extends ChangeNotifier {
     this.issues = const [],
   });
 
-  // update status, save to database
-  Future<void> updateStatus(String status) async {
-    this.status = status;
-    await FirebaseFirestore.instance.collection('towers').doc(id).update({
-      'status': status,
-    });
-  }
-
-  // add an issue, save to database
-  Future<void> addIssue(Issue issue) async {
-    issues.add(issue);
-    await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issue.id).set(issue.toMap());
-    TowersProvider().notifyListeners();
-  }
-
-  // remove issue, save to database
-  Future<void> removeIssue(Issue issue) async {
-    issues.remove(issue);
-    await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issue.id).delete();
-    TowersProvider().notifyListeners();
-  }
-
   // given a tower document, fetch from database
   static Future<Tower> fetchFromDatabase(DocumentSnapshot doc) async {
     final data = doc.data()! as Map<String, dynamic>;
 
     // fetch reports
-    final List<Report> reports = [];
-    final List<Issue> issues = [];
-    final reportSnapshot = await FirebaseFirestore.instance.collection('towers').doc(doc.id).collection('reports').get();
-    final issueSnapshot = await FirebaseFirestore.instance.collection('towers').doc(doc.id).collection('issues').get();
-
-    for (final reportDoc in reportSnapshot.docs) {
-      final report = Report.fetchFromDatabase(reportDoc);
-      reports.add(report);
-    }
-
-    for (final issueDoc in issueSnapshot.docs) {
-      final issue = Issue.fetchFromDatabase(issueDoc);
-      issues.add(issue);
-    }
+    final List<Report> reports = await fetchReports(doc.id);
+    final List<Issue> issues = await fetchIssues(doc.id);
 
     return Tower(
       id: doc.id, // firebase document id = tower id
@@ -131,6 +105,57 @@ class Tower extends ChangeNotifier {
       issues: issues,
     );
   }
+
+  // fetch tower reports
+  static Future<List<Report>> fetchReports(String towerId) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('towers')
+        .doc(towerId)
+        .collection('reports')
+        .get();
+    return snapshot.docs.map((doc) => Report.fetchFromDatabase(doc)).toList();
+  }
+
+  // fetch tower issues
+  static Future<List<Issue>> fetchIssues(String towerId) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('towers')
+        .doc(towerId)
+        .collection('issues')
+        .get();
+    return snapshot.docs.map((doc) => Issue.fetchFromDatabase(doc)).toList();
+  }
+
+  // add report to tower, save to firestore
+  Future<void> addReport(Report report) async {
+    reports.add(report);
+    await FirebaseFirestore.instance
+        .collection('towers')
+        .doc(id)
+        .collection('reports')
+        .doc(report.id)
+        .set(report.toMap());
+  }
+
+  Future<void> addIssue(Issue issue) async {
+    issues.add(issue);
+    await FirebaseFirestore.instance
+        .collection('towers')
+        .doc(id)
+        .collection('issues')
+        .doc(issue.id)
+        .set(issue.toMap());
+  }
+
+  Future<void> removeIssue(Issue issue) async {
+    issues.remove(issue);
+    await FirebaseFirestore.instance
+        .collection('towers')
+        .doc(id)
+        .collection('issues')
+        .doc(issue.id)
+        .delete();
+  }
 }
 
 // Report Model
@@ -138,6 +163,7 @@ class Report {
   String id;
   Timestamp dateTime;
   String authorId;
+  String authorName;
   // List<String> pictures;
   String notes;
 
@@ -146,6 +172,7 @@ class Report {
     this.id = '', // will be filled when created in firestore
     required this.dateTime,
     required this.authorId,
+    required this.authorName,
     // this.pictures = const [], // default empty
     this.notes = 'no notes', // default
   });
@@ -155,6 +182,7 @@ class Report {
     return {
       'dateTime': dateTime,
       'authorId': authorId,
+      'authorName': authorName,
       'notes': notes,
     };
   }
@@ -167,6 +195,7 @@ class Report {
       id: doc.id,
       dateTime: data['dateTime'] as Timestamp,
       authorId: data['authorId'] as String,
+      authorName: data['authorName'] as String,
       // pictures: data['pictures'] != null ? data['pictures'] as List<String> : [],
       notes: data['notes'] as String? ?? 'no notes',
     );
@@ -175,15 +204,10 @@ class Report {
   // save report to firestore given tower id
   Future<void> saveToDatabase(String towerId) async {
     try {
-      final reference = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('reports').add({
-        'dateTime': dateTime,
-        'authorId': authorId,
-        'notes': notes,
-      });
-
-      id = reference.id; // unique ID, replace?
+      final reference = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('reports').add(toMap());
+      id = reference.id;
     } catch (e) {
-      print("Error saving report: $e");
+      throw Exception("Error saving report: $e");
     }
   }
 }
@@ -194,6 +218,7 @@ class Issue {
   String status;
   Timestamp dateTime;
   String authorId;
+  String authorName;
   String description;
   List<String> tags;
 
@@ -203,6 +228,7 @@ class Issue {
     required this.status,
     required this.dateTime,
     required this.authorId,
+    required this.authorName,
     this.description = 'no description',
     this.tags = const [],
   });
@@ -213,6 +239,7 @@ class Issue {
       'status': status,
       'dateTime': dateTime,
       'authorId': authorId,
+      'authorName': authorName,
       'description': description,
       'tags': tags,
     };
@@ -227,6 +254,7 @@ class Issue {
       status: data['status'] as String,
       dateTime: data['dateTime'] as Timestamp,
       authorId: data['authorId'] as String,
+      authorName: data['authorName'] as String,
       description: data['description'] as String? ?? 'no description',
       tags: data['tags'] != null ? List<String>.from(data['tags'] as List<dynamic>) : [],
     );

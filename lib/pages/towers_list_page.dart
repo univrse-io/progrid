@@ -68,7 +68,11 @@ class _TowersListPageState extends State<TowersListPage> {
                     controller: _searchController,
                     onChanged: _onSearchChanged,
                     decoration: InputDecoration(
-                        hintText: 'enter id, name, address, region, etc...'),
+                      hintText: 'enter id, name, address, region, etc...',
+                        hintStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                    ),
                   ),
                 ),
               ),
@@ -186,13 +190,6 @@ class _TowersListPageState extends State<TowersListPage> {
                                                           fontWeight: FontWeight
                                                               .normal),
                                                     ),
-
-                                                    // debug
-                                                    // Text(
-                                                    //   tower.reports.length.toString(),
-                                                    //   style:
-                                                    //       const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
-                                                    // ),
                                                   ],
                                                 ),
                                               ],

@@ -15,6 +15,7 @@ class ReportCreationPage extends StatefulWidget {
 
 class _ReportCreationPageState extends State<ReportCreationPage> {
   final _notesController = TextEditingController();
+  final int _maxNotesLength = 500;
   // TODO: implement pictures
 
   Future<void> _createReport() async {
@@ -26,10 +27,14 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
       return;
     }
 
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+
     // create new report instance
     final report = Report(
       dateTime: Timestamp.now(),
-      authorId: Provider.of<UserProvider>(context).userId,
+      authorId: userProvider.userId,
+      authorName: userProvider.name,
       notes: _notesController.text,
     );
 
@@ -37,14 +42,19 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
       // save to firestore, assign id
       await report.saveToDatabase(widget.towerId);
 
+      // Update provider's state
+      towersProvider.addReportToTower(widget.towerId, report);
+
+      // clear fields
+      _notesController.clear();
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Report created successfully!")),
         );
-      }
 
-      // clear fields
-      _notesController.clear();
+        Navigator.pop(context);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -72,19 +82,57 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
         minimum: EdgeInsets.symmetric(horizontal: 25),
         child: Column(
           children: [
-            // Notes
-            TextField(
-              controller: _notesController,
-              decoration: InputDecoration(hintText: 'Notes'),
+            // pictures upload
+            Expanded(
+              child: Container(
+                height: 150,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            // notes text field
+            SizedBox(
+              height: 200, // control text box height here
+              child: TextField(
+                controller: _notesController,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                expands: true,
+                textAlignVertical: TextAlignVertical.top,
+                maxLength: _maxNotesLength,
+                buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      '$currentLength/$maxLength',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
+                },
+                decoration: InputDecoration(
+                  hintText: 'Notes',
+                  alignLabelWithHint: true,
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                  contentPadding: EdgeInsets.all(12),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             FilledButton(
               onPressed: () {
                 _createReport();
-                Navigator.pop(context);
               },
               child: Text("Create Report"),
-            )
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

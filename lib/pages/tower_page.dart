@@ -124,18 +124,19 @@ class _TowerPageState extends State<TowerPage> {
                       ],
                     ),
                     const SizedBox(height: 25),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 1,
-                      child: Container(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
+
+            SizedBox(
+              width: double.infinity,
+              height: 1,
+              child: Container(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 24),
 
             Row(
               children: [
@@ -147,15 +148,18 @@ class _TowerPageState extends State<TowerPage> {
                   ),
                 ),
                 const SizedBox(width: 5),
-                IconButton(
-                  icon: Icon(Icons.edit_note, size: 34),
-                  onPressed: () {
-                    // TODO: implement engineer-side site editing
-                  },
-                )
+                Icon(
+                  Icons.list, size: 32,
+                ),
+                // IconButton(
+                //   icon: Icon(Icons.edit_note, size: 34),
+                //   onPressed: () {
+                //     // implement engineer-side site editing?
+                //   },
+                // )
               ],
             ),
-            const SizedBox(height: 0),
+            const SizedBox(height: 4),
 
             // site address
             _buildDetailRow('Address:', selectedTower.address),
@@ -168,7 +172,7 @@ class _TowerPageState extends State<TowerPage> {
             const SizedBox(height: 20),
 
             const Text(
-              'All Site Reports',
+              'Site Reports',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -176,7 +180,8 @@ class _TowerPageState extends State<TowerPage> {
             ),
             GestureDetector(
               onTap: () =>
-                  Navigator.push(context, PageRouteBuilder(pageBuilder: (_, __, ___) => ReportCreationPage(towerId: selectedTower.id))),
+                  // Navigator.push(context, PageRouteBuilder(pageBuilder: (_, __, ___) => ReportCreationPage(towerId: selectedTower.id))),
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ReportCreationPage(towerId: selectedTower.id))),
               child: Text(
                 'Create New Report',
                 style: TextStyle(
@@ -192,9 +197,10 @@ class _TowerPageState extends State<TowerPage> {
               child: selectedTower.reports.isEmpty
                   ? Center(
                       child: Text(
-                      "...",
+                      "No Report History...",
                       style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
-                    ))
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: selectedTower.reports.length,
                       itemBuilder: (context, index) {
@@ -218,9 +224,12 @@ class _TowerPageState extends State<TowerPage> {
                                     Text(
                                       report.id,
                                     ),
-                                    const SizedBox(height: 5),
                                     Text(
-                                      report.authorId,
+                                      report.authorName,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
                                     ),
                                   ],
                                 ),
