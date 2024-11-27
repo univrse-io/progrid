@@ -69,9 +69,9 @@ class _TowersListPageState extends State<TowersListPage> {
                     onChanged: _onSearchChanged,
                     decoration: InputDecoration(
                       hintText: 'enter id, name, address, region, etc...',
-                        hintStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                     ),
                   ),
                 ),
@@ -94,7 +94,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                   context,
                                   PageRouteBuilder(
                                       pageBuilder: (_, __, ___) =>
-                                          TowerPage(towerId: tower.id),
+                                          TowerPage(tower: tower),
                                       transitionsBuilder:
                                           (_, animation, __, child) {
                                         return FadeTransition(
@@ -109,7 +109,8 @@ class _TowersListPageState extends State<TowersListPage> {
                                 child: Material(
                                   color: Colors.transparent,
                                   child: Card(
-                                    margin: const EdgeInsets.symmetric(vertical: 4),
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 4),
                                     elevation: 5,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -143,7 +144,8 @@ class _TowersListPageState extends State<TowersListPage> {
                                                     Text(
                                                       tower.id,
                                                       style: const TextStyle(
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         fontSize: 15,
                                                       ),
                                                     ),
