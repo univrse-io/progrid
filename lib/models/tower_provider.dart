@@ -141,7 +141,7 @@ class Report {
   Timestamp dateTime;
   String authorId;
   String authorName;
-  // List<String> pictures;
+  List<String> images;
   String notes;
 
   // constructor
@@ -150,7 +150,7 @@ class Report {
     required this.dateTime,
     required this.authorId,
     required this.authorName,
-    // this.pictures = const [], // default empty
+    this.images = const [], // default empty
     this.notes = 'no notes', // default
   });
 
@@ -161,6 +161,7 @@ class Report {
       'authorId': authorId,
       'authorName': authorName,
       'notes': notes,
+      'images': images,
     };
   }
 
@@ -173,7 +174,7 @@ class Report {
       dateTime: data['dateTime'] as Timestamp,
       authorId: data['authorId'] as String,
       authorName: data['authorName'] as String,
-      // pictures: data['pictures'] != null ? data['pictures'] as List<String> : [],
+      images: data['images'] != null ? data['images'] as List<String> : [],
       notes: data['notes'] as String? ?? 'no notes',
     );
   }

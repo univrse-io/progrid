@@ -201,6 +201,7 @@ class TowerPage extends StatelessWidget {
                                       Text(
                                         report.id,
                                       ),
+                                      // author name
                                       Text(
                                         report.authorName,
                                         style: TextStyle(
@@ -208,6 +209,14 @@ class TowerPage extends StatelessWidget {
                                           fontSize: 20,
                                         ),
                                       ),
+                                      // photo count
+                                      Text(
+                                        '${report.images.length} Photo(s)',
+                                        style: TextStyle(
+                                          color: Theme.of(context).colorScheme.secondary,
+                                          fontSize: 12,
+                                        ),
+                                      )
                                     ],
                                   ),
 
