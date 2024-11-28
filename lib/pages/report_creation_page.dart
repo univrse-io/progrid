@@ -42,7 +42,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
       // save to firestore, assign id
       await report.saveToDatabase(widget.towerId);
 
-      // Update provider's state
+      // update provider's state
       towersProvider.addReportToTower(widget.towerId, report);
 
       // clear fields
@@ -87,6 +87,16 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                   borderRadius: BorderRadius.circular(10),
                   color: Theme.of(context).colorScheme.tertiary,
                 ),
+                child: Stack(
+                  children: [
+                    // picture gallery wrap
+
+
+                    // button controls
+                      // upload link
+                      // camera link
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 10),
@@ -101,10 +111,9 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
                 maxLength: _maxNotesLength,
-                buildCounter: (context,
-                    {required currentLength, maxLength, required isFocused}) {
+                buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
                   return Padding(
-                    padding: const EdgeInsets.only(top: 4.0),
+                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       '$currentLength/$maxLength',
                       style: TextStyle(
@@ -125,9 +134,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
             ),
             const SizedBox(height: 20),
             FilledButton(
-              onPressed: () {
-                _createReport();
-              },
+              onPressed: () => _createReport(),
               child: Text("Create Report"),
             ),
             const SizedBox(height: 20),

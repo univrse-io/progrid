@@ -25,7 +25,6 @@ class TowerPage extends StatelessWidget {
             children: [
               const SizedBox(height: 5),
               // columns exists solely for animation
-              // TODO: fix renderflex overflow on transition
               Hero(
                 tag: tower.id,
                 child: Material(
@@ -151,7 +150,6 @@ class TowerPage extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () =>
-                    // Navigator.push(context, PageRouteBuilder(pageBuilder: (_, __, ___) => ReportCreationPage(towerId: selectedTower.id))),
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -236,7 +234,6 @@ class TowerPage extends StatelessWidget {
                         },
                       ),
               ),
-              // TODO: implement site issues
               FilledButton(
                 onPressed: () {
                   Navigator.push(

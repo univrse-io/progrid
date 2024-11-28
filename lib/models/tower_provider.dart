@@ -108,53 +108,30 @@ class Tower extends ChangeNotifier {
 
   // fetch tower reports
   static Future<List<Report>> fetchReports(String towerId) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('towers')
-        .doc(towerId)
-        .collection('reports')
-        .get();
+    final snapshot = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('reports').get();
     return snapshot.docs.map((doc) => Report.fetchFromDatabase(doc)).toList();
   }
 
   // fetch tower issues
   static Future<List<Issue>> fetchIssues(String towerId) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('towers')
-        .doc(towerId)
-        .collection('issues')
-        .get();
+    final snapshot = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').get();
     return snapshot.docs.map((doc) => Issue.fetchFromDatabase(doc)).toList();
   }
 
   // add report to tower, save to firestore
   Future<void> addReport(Report report) async {
     reports.add(report);
-    await FirebaseFirestore.instance
-        .collection('towers')
-        .doc(id)
-        .collection('reports')
-        .doc(report.id)
-        .set(report.toMap());
+    await FirebaseFirestore.instance.collection('towers').doc(id).collection('reports').doc(report.id).set(report.toMap());
   }
 
   Future<void> addIssue(Issue issue) async {
     issues.add(issue);
-    await FirebaseFirestore.instance
-        .collection('towers')
-        .doc(id)
-        .collection('issues')
-        .doc(issue.id)
-        .set(issue.toMap());
+    await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issue.id).set(issue.toMap());
   }
 
   Future<void> removeIssue(Issue issue) async {
     issues.remove(issue);
-    await FirebaseFirestore.instance
-        .collection('towers')
-        .doc(id)
-        .collection('issues')
-        .doc(issue.id)
-        .delete();
+    await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issue.id).delete();
   }
 }
 
@@ -224,7 +201,7 @@ class Issue {
 
   // constructor
   Issue({
-    required this.id,
+    this.id = '',
     required this.status,
     required this.dateTime,
     required this.authorId,
@@ -263,5 +240,15 @@ class Issue {
   // update issue details
   Future<void> updateDetails(String towerId) async {
     await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').doc(id).update(toMap());
+  }
+
+  // save issue to database, given tower id
+  Future<void> saveToDatabase(String towerId) async {
+    try {
+      final reference = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').add(toMap());
+      id = reference.id;
+    } catch (e) {
+      throw Exception("Error saving issue: $e");
+    }
   }
 }

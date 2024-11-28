@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:progrid/models/tower_provider.dart';
+import 'package:progrid/pages/issue_creation_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -54,7 +55,11 @@ class _IssuesListPageState extends State<IssuesListPage> {
             // new issue ticket link
             GestureDetector(
               onTap: () {
-                // TODO: implement issue creation page
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => IssueCreationPage(towerId: selectedTower.id),
+                    ));
               },
               child: Text(
                 "Create New Ticket",
@@ -76,8 +81,7 @@ class _IssuesListPageState extends State<IssuesListPage> {
                   final issue = selectedTower.issues[index];
 
                   // tags
-                  final String tagsDisplay =
-                      issue.tags.join(', '); // no null check needed
+                  final String tagsDisplay = issue.tags.join(', '); // no null check needed
 
                   return GestureDetector(
                     onTap: () {
@@ -107,9 +111,7 @@ class _IssuesListPageState extends State<IssuesListPage> {
                                         height: 14,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: issue.status == 'resolved'
-                                              ? AppColors.green
-                                              : AppColors.red,
+                                          color: issue.status == 'resolved' ? AppColors.green : AppColors.red,
                                         ),
                                       ),
                                       const SizedBox(width: 7),
@@ -139,27 +141,21 @@ class _IssuesListPageState extends State<IssuesListPage> {
                                       Text(
                                         issue.authorName,
                                         style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
+                                          color: Theme.of(context).colorScheme.secondary,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
                                         ', ',
                                         style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
+                                          color: Theme.of(context).colorScheme.secondary,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
                                         '${issue.status[0].toUpperCase()}${issue.status.substring(1)}',
                                         style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
+                                          color: Theme.of(context).colorScheme.secondary,
                                         ),
                                       ),
                                     ],
@@ -176,8 +172,7 @@ class _IssuesListPageState extends State<IssuesListPage> {
                                 children: [
                                   // date time
                                   Text(
-                                    DateFormat('dd/MM/yy')
-                                        .format(issue.dateTime.toDate()),
+                                    DateFormat('dd/MM/yy').format(issue.dateTime.toDate()),
                                     style: TextStyle(
                                       fontSize: 15,
                                     ),
