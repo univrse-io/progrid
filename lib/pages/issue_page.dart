@@ -96,7 +96,8 @@ class _IssuePageState extends State<IssuePage> {
             const SizedBox(height: 7),
             Text(
               selectedIssue.description,
-              style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+              style: TextStyle(
+                  fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
               textAlign: TextAlign.justify,
             ),
             const SizedBox(height: 10),
@@ -112,10 +113,12 @@ class _IssuePageState extends State<IssuePage> {
             const SizedBox(height: 7),
             if (showDropdown)
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+                padding: EdgeInsets.symmetric(horizontal: 14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
-                  color: selectedIssue.status == 'resolved' ? AppColors.green : AppColors.red,
+                  color: selectedIssue.status == 'resolved'
+                      ? AppColors.green
+                      : AppColors.red,
                 ),
                 child: DropdownButton(
                   value: selectedIssue.status,
@@ -151,28 +154,33 @@ class _IssuePageState extends State<IssuePage> {
                     ),
                   ],
                   underline: Container(), // remove default underline
-                  iconEnabledColor: Theme.of(context).colorScheme.surface, // dropdown arrow
+                  iconEnabledColor:
+                      Theme.of(context).colorScheme.surface, // dropdown arrow
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.surface,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ) else Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      color: selectedIssue.status == 'resolved' ? AppColors.green : AppColors.red,
-                    ),
-                    child: Text(
-                      '${selectedIssue.status[0].toUpperCase()}${selectedIssue.status.substring(1)}',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.surface,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      
-                    ),
-                  ), 
+              )
+            else
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  color: selectedIssue.status == 'resolved'
+                      ? AppColors.green
+                      : AppColors.red,
+                ),
+                child: Text(
+                  '${selectedIssue.status[0].toUpperCase()}${selectedIssue.status.substring(1)}',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.surface,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
 
             // const Text(
             //   'Status',
