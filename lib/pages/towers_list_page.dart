@@ -100,7 +100,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                 );
                               },
                               child: Hero(
-                                tag: 'item ${tower.id}',
+                                tag: tower.id,
                                 child: Material(
                                   color: Colors.transparent,
                                   child: Card(

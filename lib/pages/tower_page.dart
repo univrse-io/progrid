@@ -12,7 +12,6 @@ class TowerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        // use appbar for back buttons
         appBar: AppBar(
           title: Text(
             tower.id,
@@ -25,96 +24,90 @@ class TowerPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 5),
-
               // columns exists solely for animation
               // TODO: fix renderflex overflow on transition
               Hero(
-                tag: 'item ${tower.id}',
+                tag: tower.id,
                 child: Material(
                   color: Colors.transparent,
-                  child: Column(
-                    children: [
-                      // tower name
-                      Text(
-                        tower.name,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // tower name
+                        Text(
+                          tower.name,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 5),
+                        const SizedBox(height: 5),
 
-                      // tower geopoint
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'LatLong:',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            // :)
-                            '${tower.position.latitude.toStringAsFixed(6)}, ${tower.position.longitude.toStringAsFixed(6)}',
-                            style: TextStyle(
-                              fontSize: 17,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-
-                      // tower status
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Status:',
-                            style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 17,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 2),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              color: tower.status == 'Surveyed'
-                                  ? AppColors.green
-                                  : AppColors.red,
-                            ),
-                            child: Text(
-                              tower.status,
+                        // tower geopoint
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'LatLong:',
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.surface,
-                                fontSize: 15,
+                                fontSize: 17,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 25),
-                    ],
+                            const SizedBox(width: 5),
+                            Text(
+                              // :)
+                              '${tower.position.latitude.toStringAsFixed(6)}, ${tower.position.longitude.toStringAsFixed(6)}',
+                              style: TextStyle(
+                                fontSize: 17,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+
+                        // tower status
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Status:',
+                              style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                fontSize: 17,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 2),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(24),
+                                color: tower.status == 'Surveyed'
+                                    ? AppColors.green
+                                    : AppColors.red,
+                              ),
+                              child: Text(
+                                tower.status,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.surface,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 25),
+                      ],
+                    ),
                   ),
                 ),
               ),
-
-              SizedBox(
-                width: double.infinity,
-                height: 1,
-                child: Container(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
+              Divider(),
               const SizedBox(height: 24),
-
               Row(
                 children: [
                   const Text(
