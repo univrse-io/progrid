@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/pages/issues_list_page.dart';
 import 'package:progrid/pages/report_creation_page.dart';
+import 'package:progrid/pages/report_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -187,61 +188,68 @@ class _TowerPageState extends State<TowerPage> {
                       itemCount: selectedTower.reports.length,
                       itemBuilder: (context, index) {
                         final report = selectedTower.reports[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          elevation: 5,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: SafeArea(
-                            minimum: EdgeInsets.all(12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                // left side
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // report id
-                                    Text(
-                                      report.id,
-                                    ),
-                                    // author name
-                                    Text(
-                                      report.authorName,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => ReportPage(towerId: selectedTower.id, reportId: report.id),
+                            ));
+                          },
+                          child: Card(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: SafeArea(
+                              minimum: EdgeInsets.all(12),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // left side
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // report id
+                                      Text(
+                                        report.id,
                                       ),
-                                    ),
-                                    // photo count
-                                    Text(
-                                      '${report.images.length} Photo(s)',
-                                      style: TextStyle(
-                                        color: Theme.of(context).colorScheme.secondary,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
+                                      // author name
+                                      Text(
+                                        report.authorName,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ),
                                       ),
-                                    )
-                                  ],
-                                ),
+                                      // photo count
+                                      Text(
+                                        '${report.images.length} Photo(s)',
+                                        style: TextStyle(
+                                          color: Theme.of(context).colorScheme.secondary,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                        ),
+                                      )
+                                    ],
+                                  ),
 
-                                // right side
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Icon(
-                                      Icons.arrow_right,
-                                      size: 36,
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  // right side
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
+                                        style: TextStyle(fontSize: 15),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Icon(
+                                        Icons.arrow_right,
+                                        size: 36,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );

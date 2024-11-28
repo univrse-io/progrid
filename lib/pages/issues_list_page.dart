@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:progrid/models/tower_provider.dart';
 import 'package:progrid/pages/issue_creation_page.dart';
+import 'package:progrid/pages/issue_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -84,7 +85,11 @@ class _IssuesListPageState extends State<IssuesListPage> {
 
                   return GestureDetector(
                     onTap: () {
-                      // TODO: implement view individual issue page
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => IssuePage(issueId: issue.id, towerId: widget.towerId),
+                          ));
                     },
                     child: Card(
                       margin: const EdgeInsets.symmetric(vertical: 4),
