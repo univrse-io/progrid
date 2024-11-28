@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:progrid/models/user_provider.dart';
+import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/towers_list_page.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +22,8 @@ class HomePage extends StatelessWidget {
           IconButton(
             padding: EdgeInsets.only(right: 20, top: 15),
             icon: Icon(Icons.person, size: 34),
-            onPressed: () {}, // TODO: implement profile page
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => ProfilePage())),
           ),
         ],
       ),
