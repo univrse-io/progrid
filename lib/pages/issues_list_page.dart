@@ -6,7 +6,6 @@ import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
 class IssuesListPage extends StatefulWidget {
-  // TODO: implement callback system
   final String towerId; // id of selected tower
 
   const IssuesListPage({super.key, required this.towerId});

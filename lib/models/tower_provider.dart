@@ -174,7 +174,7 @@ class Report {
       dateTime: data['dateTime'] as Timestamp,
       authorId: data['authorId'] as String,
       authorName: data['authorName'] as String,
-      images: data['images'] != null ? data['images'] as List<String> : [],
+      images: (data['images'] as List<dynamic>?)?.cast<String>() ?? [],
       notes: data['notes'] as String? ?? 'no notes',
     );
   }

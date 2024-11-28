@@ -89,7 +89,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                   context,
                                   PageRouteBuilder(
                                       pageBuilder: (_, __, ___) =>
-                                          TowerPage(tower: tower),
+                                          TowerPage(towerId: tower.id),
                                       transitionsBuilder:
                                           (_, animation, __, child) {
                                         return FadeTransition(
@@ -129,7 +129,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                                       decoration: BoxDecoration(
                                                         shape: BoxShape.circle,
                                                         color: tower.status ==
-                                                                'active'
+                                                                'surveyed'
                                                             ? AppColors.green
                                                             : AppColors.red,
                                                       ),

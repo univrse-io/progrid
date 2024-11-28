@@ -61,7 +61,6 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
   Future<void> _createReport() async {
     if (_notesController.text.isEmpty) {
-      // TODO: replace most warnings with snackbars
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields.")),
       );
@@ -94,6 +93,10 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
     try {
       // save to firestore, assign id
       await report.saveToDatabase(widget.towerId);
+
+      // update tower status
+      final towerRef = FirebaseFirestore.instance.collection('towers').doc(widget.towerId);
+      await towerRef.update({'status': 'surveyed'});
 
       // update provider's state
       towersProvider.addReportToTower(widget.towerId, report);
@@ -161,10 +164,15 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: Image.file(
-                                      _images[index],
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxHeight: 400,
+                                      ),
+                                      child: Image.file(
+                                        _images[index],
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      ),
                                     ),
                                   ),
                                   Positioned(
@@ -196,6 +204,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                           },
                         ),
 
+                        // grid implementation
                         // GridView.builder(
                         //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 8, mainAxisSpacing: 8),
                         //   itemCount: _images.length,
@@ -213,7 +222,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                         // button controls
                         Positioned(
                           bottom: 10,
-                          right: 10,
+                          right: 0,
                           child: Row(
                             children: [
                               FloatingActionButton(

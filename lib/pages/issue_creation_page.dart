@@ -64,7 +64,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Report created successfully!")),
+          const SnackBar(content: Text("Issue created successfully!")),
         );
 
         Navigator.pop(context);
