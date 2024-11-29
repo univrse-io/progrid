@@ -121,6 +121,7 @@ class _IssuePageState extends State<IssuePage> {
                       : AppColors.red,
                 ),
                 child: DropdownButton(
+                  isDense: true,
                   value: selectedIssue.status,
                   onChanged: (newStatus) {
                     setState(() {
@@ -131,35 +132,17 @@ class _IssuePageState extends State<IssuePage> {
                       }
                     });
                   },
+                  // UNDONE: Still unable to change the text color.
                   items: [
                     DropdownMenuItem(
-                      value: 'unresolved',
-                      child: Text(
-                        'Unresolved',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                        value: 'unresolved', child: Text('Unresolved')),
                     DropdownMenuItem(
-                      value: 'resolved',
-                      child: Text(
-                        'Resolved',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                        value: 'resolved', child: Text('Resolved')),
                   ],
-                  underline: Container(), // remove default underline
-                  iconEnabledColor:
-                      Theme.of(context).colorScheme.surface, // dropdown arrow
+                  iconEnabledColor: Theme.of(context).colorScheme.surface,
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.surface,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.bold),
                 ),
               )
             else
