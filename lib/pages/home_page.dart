@@ -13,11 +13,6 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          padding: EdgeInsets.only(left: 20, top: 15),
-          icon: Icon(Icons.logout, size: 31),
-          onPressed: () => userProvider.logout(),
-        ),
         actions: [
           IconButton(
             padding: EdgeInsets.only(right: 20, top: 15),
