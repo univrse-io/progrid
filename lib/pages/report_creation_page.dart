@@ -4,8 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:progrid/models/tower_provider.dart';
-import 'package:progrid/models/user_provider.dart';
+import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/providers/user_provider.dart';
+import 'package:progrid/models/report.dart';
 import 'package:provider/provider.dart';
 
 class ReportCreationPage extends StatefulWidget {

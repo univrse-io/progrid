@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/models/tower_provider.dart';
-import 'package:progrid/models/user_provider.dart';
+import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
 import 'package:progrid/pages/home_page.dart';

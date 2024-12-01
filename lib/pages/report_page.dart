@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/models/tower_provider.dart';
+import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/report.dart';
 import 'package:provider/provider.dart';
 
 class ReportPage extends StatefulWidget {

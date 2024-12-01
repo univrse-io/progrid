@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/models/tower_provider.dart';
-import 'package:progrid/models/user_provider.dart';
+import 'package:progrid/models/issue.dart';
+import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class IssueCreationPage extends StatefulWidget {
@@ -42,7 +43,6 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final towersProvider = Provider.of<TowersProvider>(context, listen: false);
 
-    // UNDONE: issue creation logic
     final issue = Issue(
       dateTime: Timestamp.now(),
       authorId: userProvider.userId,

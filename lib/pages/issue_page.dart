@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/models/tower_provider.dart';
-import 'package:progrid/models/user_provider.dart';
+import 'package:progrid/models/issue.dart';
+import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -136,14 +137,6 @@ class _IssuePageState extends State<IssuePage> {
                         );
                       }
                     }
-
-                    // setState(() {
-                    //   if (newStatus != null) {
-                    //     // TODO: implement proper status database update here
-                    //     // update provider as well
-                    //     selectedIssue.status = newStatus;
-                    //   }
-                    // });
                   },
                   // UNDONE: Still unable to change the text color.
                   items: [

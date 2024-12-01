@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/models/user_provider.dart';
+import 'package:progrid/models/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {

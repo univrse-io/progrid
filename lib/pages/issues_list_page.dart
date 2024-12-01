@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:progrid/models/tower_provider.dart';
+import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/issue_creation_page.dart';
 import 'package:progrid/pages/issue_page.dart';
 import 'package:progrid/utils/themes.dart';
