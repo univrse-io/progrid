@@ -123,21 +123,34 @@ class _IssuePageState extends State<IssuePage> {
                 child: DropdownButton(
                   isDense: true,
                   value: selectedIssue.status,
-                  onChanged: (newStatus) {
-                    setState(() {
-                      if (newStatus != null) {
-                        // TODO: implement proper status database update here
-                        // update provider as well
-                        selectedIssue.status = newStatus;
+                  onChanged: (newStatus) async {
+                    if (newStatus != null && newStatus != selectedIssue.status) {
+                      try {
+                        towersProvider.updateIssueStatus(widget.towerId, widget.issueId, newStatus);
+                        setState(() {
+                          selectedIssue.status = newStatus; // Reflect the change locally
+                        });
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error updating status: $e')),
+                        );
                       }
-                    });
+                    }
+
+                    // setState(() {
+                    //   if (newStatus != null) {
+                    //     // TODO: implement proper status database update here
+                    //     // update provider as well
+                    //     selectedIssue.status = newStatus;
+                    //   }
+                    // });
                   },
                   // UNDONE: Still unable to change the text color.
                   items: [
                     DropdownMenuItem(
-                        value: 'unresolved', child: Text('Unresolved')),
+                        value: 'unresolved', child: Text('Unresolved', style: TextStyle(color: Theme.of(context).colorScheme.onSurface),)),
                     DropdownMenuItem(
-                        value: 'resolved', child: Text('Resolved')),
+                        value: 'resolved', child: Text('Resolved', style: TextStyle(color: Theme.of(context).colorScheme.onSurface),)),
                   ],
                   iconEnabledColor: Theme.of(context).colorScheme.surface,
                   style: TextStyle(

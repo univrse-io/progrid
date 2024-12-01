@@ -31,6 +31,16 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
+  void updateIssueStatus(String towerId, String issueId, String newStatus) async {
+    try {
+      final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
+      await tower.updateIssueStatus(issueId, newStatus);
+      notifyListeners();
+    } catch (e) {
+      print("Error updating issue status: $e");
+    }
+  }
+
   // add a report to a tower
   void addReportToTower(String towerId, Report report) {
     final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
@@ -54,7 +64,7 @@ class TowersProvider extends ChangeNotifier {
 }
 
 // Tower Model
-class Tower extends ChangeNotifier {
+class Tower {
   String id;
   String name;
   String region;
@@ -132,6 +142,27 @@ class Tower extends ChangeNotifier {
   Future<void> removeIssue(Issue issue) async {
     issues.remove(issue);
     await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issue.id).delete();
+  }
+
+  Future<void> updateIssueStatus(String issueId, String newStatus) async {
+    try {
+      // Find the issue in the tower's local issues list
+      final issue = issues.firstWhere((issue) => issue.id == issueId, orElse: () => throw Exception("Issue not found"));
+
+      // Update the status locally
+      issue.status = newStatus;
+
+      // Update the status in Firestore
+      await FirebaseFirestore.instance
+          .collection('towers')
+          .doc(id)
+          .collection('issues')
+          .doc(issueId)
+          .update({'status': newStatus});
+          
+    } catch (e) {
+      print("Error updating issue status in tower: $e");
+    }
   }
 }
 

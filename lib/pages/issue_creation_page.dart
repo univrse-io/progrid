@@ -42,7 +42,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final towersProvider = Provider.of<TowersProvider>(context, listen: false);
 
-    // TODO: issue creation logic
+    // UNDONE: issue creation logic
     final issue = Issue(
       dateTime: Timestamp.now(),
       authorId: userProvider.userId,
