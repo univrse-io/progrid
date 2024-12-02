@@ -4,7 +4,7 @@ import 'package:progrid/models/providers/tower_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
-// import 'package:progrid/pages/authentication/verify_email_page.dart';
+import 'package:progrid/pages/dashboard_page.dart';
 import 'package:progrid/pages/home_page.dart';
 import 'package:provider/provider.dart';
 
@@ -87,34 +87,35 @@ class _AuthWrapperState extends State<AuthWrapper> {
             future: _fetchFromDatabase(user),
             builder: (context, fetchSnapshot) {
               if (fetchSnapshot.connectionState == ConnectionState.waiting) {
-                return const Scaffold(body: Center(child: CircularProgressIndicator()));
+                return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()));
               }
 
               // successful data load
               // update user after frame built
               WidgetsBinding.instance.addPostFrameCallback(
                 (_) {
-                  final userProvider = Provider.of<UserProvider>(context, listen: false);
-                  userProvider.setUser(user); // this should set to 'null' if user is signed out
+                  final userProvider =
+                      Provider.of<UserProvider>(context, listen: false);
+                  userProvider.setUser(
+                      user); // this should set to 'null' if user is signed out
                 },
               );
 
               // multi user type fallback
               switch (Provider.of<UserProvider>(context, listen: false).role) {
-                case 'basic':
-                  return HomePage();
+                case 'admin':
+                  return DashboardPage();
                 default:
-                  return const Center(child: Text("Placeholder Page"));
+                  return HomePage();
               }
             },
           );
         }
 
-        return Scaffold(
-          body: _onLoginPage
-              ? LoginPage(onTapSwitchPage: _toggleLoginPage)
-              : RegisterPage(onTapSwitchPage: _toggleLoginPage),
-        );
+        return _onLoginPage
+            ? LoginPage(onTapSwitchPage: _toggleLoginPage)
+            : RegisterPage(onTapSwitchPage: _toggleLoginPage);
       },
     );
   }
