@@ -86,7 +86,6 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
     final report = Report(
       dateTime: Timestamp.now(),
       authorId: userProvider.userId,
-      authorName: userProvider.name,
       notes: _notesController.text,
       images: imageUrls,
     );

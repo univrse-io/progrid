@@ -6,7 +6,6 @@ class Issue {
   String status;
   Timestamp dateTime;
   String authorId;
-  String authorName;
   String description;
   List<String> tags;
 
@@ -16,7 +15,6 @@ class Issue {
     required this.status,
     required this.dateTime,
     required this.authorId,
-    required this.authorName,
     this.description = 'no description',
     this.tags = const [],
   });
@@ -27,7 +25,6 @@ class Issue {
       'status': status,
       'dateTime': dateTime,
       'authorId': authorId,
-      'authorName': authorName,
       'description': description,
       'tags': tags,
     };
@@ -42,7 +39,6 @@ class Issue {
       status: data['status'] as String,
       dateTime: data['dateTime'] as Timestamp,
       authorId: data['authorId'] as String,
-      authorName: data['authorName'] as String,
       description: data['description'] as String? ?? 'no description',
       tags: data['tags'] != null ? List<String>.from(data['tags'] as List<dynamic>) : [],
     );

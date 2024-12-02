@@ -46,7 +46,6 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     final issue = Issue(
       dateTime: Timestamp.now(),
       authorId: userProvider.userId,
-      authorName: userProvider.name,
       tags: _selectedTags,
       description: _descriptionController.text,
       status: 'unresolved',
