@@ -33,12 +33,12 @@ class Tower {
   });
 
   // given a tower document, fetch from database
-  static Future<Tower> fetchFromDatabase(DocumentSnapshot doc) async {
+  static Future<Tower> fromFirestore(DocumentSnapshot doc) async {
     final data = doc.data()! as Map<String, dynamic>;
 
-    // fetch reports
-    final List<Report> reports = await fetchReports(doc.id);
-    final List<Issue> issues = await fetchIssues(doc.id);
+    // fetch reports and issues
+    final List<Report> reports = await _fetchReports(doc.id);
+    final List<Issue> issues = await _fetchIssues(doc.id);
 
     return Tower(
       id: doc.id, // firebase document id = tower id
@@ -56,15 +56,15 @@ class Tower {
   }
 
   // fetch tower reports
-  static Future<List<Report>> fetchReports(String towerId) async {
+  static Future<List<Report>> _fetchReports(String towerId) async {
     final snapshot = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('reports').get();
-    return snapshot.docs.map((doc) => Report.fetchFromDatabase(doc)).toList();
+    return snapshot.docs.map((doc) => Report.fromFirestore(doc)).toList();
   }
 
   // fetch tower issues
-  static Future<List<Issue>> fetchIssues(String towerId) async {
+  static Future<List<Issue>> _fetchIssues(String towerId) async {
     final snapshot = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').get();
-    return snapshot.docs.map((doc) => Issue.fetchFromDatabase(doc)).toList();
+    return snapshot.docs.map((doc) => Issue.fromFirestore(doc)).toList();
   }
 
   // add report to tower, save to firestore
@@ -73,7 +73,8 @@ class Tower {
 
     // create report in firebase
     await FirebaseFirestore.instance.collection('towers').doc(id).collection('reports').add(report.toMap());
-    await FirebaseFirestore.instance.collection('towers').doc(id).update({'status': 'surveyed'}); // update tower status to 'surveyed'
+    // update tower status to 'surveyed'
+    await FirebaseFirestore.instance.collection('towers').doc(id).update({'status': 'surveyed'});
   }
 
   Future<void> addIssue(Issue issue) async {
@@ -82,16 +83,15 @@ class Tower {
     await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').add(issue.toMap());
   }
 
-  Future<void> updateIssueStatus(String issueId, String newStatus) async {
+  Future<void> updateIssueStatus(String issueId, String status) async {
     try {
-      // Find the issue in the tower's local issues list
+      // find issue locally
       final issue = issues.firstWhere((issue) => issue.id == issueId, orElse: () => throw Exception("Issue not found"));
-
-      // Update the status locally
-      issue.status = newStatus;
-
-      // Update the status in Firestore
-      await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issueId).update({'status': newStatus});
+      
+      // update status locally
+      issue.status = status;
+      // , and in the database as well
+      await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issueId).update({'status': status});
     } catch (e) {
       print("Error updating issue status in tower: $e");
     }

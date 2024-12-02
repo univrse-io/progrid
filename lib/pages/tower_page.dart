@@ -23,8 +23,9 @@ class _TowerPageState extends State<TowerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final towersProvider = Provider.of<TowersProvider>(context);
-    final selectedTower = towersProvider.towers.firstWhere(
+    // TODO: for some reason the tower page is not rebuilt after a new report is created, even though notifylisteners is called. (urgent)
+    // final towersProvider = Provider.of<TowersProvider>(context);
+    final selectedTower = Provider.of<TowersProvider>(context).towers.firstWhere(
       (tower) => tower.id == widget.towerId,
       orElse: () => throw Exception('Tower not found'),
     );

@@ -30,8 +30,8 @@ class Issue {
     };
   }
 
-  // factory builder, get from database
-  factory Issue.fetchFromDatabase(DocumentSnapshot doc) {
+  // factory builder: given a document, return an issue instance
+  factory Issue.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data()! as Map<String, dynamic>;
 
     return Issue(
@@ -48,14 +48,4 @@ class Issue {
   Future<void> updateDetails(String towerId) async {
     await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').doc(id).update(toMap());
   }
-
-  // save issue to database, given tower id
-  // Future<void> saveToDatabase(String towerId) async {
-  //   try {
-  //     final reference = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').add(toMap());
-  //     id = reference.id;
-  //   } catch (e) {
-  //     throw Exception("Error saving issue: $e");
-  //   }
-  // }
 }

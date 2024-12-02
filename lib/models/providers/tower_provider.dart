@@ -16,7 +16,7 @@ class TowersProvider extends ChangeNotifier {
 
       // fetch each tower
       for (final doc in snapshot.docs) {
-        final Tower tower = await Tower.fetchFromDatabase(doc);
+        final Tower tower = await Tower.fromFirestore(doc);
         towers.add(tower);
       }
       notifyListeners();
@@ -25,10 +25,11 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
-  void updateIssueStatus(String towerId, String issueId, String newStatus) {
+  // update issue status in a tower
+  void updateIssueStatus(String towerId, String issueId, String status) {
     try {
       final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
-      tower.updateIssueStatus(issueId, newStatus);
+      tower.updateIssueStatus(issueId, status);
       notifyListeners();
     } catch (e) {
       print("Error updating issue status: $e");
@@ -38,14 +39,14 @@ class TowersProvider extends ChangeNotifier {
   // add a report to a tower
   Future<void> addReportToTower(String towerId, Report report) async {
     final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
-    await tower.addReport(report);
+    tower.addReport(report);
     notifyListeners();
   }
 
   // add an issue to a tower
   Future<void> addIssueToTower(String towerId, Issue issue) async {
     final tower = towers.firstWhere((tower) => tower.id == towerId);
-    await tower.addIssue(issue);
+    tower.addIssue(issue);
     notifyListeners();
   }
 }

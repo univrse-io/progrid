@@ -27,8 +27,8 @@ class Report {
     };
   }
 
-  // factory builder, get from database
-  factory Report.fetchFromDatabase(DocumentSnapshot doc) {
+  // factory builder: given a document, return a report instance
+  factory Report.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data()! as Map<String, dynamic>;
 
     return Report(
@@ -39,14 +39,4 @@ class Report {
       notes: data['notes'] as String? ?? 'no notes',
     );
   }
-
-  // // save report to firestore given tower id
-  // Future<void> saveToDatabase(String towerId) async {
-  //   try {
-  //     final reference = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('reports').add(toMap());
-  //     id = reference.id;
-  //   } catch (e) {
-  //     throw Exception("Error saving report: $e");
-  //   }
-  // }
 }
