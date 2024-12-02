@@ -40,9 +40,11 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
       return;
     }
 
+    // define providers
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final towersProvider = Provider.of<TowersProvider>(context, listen: false);
 
+    // create issue instance
     final issue = Issue(
       dateTime: Timestamp.now(),
       authorId: userProvider.userId,
@@ -52,10 +54,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     );
 
     try {
-      // save to firestore, assign id
-      await issue.saveToDatabase(widget.towerId);
-
-      // update provider state
+      // add issue to firebase and provider, update widgets
       towersProvider.addIssueToTower(widget.towerId, issue);
 
       // clear fields
@@ -66,6 +65,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
           const SnackBar(content: Text("Issue created successfully!")),
         );
 
+        // go back
         Navigator.pop(context);
       }
     } catch (e) {

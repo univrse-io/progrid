@@ -94,7 +94,7 @@ class _IssuesListPageState extends State<IssuesListPage> {
                           subtitle: Text("Issue ID: ${issue.id}"),
                         );
                       } else {
-                        final authorName = snapshot.data!['name'] as String ?? "Unknown Author";
+                        final authorName = snapshot.data!['name'] as String;
 
                         return GestureDetector(
                           onTap: () {

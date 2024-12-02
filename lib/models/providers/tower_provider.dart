@@ -25,15 +25,6 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
-  // TODO: is this the best implementation? need review
-  void updateTower(Tower updatedTower) {
-    final index = towers.indexWhere((tower) => tower.id == updatedTower.id);
-    if (index != -1) {
-      towers[index] = updatedTower;
-      notifyListeners();
-    }
-  }
-
   void updateIssueStatus(String towerId, String issueId, String newStatus) {
     try {
       final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
@@ -45,9 +36,9 @@ class TowersProvider extends ChangeNotifier {
   }
 
   // add a report to a tower
-  void addReportToTower(String towerId, Report report) {
+  Future<void> addReportToTower(String towerId, Report report) async {
     final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
-    tower.addReport(report);
+    await tower.addReport(report);
     notifyListeners();
   }
 
@@ -55,13 +46,6 @@ class TowersProvider extends ChangeNotifier {
   Future<void> addIssueToTower(String towerId, Issue issue) async {
     final tower = towers.firstWhere((tower) => tower.id == towerId);
     await tower.addIssue(issue);
-    notifyListeners();
-  }
-
-  // remove an issue from a tower
-  Future<void> removeIssueFromTower(String towerId, Issue issue) async {
-    final tower = towers.firstWhere((tower) => tower.id == towerId);
-    await tower.removeIssue(issue);
     notifyListeners();
   }
 }

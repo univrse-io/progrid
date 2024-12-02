@@ -40,13 +40,13 @@ class Report {
     );
   }
 
-  // save report to firestore given tower id
-  Future<void> saveToDatabase(String towerId) async {
-    try {
-      final reference = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('reports').add(toMap());
-      id = reference.id;
-    } catch (e) {
-      throw Exception("Error saving report: $e");
-    }
-  }
+  // // save report to firestore given tower id
+  // Future<void> saveToDatabase(String towerId) async {
+  //   try {
+  //     final reference = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('reports').add(toMap());
+  //     id = reference.id;
+  //   } catch (e) {
+  //     throw Exception("Error saving report: $e");
+  //   }
+  // }
 }

@@ -24,9 +24,7 @@ class _TowerPageState extends State<TowerPage> {
   @override
   Widget build(BuildContext context) {
     final towersProvider = Provider.of<TowersProvider>(context);
-
-    // fetch tower from provider
-    selectedTower = towersProvider.towers.firstWhere(
+    final selectedTower = towersProvider.towers.firstWhere(
       (tower) => tower.id == widget.towerId,
       orElse: () => throw Exception('Tower not found'),
     );

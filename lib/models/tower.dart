@@ -70,17 +70,16 @@ class Tower {
   // add report to tower, save to firestore
   Future<void> addReport(Report report) async {
     reports.add(report);
-    await FirebaseFirestore.instance.collection('towers').doc(id).collection('reports').doc(report.id).set(report.toMap());
+
+    // create report in firebase
+    await FirebaseFirestore.instance.collection('towers').doc(id).collection('reports').add(report.toMap());
+    await FirebaseFirestore.instance.collection('towers').doc(id).update({'status': 'surveyed'}); // update tower status to 'surveyed'
   }
 
   Future<void> addIssue(Issue issue) async {
     issues.add(issue);
-    await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issue.id).set(issue.toMap());
-  }
-
-  Future<void> removeIssue(Issue issue) async {
-    issues.remove(issue);
-    await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issue.id).delete();
+    // create issue in firebase
+    await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').add(issue.toMap());
   }
 
   Future<void> updateIssueStatus(String issueId, String newStatus) async {
@@ -92,13 +91,7 @@ class Tower {
       issue.status = newStatus;
 
       // Update the status in Firestore
-      await FirebaseFirestore.instance
-          .collection('towers')
-          .doc(id)
-          .collection('issues')
-          .doc(issueId)
-          .update({'status': newStatus});
-          
+      await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issueId).update({'status': newStatus});
     } catch (e) {
       print("Error updating issue status in tower: $e");
     }

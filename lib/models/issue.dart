@@ -50,12 +50,12 @@ class Issue {
   }
 
   // save issue to database, given tower id
-  Future<void> saveToDatabase(String towerId) async {
-    try {
-      final reference = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').add(toMap());
-      id = reference.id;
-    } catch (e) {
-      throw Exception("Error saving issue: $e");
-    }
-  }
+  // Future<void> saveToDatabase(String towerId) async {
+  //   try {
+  //     final reference = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').add(toMap());
+  //     id = reference.id;
+  //   } catch (e) {
+  //     throw Exception("Error saving issue: $e");
+  //   }
+  // }
 }

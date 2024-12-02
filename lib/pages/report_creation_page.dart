@@ -91,17 +91,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
     );
 
     try {
-      // save to firestore, assign id
-      await report.saveToDatabase(widget.towerId);
-
-      // update tower status
-      final towerRef = FirebaseFirestore.instance.collection('towers').doc(widget.towerId);
-      await towerRef.update({'status': 'surveyed'});
-
-      // update provider's state
-      towersProvider.addReportToTower(widget.towerId, report);
-
-      // clear fields
+      await towersProvider.addReportToTower(widget.towerId, report);
       _notesController.clear();
 
       setState(() {
@@ -141,6 +131,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
         minimum: EdgeInsets.symmetric(horizontal: 25),
         child: Stack(
           children: [
+            // UNDONE: renderflex issue?
             Column(
               children: [
                 // pictures upload section
