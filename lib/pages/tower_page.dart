@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:progrid/models/providers/tower_provider.dart';
@@ -189,70 +190,88 @@ class _TowerPageState extends State<TowerPage> {
                       itemCount: selectedTower.reports.length,
                       itemBuilder: (context, index) {
                         final report = selectedTower.reports[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => ReportPage(towerId: selectedTower.id, reportId: report.id),
-                            ));
+                        return FutureBuilder<DocumentSnapshot>(
+                          future: FirebaseFirestore.instance.collection('users').doc(report.authorId).get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
+                              return ListTile(
+                                title: Text("Author not found"),
+                                subtitle: Text("Report ID: ${report.id}"),
+                              );
+                            } else {
+                              final String authorName = snapshot.data!['name'] as String;
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ReportPage(
+                                        towerId: selectedTower.id,
+                                        reportId: report.id,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Card(
+                                  margin: const EdgeInsets.symmetric(vertical: 4),
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: SafeArea(
+                                    minimum: EdgeInsets.all(12),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        // left side
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            // report id
+                                            Text(report.id),
+                                            // author name
+                                            Text(
+                                              authorName,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                            // photo count
+                                            Text(
+                                              '${report.images.length} Photo(s)',
+                                              style: TextStyle(
+                                                color: Theme.of(context).colorScheme.secondary,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 13,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        // right side
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
+                                              style: TextStyle(fontSize: 15),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            Icon(
+                                              Icons.arrow_right,
+                                              size: 36,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
                           },
-                          child: Card(
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: SafeArea(
-                              minimum: EdgeInsets.all(12),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // left side
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // report id
-                                      Text(
-                                        report.id,
-                                      ),
-                                      // author name
-                                      Text(
-                                        report.authorName,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                      // photo count
-                                      Text(
-                                        '${report.images.length} Photo(s)',
-                                        style: TextStyle(
-                                          color: Theme.of(context).colorScheme.secondary,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-
-                                  // right side
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Icon(
-                                        Icons.arrow_right,
-                                        size: 36,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
                         );
                       },
                     ),
