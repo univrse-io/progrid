@@ -23,6 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> _register() async {
+    // validate forms
     final isValid = _formKey.currentState!.validate();
     if (!isValid) return;
 
