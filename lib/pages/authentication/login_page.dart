@@ -66,94 +66,99 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // welcome text
-                Text(
-                  'Welcome Back!\nGlad to see you again.',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Theme.of(context).colorScheme.onSurface,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // welcome text
+                  Text(
+                    'Welcome Back!\nGlad to see you again.',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    hintText: 'Email',
-                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      hintStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Password',
-                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                  const SizedBox(height: 10),
+                  TextField(
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      hintStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                    controller: _passwordController,
                   ),
-                  controller: _passwordController,
-                ),
-                const SizedBox(height: 7),
+                  const SizedBox(height: 7),
 
-                // forgot password?
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const ForgotPasswordPage()),
-                        );
-                      },
-                      child: Text(
-                        "Forgot Password?",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          decoration: TextDecoration.underline,
-                          color: Theme.of(context).colorScheme.secondary,
+                  // forgot password?
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const ForgotPasswordPage()),
+                          );
+                        },
+                        child: Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
+                            decoration: TextDecoration.underline,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 14),
-                FilledButton(onPressed: _login, child: Text('Login')),
-                const SizedBox(height: 14),
+                  const SizedBox(height: 14),
+                  FilledButton(onPressed: _login, child: Text('Login')),
+                  const SizedBox(height: 14),
 
-                // link to register page
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Not a member? ",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: widget.onTapSwitchPage,
-                      child: Text(
-                        "Register Now",
+                  // link to register page
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Not a member? ",
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 2),
-              ],
+                      GestureDetector(
+                        onTap: widget.onTapSwitchPage,
+                        child: Text(
+                          "Register Now",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                ],
+              ),
             ),
           ),
         ),

@@ -75,80 +75,86 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             child: Form(
               key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Welcome!\nCreate an Account.',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      hintText: 'Email',
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      hintText: 'Full Name',
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      hintText: 'Confirm Password',
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                    ),
-                    controller: _confirmPasswordController,
-                    validator: (value) => _passwordController.text != value
-                        ? "Passwords don't match"
-                        : null,
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton(onPressed: _register, child: Text('Register')),
-                  const SizedBox(height: 14),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Have an account? ",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Welcome!\nCreate an Account.',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
-                      GestureDetector(
-                        onTap: widget.onTapSwitchPage,
-                        child: Text(
-                          "Login Now",
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        hintText: 'Email',
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        hintText: 'Full Name',
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: 'Confirm Password',
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                      controller: _confirmPasswordController,
+                      validator: (value) => _passwordController.text != value
+                          ? "Passwords don't match"
+                          : null,
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton(onPressed: _register, child: Text('Register')),
+                    const SizedBox(height: 14),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Have an account? ",
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                ],
+                        GestureDetector(
+                          onTap: widget.onTapSwitchPage,
+                          child: Text(
+                            "Login Now",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
