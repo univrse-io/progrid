@@ -24,16 +24,17 @@ class _IssuePageState extends State<IssuePage> {
     final userProvider = Provider.of<UserProvider>(context);
 
     // fetch issue from provider
-    selectedIssue = towersProvider.towers
-        .firstWhere(
-          (tower) => tower.id == widget.towerId,
-          orElse: () => throw Exception('Tower not found'),
-        )
-        .issues
-        .firstWhere(
-          (issue) => issue.id == widget.issueId,
-          orElse: () => throw Exception("Issue not found"),
-        );
+    // TODO: refactor this page
+    // selectedIssue = towersProvider.towers
+    //     .firstWhere(
+    //       (tower) => tower.id == widget.towerId,
+    //       orElse: () => throw Exception('Tower not found'),
+    //     )
+    //     .issues
+    //     .firstWhere(
+    //       (issue) => issue.id == widget.issueId,
+    //       orElse: () => throw Exception("Issue not found"),
+    //     );
 
     // status dropdown will only show when issue authorid matches current login
     final bool showDropdown = selectedIssue.authorId == userProvider.userId;

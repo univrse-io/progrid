@@ -26,271 +26,274 @@ class _TowerPageState extends State<TowerPage> {
     // TODO: for some reason the tower page is not rebuilt after a new report is created, even though notifylisteners is called. (urgent)
     // final towersProvider = Provider.of<TowersProvider>(context);
     final selectedTower = Provider.of<TowersProvider>(context).towers.firstWhere(
-      (tower) => tower.id == widget.towerId,
-      orElse: () => throw Exception('Tower not found'),
-    );
+          (tower) => tower.id == widget.towerId,
+          orElse: () => throw Exception('Tower not found'),
+        );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.towerId,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-        ),
-      ),
-      body: SafeArea(
-        minimum: EdgeInsets.symmetric(horizontal: 25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 5),
-            // columns exists solely for animation
-            Hero(
-              tag: selectedTower.id,
-              child: Material(
-                color: Colors.transparent,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // tower name
-                      Text(
-                        selectedTower.name,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
+    // TODO: refactor this page
+    return Scaffold();
 
-                      // tower geopoint
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'LatLong:',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            // :)
-                            '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
-                            style: TextStyle(
-                              fontSize: 17,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     title: Text(
+    //       widget.towerId,
+    //       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+    //     ),
+    //   ),
+    //   body: SafeArea(
+    //     minimum: EdgeInsets.symmetric(horizontal: 25),
+    //     child: Column(
+    //       crossAxisAlignment: CrossAxisAlignment.stretch,
+    //       children: [
+    //         const SizedBox(height: 5),
+    //         // columns exists solely for animation
+    //         Hero(
+    //           tag: selectedTower.id,
+    //           child: Material(
+    //             color: Colors.transparent,
+    //             child: SingleChildScrollView(
+    //               child: Column(
+    //                 mainAxisSize: MainAxisSize.min,
+    //                 children: [
+    //                   // tower name
+    //                   Text(
+    //                     selectedTower.name,
+    //                     textAlign: TextAlign.center,
+    //                     style: TextStyle(
+    //                       fontSize: 32,
+    //                       fontWeight: FontWeight.bold,
+    //                     ),
+    //                   ),
+    //                   const SizedBox(height: 5),
 
-                      // tower status
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Status:',
-                            style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 17,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              color: selectedTower.status == 'surveyed' ? AppColors.green : AppColors.red,
-                            ),
-                            child: Text(
-                              '${selectedTower.status[0].toUpperCase()}${selectedTower.status.substring(1)}',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.surface,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 25),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Divider(),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                const Text(
-                  'Site Details',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(width: 5),
-                Icon(
-                  Icons.list,
-                  size: 32,
-                ),
-                // IconButton(
-                //   icon: Icon(Icons.edit_note, size: 34),
-                //   onPressed: () {
-                //     // implement engineer-side site editing?
-                //   },
-                // )
-              ],
-            ),
-            const SizedBox(height: 4),
+    //                   // tower geopoint
+    //                   Row(
+    //                     mainAxisAlignment: MainAxisAlignment.center,
+    //                     children: [
+    //                       Text(
+    //                         'LatLong:',
+    //                         style: TextStyle(
+    //                           fontSize: 17,
+    //                           fontWeight: FontWeight.bold,
+    //                         ),
+    //                       ),
+    //                       const SizedBox(width: 5),
+    //                       Text(
+    //                         // :)
+    //                         '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
+    //                         style: TextStyle(
+    //                           fontSize: 17,
+    //                         ),
+    //                       ),
+    //                     ],
+    //                   ),
+    //                   const SizedBox(height: 8),
 
-            // site address
-            _buildDetailRow('Address:', selectedTower.address),
-            // site region
-            _buildDetailRow('Region:', selectedTower.region),
-            // site type
-            _buildDetailRow('Type:', selectedTower.type),
-            // site owner
-            _buildDetailRow('Owner:', selectedTower.owner),
-            const SizedBox(height: 20),
+    //                   // tower status
+    //                   Row(
+    //                     mainAxisAlignment: MainAxisAlignment.center,
+    //                     children: [
+    //                       Text(
+    //                         'Status:',
+    //                         style: TextStyle(
+    //                           fontStyle: FontStyle.italic,
+    //                           fontSize: 17,
+    //                         ),
+    //                       ),
+    //                       const SizedBox(width: 5),
+    //                       Container(
+    //                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+    //                         decoration: BoxDecoration(
+    //                           borderRadius: BorderRadius.circular(24),
+    //                           color: selectedTower.status == 'surveyed' ? AppColors.green : AppColors.red,
+    //                         ),
+    //                         child: Text(
+    //                           '${selectedTower.status[0].toUpperCase()}${selectedTower.status.substring(1)}',
+    //                           style: TextStyle(
+    //                             color: Theme.of(context).colorScheme.surface,
+    //                             fontSize: 15,
+    //                             fontWeight: FontWeight.bold,
+    //                           ),
+    //                         ),
+    //                       ),
+    //                     ],
+    //                   ),
+    //                   const SizedBox(height: 25),
+    //                 ],
+    //               ),
+    //             ),
+    //           ),
+    //         ),
+    //         Divider(),
+    //         const SizedBox(height: 24),
+    //         Row(
+    //           children: [
+    //             const Text(
+    //               'Site Details',
+    //               style: TextStyle(
+    //                 fontSize: 24,
+    //                 fontWeight: FontWeight.bold,
+    //               ),
+    //             ),
+    //             const SizedBox(width: 5),
+    //             Icon(
+    //               Icons.list,
+    //               size: 32,
+    //             ),
+    //             // IconButton(
+    //             //   icon: Icon(Icons.edit_note, size: 34),
+    //             //   onPressed: () {
+    //             //     // implement engineer-side site editing?
+    //             //   },
+    //             // )
+    //           ],
+    //         ),
+    //         const SizedBox(height: 4),
 
-            const Text(
-              'Site Reports',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ReportCreationPage(towerId: selectedTower.id))),
-              child: Text(
-                'Create New Report',
-                style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontStyle: FontStyle.italic,
-                    fontSize: 15,
-                    color: Theme.of(context).colorScheme.secondary),
-              ),
-            ),
-            const SizedBox(height: 5),
-            // reports list
-            Expanded(
-              child: selectedTower.reports.isEmpty
-                  ? Center(
-                      child: Text(
-                        "No Report History...",
-                        style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: selectedTower.reports.length,
-                      itemBuilder: (context, index) {
-                        final report = selectedTower.reports[index];
-                        return FutureBuilder<DocumentSnapshot>(
-                          future: FirebaseFirestore.instance.collection('users').doc(report.authorId).get(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
-                              return ListTile(
-                                title: Text("Author not found"),
-                                subtitle: Text("Report ID: ${report.id}"),
-                              );
-                            } else {
-                              final String authorName = snapshot.data!['name'] as String;
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ReportPage(
-                                        towerId: selectedTower.id,
-                                        reportId: report.id,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Card(
-                                  margin: const EdgeInsets.symmetric(vertical: 4),
-                                  elevation: 5,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: SafeArea(
-                                    minimum: EdgeInsets.all(12),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        // left side
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            // report id
-                                            Text(report.id),
-                                            // author name
-                                            Text(
-                                              authorName,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                            // photo count
-                                            Text(
-                                              '${report.images.length} Photo(s)',
-                                              style: TextStyle(
-                                                color: Theme.of(context).colorScheme.secondary,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 13,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        // right side
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                            const SizedBox(height: 10),
-                                            Icon(
-                                              Icons.arrow_right,
-                                              size: 36,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        );
-                      },
-                    ),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => IssuesListPage(towerId: selectedTower.id),
-                  ),
-                );
-              },
-              child: Text("View Issues"),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
+    //         // site address
+    //         _buildDetailRow('Address:', selectedTower.address),
+    //         // site region
+    //         _buildDetailRow('Region:', selectedTower.region),
+    //         // site type
+    //         _buildDetailRow('Type:', selectedTower.type),
+    //         // site owner
+    //         _buildDetailRow('Owner:', selectedTower.owner),
+    //         const SizedBox(height: 20),
+
+    //         const Text(
+    //           'Site Reports',
+    //           style: TextStyle(
+    //             fontSize: 24,
+    //             fontWeight: FontWeight.bold,
+    //           ),
+    //         ),
+    //         GestureDetector(
+    //           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ReportCreationPage(towerId: selectedTower.id))),
+    //           child: Text(
+    //             'Create New Report',
+    //             style: TextStyle(
+    //                 decoration: TextDecoration.underline,
+    //                 fontStyle: FontStyle.italic,
+    //                 fontSize: 15,
+    //                 color: Theme.of(context).colorScheme.secondary),
+    //           ),
+    //         ),
+    //         const SizedBox(height: 5),
+    //         // reports list
+    //         Expanded(
+    //           child: selectedTower.reports.isEmpty
+    //               ? Center(
+    //                   child: Text(
+    //                     "No Report History...",
+    //                     style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
+    //                   ),
+    //                 )
+    //               : ListView.builder(
+    //                   itemCount: selectedTower.reports.length,
+    //                   itemBuilder: (context, index) {
+    //                     final report = selectedTower.reports[index];
+    //                     return FutureBuilder<DocumentSnapshot>(
+    //                       future: FirebaseFirestore.instance.collection('users').doc(report.authorId).get(),
+    //                       builder: (context, snapshot) {
+    //                         if (snapshot.connectionState == ConnectionState.waiting) {
+    //                           return Center(child: CircularProgressIndicator());
+    //                         } else if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
+    //                           return ListTile(
+    //                             title: Text("Author not found"),
+    //                             subtitle: Text("Report ID: ${report.id}"),
+    //                           );
+    //                         } else {
+    //                           final String authorName = snapshot.data!['name'] as String;
+    //                           return GestureDetector(
+    //                             onTap: () {
+    //                               Navigator.push(
+    //                                 context,
+    //                                 MaterialPageRoute(
+    //                                   builder: (context) => ReportPage(
+    //                                     towerId: selectedTower.id,
+    //                                     reportId: report.id,
+    //                                   ),
+    //                                 ),
+    //                               );
+    //                             },
+    //                             child: Card(
+    //                               margin: const EdgeInsets.symmetric(vertical: 4),
+    //                               elevation: 5,
+    //                               shape: RoundedRectangleBorder(
+    //                                 borderRadius: BorderRadius.circular(10),
+    //                               ),
+    //                               child: SafeArea(
+    //                                 minimum: EdgeInsets.all(12),
+    //                                 child: Row(
+    //                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                                   children: [
+    //                                     // left side
+    //                                     Column(
+    //                                       crossAxisAlignment: CrossAxisAlignment.start,
+    //                                       children: [
+    //                                         // report id
+    //                                         Text(report.id),
+    //                                         // author name
+    //                                         Text(
+    //                                           authorName,
+    //                                           style: TextStyle(
+    //                                             fontWeight: FontWeight.bold,
+    //                                             fontSize: 20,
+    //                                           ),
+    //                                         ),
+    //                                         // photo count
+    //                                         Text(
+    //                                           '${report.images.length} Photo(s)',
+    //                                           style: TextStyle(
+    //                                             color: Theme.of(context).colorScheme.secondary,
+    //                                             fontWeight: FontWeight.bold,
+    //                                             fontSize: 13,
+    //                                           ),
+    //                                         )
+    //                                       ],
+    //                                     ),
+    //                                     // right side
+    //                                     Column(
+    //                                       crossAxisAlignment: CrossAxisAlignment.end,
+    //                                       children: [
+    //                                         Text(
+    //                                           DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
+    //                                           style: TextStyle(fontSize: 15),
+    //                                         ),
+    //                                         const SizedBox(height: 10),
+    //                                         Icon(
+    //                                           Icons.arrow_right,
+    //                                           size: 36,
+    //                                         ),
+    //                                       ],
+    //                                     ),
+    //                                   ],
+    //                                 ),
+    //                               ),
+    //                             ),
+    //                           );
+    //                         }
+    //                       },
+    //                     );
+    //                   },
+    //                 ),
+    //         ),
+    //         FilledButton(
+    //           onPressed: () {
+    //             Navigator.push(
+    //               context,
+    //               MaterialPageRoute(
+    //                 builder: (context) => IssuesListPage(towerId: selectedTower.id),
+    //               ),
+    //             );
+    //           },
+    //           child: Text("View Issues"),
+    //         ),
+    //         const SizedBox(height: 20),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 
   // UI function to build a detail row format

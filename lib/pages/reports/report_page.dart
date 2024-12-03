@@ -21,16 +21,17 @@ class _ReportPageState extends State<ReportPage> {
     final towersProvider = Provider.of<TowersProvider>(context);
 
     // fetch report from provider
-    selectedReport = towersProvider.towers
-        .firstWhere(
-          (tower) => tower.id == widget.towerId,
-          orElse: () => throw Exception('Tower not found'),
-        )
-        .reports
-        .firstWhere(
-          (report) => report.id == widget.reportId,
-          orElse: () => throw Exception('Report not found'),
-        );
+    // TODO: refactor this page
+    // selectedReport = towersProvider.towers
+    //     .firstWhere(
+    //       (tower) => tower.id == widget.towerId,
+    //       orElse: () => throw Exception('Tower not found'),
+    //     )
+    //     .reports
+    //     .firstWhere(
+    //       (report) => report.id == widget.reportId,
+    //       orElse: () => throw Exception('Report not found'),
+    //     );
 
     return Scaffold(
       appBar: AppBar(
