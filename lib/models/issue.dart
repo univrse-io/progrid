@@ -43,9 +43,4 @@ class Issue {
       tags: data['tags'] != null ? List<String>.from(data['tags'] as List<dynamic>) : [],
     );
   }
-
-  // update issue details
-  Future<void> updateDetails(String towerId) async {
-    await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').doc(id).update(toMap());
-  }
 }
