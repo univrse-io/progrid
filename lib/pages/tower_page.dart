@@ -52,7 +52,6 @@ class TowerPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 5),
-                    // TODO: broken because of streambuilder?
                     SingleChildScrollView(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -240,7 +239,11 @@ class TowerPage extends StatelessWidget {
                                                             crossAxisAlignment: CrossAxisAlignment.start,
                                                             children: [
                                                               // report id
-                                                              Text(report.id),
+                                                              Text(report.id,
+                                                                  style: TextStyle(
+                                                                    fontSize: 14,
+                                                                    fontWeight: FontWeight.bold,
+                                                                  )),
                                                               // author name
                                                               Text(
                                                                 authorName,
@@ -255,6 +258,7 @@ class TowerPage extends StatelessWidget {
                                                                 style: TextStyle(
                                                                   color: Theme.of(context).colorScheme.secondary,
                                                                   fontWeight: FontWeight.bold,
+                                                                  fontStyle: FontStyle.italic,
                                                                   fontSize: 13,
                                                                 ),
                                                               )

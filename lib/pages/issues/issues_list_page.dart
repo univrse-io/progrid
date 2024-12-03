@@ -12,7 +12,6 @@ class IssuesListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: refactor this page
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,

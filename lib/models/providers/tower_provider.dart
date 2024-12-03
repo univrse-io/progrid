@@ -27,8 +27,11 @@ class TowersProvider extends ChangeNotifier {
         throw 'Tower not found';
       }
 
-      await towerRef.collection('reports').add(report.toMap());
+      // custom report id
+      final String reportId = await _generateUniqueId(towerId, 'R');
+      await towerRef.collection('reports').doc(reportId).set(report.toMap());
       await towerRef.update({'status': 'surveyed'});
+
       notifyListeners();
     } catch (e) {
       throw 'Error adding report: $e';
@@ -44,7 +47,10 @@ class TowersProvider extends ChangeNotifier {
         throw 'Tower not found';
       }
 
-      await towerRef.collection('issues').add(issue.toMap());
+      // custom issue id
+      final String issueId = await _generateUniqueId(towerId, 'I');
+      await towerRef.collection('issues').doc(issueId).set(issue.toMap());
+
       notifyListeners();
     } catch (e) {
       throw 'Error adding issue: $e';
@@ -70,5 +76,30 @@ class TowersProvider extends ChangeNotifier {
     } catch (e) {
       throw Exception("Tower not found with id: $towerId");
     }
+  }
+
+  Future<String> _generateUniqueId(String towerId, String type) async {
+    String id = 'null';
+    bool isUnique = false;
+
+    // on the off-chance of 1/onetrillion that same ids are generated
+    while (!isUnique) {
+      String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      timestamp = timestamp.substring(timestamp.length - 3); // last 3 digits, TODO: REVIEW METHOD
+
+      // combine
+      id = "$towerId-${timestamp}-$type";
+
+      // collision check
+      final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
+      final collectionRef = towerRef.collection(type == 'R' ? 'reports' : 'issues');
+      final docSnapshot = await collectionRef.doc(id).get();
+
+      if (!docSnapshot.exists) {
+        isUnique = true; // unique ID found
+      }
+    }
+
+    return id;
   }
 }

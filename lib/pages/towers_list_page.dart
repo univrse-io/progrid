@@ -53,25 +53,8 @@ class _TowersListPageState extends State<TowersListPage> {
               ),
             ),
 
-            // Hero(
-            //   tag: 'openList',
-            //   child: Material(
-            //     color: Colors.transparent,
-            //     child: TextField(
-            //       controller: _searchController,
-            //       onChanged: _onSearchChanged,
-            //       decoration: InputDecoration(
-            //         hintText: 'Enter ID, name, address, region, etc...',
-            //         hintStyle: TextStyle(
-            //           color: Theme.of(context).colorScheme.secondary,
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // const SizedBox(height: 10),
-
             // towers list
+            // TODO: implement pagination callback to provider
             Expanded(
               child: StreamBuilder<List<Tower>>(
                 stream: towersProvider.getTowersStream(),

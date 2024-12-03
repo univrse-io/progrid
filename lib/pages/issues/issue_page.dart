@@ -160,7 +160,7 @@ class _IssuePageState extends State<IssuePage> {
                       ],
                       iconEnabledColor: Theme.of(context).colorScheme.surface,
                       style: TextStyle(
-                        // UNDONE: this color is broken
+                        // UNDONE: text color is still broken
                         color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
                       ),

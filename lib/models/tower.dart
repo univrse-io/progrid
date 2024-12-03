@@ -74,19 +74,6 @@ class Tower {
     );
   }
 
-  // deleted reports functions here
-
-  // UNDONE: manage the other functions. if possible move to provider
-
-  // add an issue to tower (to delete)
-  Future<void> addIssue(Issue issue) async {
-    await FirebaseFirestore.instance
-        .collection('towers')
-        .doc(id)
-        .collection('issues')
-        .add(issue.toMap());
-  }
-
   Future<void> updateIssueStatus(String issueId, String status) async {
     try {
       await FirebaseFirestore.instance
