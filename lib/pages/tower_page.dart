@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:progrid/models/providers/tower_provider.dart';
 import 'package:progrid/models/report.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
 import 'package:progrid/pages/reports/report_creation_page.dart';
 import 'package:progrid/pages/reports/report_page.dart';
 import 'package:progrid/utils/themes.dart';
+import 'package:provider/provider.dart';
 
 class TowerPage extends StatelessWidget {
   final String towerId;
@@ -24,29 +26,34 @@ class TowerPage extends StatelessWidget {
       ),
       body: SafeArea(
         minimum: EdgeInsets.symmetric(horizontal: 25),
-        child: StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance.collection('towers').doc(towerId).snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || !snapshot.data!.exists) {
-              return Center(child: Text('Tower not found.'));
-            }
+        // switched to local list
+        child: Consumer<TowersProvider>(
+          builder: (context, towersProvider, child) {
+            return StreamBuilder<List<Tower>>(
+              stream: towersProvider.getTowersStream(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No towers available.'));
+                }
 
-            final towerData = snapshot.data!;
-            final selectedTower = Tower.fromFirestore(towerData);
+                final towers = snapshot.data!;
+                final selectedTower = towers.firstWhere(
+                  (tower) => tower.id == towerId,
+                  orElse: () => throw Exception("Tower not found"),
+                );
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 5),
-                Hero(
-                  tag: selectedTower.id,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: SingleChildScrollView(
+                print(selectedTower.id);
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 5),
+                    // TODO: broken because of streambuilder?
+                    SingleChildScrollView(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -116,189 +123,189 @@ class TowerPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),
-                ),
-                Divider(),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
+
+                    Divider(),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        const Text(
+                          'Site Details',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Icon(
+                          Icons.list,
+                          size: 32,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+
+                    // site address
+                    _buildDetailRow('Address:', selectedTower.address),
+                    // site region
+                    _buildDetailRow('Region:', selectedTower.region),
+                    // site type
+                    _buildDetailRow('Type:', selectedTower.type),
+                    // site owner
+                    _buildDetailRow('Owner:', selectedTower.owner),
+                    const SizedBox(height: 20),
+
                     const Text(
-                      'Site Details',
+                      'Site Reports',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 5),
-                    Icon(
-                      Icons.list,
-                      size: 32,
+                    GestureDetector(
+                      onTap: () =>
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ReportCreationPage(towerId: selectedTower.id))),
+                      child: Text(
+                        'Create New Report',
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            fontStyle: FontStyle.italic,
+                            fontSize: 15,
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
+                    const SizedBox(height: 5),
+                    // reports list
+                    Expanded(
+                      child: StreamBuilder<List<Report>>(
+                        stream: selectedTower.reports,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(child: Text('No Reports Available.'));
+                          }
 
-                // site address
-                _buildDetailRow('Address:', selectedTower.address),
-                // site region
-                _buildDetailRow('Region:', selectedTower.region),
-                // site type
-                _buildDetailRow('Type:', selectedTower.type),
-                // site owner
-                _buildDetailRow('Owner:', selectedTower.owner),
-                const SizedBox(height: 20),
+                          final reports = snapshot.data!;
 
-                const Text(
-                  'Site Reports',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ReportCreationPage(towerId: selectedTower.id))),
-                  child: Text(
-                    'Create New Report',
-                    style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        fontStyle: FontStyle.italic,
-                        fontSize: 15,
-                        color: Theme.of(context).colorScheme.secondary),
-                  ),
-                ),
-                const SizedBox(height: 5),
-                // reports list
-                Expanded(
-                  child: StreamBuilder<List<Report>>(
-                    stream: selectedTower.reports,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text('No Reports Available.'));
-                      }
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const SizedBox(height: 5),
+                              Expanded(
+                                child: reports.isEmpty
+                                    ? Center(child: Text("No Report History..."))
+                                    : ListView.builder(
+                                        itemCount: reports.length,
+                                        itemBuilder: (context, index) {
+                                          final report = reports[index];
+                                          return FutureBuilder<DocumentSnapshot>(
+                                            future: FirebaseFirestore.instance.collection('users').doc(report.authorId).get(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                                return Center(child: CircularProgressIndicator());
+                                              } else if (snapshot.hasError) {
+                                                return Center(child: Text('Error: ${snapshot.error}'));
+                                              } else if (!snapshot.hasData || !snapshot.data!.exists) {
+                                                return Center(child: Text('Author not found.'));
+                                              } else {
+                                                final authorName = snapshot.data!['name'] as String;
 
-                      final reports = snapshot.data!; // list of reports
-
-                      print("Number of reports: ${reports.length}");
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SizedBox(height: 5),
-                          // display reports
-                          Expanded(
-                              child: reports.isEmpty
-                                  ? Center(child: Text("No Report History..."))
-                                  : ListView.builder(
-                                      itemCount: reports.length,
-                                      itemBuilder: (context, index) {
-                                        final report = reports[index];
-                                        return FutureBuilder<DocumentSnapshot>(
-                                          future: FirebaseFirestore.instance.collection('users').doc(report.authorId).get(),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState == ConnectionState.waiting) {
-                                              return Center(child: CircularProgressIndicator());
-                                            } else if (snapshot.hasError) {
-                                              return Center(child: Text('Error: ${snapshot.error}'));
-                                            } else if (!snapshot.hasData || !snapshot.data!.exists) {
-                                              return Center(child: Text('Author not found.'));
-                                            } else {
-                                              final authorName = snapshot.data!['name'] as String;
-
-                                              return GestureDetector(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) => ReportPage(
-                                                        towerId: selectedTower.id,
-                                                        reportId: report.id,
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) => ReportPage(
+                                                          towerId: selectedTower.id,
+                                                          reportId: report.id,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: Card(
+                                                    margin: const EdgeInsets.symmetric(vertical: 4),
+                                                    elevation: 5,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(10),
+                                                    ),
+                                                    child: SafeArea(
+                                                      minimum: EdgeInsets.all(12),
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          // left side
+                                                          Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              // report id
+                                                              Text(report.id),
+                                                              // author name
+                                                              Text(
+                                                                authorName,
+                                                                style: TextStyle(
+                                                                  fontWeight: FontWeight.bold,
+                                                                  fontSize: 20,
+                                                                ),
+                                                              ),
+                                                              // photo count
+                                                              Text(
+                                                                '${report.images.length} Photo(s)',
+                                                                style: TextStyle(
+                                                                  color: Theme.of(context).colorScheme.secondary,
+                                                                  fontWeight: FontWeight.bold,
+                                                                  fontSize: 13,
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                          // right side
+                                                          Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                                            children: [
+                                                              Text(
+                                                                DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
+                                                                style: TextStyle(fontSize: 15),
+                                                              ),
+                                                              const SizedBox(height: 10),
+                                                              Icon(
+                                                                Icons.arrow_right,
+                                                                size: 36,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
-                                                  );
-                                                },
-                                                child: Card(
-                                                  margin: const EdgeInsets.symmetric(vertical: 4),
-                                                  elevation: 5,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(10),
                                                   ),
-                                                  child: SafeArea(
-                                                    minimum: EdgeInsets.all(12),
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                        // left side
-                                                        Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            // report id
-                                                            Text(report.id),
-                                                            // author name
-                                                            Text(
-                                                              authorName,
-                                                              style: TextStyle(
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 20,
-                                                              ),
-                                                            ),
-                                                            // photo count
-                                                            Text(
-                                                              '${report.images.length} Photo(s)',
-                                                              style: TextStyle(
-                                                                color: Theme.of(context).colorScheme.secondary,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 13,
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                        // right side
-                                                        Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                                          children: [
-                                                            Text(
-                                                              DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
-                                                              style: TextStyle(fontSize: 15),
-                                                            ),
-                                                            const SizedBox(height: 10),
-                                                            Icon(
-                                                              Icons.arrow_right,
-                                                              size: 36,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          },
-                                        );
-                                      },
-                                    )),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => IssuesListPage(towerId: selectedTower.id),
+                                                );
+                                              }
+                                            },
+                                          );
+                                        },
+                                      ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    );
-                  },
-                  child: Text("View Issues"),
-                ),
-                const SizedBox(height: 20),
-              ],
+                    ),
+                    FilledButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => IssuesListPage(towerId: selectedTower.id),
+                          ),
+                        );
+                      },
+                      child: Text("View Issues"),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              },
             );
           },
         ),
@@ -322,20 +329,16 @@ class TowerPage extends StatelessWidget {
               style: TextStyle(
                 decoration: TextDecoration.underline,
                 fontWeight: FontWeight.bold,
-                fontSize: 17,
+                fontSize: 18,
               ),
             ),
           ),
-          const SizedBox(width: 5),
-
-          // content (potentially multiline)
+          const SizedBox(width: 10),
+          // content
           Expanded(
-            flex: 20,
             child: Text(
               content,
-              style: TextStyle(
-                fontSize: 17,
-              ),
+              style: TextStyle(fontSize: 16),
             ),
           ),
         ],

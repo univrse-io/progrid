@@ -42,23 +42,34 @@ class _TowersListPageState extends State<TowersListPage> {
           children: [
             const SizedBox(height: 12),
             // search bar
-            Hero(
-              tag: 'openList',
-              child: Material(
-                color: Colors.transparent,
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: _onSearchChanged,
-                  decoration: InputDecoration(
-                    hintText: 'Enter ID, name, address, region, etc...',
-                    hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
+            TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              decoration: InputDecoration(
+                hintText: 'Enter ID, name, address, region, etc...',
+                hintStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+
+            // Hero(
+            //   tag: 'openList',
+            //   child: Material(
+            //     color: Colors.transparent,
+            //     child: TextField(
+            //       controller: _searchController,
+            //       onChanged: _onSearchChanged,
+            //       decoration: InputDecoration(
+            //         hintText: 'Enter ID, name, address, region, etc...',
+            //         hintStyle: TextStyle(
+            //           color: Theme.of(context).colorScheme.secondary,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // const SizedBox(height: 10),
 
             // towers list
             Expanded(
@@ -113,88 +124,82 @@ class _TowersListPageState extends State<TowersListPage> {
                                     ),
                                   );
                                 },
-                                child: Hero(
-                                  tag: tower.id,
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: Card(
-                                      margin: const EdgeInsets.symmetric(vertical: 4),
-                                      elevation: 5,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: SafeArea(
-                                        minimum: const EdgeInsets.all(12),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              flex: 70,
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Card(
+                                  margin: const EdgeInsets.symmetric(vertical: 4),
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: SafeArea(
+                                    minimum: const EdgeInsets.all(12),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          flex: 70,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
                                                 children: [
-                                                  Row(
-                                                    children: [
-                                                      // completion status
-                                                      Container(
-                                                        width: 14,
-                                                        height: 14,
-                                                        decoration: BoxDecoration(
-                                                          shape: BoxShape.circle,
-                                                          color: tower.status == 'surveyed' ? AppColors.green : AppColors.red,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(width: 7),
-                                                      // tower id
-                                                      Text(
-                                                        tower.id,
-                                                        style: const TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 15,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  // completion status
+                                                  Container(
+                                                    width: 14,
+                                                    height: 14,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: tower.status == 'surveyed' ? AppColors.green : AppColors.red,
+                                                    ),
                                                   ),
-                                                  // tower name
+                                                  const SizedBox(width: 7),
+                                                  // tower id
                                                   Text(
-                                                    tower.name,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                                                  ),
-                                                  const SizedBox(height: 0),
-                                                  Row(
-                                                    children: [
-                                                      // owner
-                                                      Text(
-                                                        tower.owner,
-                                                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                                                      ),
-                                                      Text(
-                                                        ",",
-                                                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                                                      ),
-                                                      const SizedBox(width: 4),
-                                                      // region
-                                                      Text(
-                                                        tower.region,
-                                                        style: const TextStyle(
-                                                            fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
-                                                      ),
-                                                    ],
+                                                    tower.id,
+                                                    style: const TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 15,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                            const Expanded(
-                                              flex: 10,
-                                              child: Icon(
-                                                Icons.arrow_right,
-                                                size: 38,
+                                              // tower name
+                                              Text(
+                                                tower.name,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                               ),
-                                            ),
-                                          ],
+                                              const SizedBox(height: 0),
+                                              Row(
+                                                children: [
+                                                  // owner
+                                                  Text(
+                                                    tower.owner,
+                                                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    ",",
+                                                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  // region
+                                                  Text(
+                                                    tower.region,
+                                                    style: const TextStyle(
+                                                        fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
+                                        const Expanded(
+                                          flex: 10,
+                                          child: Icon(
+                                            Icons.arrow_right,
+                                            size: 38,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
