@@ -30,9 +30,20 @@ class TowersProvider extends ChangeNotifier {
 
   // add a report to a tower
   Future<void> addReportToTower(String towerId, Report report) async {
-    final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
-    tower.addReport(report);
-    notifyListeners();
+    try {
+      final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
+      final towerSnapshot = await towerRef.get();
+
+      if (!towerSnapshot.exists) {
+        throw 'Tower not found'; 
+      }
+
+      await towerRef.collection('reports').add(report.toMap());
+      await towerRef.update({'status': 'surveyed'});
+      notifyListeners();
+    } catch (e) {
+      throw 'Error adding report: $e';
+    }
   }
 
   // add an issue to a tower
@@ -40,5 +51,15 @@ class TowersProvider extends ChangeNotifier {
     final tower = towers.firstWhere((tower) => tower.id == towerId);
     tower.addIssue(issue);
     notifyListeners();
+  }
+
+  // for retrieving tower instance given an id
+  Future<Tower> getTowerById(String towerId) async {
+    try {
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      return tower;
+    } catch (e) {
+      throw Exception("Tower not found with id: $towerId");
+    }
   }
 }

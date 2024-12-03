@@ -74,16 +74,9 @@ class Tower {
     );
   }
 
-  // add report to tower
-  Future<void> addReport(Report report) async {
-    await FirebaseFirestore.instance
-        .collection('towers')
-        .doc(id)
-        .collection('reports')
-        .add(report.toMap());
-    // also update status to 'surveyed'
-    await FirebaseFirestore.instance.collection('towers').doc(id).update({'status': 'surveyed'});
-  }
+  // deleted reports functions here
+
+  // UNDONE: manage the other functions. if possible move to provider
 
   // add an issue to tower
   Future<void> addIssue(Issue issue) async {

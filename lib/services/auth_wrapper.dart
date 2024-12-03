@@ -25,15 +25,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
     });
   }
 
-  // fetch from database
-  Future<void> _fetchFromDatabase(User user) async {
-    try {
-      await Provider.of<UserProvider>(context, listen: false).fetchUserInfoFromDatabase(user);
-    } catch (e) {
-      print("Error Fetching Information: $e");
-    }
-  }
-
   // autologin
   Future<void> _autoLogin() async {
     final User? user = FirebaseAuth.instance.currentUser;
@@ -73,9 +64,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
           // fetch user info and set user provider
           WidgetsBinding.instance.addPostFrameCallback(
             (_) {
-              final userProvider =
-                  Provider.of<UserProvider>(context, listen: false);
+              final userProvider = Provider.of<UserProvider>(context, listen: false);
               userProvider.setUser(user);
+              userProvider.fetchUserInfoFromDatabase(user);
             },
           );
 
