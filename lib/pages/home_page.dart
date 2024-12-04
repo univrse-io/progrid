@@ -36,16 +36,16 @@ class HomePage extends StatelessWidget {
               "Welcome! '${userProvider.name}'",
               style: TextStyle(fontSize: 17),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             const Text(
-              'Query Database',
+              'Progrid Database',
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 
             // search button
             FilledButton(
-              child: Text('Open List'),
+              child: Text('Access'),
               onPressed: () {
                 Navigator.push(
                   context,

@@ -203,7 +203,7 @@ class _TowersListPageState extends State<TowersListPage> {
                 fontWeight: FontWeight.bold,
               ),
             )),
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
             FilledButton(
               onPressed: () {
                 Navigator.push(
@@ -217,9 +217,9 @@ class _TowersListPageState extends State<TowersListPage> {
                           );
                         }));
               },
-              child: const Text("Use My Location"),
+              child: const Text("Open Map"),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
           ],
         ),
       ),
