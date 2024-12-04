@@ -56,7 +56,7 @@ class _TowersListPageState extends State<TowersListPage> {
             const SizedBox(height: 10),
 
             // towers list
-            // TODO: implement pagination callback to provider
+            // TODO: implement pagination callback to provider?
             Expanded(
               child: StreamBuilder<List<Tower>>(
                 stream: towersProvider.getTowersStream(),
@@ -110,13 +110,13 @@ class _TowersListPageState extends State<TowersListPage> {
                                   );
                                 },
                                 child: Card(
-                                  margin: const EdgeInsets.symmetric(vertical: 4),
-                                  elevation: 5,
+                                  margin: const EdgeInsets.symmetric(vertical: 3),
+                                  elevation: 3,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: SafeArea(
-                                    minimum: const EdgeInsets.all(12),
+                                    minimum: const EdgeInsets.symmetric(vertical: 6, horizontal: 9),
                                     child: Row(
                                       children: [
                                         Expanded(
@@ -128,20 +128,20 @@ class _TowersListPageState extends State<TowersListPage> {
                                                 children: [
                                                   // completion status
                                                   Container(
-                                                    width: 14,
-                                                    height: 14,
+                                                    width: 11,
+                                                    height: 11,
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
                                                       color: tower.status == 'surveyed' ? AppColors.green : AppColors.red,
                                                     ),
                                                   ),
-                                                  const SizedBox(width: 7),
+                                                  const SizedBox(width: 4),
                                                   // tower id
                                                   Text(
                                                     tower.id,
                                                     style: const TextStyle(
                                                       fontWeight: FontWeight.bold,
-                                                      fontSize: 15,
+                                                      fontSize: 13,
                                                     ),
                                                   ),
                                                 ],
@@ -151,26 +151,27 @@ class _TowersListPageState extends State<TowersListPage> {
                                                 tower.name,
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                              const SizedBox(height: 0),
                                               Row(
                                                 children: [
                                                   // owner
                                                   Text(
                                                     tower.owner,
-                                                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                                                   ),
                                                   Text(
                                                     ",",
-                                                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                                                   ),
                                                   const SizedBox(width: 4),
                                                   // region
                                                   Text(
                                                     tower.region,
-                                                    style: const TextStyle(
-                                                        fontSize: 15, fontStyle: FontStyle.italic, fontWeight: FontWeight.normal),
+                                                    style: const TextStyle(fontSize: 13, fontStyle: FontStyle.italic),
                                                   ),
                                                 ],
                                               ),
@@ -181,7 +182,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                           flex: 10,
                                           child: Icon(
                                             Icons.arrow_right,
-                                            size: 38,
+                                            size: 30,
                                           ),
                                         ),
                                       ],
