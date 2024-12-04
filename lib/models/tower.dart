@@ -13,9 +13,8 @@ class Tower {
   GeoPoint position;
   String status;
   String notes;
-
-  Stream<List<Report>> reports;
-  Stream<List<Issue>> issues;
+  Stream<List<Report>>? reports;
+  Stream<List<Issue>>? issues;
 
   // List<Report> reports;
   // List<Issue> issues;
@@ -31,8 +30,8 @@ class Tower {
     this.position = const GeoPoint(0, 0),
     this.status = 'undefined',
     this.notes = 'no notes',
-    required this.reports,
-    required this.issues,
+    this.reports,
+    this.issues,
   });
 
   // given a tower document, fetch from database
