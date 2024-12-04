@@ -52,7 +52,8 @@ class _TowersListPageState extends State<TowersListPage> {
                 ),
               ),
             ),
-
+            const SizedBox(height: 10),
+            
             // towers list
             // TODO: implement pagination callback to provider
             Expanded(

@@ -181,7 +181,7 @@ class IssuesListPage extends StatelessWidget {
                                       ),
                                     ),
                                     Expanded(
-                                      flex: 20,
+                                      flex: 30,
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: [
