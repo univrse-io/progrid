@@ -44,28 +44,22 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 10),
 
             // search button
-            Hero(
-              tag: 'openList',
-              child: Material(
-                color: Colors.transparent,
-                child: FilledButton(
-                  child: Text('Open List'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => const TowersListPage(),
-                        transitionsBuilder: (_, animation, __, child) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
+            FilledButton(
+              child: Text('Open List'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => const TowersListPage(),
+                    transitionsBuilder: (_, animation, __, child) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
             ),
             Expanded(
               flex: 60,

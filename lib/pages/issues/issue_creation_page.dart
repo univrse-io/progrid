@@ -6,7 +6,7 @@ import 'package:progrid/models/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class IssueCreationPage extends StatefulWidget {
-  final String towerId; // id of selected tower
+  final String towerId;
 
   const IssueCreationPage({super.key, required this.towerId});
 
@@ -17,22 +17,18 @@ class IssueCreationPage extends StatefulWidget {
 class _IssueCreationPageState extends State<IssueCreationPage> {
   final List<String> _availableTags = ["Permit", "Logistics", "Key", "Access", "Hazard", "FSC"];
   final List<String> _selectedTags = [];
-  String? _selectedTag; // dropdown current selected tag
-
+  String? _selectedTag;
   final _descriptionController = TextEditingController();
   final int _maxDescriptionLength = 750;
-  final String tag = 'No Tag';
 
   Future<void> _createIssue() async {
-    // check tags
     if (_selectedTags.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select atleast one tag")),
+        const SnackBar(content: Text("Please select at least one tag")),
       );
       return;
     }
-    
-    // check description
+
     if (_descriptionController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please add a description")),
@@ -40,11 +36,9 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
       return;
     }
 
-    // define providers
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final towersProvider = Provider.of<TowersProvider>(context, listen: false);
 
-    // create issue instance
     final issue = Issue(
       dateTime: Timestamp.now(),
       authorId: userProvider.userId,
@@ -54,24 +48,19 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     );
 
     try {
-      // add issue to firebase and provider, update widgets
-      towersProvider.addIssueToTower(widget.towerId, issue);
-
-      // clear fields
+      await towersProvider.addIssueToTower(widget.towerId, issue);
       _descriptionController.clear();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Issue created successfully!")),
         );
-
-        // go back
-        Navigator.pop(context);
+        Navigator.pop(context); // go back
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to create report")),
+          const SnackBar(content: Text("Failed to create issue")),
         );
       }
     }
@@ -90,7 +79,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
         minimum: EdgeInsets.symmetric(horizontal: 25),
         child: Column(
           children: [
-            // tags section
+            // Tags section (Dropdown)
             DropdownButton<String>(
               isExpanded: true,
               value: _selectedTag,
@@ -105,7 +94,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                 if (newTag != null && !_selectedTags.contains(newTag)) {
                   setState(() {
                     _selectedTags.add(newTag);
-                    _selectedTag = null; // reset selection
+                    _selectedTag = null; // Reset selection
                   });
                 }
               },
@@ -113,7 +102,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
             ),
             const SizedBox(height: 3),
 
-            // display selected tags
+            // Display selected tags
             if (_selectedTags.isNotEmpty)
               Container(
                 width: double.infinity,
@@ -124,7 +113,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          _selectedTags.remove(tag); // remove tag on click
+                          _selectedTags.remove(tag); // Remove tag on click
                         });
                       },
                       child: Container(
@@ -148,7 +137,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
               ),
             const SizedBox(height: 17),
 
-            // description box
+            // Description box
             Expanded(
               child: TextField(
                 controller: _descriptionController,
@@ -178,6 +167,8 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
               ),
             ),
             const SizedBox(height: 20),
+
+            // Create issue button
             FilledButton(
               onPressed: () => _createIssue(),
               child: Text("Create Issue"),

@@ -1,4 +1,4 @@
-// Tower Model
+// Tower Model (perfected)
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/report.dart';
@@ -14,8 +14,11 @@ class Tower {
   String status;
   String notes;
 
-  List<Report> reports;
-  List<Issue> issues;
+  Stream<List<Report>> reports;
+  Stream<List<Issue>> issues;
+
+  // List<Report> reports;
+  // List<Issue> issues;
 
   // constructor
   Tower({
@@ -28,70 +31,57 @@ class Tower {
     this.position = const GeoPoint(0, 0),
     this.status = 'undefined',
     this.notes = 'no notes',
-    this.reports = const [],
-    this.issues = const [],
+    required this.reports,
+    required this.issues,
   });
 
   // given a tower document, fetch from database
-  static Future<Tower> fromFirestore(DocumentSnapshot doc) async {
+  static Tower fromFirestore(DocumentSnapshot doc) {
     final data = doc.data()! as Map<String, dynamic>;
 
-    // fetch reports and issues
-    final List<Report> reports = await _fetchReports(doc.id);
-    final List<Issue> issues = await _fetchIssues(doc.id);
+    // set up report stream
+    final Stream<List<Report>> reportsStream = FirebaseFirestore.instance
+        .collection('towers')
+        .doc(doc.id)
+        .collection('reports')
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Report.fromFirestore(doc)).toList());
+
+    // set up issue stream
+    final Stream<List<Issue>> issuesStream = FirebaseFirestore.instance
+        .collection('towers')
+        .doc(doc.id)
+        .collection('issues')
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Issue.fromFirestore(doc)).toList());
 
     return Tower(
-      id: doc.id, // firebase document id = tower id
+      id: doc.id, // Firebase document ID = tower ID
       name: data['name'] as String? ?? 'undefined',
       region: data['region'] as String? ?? 'undefined',
       type: data['type'] as String? ?? 'undefined',
       owner: data['owner'] as String? ?? 'undefined',
       address: data['address'] as String? ?? 'undefined',
-      position: data['position'] is GeoPoint ? data['position'] as GeoPoint : GeoPoint(0, 0), // fix
+      position: data['position'] is GeoPoint
+          ? data['position'] as GeoPoint
+          : GeoPoint(0, 0), // fix
       status: data['status'] as String? ?? 'undefined',
       notes: data['notes'] as String? ?? 'no notes',
-      reports: reports,
-      issues: issues,
+      reports: reportsStream,
+      issues: issuesStream,
     );
-  }
-
-  // fetch tower reports
-  static Future<List<Report>> _fetchReports(String towerId) async {
-    final snapshot = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('reports').get();
-    return snapshot.docs.map((doc) => Report.fromFirestore(doc)).toList();
-  }
-
-  // fetch tower issues
-  static Future<List<Issue>> _fetchIssues(String towerId) async {
-    final snapshot = await FirebaseFirestore.instance.collection('towers').doc(towerId).collection('issues').get();
-    return snapshot.docs.map((doc) => Issue.fromFirestore(doc)).toList();
-  }
-
-  // add report to tower, save to firestore
-  Future<void> addReport(Report report) async {
-    reports.add(report);
-
-    // create report in firebase
-    await FirebaseFirestore.instance.collection('towers').doc(id).collection('reports').add(report.toMap());
-    // update tower status to 'surveyed'
-    await FirebaseFirestore.instance.collection('towers').doc(id).update({'status': 'surveyed'});
-  }
-
-  Future<void> addIssue(Issue issue) async {
-    issues.add(issue);
-    // create issue in firebase
-    await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').add(issue.toMap());
   }
 
   Future<void> updateIssueStatus(String issueId, String status) async {
     try {
-      // find issue locally
-      final issue = issues.firstWhere((issue) => issue.id == issueId, orElse: () => throw Exception("Issue not found"));
-      
-      // update status locally
-      issue.status = status;
-      // , and in the database as well
-      await FirebaseFirestore.instance.collection('towers').doc(id).collection('issues').doc(issueId).update({'status': status});
+      await FirebaseFirestore.instance
+          .collection('towers')
+          .doc(id)
+          .collection('issues')
+          .doc(issueId)
+          .update({'status': status});
     } catch (e) {
       print("Error updating issue status in tower: $e");
     }

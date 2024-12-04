@@ -8,24 +8,56 @@ import 'package:progrid/models/tower.dart';
 class TowersProvider extends ChangeNotifier {
   List<Tower> towers = [];
 
-  // run this to refresh towers list
-  Future<void> fetchTowers() async {
-    try {
-      towers = []; // reset list
-      final snapshot = await FirebaseFirestore.instance.collection('towers').get();
+  // initialize towers stream
+  Stream<List<Tower>> getTowersStream() {
+    return FirebaseFirestore.instance.collection('towers').snapshots().map(
+      (snapshot) {
+        return snapshot.docs.map((doc) => Tower.fromFirestore(doc)).toList();
+      },
+    );
+  }
 
-      // fetch each tower
-      for (final doc in snapshot.docs) {
-        final Tower tower = await Tower.fromFirestore(doc);
-        towers.add(tower);
+  // add a report to a tower
+  Future<void> addReportToTower(String towerId, Report report) async {
+    try {
+      final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
+      final towerSnapshot = await towerRef.get();
+
+      if (!towerSnapshot.exists) {
+        throw 'Tower not found';
       }
+
+      // custom report id
+      final String reportId = await _generateUniqueId(towerId, 'R');
+      await towerRef.collection('reports').doc(reportId).set(report.toMap());
+      await towerRef.update({'status': 'surveyed'});
+
       notifyListeners();
     } catch (e) {
-      print("Error Fetching Towers: $e");
+      throw 'Error adding report: $e';
     }
   }
 
-  // update issue status in a tower
+  Future<void> addIssueToTower(String towerId, Issue issue) async {
+    try {
+      final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
+      final towerSnapshot = await towerRef.get();
+
+      if (!towerSnapshot.exists) {
+        throw 'Tower not found';
+      }
+
+      // custom issue id
+      final String issueId = await _generateUniqueId(towerId, 'I');
+      await towerRef.collection('issues').doc(issueId).set(issue.toMap());
+
+      notifyListeners();
+    } catch (e) {
+      throw 'Error adding issue: $e';
+    }
+  }
+
+  // update a tower's issue's status
   void updateIssueStatus(String towerId, String issueId, String status) {
     try {
       final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
@@ -36,17 +68,38 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
-  // add a report to a tower
-  Future<void> addReportToTower(String towerId, Report report) async {
-    final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
-    tower.addReport(report);
-    notifyListeners();
+  // for retrieving tower instance given an id
+  Future<Tower> getTowerById(String towerId) async {
+    try {
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      return tower;
+    } catch (e) {
+      throw Exception("Tower not found with id: $towerId");
+    }
   }
 
-  // add an issue to a tower
-  Future<void> addIssueToTower(String towerId, Issue issue) async {
-    final tower = towers.firstWhere((tower) => tower.id == towerId);
-    tower.addIssue(issue);
-    notifyListeners();
+  Future<String> _generateUniqueId(String towerId, String type) async {
+    String id = 'null';
+    bool isUnique = false;
+
+    // on the off-chance of 1/onetrillion that same ids are generated
+    while (!isUnique) {
+      String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      timestamp = timestamp.substring(timestamp.length - 3); // last 3 digits, TODO: REVIEW METHOD
+
+      // combine
+      id = "$towerId-${timestamp}-$type";
+
+      // collision check
+      final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
+      final collectionRef = towerRef.collection(type == 'R' ? 'reports' : 'issues');
+      final docSnapshot = await collectionRef.doc(id).get();
+
+      if (!docSnapshot.exists) {
+        isUnique = true; // unique ID found
+      }
+    }
+
+    return id;
   }
 }

@@ -112,7 +112,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to create report")),
+          SnackBar(content: Text("Failed to create report: $e")),
         );
       }
     }
@@ -131,7 +131,6 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
         minimum: EdgeInsets.symmetric(horizontal: 25),
         child: Stack(
           children: [
-            // UNDONE: renderflex issue?
             Column(
               children: [
                 // pictures upload section

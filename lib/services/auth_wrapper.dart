@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/providers/tower_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
+import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
 import 'package:progrid/pages/dashboard_page.dart';
@@ -24,16 +25,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
     });
   }
 
-  // fetch from database
-  Future<void> _fetchFromDatabase(User user) async {
-    try {
-      await Provider.of<UserProvider>(context, listen: false)
-          .fetchUserInfoFromDatabase(user);
-    } catch (e) {
-      print("Error Fetching Information: $e");
-    }
-  }
-
   // autologin
   Future<void> _autoLogin() async {
     final User? user = FirebaseAuth.instance.currentUser;
@@ -52,13 +43,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
+    _autoLogin();
 
     // autologin then load towers, order is ensured
-    _autoLogin().then((_) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Provider.of<TowersProvider>(context, listen: false).fetchTowers();
-      });
-    });
+    // _autoLogin().then((_) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     Provider.of<TowersProvider>(context, listen: false).fetchTowers();
+    //   });
+    // });
   }
 
   @override
@@ -69,26 +61,31 @@ class _AuthWrapperState extends State<AuthWrapper> {
         final user = snapshot.data;
 
         if (user != null) {
-          return FutureBuilder(
-            future: _fetchFromDatabase(user),
-            builder: (context, fetchSnapshot) {
-              if (fetchSnapshot.connectionState == ConnectionState.waiting) {
+          // fetch user info and set user provider
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) {
+              final userProvider = Provider.of<UserProvider>(context, listen: false);
+              userProvider.setUser(user);
+              userProvider.fetchUserInfoFromDatabase(user);
+            },
+          );
+
+          // get towers data stream
+          return StreamBuilder<List<Tower>>(
+            stream: Provider.of<TowersProvider>(context).getTowersStream(),
+            builder: (context, towerSnapshot) {
+              if (towerSnapshot.connectionState == ConnectionState.waiting) {
                 return const Scaffold(
                     body: Center(child: CircularProgressIndicator()));
               }
 
-              // successful data load
-              // update user after frame built
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) {
-                  final userProvider =
-                      Provider.of<UserProvider>(context, listen: false);
-                  userProvider.setUser(
-                      user); // this should set to 'null' if user is signed out
-                },
-              );
+              if (towerSnapshot.hasError) {
+                return const Scaffold(
+                    body: Center(child: Text('Error loading towers')));
+              }
 
-              // multi user type fallback
+              // all data successfully loaded
+              // multi-user type fallback
               switch (Provider.of<UserProvider>(context, listen: false).role) {
                 case 'admin':
                   return DashboardPage();
@@ -99,6 +96,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
           );
         }
 
+        // if no user authenticated
         return _onLoginPage
             ? LoginPage(onTapSwitchPage: _toggleLoginPage)
             : RegisterPage(onTapSwitchPage: _toggleLoginPage);

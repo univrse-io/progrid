@@ -17,7 +17,7 @@ class Report {
     this.notes = 'no notes', // default
   });
 
-  // format for database
+  // format function
   Map<String, dynamic> toMap() {
     return {
       'dateTime': dateTime,
