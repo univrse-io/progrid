@@ -1,10 +1,11 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/report.dart';
+import 'package:http/http.dart' as http;
 
 class ReportPage extends StatefulWidget {
   final String towerId;
@@ -26,26 +27,49 @@ class _ReportPageState extends State<ReportPage> {
     });
   }
 
-  // download an image
+  // TODO: fix download permissions, it always returns denied?
   Future<void> _downloadImage(String url) async {
     try {
-      final Dio dio = Dio();
+      final PermissionStatus status = await Permission.storage.request();
+  
+      if (status.isGranted) {
+        // download the image
+        final response = await http.get(Uri.parse(url));
 
-      // as image names aren't saved in database, we need to define the name ourselves
-      final Directory appDocDir = await getApplicationDocumentsDirectory();
-      final String savePath = '${appDocDir.path}/image_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        if (response.statusCode == 200) {
+          final directory = await getExternalStorageDirectory();
+          final downloadDirectory = Directory('${directory!.path}/Progrid'); // custom directory
 
-      await dio.download(url, savePath);
+          if (!await downloadDirectory.exists()) {
+            await downloadDirectory.create(recursive: true);
+          }
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image Downloaded...')),
-        );
+          final filePath = '${downloadDirectory.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+          final file = File(filePath);
+          await file.writeAsBytes(response.bodyBytes);
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Image saved to Downloads folder')),
+            );
+          }
+        } else {
+          throw Exception('Failed to download image');
+        }
+      } else if (status.isDenied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Permission to access storage denied.')),
+          );
+        }
+      } else if (status.isPermanentlyDenied) {
+        openAppSettings();
       }
     } catch (e) {
+      // Handle error
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to download image: $e')),
+          SnackBar(content: Text('Failed to save image: $e')),
         );
       }
     }
