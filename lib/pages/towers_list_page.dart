@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:progrid/models/providers/tower_provider.dart';
 import 'package:progrid/models/tower.dart';
+import 'package:progrid/pages/map_page.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
@@ -53,7 +54,7 @@ class _TowersListPageState extends State<TowersListPage> {
               ),
             ),
             const SizedBox(height: 10),
-            
+
             // towers list
             // TODO: implement pagination callback to provider
             Expanded(
@@ -93,7 +94,7 @@ class _TowersListPageState extends State<TowersListPage> {
                             itemBuilder: (context, index) {
                               final tower = filteredTowers[index];
                               return GestureDetector(
-                                onTap: () async {
+                                onTap: () {
                                   print("Tapped on tower: ${tower.id}");
                                   Navigator.push(
                                     context,
@@ -203,8 +204,21 @@ class _TowersListPageState extends State<TowersListPage> {
               ),
             )),
             const SizedBox(height: 10),
-            // TODO: implement geolocation search in new page
-            FilledButton(onPressed: () {}, child: const Text("Use My Location")),
+            FilledButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => MapPage(),
+                        transitionsBuilder: (_, animation, __, child) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        }));
+              },
+              child: const Text("Use My Location"),
+            ),
             const SizedBox(height: 20),
           ],
         ),

@@ -9,6 +9,9 @@ import 'package:progrid/pages/dashboard_page.dart';
 import 'package:progrid/pages/home_page.dart';
 import 'package:provider/provider.dart';
 
+// TODO: fetch towers only during initialization, no reports or issues
+// TODO: fetch issues and reports only when a tower is clicked, should we delete them locally on exit?
+
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
@@ -44,13 +47,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void initState() {
     super.initState();
     _autoLogin();
-
-    // autologin then load towers, order is ensured
-    // _autoLogin().then((_) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     Provider.of<TowersProvider>(context, listen: false).fetchTowers();
-    //   });
-    // });
   }
 
   @override
@@ -75,13 +71,11 @@ class _AuthWrapperState extends State<AuthWrapper> {
             stream: Provider.of<TowersProvider>(context).getTowersStream(),
             builder: (context, towerSnapshot) {
               if (towerSnapshot.connectionState == ConnectionState.waiting) {
-                return const Scaffold(
-                    body: Center(child: CircularProgressIndicator()));
+                return const Scaffold(body: Center(child: CircularProgressIndicator()));
               }
 
               if (towerSnapshot.hasError) {
-                return const Scaffold(
-                    body: Center(child: Text('Error loading towers')));
+                return const Scaffold(body: Center(child: Text('Error loading towers')));
               }
 
               // all data successfully loaded
@@ -97,9 +91,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         }
 
         // if no user authenticated
-        return _onLoginPage
-            ? LoginPage(onTapSwitchPage: _toggleLoginPage)
-            : RegisterPage(onTapSwitchPage: _toggleLoginPage);
+        return _onLoginPage ? LoginPage(onTapSwitchPage: _toggleLoginPage) : RegisterPage(onTapSwitchPage: _toggleLoginPage);
       },
     );
   }
