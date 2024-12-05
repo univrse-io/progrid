@@ -18,9 +18,11 @@ class TowersProvider extends ChangeNotifier {
   // also sets up the stream subscription
   Future<void> loadTowers() async {
     try {
+      towers = [];
       final snapshot = await FirebaseFirestore.instance.collection('towers').get();
 
       // load multiple simultaneously
+      // TODO: implement progress tracking using a counter?
       towers = await Future.wait(snapshot.docs.map((doc) async {
         return await Tower.fromFirestore(doc);
       }));
