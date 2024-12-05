@@ -9,11 +9,6 @@ import 'package:provider/provider.dart';
 
 // uses openstreetmap
 
-// shows location of all towers including self
-// clicking on a tower will open correlated tower page
-
-// UNDONE: geolocation page
-
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
 
@@ -168,6 +163,8 @@ class _MapPageState extends State<MapPage> {
                 options: MapOptions(
                   initialCenter: _defaultPosition,
                   initialZoom: 12,
+                  maxZoom: 17, // to review
+                  minZoom: 8,
                   backgroundColor: Theme.of(context).colorScheme.surface,
                   interactionOptions: const InteractionOptions(
                     flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
