@@ -91,8 +91,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
     );
 
     try {
-      // TODO: fix this
-      // await towersProvider.addReportToTower(widget.towerId, report);
+      await towersProvider.addReportToTower(widget.towerId, report);
       _notesController.clear();
 
       setState(() {

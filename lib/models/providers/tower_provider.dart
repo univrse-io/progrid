@@ -83,8 +83,8 @@ class TowersProvider extends ChangeNotifier {
       final towerIndex = towers.indexWhere((tower) => tower.id == towerId);
       if (towerIndex != -1) {
         towers[towerIndex].issues.add(issue);
-        notifyListeners();
       }
+      notifyListeners();
     } catch (e) {
       throw 'Error adding issue: $e';
     }
@@ -105,8 +105,9 @@ class TowersProvider extends ChangeNotifier {
       final towerIndex = towers.indexWhere((tower) => tower.id == towerId);
       if (towerIndex != -1) {
         towers[towerIndex].reports.add(report);
-        notifyListeners();
+        towers[towerIndex].status = 'surveyed';
       }
+      notifyListeners();
     } catch (e) {
       throw 'Error adding report: $e';
     }
