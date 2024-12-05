@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 // uses openstreetmap
 
-// TODO: implement map filter
+// TODO: implement map marker filter
 // TODO: implement map region jump selection
 
 class MapPage extends StatefulWidget {

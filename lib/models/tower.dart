@@ -52,11 +52,11 @@ class Tower {
         .collection('issues')
         .get();
 
-    List<Report> reports = reportsQuery.docs
+    final List<Report> reports = reportsQuery.docs
         .map((doc) => Report.fromFirestore(doc))
         .toList();
 
-    List<Issue> issues = issuesQuery.docs
+    final List<Issue> issues = issuesQuery.docs
         .map((doc) => Issue.fromFirestore(doc))
         .toList();
 

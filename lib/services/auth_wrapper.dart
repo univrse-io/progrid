@@ -9,9 +9,6 @@ import 'package:progrid/pages/dashboard_page.dart';
 import 'package:progrid/pages/map_page.dart';
 import 'package:provider/provider.dart';
 
-// TODO: fetch towers only during initialization, no reports or issues
-// TODO: fetch issues and reports only when a tower is clicked, should we delete them locally on exit?
-
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 

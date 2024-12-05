@@ -6,9 +6,6 @@ import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/report.dart';
 import 'package:progrid/models/tower.dart';
 
-// TODO: major refactor needed
-// UNDONE: every time 'towers' stream is called, it needs to read the entire database; of 600. need to reduce this count
-
 // Tower List Provider
 class TowersProvider extends ChangeNotifier {
   List<Tower> towers = [];
