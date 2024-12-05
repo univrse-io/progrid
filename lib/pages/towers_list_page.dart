@@ -32,7 +32,7 @@ class _TowersListPageState extends State<TowersListPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: const Text(
-          'Search Towers',
+          'Search Database',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
         ),
       ),

@@ -9,6 +9,7 @@ class TowersProvider extends ChangeNotifier {
   List<Tower> towers = [];
 
   // initialize towers stream
+  // UNDONE: this is very bad, should store stream locally instead and return that, no need to reread database everytime
   Stream<List<Tower>> getTowersStream() {
     return FirebaseFirestore.instance.collection('towers').snapshots().map(
       (snapshot) {

@@ -11,8 +11,8 @@ import 'package:provider/provider.dart';
 
 // uses openstreetmap
 
-// TODO: add link to tower list page
-// TODO: add link to profile page
+// TODO: implement map filter
+// TODO: implement map region jump selection
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -200,7 +200,6 @@ class _MapPageState extends State<MapPage> {
             right: 14,
             child: Row(
               children: [
-                
                 // search button
                 FloatingActionButton(
                   heroTag: 'searchbar',
@@ -234,10 +233,26 @@ class _MapPageState extends State<MapPage> {
                 FloatingActionButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ProfilePage(),
-                        ));
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => const ProfilePage(),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(0.0, 1.0); // bottom
+                          const end = Offset.zero;
+                          const curve = Curves.easeInOut;
+                          
+                          final offsetAnimation = animation.drive(Tween(begin: begin, end: end).chain(CurveTween(curve: curve)));
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                      ),
+
+                      // MaterialPageRoute(
+                      //   builder: (context) => const ProfilePage(),
+                      // ),
+                    );
                   },
                   backgroundColor: Colors.black.withOpacity(0.6),
                   child: const Icon(
