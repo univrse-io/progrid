@@ -73,16 +73,16 @@ class Tower {
     );
   }
 
-  Future<void> updateIssueStatus(String issueId, String status) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('towers')
-          .doc(id)
-          .collection('issues')
-          .doc(issueId)
-          .update({'status': status});
-    } catch (e) {
-      print("Error updating issue status in tower: $e");
-    }
-  }
+  // Future<void> updateIssueStatus(String issueId, String status) async {
+  //   try {
+  //     await FirebaseFirestore.instance
+  //         .collection('towers')
+  //         .doc(id)
+  //         .collection('issues')
+  //         .doc(issueId)
+  //         .update({'status': status});
+  //   } catch (e) {
+  //     print("Error updating issue status in tower: $e");
+  //   }
+  // }
 }

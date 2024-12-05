@@ -66,7 +66,7 @@ class _TowersListPageState extends State<TowersListPage> {
             // TODO: implement pagination callback to provider?
             Expanded(
               child: StreamBuilder<List<Tower>>(
-                stream: towersProvider.getTowersStream(),
+                stream: towersProvider.towers,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());

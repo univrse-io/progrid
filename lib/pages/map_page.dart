@@ -86,7 +86,7 @@ class _MapPageState extends State<MapPage> {
         children: [
           // map content
           StreamBuilder<List<Tower>>(
-            stream: towersProvider.getTowersStream(),
+            stream: towersProvider.towers,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

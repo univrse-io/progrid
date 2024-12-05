@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/providers/tower_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
-import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
 import 'package:progrid/pages/dashboard_page.dart';
@@ -61,36 +60,35 @@ class _AuthWrapperState extends State<AuthWrapper> {
           // fetch user info and set user provider
           WidgetsBinding.instance.addPostFrameCallback(
             (_) {
-              final userProvider =
-                  Provider.of<UserProvider>(context, listen: false);
+              final userProvider = Provider.of<UserProvider>(context, listen: false);
               userProvider.setUser(user);
               userProvider.fetchUserInfoFromDatabase(user);
+
+              // set up towers stream
+              // final towerProvider = Provider.of<TowersProvider>(context, listen: false);
+              // towerProvider.fetchTowersStream();
             },
           );
 
           // get towers data stream
-          return StreamBuilder<List<Tower>>(
-            stream: Provider.of<TowersProvider>(context).getTowersStream(),
-            builder: (context, towerSnapshot) {
-              if (towerSnapshot.connectionState == ConnectionState.waiting) {
-                return const Scaffold(
-                    body: Center(child: CircularProgressIndicator()));
-              }
+          // return StreamBuilder<List<Tower>>(
+          //   stream: Provider.of<TowersProvider>(context).towers,
+          //   builder: (context, towerSnapshot) {
+          //     if (towerSnapshot.connectionState == ConnectionState.waiting) {
+          //       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          //     }
 
-              if (towerSnapshot.hasError) {
-                return const Scaffold(
-                    body: Center(child: Text('Error loading towers')));
-              }
+          //     if (towerSnapshot.hasError) {
+          //       return const Scaffold(body: Center(child: Text('Error loading towers')));
+          //     }
+          //   },
+          // );
 
-              return kIsWeb ? DashboardPage() : MapPage();
-            },
-          );
+          return kIsWeb ? DashboardPage() : MapPage();
         }
 
         // if no user authenticated
-        return _onLoginPage
-            ? LoginPage(onTapSwitchPage: _toggleLoginPage)
-            : RegisterPage(onTapSwitchPage: _toggleLoginPage);
+        return _onLoginPage ? LoginPage(onTapSwitchPage: _toggleLoginPage) : RegisterPage(onTapSwitchPage: _toggleLoginPage);
       },
     );
   }

@@ -4,19 +4,29 @@ import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/report.dart';
 import 'package:progrid/models/tower.dart';
 
+// TODO: major refactor needed
+// UNDONE: every time 'towers' stream is called, it needs to read the entire database; of 600. need to reduce this count
+
 // Tower List Provider
 class TowersProvider extends ChangeNotifier {
-  List<Tower> towers = [];
+  // Stream<List<Tower>>? towers; // cached towers stream
 
-  // initialize towers stream
-  // UNDONE: this is very bad, should store stream locally instead and return that, no need to reread database everytime
-  Stream<List<Tower>> getTowersStream() {
+  Stream<List<Tower>> get towers {
     return FirebaseFirestore.instance.collection('towers').snapshots().map(
       (snapshot) {
         return snapshot.docs.map((doc) => Tower.fromFirestore(doc)).toList();
       },
     );
   }
+
+  // // initialize towers stream
+  // Future<void> fetchTowersStream() async {
+  //   towers = FirebaseFirestore.instance.collection('towers').snapshots().map(
+  //     (snapshot) {
+  //       return snapshot.docs.map((doc) => Tower.fromFirestore(doc)).toList();
+  //     },
+  //   );
+  // }
 
   // add a report to a tower
   Future<void> addReportToTower(String towerId, Report report) async {
@@ -61,8 +71,10 @@ class TowersProvider extends ChangeNotifier {
   // update a tower's issue's status
   void updateIssueStatus(String towerId, String issueId, String status) {
     try {
-      final tower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
-      tower.updateIssueStatus(issueId, status);
+      final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
+      final issueRef = towerRef.collection('issues').doc(issueId);
+      issueRef.update({'status': status});
+
       notifyListeners();
     } catch (e) {
       print("Error updating issue status: $e");
@@ -72,8 +84,14 @@ class TowersProvider extends ChangeNotifier {
   // for retrieving tower instance given an id
   Future<Tower> getTowerById(String towerId) async {
     try {
-      final tower = towers.firstWhere((tower) => tower.id == towerId);
-      return tower;
+      final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
+      final towerSnapshot = await towerRef.get();
+
+      if (!towerSnapshot.exists) {
+        throw Exception("Tower not found with id: $towerId");
+      }
+
+      return Tower.fromFirestore(towerSnapshot);
     } catch (e) {
       throw Exception("Tower not found with id: $towerId");
     }

@@ -30,7 +30,7 @@ class TowerPage extends StatelessWidget {
         child: Consumer<TowersProvider>(
           builder: (context, towersProvider, child) {
             return StreamBuilder<List<Tower>>(
-              stream: towersProvider.getTowersStream(),
+              stream: towersProvider.towers,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
