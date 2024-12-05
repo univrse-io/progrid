@@ -34,32 +34,42 @@ class _MapPageState extends State<MapPage> {
     Widget tileWidget,
     TileImage tile,
   ) {
+    // black and white light theme
     return ColorFiltered(
-      colorFilter: const ColorFilter.matrix(<double>[
-        -0.2126, -0.7152, -0.0722, 0, 255, // red channel
-        -0.2126, -0.7152, -0.0722, 0, 255, // green channel
-        -0.2126, -0.7152, -0.0722, 0, 255, // blue channel
-        0, 0, 0, 1, 0, // alpha channel
-      ]),
+      colorFilter: const ColorFilter.mode(
+        Colors.white,
+        BlendMode.saturation,
+      ),
       child: tileWidget,
     );
+
+    // dark theme
+    // return ColorFiltered(
+    //   colorFilter: const ColorFilter.matrix(<double>[
+    //     -0.2126, -0.7152, -0.0722, 0, 255, // red channel
+    //     -0.2126, -0.7152, -0.0722, 0, 255, // green channel
+    //     -0.2126, -0.7152, -0.0722, 0, 255, // blue channel
+    //     0, 0, 0, 1, 0, // alpha channel
+    //   ]),
+    //   child: tileWidget,
+    // );
   }
 
   // determing region color here
   Color _getRegionColor(String region) {
     switch (region.toLowerCase()) {
       case 'southern':
-        return Color.fromARGB(255, 112, 170, 101);
+        return Color.fromARGB(255, 82, 114, 76);
       case 'northern':
-        return Color.fromARGB(255, 179, 89, 89);
+        return Color.fromARGB(255, 100, 68, 68);
       case 'eastern':
-        return Color.fromARGB(255, 173, 171, 111);
+        return Color.fromARGB(255, 134, 124, 79);
       case 'central':
-        return Color.fromARGB(255, 106, 131, 158);
+        return Color.fromARGB(255, 63, 81, 100);
       case 'western':
-        return Color.fromARGB(255, 160, 88, 160);
+        return Color.fromARGB(255, 104, 71, 104);
       case 'sabah':
-        return Color.fromARGB(255, 87, 158, 158);
+        return Color.fromARGB(255, 62, 88, 88);
       case 'sarawak':
         return Color.fromARGB(255, 163, 110, 90);
       default:
@@ -87,9 +97,9 @@ class _MapPageState extends State<MapPage> {
               if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return const Center(child: Text('No towers available.'));
               }
-          
+
               final towers = snapshot.data!;
-          
+
               // create tower markers
               final List<Marker> markers = towers.map((tower) {
                 return Marker(
@@ -108,12 +118,12 @@ class _MapPageState extends State<MapPage> {
                       children: [
                         // marker icon
                         Icon(
-                          Icons.location_on,
+                          Icons.cell_tower,
                           color: _getRegionColor(tower.region),
-                          size: 32,
+                          size: 36,
                         ),
-          
-                        // identifier
+
+                        // information box
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 5),
                           decoration: BoxDecoration(
@@ -134,7 +144,7 @@ class _MapPageState extends State<MapPage> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-          
+
                               // tower id
                               Text(
                                 tower.id,
@@ -152,7 +162,7 @@ class _MapPageState extends State<MapPage> {
                   ),
                 );
               }).toList();
-          
+
               return FlutterMap(
                 mapController: _mapController,
                 options: MapOptions(
@@ -169,6 +179,7 @@ class _MapPageState extends State<MapPage> {
                     tileBuilder: _mapThemeTileBuilder,
                   ),
                   MarkerLayer(
+                    alignment: Alignment.topCenter, // define marker alignment here
                     markers: markers,
                   ),
                   SimpleAttributionWidget(
@@ -193,28 +204,6 @@ class _MapPageState extends State<MapPage> {
               child: const Icon(Icons.arrow_back),
             ),
           ),
-
-          // Positioned(
-          //   top: 16,
-          //   left: 16,
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       Navigator.pop(context);
-          //     },
-          //     child: Container(
-          //       padding: const EdgeInsets.all(8),
-          //       decoration: BoxDecoration(
-          //         color: Colors.black.withOpacity(0.6), // Semi-transparent background
-          //         shape: BoxShape.circle,
-          //       ),
-          //       child: const Icon(
-          //         Icons.arrow_back,
-          //         color: Colors.white,
-          //         size: 24,
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

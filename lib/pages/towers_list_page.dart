@@ -37,7 +37,7 @@ class _TowersListPageState extends State<TowersListPage> {
         ),
       ),
       body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 25),
+        minimum: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -128,8 +128,8 @@ class _TowersListPageState extends State<TowersListPage> {
                                                 children: [
                                                   // completion status
                                                   Container(
-                                                    width: 11,
-                                                    height: 11,
+                                                    width: 12,
+                                                    height: 12,
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
                                                       color: tower.status == 'surveyed' ? AppColors.green : AppColors.red,
@@ -141,7 +141,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                                     tower.id,
                                                     style: const TextStyle(
                                                       fontWeight: FontWeight.bold,
-                                                      fontSize: 13,
+                                                      fontSize: 14,
                                                     ),
                                                   ),
                                                 ],
@@ -152,7 +152,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: const TextStyle(
-                                                  fontSize: 18,
+                                                  fontSize: 20,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
@@ -161,17 +161,17 @@ class _TowersListPageState extends State<TowersListPage> {
                                                   // owner
                                                   Text(
                                                     tower.owner,
-                                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                                                   ),
                                                   Text(
                                                     ",",
-                                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                                                   ),
                                                   const SizedBox(width: 4),
                                                   // region
                                                   Text(
                                                     tower.region,
-                                                    style: const TextStyle(fontSize: 13, fontStyle: FontStyle.italic),
+                                                    style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
                                                   ),
                                                 ],
                                               ),
