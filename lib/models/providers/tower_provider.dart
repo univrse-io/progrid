@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/issue.dart';
@@ -10,9 +12,10 @@ import 'package:progrid/models/tower.dart';
 // Tower List Provider
 class TowersProvider extends ChangeNotifier {
   List<Tower> towers = [];
-  // List<Tower> get towers => _towers;
+  StreamSubscription? _towersSubscription;
 
   // on app start, load entire database
+  // also sets up the stream subscription
   Future<void> loadTowers() async {
     try {
       final snapshot = await FirebaseFirestore.instance.collection('towers').get();
@@ -30,9 +33,38 @@ class TowersProvider extends ChangeNotifier {
       //   towers.add(tower);
       //   notifyListeners();
       // }
+
+      // track changes, update local
+      _towersSubscription = FirebaseFirestore.instance.collection('towers').snapshots().listen((snapshot) async {
+        for (final docChange in snapshot.docChanges) {
+          if (docChange.type == DocumentChangeType.added) {
+            // new tower added
+            final newTower = await Tower.fromFirestore(docChange.doc);
+            towers.add(newTower);
+          } else if (docChange.type == DocumentChangeType.modified) {
+            // tower updated
+            final index = towers.indexWhere((t) => t.id == docChange.doc.id);
+            if (index != -1) {
+              final updatedTower = await Tower.fromFirestore(docChange.doc);
+              towers[index] = updatedTower;
+            }
+          } else if (docChange.type == DocumentChangeType.removed) {
+            // tower deleted
+            towers.removeWhere((t) => t.id == docChange.doc.id);
+          }
+        }
+
+        notifyListeners();
+      });
     } catch (e) {
       throw 'Error loading towers: $e';
     }
+  }
+
+  @override
+  void dispose() {
+    _towersSubscription?.cancel(); // safe stop
+    super.dispose();
   }
 
   Future<void> addIssueToTower(String towerId, Issue issue) async {
