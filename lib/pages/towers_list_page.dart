@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:progrid/models/providers/tower_provider.dart';
-import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/map_page.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/utils/themes.dart';

@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:progrid/models/providers/tower_provider.dart';
-import 'package:progrid/models/report.dart';
-import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
 import 'package:progrid/pages/reports/report_creation_page.dart';
 import 'package:progrid/pages/reports/report_page.dart';
