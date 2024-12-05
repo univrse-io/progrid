@@ -64,25 +64,16 @@ class _AuthWrapperState extends State<AuthWrapper> {
               userProvider.setUser(user);
               userProvider.fetchUserInfoFromDatabase(user);
 
+              // load towers from database
+              final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+              towersProvider.loadTowers();
+              print('towers loaded: ${towersProvider.towers.length}');
+
               // set up towers stream
               // final towerProvider = Provider.of<TowersProvider>(context, listen: false);
               // towerProvider.fetchTowersStream();
             },
           );
-
-          // get towers data stream
-          // return StreamBuilder<List<Tower>>(
-          //   stream: Provider.of<TowersProvider>(context).towers,
-          //   builder: (context, towerSnapshot) {
-          //     if (towerSnapshot.connectionState == ConnectionState.waiting) {
-          //       return const Scaffold(body: Center(child: CircularProgressIndicator()));
-          //     }
-
-          //     if (towerSnapshot.hasError) {
-          //       return const Scaffold(body: Center(child: Text('Error loading towers')));
-          //     }
-          //   },
-          // );
 
           return kIsWeb ? DashboardPage() : MapPage();
         }

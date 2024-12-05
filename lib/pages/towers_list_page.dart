@@ -63,146 +63,146 @@ class _TowersListPageState extends State<TowersListPage> {
             const SizedBox(height: 10),
 
             // towers list
-            // TODO: implement pagination callback to provider?
-            Expanded(
-              child: StreamBuilder<List<Tower>>(
-                stream: towersProvider.towers,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+            // TODO: fix this
+            // Expanded(
+            //   child: StreamBuilder<List<Tower>>(
+            //     stream: towersProvider.towers,
+            //     builder: (context, snapshot) {
+            //       if (snapshot.connectionState == ConnectionState.waiting) {
+            //         return const Center(child: CircularProgressIndicator());
+            //       }
 
-                  if (snapshot.hasError) {
-                    return const Center(child: Text('Error loading towers'));
-                  }
+            //       if (snapshot.hasError) {
+            //         return const Center(child: Text('Error loading towers'));
+            //       }
 
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No towers available'));
-                  }
+            //       if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            //         return const Center(child: Text('No towers available'));
+            //       }
 
-                  final List<Tower> towers = snapshot.data!;
-                  // filter towers based on search query
-                  // note that this is a local list; no need to requery the entire database
-                  final List<Tower> filteredTowers = towers
-                      .where((tower) =>
-                          tower.name.toLowerCase().contains(_searchQuery) ||
-                          tower.address.toLowerCase().contains(_searchQuery) ||
-                          tower.region.toLowerCase().contains(_searchQuery) ||
-                          tower.owner.toLowerCase().contains(_searchQuery) ||
-                          tower.id.toLowerCase().contains(_searchQuery))
-                      .toList();
+            //       final List<Tower> towers = snapshot.data!;
+            //       // filter towers based on search query
+            //       // note that this is a local list; no need to requery the entire database
+            //       final List<Tower> filteredTowers = towers
+            //           .where((tower) =>
+            //               tower.name.toLowerCase().contains(_searchQuery) ||
+            //               tower.address.toLowerCase().contains(_searchQuery) ||
+            //               tower.region.toLowerCase().contains(_searchQuery) ||
+            //               tower.owner.toLowerCase().contains(_searchQuery) ||
+            //               tower.id.toLowerCase().contains(_searchQuery))
+            //           .toList();
 
-                  // display filtered towers
-                  return filteredTowers.isEmpty
-                      ? const Center(child: Text('No results found'))
-                      : Scrollbar(
-                          child: ListView.builder(
-                            itemCount: filteredTowers.length,
-                            itemBuilder: (context, index) {
-                              final tower = filteredTowers[index];
-                              return GestureDetector(
-                                onTap: () {
-                                  print("Tapped on tower: ${tower.id}");
-                                  Navigator.push(
-                                    context,
-                                    PageRouteBuilder(
-                                      pageBuilder: (_, __, ___) => TowerPage(towerId: tower.id),
-                                      transitionsBuilder: (_, animation, __, child) {
-                                        return FadeTransition(
-                                          opacity: animation,
-                                          child: child,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                                child: Card(
-                                  margin: const EdgeInsets.symmetric(vertical: 3),
-                                  elevation: 3,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: SafeArea(
-                                    minimum: const EdgeInsets.symmetric(vertical: 6, horizontal: 9),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 70,
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  // completion status
-                                                  Container(
-                                                    width: 12,
-                                                    height: 12,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      color: tower.status == 'surveyed' ? AppColors.green : AppColors.red,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  // tower id
-                                                  Text(
-                                                    tower.id,
-                                                    style: const TextStyle(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              // tower name
-                                              Text(
-                                                tower.name,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Row(
-                                                children: [
-                                                  // owner
-                                                  Text(
-                                                    tower.owner,
-                                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                                                  ),
-                                                  Text(
-                                                    ",",
-                                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  // region
-                                                  Text(
-                                                    tower.region,
-                                                    style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const Expanded(
-                                          flex: 10,
-                                          child: Icon(
-                                            Icons.arrow_right,
-                                            size: 30,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                },
-              ),
-            ),
+            //       // display filtered towers
+            //       return filteredTowers.isEmpty
+            //           ? const Center(child: Text('No results found'))
+            //           : Scrollbar(
+            //               child: ListView.builder(
+            //                 itemCount: filteredTowers.length,
+            //                 itemBuilder: (context, index) {
+            //                   final tower = filteredTowers[index];
+            //                   return GestureDetector(
+            //                     onTap: () {
+            //                       print("Tapped on tower: ${tower.id}");
+            //                       Navigator.push(
+            //                         context,
+            //                         PageRouteBuilder(
+            //                           pageBuilder: (_, __, ___) => TowerPage(towerId: tower.id),
+            //                           transitionsBuilder: (_, animation, __, child) {
+            //                             return FadeTransition(
+            //                               opacity: animation,
+            //                               child: child,
+            //                             );
+            //                           },
+            //                         ),
+            //                       );
+            //                     },
+            //                     child: Card(
+            //                       margin: const EdgeInsets.symmetric(vertical: 3),
+            //                       elevation: 3,
+            //                       shape: RoundedRectangleBorder(
+            //                         borderRadius: BorderRadius.circular(10),
+            //                       ),
+            //                       child: SafeArea(
+            //                         minimum: const EdgeInsets.symmetric(vertical: 6, horizontal: 9),
+            //                         child: Row(
+            //                           children: [
+            //                             Expanded(
+            //                               flex: 70,
+            //                               child: Column(
+            //                                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                                 children: [
+            //                                   Row(
+            //                                     children: [
+            //                                       // completion status
+            //                                       Container(
+            //                                         width: 12,
+            //                                         height: 12,
+            //                                         decoration: BoxDecoration(
+            //                                           shape: BoxShape.circle,
+            //                                           color: tower.status == 'surveyed' ? AppColors.green : AppColors.red,
+            //                                         ),
+            //                                       ),
+            //                                       const SizedBox(width: 4),
+            //                                       // tower id
+            //                                       Text(
+            //                                         tower.id,
+            //                                         style: const TextStyle(
+            //                                           fontWeight: FontWeight.bold,
+            //                                           fontSize: 14,
+            //                                         ),
+            //                                       ),
+            //                                     ],
+            //                                   ),
+            //                                   // tower name
+            //                                   Text(
+            //                                     tower.name,
+            //                                     maxLines: 1,
+            //                                     overflow: TextOverflow.ellipsis,
+            //                                     style: const TextStyle(
+            //                                       fontSize: 20,
+            //                                       fontWeight: FontWeight.bold,
+            //                                     ),
+            //                                   ),
+            //                                   Row(
+            //                                     children: [
+            //                                       // owner
+            //                                       Text(
+            //                                         tower.owner,
+            //                                         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            //                                       ),
+            //                                       Text(
+            //                                         ",",
+            //                                         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            //                                       ),
+            //                                       const SizedBox(width: 4),
+            //                                       // region
+            //                                       Text(
+            //                                         tower.region,
+            //                                         style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+            //                                       ),
+            //                                     ],
+            //                                   ),
+            //                                 ],
+            //                               ),
+            //                             ),
+            //                             const Expanded(
+            //                               flex: 10,
+            //                               child: Icon(
+            //                                 Icons.arrow_right,
+            //                                 size: 30,
+            //                               ),
+            //                             ),
+            //                           ],
+            //                         ),
+            //                       ),
+            //                     ),
+            //                   );
+            //                 },
+            //               ),
+            //             );
+            //     },
+            //   ),
+            // ),
             const SizedBox(height: 10),
             Center(
                 child: const Text(

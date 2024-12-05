@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/providers/tower_provider.dart';
-import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/pages/towers_list_page.dart';
@@ -80,118 +79,97 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     final towersProvider = Provider.of<TowersProvider>(context);
+    // final towers = towersProvider.towers;
 
     return Scaffold(
       body: Stack(
         children: [
           // map content
-          StreamBuilder<List<Tower>>(
-            stream: towersProvider.towers,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('No towers available.'));
-              }
-
-              final towers = snapshot.data!;
-
-              // create tower markers
-              final List<Marker> markers = towers.map((tower) {
-                return Marker(
-                  point: LatLng(tower.position.latitude, tower.position.longitude),
-                  width: 80,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TowerPage(towerId: tower.id),
-                        ),
-                      );
-                    },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // marker icon
-                        Icon(
-                          Icons.cell_tower,
-                          color: _getRegionColor(tower.region),
-                          size: 36,
-                        ),
-
-                        // information box
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.7),
-                            borderRadius: BorderRadius.circular(4),
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              initialCenter: _defaultPosition,
+              initialZoom: 12,
+              maxZoom: 17, // to review
+              minZoom: 8,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              ),
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: _tileLayerUrl,
+                tileBuilder: _mapThemeTileBuilder,
+              ),
+              MarkerLayer(
+                alignment: Alignment.topCenter, // define marker alignment here
+                markers: towersProvider.towers.map((tower) {
+                  return Marker(
+                    point: LatLng(tower.position.latitude, tower.position.longitude),
+                    width: 80,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TowerPage(towerId: tower.id),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // status indicator
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: tower.status == 'surveyed' ? AppColors.green : AppColors.red,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-
-                              // tower id
-                              Text(
-                                tower.id,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                ),
-                                maxLines: 1,
-                              ),
-                            ],
+                        );
+                      },
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // marker icon
+                          Icon(
+                            Icons.cell_tower,
+                            color: _getRegionColor(tower.region),
+                            size: 36,
                           ),
-                        ),
-                      ],
+                          // information box
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.7),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // status indicator
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: tower.status == 'surveyed' ? AppColors.green : AppColors.red,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                // tower id
+                                Text(
+                                  tower.id,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
+                                  maxLines: 1,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }).toList();
-
-              return FlutterMap(
-                mapController: _mapController,
-                options: MapOptions(
-                  initialCenter: _defaultPosition,
-                  initialZoom: 12,
-                  maxZoom: 17, // to review
-                  minZoom: 8,
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  interactionOptions: const InteractionOptions(
-                    flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-                  ),
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate: _tileLayerUrl,
-                    tileBuilder: _mapThemeTileBuilder,
-                  ),
-                  MarkerLayer(
-                    alignment: Alignment.topCenter, // define marker alignment here
-                    markers: markers,
-                  ),
-                  SimpleAttributionWidget(
-                    source: Text('OpenStreetMap'),
-                    backgroundColor: Colors.black.withOpacity(0.1),
-                  ),
-                ],
-              );
-            },
+                  );
+                }).toList(),
+              ),
+              SimpleAttributionWidget(
+                source: Text('OpenStreetMap'),
+                backgroundColor: Colors.black.withOpacity(0.1),
+              ),
+            ],
           ),
 
           // top row
@@ -240,7 +218,7 @@ class _MapPageState extends State<MapPage> {
                           const begin = Offset(0.0, 1.0); // bottom
                           const end = Offset.zero;
                           const curve = Curves.easeInOut;
-                          
+
                           final offsetAnimation = animation.drive(Tween(begin: begin, end: end).chain(CurveTween(curve: curve)));
                           return SlideTransition(
                             position: offsetAnimation,

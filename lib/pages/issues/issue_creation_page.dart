@@ -48,7 +48,8 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     );
 
     try {
-      await towersProvider.addIssueToTower(widget.towerId, issue);
+      // TODO: fix this
+      // await towersProvider.addIssueToTower(widget.towerId, issue);
       _descriptionController.clear();
 
       if (mounted) {
