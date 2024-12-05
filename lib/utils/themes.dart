@@ -26,6 +26,7 @@ final lightTheme = ThemeData(
     actionIconTheme: ActionIconThemeData(
       backButtonIconBuilder: (context) => Icon(Icons.arrow_back, size: 34),
     ),
+    cardTheme: CardTheme(margin: EdgeInsets.zero),
     inputDecorationTheme: InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.black26),
