@@ -1,8 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_alert.dart';
-import 'package:progrid/components/my_button.dart';
-import 'package:progrid/components/my_textfield.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -12,14 +9,17 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final TextEditingController _emailController = TextEditingController();
+  final _emailController = TextEditingController();
 
   // forgot password
   Future<void> forgotPassword() async {
     final String email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      displayMessage("Please Enter an Email Address", context);
+      showDialog(
+          context: context,
+          builder: (_) =>
+              AlertDialog(title: Text("Please Enter an Email Address")));
       return;
     }
 
@@ -28,10 +28,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
       if (mounted) {
         Navigator.pop(context);
-        displayMessage("Password reset email sent. Check your inbox", context);
+        showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+                title: Text("Password reset email sent. Check your inbox")));
       }
     } on FirebaseAuthException catch (e) {
-      if (mounted) displayMessage(e.message!, context);
+      if (mounted)
+        showDialog(
+            context: context,
+            builder: (_) => AlertDialog(title: Text(e.message!)));
     }
   }
 
@@ -69,19 +75,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                 ),
                 const SizedBox(height: 14),
-
-                // email field
-                MyTextField(
-                  hintText: 'Email',
+                TextField(
                   controller: _emailController,
+                  decoration: InputDecoration(hintText: 'Email'),
                 ),
                 const SizedBox(height: 10),
-
-                // confirm button
-                MyButton(
-                  onTap: forgotPassword,
-                  text: 'Confirm',
-                ),
+                FilledButton(onPressed: forgotPassword, child: Text('Confirm')),
                 const SizedBox(height: 14),
 
                 // back link

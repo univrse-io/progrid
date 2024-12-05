@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_alert.dart';
-import 'package:progrid/components/my_button.dart';
-import 'package:progrid/components/my_textfield.dart';
 
 class RegisterPage extends StatefulWidget {
   // toggle to login page
@@ -20,16 +17,15 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
+  final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  // register user
   Future<void> _register() async {
-    // make sure passwords match
-    if (_passwordController.text != _confirmPasswordController.text) {
-      displayMessage("passwords don't match", context);
-      return;
-    }
+    // validate forms
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) return;
 
     // create the user
     try {
@@ -40,17 +36,18 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       final String userId = credentials.user!.uid;
 
-      // save user data to firestore database
+      // save fields to firestore database
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'email': _emailController.text.trim(),
-        'phone': 'Not Set',
-        'altEmail': 'Not Set',
-        'role': 'debug',
+        'name': _nameController.text,
+        'phone': 'not set',
+        'role': 'basic',
         'lastLogin': Timestamp.now(),
       });
     } on FirebaseAuthException catch (e) {
       if (mounted) {
-        displayMessage(e.code, context);
+        showDialog(
+            context: context, builder: (_) => AlertDialog(title: Text(e.code)));
       }
     }
   }
@@ -76,74 +73,89 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // welcome text
-                Text(
-                  'Welcome!\nCreate an Account.',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // email textfield
-                MyTextField(
-                  hintText: 'Email',
-                  controller: _emailController,
-                ),
-                const SizedBox(height: 10),
-
-                // password textfield
-                MyTextField(
-                  hintText: 'Password',
-                  obscureText: true,
-                  controller: _passwordController,
-                ),
-                const SizedBox(height: 10),
-
-                // confirm password textfield
-                MyTextField(
-                  hintText: 'Confirm Password',
-                  obscureText: true,
-                  controller: _confirmPasswordController,
-                ),
-                const SizedBox(height: 24),
-
-                // register button
-                MyButton(
-                  onTap: _register,
-                  text: 'Register',
-                ),
-                const SizedBox(height: 14),
-
-                // link to login page
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Have an account? ",
+                      'Welcome!\nCreate an Account.',
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: widget.onTapSwitchPage,
-                      child: Text(
-                        "Login Now",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        hintText: 'Email',
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
                       ),
-                    )
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        hintText: 'Full Name',
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: 'Confirm Password',
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                      controller: _confirmPasswordController,
+                      validator: (value) => _passwordController.text != value
+                          ? "Passwords don't match"
+                          : null,
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton(onPressed: _register, child: Text('Register')),
+                    const SizedBox(height: 14),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Have an account? ",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: widget.onTapSwitchPage,
+                          child: Text(
+                            "Login Now",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

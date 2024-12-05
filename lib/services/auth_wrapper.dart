@@ -1,12 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/components/my_loader.dart';
-import 'package:progrid/models/tower_provider.dart';
-import 'package:progrid/models/user_provider.dart';
+import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/providers/user_provider.dart';
+import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
-import 'package:progrid/pages/base_page.dart';
+import 'package:progrid/pages/dashboard_page.dart';
+import 'package:progrid/pages/home_page.dart';
 import 'package:provider/provider.dart';
+
+// TODO: fetch towers only during initialization, no reports or issues
+// TODO: fetch issues and reports only when a tower is clicked, should we delete them locally on exit?
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -22,19 +27,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
     setState(() {
       _onLoginPage = !_onLoginPage;
     });
-  }
-
-  // fetch from database
-  Future<void> _fetchFromDatabase(User user) async {
-    try {
-      await Provider.of<UserProvider>(context, listen: false)
-          .fetchUserInfoFromDatabase(user);
-      if (!mounted) return;
-
-      await Provider.of<TowersProvider>(context, listen: false).fetchTowers();
-    } catch (e) {
-      print("Error Fetching Information: $e");
-    }
   }
 
   // autologin
@@ -66,40 +58,39 @@ class _AuthWrapperState extends State<AuthWrapper> {
         final user = snapshot.data;
 
         if (user != null) {
-          return FutureBuilder(
-            future: _fetchFromDatabase(user),
-            builder: (context, fetchSnapshot) {
-              if (fetchSnapshot.connectionState == ConnectionState.waiting) {
-                return const MyLoadingIndicator();
+          // fetch user info and set user provider
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) {
+              final userProvider =
+                  Provider.of<UserProvider>(context, listen: false);
+              userProvider.setUser(user);
+              userProvider.fetchUserInfoFromDatabase(user);
+            },
+          );
+
+          // get towers data stream
+          return StreamBuilder<List<Tower>>(
+            stream: Provider.of<TowersProvider>(context).getTowersStream(),
+            builder: (context, towerSnapshot) {
+              if (towerSnapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()));
               }
 
-              // successful data load
-              // update user after frame built
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) {
-                  final userProvider =
-                      Provider.of<UserProvider>(context, listen: false);
-                  userProvider.setUser(user);
-                },
-              );
-
-              // multi user type fallback
-              switch (Provider.of<UserProvider>(context, listen: false).role) {
-                case 'debug':
-                  return const BasePage();
-                default:
-                  return const Center(child: Text("Placeholder Page"));
+              if (towerSnapshot.hasError) {
+                return const Scaffold(
+                    body: Center(child: Text('Error loading towers')));
               }
+
+              return kIsWeb ? DashboardPage() : HomePage();
             },
           );
         }
 
-        return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          body: _onLoginPage
-              ? LoginPage(onTapSwitchPage: _toggleLoginPage)
-              : RegisterPage(onTapSwitchPage: _toggleLoginPage),
-        );
+        // if no user authenticated
+        return _onLoginPage
+            ? LoginPage(onTapSwitchPage: _toggleLoginPage)
+            : RegisterPage(onTapSwitchPage: _toggleLoginPage);
       },
     );
   }
