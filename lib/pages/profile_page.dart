@@ -30,10 +30,8 @@ class ProfilePage extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(userProvider.name,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall),
-                            Text('Engineer'), // Insert role/position here.
+                            Text(userProvider.name, style: Theme.of(context).textTheme.headlineSmall),
+                            Text('${userProvider.role[0].toUpperCase()}${userProvider.role.substring(1)}'), // capitalize
                           ],
                         ),
                       ],

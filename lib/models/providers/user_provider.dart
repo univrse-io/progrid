@@ -54,6 +54,8 @@ class UserProvider extends ChangeNotifier {
         phone = data['phone'] as String? ?? 'undefined';
         role = data['role'] as String? ?? 'undefined';
         lastLogin = data['lastLogin'] as Timestamp?;
+
+        notifyListeners();
       } else {
         throw Exception("User Document does not Exist");
       }
