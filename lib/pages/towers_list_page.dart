@@ -32,7 +32,7 @@ class _TowersListPageState extends State<TowersListPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: const Text(
-          'Query Towers',
+          'Search Towers',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
         ),
       ),
@@ -41,15 +41,22 @@ class _TowersListPageState extends State<TowersListPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
+
             // search bar
-            TextField(
-              controller: _searchController,
-              onChanged: _onSearchChanged,
-              decoration: InputDecoration(
-                hintText: 'Enter ID, name, address, region, etc...',
-                hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
+            Hero(
+              tag: 'searchbar',
+              child: Material(
+                color: Colors.transparent,
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: _onSearchChanged,
+                  decoration: InputDecoration(
+                    hintText: 'Enter ID, name, address, region, etc...',
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
                 ),
               ),
             ),

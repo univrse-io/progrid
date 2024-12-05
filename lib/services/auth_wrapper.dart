@@ -7,7 +7,7 @@ import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
 import 'package:progrid/pages/dashboard_page.dart';
-import 'package:progrid/pages/home_page.dart';
+import 'package:progrid/pages/map_page.dart';
 import 'package:provider/provider.dart';
 
 // TODO: fetch towers only during initialization, no reports or issues
@@ -82,7 +82,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                     body: Center(child: Text('Error loading towers')));
               }
 
-              return kIsWeb ? DashboardPage() : HomePage();
+              return kIsWeb ? DashboardPage() : MapPage();
             },
           );
         }

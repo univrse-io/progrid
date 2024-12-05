@@ -3,11 +3,16 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/providers/tower_provider.dart';
 import 'package:progrid/models/tower.dart';
+import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/tower_page.dart';
+import 'package:progrid/pages/towers_list_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
 // uses openstreetmap
+
+// TODO: add link to tower list page
+// TODO: add link to profile page
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -103,10 +108,11 @@ class _MapPageState extends State<MapPage> {
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TowerPage(towerId: tower.id),
-                          ));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TowerPage(towerId: tower.id),
+                        ),
+                      );
                     },
                     child: Stack(
                       alignment: Alignment.center,
@@ -181,26 +187,82 @@ class _MapPageState extends State<MapPage> {
                   ),
                   SimpleAttributionWidget(
                     source: Text('OpenStreetMap'),
-                    backgroundColor: Colors.black.withOpacity(0.04),
+                    backgroundColor: Colors.black.withOpacity(0.1),
                   ),
                 ],
               );
             },
           ),
 
-          // back button
+          // top row
           Positioned(
-            top: 28,
-            left: 6,
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.pop(context); // go back
-              },
-              backgroundColor: Colors.black.withOpacity(0.6),
-              mini: true,
-              child: const Icon(Icons.arrow_back),
+            top: 30,
+            right: 14,
+            child: Row(
+              children: [
+                
+                // search button
+                FloatingActionButton(
+                  heroTag: 'searchbar',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => const TowersListPage(),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                      ),
+
+                      // MaterialPageRoute(
+                      //   builder: (context) => const TowersListPage(),
+                      // ),
+                    );
+                  },
+                  backgroundColor: Colors.black.withOpacity(0.6),
+                  child: const Icon(
+                    Icons.search,
+                    size: 32,
+                  ),
+                  mini: true,
+                ),
+
+                // profile button
+                FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfilePage(),
+                        ));
+                  },
+                  backgroundColor: Colors.black.withOpacity(0.6),
+                  child: const Icon(
+                    Icons.person,
+                    size: 32,
+                  ),
+                  mini: true,
+                ),
+              ],
             ),
           ),
+
+          // // back button
+          // Positioned(
+          //   top: 28,
+          //   left: 6,
+          //   child: FloatingActionButton(
+          //     onPressed: () {
+          //       Navigator.pop(context); // go back
+          //     },
+          //     backgroundColor: Colors.black.withOpacity(0.6),
+          //     mini: true,
+          //     child: const Icon(Icons.arrow_back),
+          //   ),
+          // ),
         ],
       ),
     );
