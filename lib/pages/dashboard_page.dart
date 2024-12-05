@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/tower.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -39,7 +41,102 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding: const EdgeInsets.all(10),
                   child: Row(
                     children: [
-                      Expanded(flex: 5, child: Placeholder()), // map
+                      Expanded(
+                          flex: 5,
+                          child: FlutterMap(
+                              options: MapOptions(
+                                  initialCenter: LatLng(3.1408, 101.6932),
+                                  initialZoom: 11,
+                                  interactionOptions: InteractionOptions(
+                                      flags: ~InteractiveFlag.doubleTapZoom)),
+                              children: [
+                                TileLayer(
+                                  urlTemplate:
+                                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                  userAgentPackageName:
+                                      'dev.fleaflet.flutter_map.example',
+                                ),
+                                MarkerLayer(markers: [
+                                  ...towers.map((tower) => Marker(
+                                        point: LatLng(tower.position.latitude,
+                                            tower.position.longitude),
+                                        width: 80,
+                                        child: GestureDetector(
+                                          onTap: () {},
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              // marker icon
+                                              Icon(
+                                                Icons.cell_tower,
+                                                color: switch (tower.region) {
+                                                  'southern' => Color.fromARGB(
+                                                      255, 82, 114, 76),
+                                                  'northern' => Color.fromARGB(
+                                                      255, 100, 68, 68),
+                                                  'eastern' => Color.fromARGB(
+                                                      255, 134, 124, 79),
+                                                  'central' => Color.fromARGB(
+                                                      255, 63, 81, 100),
+                                                  'western' => Color.fromARGB(
+                                                      255, 104, 71, 104),
+                                                  'sabah' => Color.fromARGB(
+                                                      255, 62, 88, 88),
+                                                  'sarawak' => Color.fromARGB(
+                                                      255, 163, 110, 90),
+                                                  _ => Colors.grey
+                                                },
+                                                size: 36,
+                                              ),
+
+                                              // information box
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 5),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black
+                                                      .withOpacity(0.7),
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    // status indicator
+                                                    Container(
+                                                      width: 8,
+                                                      height: 8,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: tower.status ==
+                                                                'surveyed'
+                                                            ? Colors.green
+                                                            : Colors.red,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 4),
+
+                                                    // tower id
+                                                    Text(
+                                                      tower.id,
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 10,
+                                                      ),
+                                                      maxLines: 1,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ))
+                                ])
+                              ])),
                       SizedBox(width: 10),
                       Expanded(
                         flex: 2,
