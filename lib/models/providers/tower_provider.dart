@@ -35,60 +35,48 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
-  // add a report to a tower
-  // Future<void> addReportToTower(String towerId, Report report) async {
-  //   try {
-  //     final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
-  //     final towerSnapshot = await towerRef.get();
+  Future<void> addIssueToTower(String towerId, Issue issue) async {
+    try {
+      // add to database
+      final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
+      final towerSnapshot = await towerRef.get();
+      if (!towerSnapshot.exists) throw "Tower not found";
 
-  //     if (!towerSnapshot.exists) {
-  //       throw 'Tower not found';
-  //     }
+      final String issueId = await _generateUniqueId(towerId, 'I');
+      await towerRef.collection('issues').doc(issueId).set(issue.toMap());
 
-  //     // update database, singly
-  //     final String reportId = await _generateUniqueId(towerId, 'R');
-  //     await towerRef.collection('reports').doc(reportId).set(report.toMap());
-  //     await towerRef.update({'status': 'surveyed'});
+      // add to local base
+      final towerIndex = towers.indexWhere((tower) => tower.id == towerId);
+      if (towerIndex != -1) {
+        towers[towerIndex].issues.add(issue);
+        notifyListeners();
+      }
+    } catch (e) {
+      throw 'Error adding issue: $e';
+    }
+  }
 
-  //     // update local cache tower status
-  //     final towerIndex = _towers.indexWhere((tower) => tower.id == towerId);
-  //     if (towerIndex != -1) {
-  //       // TODO: add cache report 
-  //       _towers[towerIndex].reports?.listen((reports) {
-  //         reports.add(report);
-  //       });
+  Future<void> addReportToTower(String towerId, Report report) async {
+    try {
+      // add to database
+      final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
+      final towerSnapshot = await towerRef.get();
+      if (!towerSnapshot.exists) throw "Tower not found";
 
-  //       // update cache status
-  //       _towers[towerIndex].status = 'surveyed';
-  //       notifyListeners();
-  //     }
+      final String issueId = await _generateUniqueId(towerId, 'R');
+      await towerRef.collection('reports').doc(issueId).set(report.toMap());
+      await towerRef.update({'status': 'surveyed'});
 
-  //     notifyListeners();
-  //   } catch (e) {
-  //     throw 'Error adding report: $e';
-  //   }
-  // }
-
-  // Future<void> addIssueToTower(String towerId, Issue issue) async {
-  //   try {
-  //     final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
-  //     final towerSnapshot = await towerRef.get();
-
-  //     if (!towerSnapshot.exists) {
-  //       throw 'Tower not found';
-  //     }
-
-  //     // custom issue id
-  //     final String issueId = await _generateUniqueId(towerId, 'I');
-  //     await towerRef.collection('issues').doc(issueId).set(issue.toMap());
-
-  //     // TODO: add isse to local tower cache
-
-  //     notifyListeners();
-  //   } catch (e) {
-  //     throw 'Error adding issue: $e';
-  //   }
-  // }
+      // add to local base
+      final towerIndex = towers.indexWhere((tower) => tower.id == towerId);
+      if (towerIndex != -1) {
+        towers[towerIndex].reports.add(report);
+        notifyListeners();
+      }
+    } catch (e) {
+      throw 'Error adding report: $e';
+    }
+  }
 
   Future<String> _generateUniqueId(String towerId, String type) async {
     String id = 'null';
