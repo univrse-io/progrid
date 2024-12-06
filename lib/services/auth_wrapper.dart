@@ -7,6 +7,7 @@ import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
 import 'package:progrid/pages/dashboard_page.dart';
 import 'package:progrid/pages/map_page.dart';
+import 'package:progrid/pages/user_verification_page.dart';
 import 'package:provider/provider.dart';
 
 class AuthWrapper extends StatefulWidget {
@@ -54,6 +55,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
         final user = snapshot.data;
 
         if (user != null) {
+          // check email user verification status
+          if (!user.emailVerified) {
+            // do not implement any navigation push in this class
+            // go to email verification page
+            _onLoginPage = true;
+            return UserVerificationPage();
+          }
+
           // fetch user info and set user provider
           WidgetsBinding.instance.addPostFrameCallback(
             (_) {
@@ -66,9 +75,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
               towersProvider.loadTowers();
               print('towers loaded: ${towersProvider.towers.length}');
 
-              // set up towers stream
-              // final towerProvider = Provider.of<TowersProvider>(context, listen: false);
-              // towerProvider.fetchTowersStream();
+              // reset to login page in background
+              _onLoginPage = true;
             },
           );
 
