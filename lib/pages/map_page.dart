@@ -78,6 +78,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: updates to the provider doesn't refresh marker?
     final towersProvider = Provider.of<TowersProvider>(context);
     // final towers = towersProvider.towers;
 
