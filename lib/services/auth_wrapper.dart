@@ -73,7 +73,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
               // load towers from database
               final towersProvider = Provider.of<TowersProvider>(context, listen: false);
               towersProvider.loadTowers();
-              print('towers loaded: ${towersProvider.towers.length}');
 
               // reset to login page in background
               _onLoginPage = true;
