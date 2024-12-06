@@ -23,6 +23,7 @@ class MainApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => TowersProvider()),
         ],
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Progrid',
           theme: lightTheme,
           darkTheme: darkTheme,

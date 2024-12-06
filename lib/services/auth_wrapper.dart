@@ -3,15 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/providers/tower_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
-import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
 import 'package:progrid/pages/dashboard_page.dart';
-import 'package:progrid/pages/home_page.dart';
+import 'package:progrid/pages/map_page.dart';
+import 'package:progrid/pages/user_verification_page.dart';
 import 'package:provider/provider.dart';
-
-// TODO: fetch towers only during initialization, no reports or issues
-// TODO: fetch issues and reports only when a tower is clicked, should we delete them locally on exit?
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -58,39 +55,36 @@ class _AuthWrapperState extends State<AuthWrapper> {
         final user = snapshot.data;
 
         if (user != null) {
+          // check email user verification status
+          if (!user.emailVerified) {
+            // do not implement any navigation push in this class
+            // go to email verification page
+            _onLoginPage = true;
+            return UserVerificationPage();
+          }
+
           // fetch user info and set user provider
           WidgetsBinding.instance.addPostFrameCallback(
             (_) {
-              final userProvider =
-                  Provider.of<UserProvider>(context, listen: false);
+              final userProvider = Provider.of<UserProvider>(context, listen: false);
               userProvider.setUser(user);
               userProvider.fetchUserInfoFromDatabase(user);
+
+              // load towers from database
+              final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+              towersProvider.loadTowers();
+              print('towers loaded: ${towersProvider.towers.length}');
+
+              // reset to login page in background
+              _onLoginPage = true;
             },
           );
 
-          // get towers data stream
-          return StreamBuilder<List<Tower>>(
-            stream: Provider.of<TowersProvider>(context).getTowersStream(),
-            builder: (context, towerSnapshot) {
-              if (towerSnapshot.connectionState == ConnectionState.waiting) {
-                return const Scaffold(
-                    body: Center(child: CircularProgressIndicator()));
-              }
-
-              if (towerSnapshot.hasError) {
-                return const Scaffold(
-                    body: Center(child: Text('Error loading towers')));
-              }
-
-              return kIsWeb ? DashboardPage() : HomePage();
-            },
-          );
+          return kIsWeb ? DashboardPage() : MapPage();
         }
 
         // if no user authenticated
-        return _onLoginPage
-            ? LoginPage(onTapSwitchPage: _toggleLoginPage)
-            : RegisterPage(onTapSwitchPage: _toggleLoginPage);
+        return _onLoginPage ? LoginPage(onTapSwitchPage: _toggleLoginPage) : RegisterPage(onTapSwitchPage: _toggleLoginPage);
       },
     );
   }

@@ -20,6 +20,8 @@ class ReportPage extends StatefulWidget {
 class _ReportPageState extends State<ReportPage> {
   String? _selectedImageUrl;
 
+  // TODO: make overlay encapsulate whole screen, including appbar (new page?)
+
   // close overlay
   void _closeOverlay() {
     setState(() {
