@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/pages/towers_list_page.dart';

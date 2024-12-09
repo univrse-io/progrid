@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/providers/issues_provider.dart';
+import 'package:progrid/models/providers/reports_provider.dart';
+import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
@@ -57,7 +59,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         if (user != null) {
           // check email user verification status
           if (!user.emailVerified) {
-            // do not implement any navigation push in this class
+            // !!do not implement any sort of push navigation in this class!!
             // go to email verification page
             _onLoginPage = true;
             return UserVerificationPage();
@@ -66,13 +68,15 @@ class _AuthWrapperState extends State<AuthWrapper> {
           // fetch user info and set user provider
           WidgetsBinding.instance.addPostFrameCallback(
             (_) {
+              // load user information
               final userProvider = Provider.of<UserProvider>(context, listen: false);
               userProvider.setUser(user);
               userProvider.fetchUserInfoFromDatabase(user);
 
-              // load towers from database
-              final towersProvider = Provider.of<TowersProvider>(context, listen: false);
-              towersProvider.loadTowers();
+              // connect to database
+              Provider.of<TowersProvider>(context, listen: false).loadTowers();
+              Provider.of<IssuesProvider>(context, listen: false).loadIssues();
+              Provider.of<ReportsProvider>(context, listen: false).loadReports();
 
               // reset to login page in background
               _onLoginPage = true;

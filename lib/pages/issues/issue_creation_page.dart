@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/issue.dart';
-import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -47,23 +47,24 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
       status: 'unresolved',
     );
 
-    try {
-      await towersProvider.addIssueToTower(widget.towerId, issue);
-      _descriptionController.clear();
+    // TODO: fix
+    // try {
+    //   await towersProvider.addIssueToTower(widget.towerId, issue);
+    //   _descriptionController.clear();
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Issue created successfully!")),
-        );
-        Navigator.pop(context); // go back
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to create issue")),
-        );
-      }
-    }
+    //   if (mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text("Issue created successfully!")),
+    //     );
+    //     Navigator.pop(context); // go back
+    //   }
+    // } catch (e) {
+    //   if (mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text("Failed to create issue")),
+    //     );
+    //   }
+    // }
   }
 
   @override

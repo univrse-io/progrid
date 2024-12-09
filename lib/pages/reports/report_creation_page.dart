@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/models/report.dart';
 import 'package:provider/provider.dart';
@@ -90,32 +90,33 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
       images: imageUrls,
     );
 
-    try {
-      await towersProvider.addReportToTower(widget.towerId, report);
-      _notesController.clear();
+    // TODO: fix
+    // try {
+    //   await towersProvider.addReportToTower(widget.towerId, report);
+    //   _notesController.clear();
 
-      setState(() {
-        _isLoading = false;
-      });
+    //   setState(() {
+    //     _isLoading = false;
+    //   });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Report created successfully!")),
-        );
+    //   if (mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(content: Text("Report created successfully!")),
+    //     );
 
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+    //     Navigator.pop(context);
+    //   }
+    // } catch (e) {
+    //   setState(() {
+    //     _isLoading = false;
+    //   });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to create report: $e")),
-        );
-      }
-    }
+    //   if (mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text("Failed to create report: $e")),
+    //     );
+    //   }
+    // }
   }
 
   @override

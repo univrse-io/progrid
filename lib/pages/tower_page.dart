@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:progrid/models/providers/tower_provider.dart';
+import 'package:progrid/models/providers/reports_provider.dart';
+import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
 import 'package:progrid/pages/reports/report_creation_page.dart';
 import 'package:progrid/pages/reports/report_page.dart';
@@ -20,6 +21,9 @@ class TowerPage extends StatelessWidget {
       (tower) => tower.id == towerId,
       orElse: () => throw Exception("Tower not found"),
     );
+
+    final reportsProvider = Provider.of<ReportsProvider>(context);
+    final reports = reportsProvider.reports.where((report) => report.id.startsWith('$towerId-R'));
 
     return Scaffold(
       appBar: AppBar(
@@ -149,104 +153,105 @@ class TowerPage extends StatelessWidget {
             const SizedBox(height: 5),
 
             Expanded(
-              child: selectedTower.reports.isEmpty
-                  ? Center(child: Text("No Report History..."))
-                  : ListView.builder(
-                      itemCount: selectedTower.reports.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        final report = selectedTower.reports[index];
-                        return FutureBuilder<DocumentSnapshot>(
-                          future: FirebaseFirestore.instance.collection('users').doc(report.authorId).get(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              return Center(child: Text('Error: ${snapshot.error}'));
-                            } else if (!snapshot.hasData || !snapshot.data!.exists) {
-                              return Center(child: Text('Author not found.'));
-                            } else {
-                              final authorName = snapshot.data!['name'] as String;
+                child: reports.isEmpty
+                    ? Center(child: Text("No Report History"))
+                    : ListView.builder(
+                        itemCount: reports.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          final report = reports.toList()[index];
 
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ReportPage(
-                                        towerId: selectedTower.id,
-                                        reportId: report.id,
+                          // future to get author from authorId
+                          return FutureBuilder<DocumentSnapshot>(
+                            future: FirebaseFirestore.instance.collection('users').doc(report.authorId).get(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(child: Text('Error: ${snapshot.error}'));
+                              } else if (!snapshot.hasData || !snapshot.data!.exists) {
+                                return Center(child: Text('Author not found.'));
+                              } else {
+                                final authorName = snapshot.data!['name'] as String;
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ReportPage(
+                                          towerId: selectedTower.id,
+                                          reportId: report.id,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Card(
+                                    margin: const EdgeInsets.symmetric(vertical: 4),
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: SafeArea(
+                                      minimum: EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          // left side
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              // report id
+                                              Text(report.id,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                  )),
+                                              // author name
+                                              Text(
+                                                authorName,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20,
+                                                ),
+                                              ),
+                                              // photo count
+                                              Text(
+                                                '${report.images.length} Photo(s)',
+                                                style: TextStyle(
+                                                  color: Theme.of(context).colorScheme.secondary,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontStyle: FontStyle.italic,
+                                                  fontSize: 13,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          // right side
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
+                                                style: TextStyle(fontSize: 15),
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Icon(
+                                                Icons.arrow_right,
+                                                size: 36,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  );
-                                },
-                                child: Card(
-                                  margin: const EdgeInsets.symmetric(vertical: 4),
-                                  elevation: 5,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: SafeArea(
-                                    minimum: EdgeInsets.all(12),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        // left side
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            // report id
-                                            Text(report.id,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                )),
-                                            // author name
-                                            Text(
-                                              authorName,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                            // photo count
-                                            Text(
-                                              '${report.images.length} Photo(s)',
-                                              style: TextStyle(
-                                                color: Theme.of(context).colorScheme.secondary,
-                                                fontWeight: FontWeight.bold,
-                                                fontStyle: FontStyle.italic,
-                                                fontSize: 13,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        // right side
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                            const SizedBox(height: 10),
-                                            Icon(
-                                              Icons.arrow_right,
-                                              size: 36,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        );
-                      },
-                    ),
-            ),
+                                );
+                              }
+                            },
+                          );
+                        },
+                      )),
 
             FilledButton(
               onPressed: () {
