@@ -80,7 +80,9 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     // TODO: updates to the provider doesn't refresh marker?
     final towersProvider = Provider.of<TowersProvider>(context);
-    // final towers = towersProvider.towers;
+
+    final int surveyedCount = towersProvider.towers.where((tower) => tower.status == 'surveyed').length;
+    final int towerCount = towersProvider.towers.length;
 
     return Scaffold(
       body: Stack(
@@ -179,6 +181,24 @@ class _MapPageState extends State<MapPage> {
             right: 14,
             child: Row(
               children: [
+                // tower counter
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'Surveyed: $surveyedCount / Total: $towerCount',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5),
+
                 // search button
                 FloatingActionButton(
                   heroTag: 'searchbar',
@@ -243,20 +263,6 @@ class _MapPageState extends State<MapPage> {
               ],
             ),
           ),
-
-          // // back button
-          // Positioned(
-          //   top: 28,
-          //   left: 6,
-          //   child: FloatingActionButton(
-          //     onPressed: () {
-          //       Navigator.pop(context); // go back
-          //     },
-          //     backgroundColor: Colors.black.withOpacity(0.6),
-          //     mini: true,
-          //     child: const Icon(Icons.arrow_back),
-          //   ),
-          // ),
         ],
       ),
     );

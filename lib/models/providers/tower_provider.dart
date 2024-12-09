@@ -6,6 +6,8 @@ import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/report.dart';
 import 'package:progrid/models/tower.dart';
 
+// TODO: map updates twice???
+
 // Tower List Provider
 class TowersProvider extends ChangeNotifier {
   List<Tower> towers = [];
@@ -16,43 +18,31 @@ class TowersProvider extends ChangeNotifier {
   Future<void> loadTowers() async {
     try {
       towers = [];
-      final snapshot = await FirebaseFirestore.instance.collection('towers').get();
-
-      // load multiple simultaneously
-      // TODO: implement progress tracking using a counter?
-      towers = await Future.wait(snapshot.docs.map((doc) async {
-        return await Tower.fromFirestore(doc);
-      }));
-      notifyListeners();
-
-      // // load multiple individually
-      // for (final doc in snapshot.docs) {
-      //   // Convert doc to a Tower object
-      //   final Tower tower = await Tower.fromFirestore(doc);
-      //   towers.add(tower);
-      //   notifyListeners();
-      // }
-
       // track changes, update local
-      _towersSubscription = FirebaseFirestore.instance.collection('towers').snapshots().listen((snapshot) async {
-        for (final docChange in snapshot.docChanges) {
-          if (docChange.type == DocumentChangeType.added) {
-            // new tower added
-            final newTower = await Tower.fromFirestore(docChange.doc);
-            towers.add(newTower);
-          } else if (docChange.type == DocumentChangeType.modified) {
-            // tower updated
-            final index = towers.indexWhere((t) => t.id == docChange.doc.id);
-            if (index != -1) {
-              final updatedTower = await Tower.fromFirestore(docChange.doc);
-              towers[index] = updatedTower;
-            }
-          } else if (docChange.type == DocumentChangeType.removed) {
-            // tower deleted
-            towers.removeWhere((t) => t.id == docChange.doc.id);
-          }
-        }
+      // _towersSubscription = FirebaseFirestore.instance.collection('towers').snapshots().listen((snapshot) async {
+      //   for (final docChange in snapshot.docChanges) {
+      //     if (docChange.type == DocumentChangeType.added) {
+      //       // new tower added
+      //       final newTower = await Tower.fromFirestore(docChange.doc);
+      //       towers.add(newTower);
+      //     } else if (docChange.type == DocumentChangeType.modified) {
+      //       // tower updated
+      //       final index = towers.indexWhere((t) => t.id == docChange.doc.id);
+      //       if (index != -1) {
+      //         final updatedTower = await Tower.fromFirestore(docChange.doc);
+      //         towers[index] = updatedTower;
+      //       }
+      //     } else if (docChange.type == DocumentChangeType.removed) {
+      //       // tower deleted
+      //       towers.removeWhere((t) => t.id == docChange.doc.id);
+      //     }
+      //   }
 
+      //   notifyListeners();
+      // });
+
+      _towersSubscription = FirebaseFirestore.instance.collection('towers').snapshots().listen((snapshot) async {
+        towers = await Future.wait(snapshot.docs.map((doc) async => await Tower.fromFirestore(doc)));
         notifyListeners();
       });
     } catch (e) {

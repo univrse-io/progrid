@@ -76,42 +76,4 @@ class Tower {
       issues: issues,
     );
   }
-
-  // static Tower fromFirestore(DocumentSnapshot doc) {
-  //   final data = doc.data()! as Map<String, dynamic>;
-
-  //   // set up report stream
-  //   final Stream<List<Report>> reportsStream = FirebaseFirestore.instance
-  //       .collection('towers')
-  //       .doc(doc.id)
-  //       .collection('reports')
-  //       .snapshots()
-  //       .map((snapshot) =>
-  //           snapshot.docs.map((doc) => Report.fromFirestore(doc)).toList());
-
-  //   // set up issue stream
-  //   final Stream<List<Issue>> issuesStream = FirebaseFirestore.instance
-  //       .collection('towers')
-  //       .doc(doc.id)
-  //       .collection('issues')
-  //       .snapshots()
-  //       .map((snapshot) =>
-  //           snapshot.docs.map((doc) => Issue.fromFirestore(doc)).toList());
-
-  //   return Tower(
-  //     id: doc.id, // Firebase document ID = tower ID
-  //     name: data['name'] as String? ?? 'undefined',
-  //     region: data['region'] as String? ?? 'undefined',
-  //     type: data['type'] as String? ?? 'undefined',
-  //     owner: data['owner'] as String? ?? 'undefined',
-  //     address: data['address'] as String? ?? 'undefined',
-  //     position: data['position'] is GeoPoint
-  //         ? data['position'] as GeoPoint
-  //         : GeoPoint(0, 0), // fix
-  //     status: data['status'] as String? ?? 'undefined',
-  //     notes: data['notes'] as String? ?? 'no notes',
-  //     reports: reportsStream,
-  //     issues: issuesStream,
-  //   );
-  // }
 }
