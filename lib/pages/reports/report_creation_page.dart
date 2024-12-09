@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:progrid/models/providers/reports_provider.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/models/report.dart';
@@ -74,6 +75,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+    final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
 
     // upload images to Firebase and get URLs
     final List<String> imageUrls = [];
@@ -91,32 +93,30 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
     );
 
     // TODO: fix
-    // try {
-    //   await towersProvider.addReportToTower(widget.towerId, report);
-    //   _notesController.clear();
+    try {
+      // add report to report provider and associated list
+      await reportsProvider.addReport(widget.towerId, report);
 
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
+      // update associated tower status to 'in progress'
+      await towersProvider.updateTowerStatus(widget.towerId, 'in-progress');
 
-    //   if (mounted) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(content: Text("Report created successfully!")),
-    //     );
-
-    //     Navigator.pop(context);
-    //   }
-    // } catch (e) {
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
-
-    //   if (mounted) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text("Failed to create report: $e")),
-    //     );
-    //   }
-    // }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Report Created Successfully!"),
+        ));
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error creating report: $e")),
+        );
+      }
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override

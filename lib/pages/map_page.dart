@@ -144,7 +144,11 @@ class _MapPageState extends State<MapPage> {
                                   height: 8,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: tower.status == 'surveyed' ? AppColors.green : AppColors.red,
+                                    color: tower.status == 'surveyed'
+                                        ? AppColors.green
+                                        : tower.status == 'in-progress'
+                                            ? AppColors.yellow
+                                            : AppColors.red
                                   ),
                                 ),
                                 const SizedBox(width: 4),

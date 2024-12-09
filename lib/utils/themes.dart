@@ -7,6 +7,7 @@ class AppColors {
   static const Color secondary = Color(0xFF908880);
   static const Color tertiary = Color.fromARGB(255, 182, 176, 170);
   static const Color red = Color(0xFFAE4040);
+  static const Color yellow = Color(0xFFE9D148);
   static const Color green = Color(0xFF7DAC6D);
   static const Color blue = Color(0xFF627B92);
 }
@@ -43,14 +44,12 @@ final lightTheme = ThemeData(
           borderSide: BorderSide(color: Colors.red),
           borderRadius: BorderRadius.circular(10),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
+        contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
     filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
             textStyle: TextStyle(fontWeight: FontWeight.w600),
             minimumSize: Size.fromHeight(45),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)))));
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))));
 
 final darkTheme = ThemeData(
     brightness: Brightness.dark,
@@ -79,11 +78,9 @@ final darkTheme = ThemeData(
           borderSide: BorderSide(color: Colors.red),
           borderRadius: BorderRadius.circular(10),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
+        contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
     filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
             textStyle: TextStyle(fontWeight: FontWeight.w600),
             minimumSize: Size.fromHeight(45),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)))));
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))));

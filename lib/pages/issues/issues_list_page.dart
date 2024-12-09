@@ -57,7 +57,7 @@ class IssuesListPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // issues list
+            // issues list TODO: replace new stream with provider
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance

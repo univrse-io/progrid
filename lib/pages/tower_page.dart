@@ -87,7 +87,11 @@ class TowerPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    color: selectedTower.status == 'surveyed' ? AppColors.green : AppColors.red,
+                    color: selectedTower.status == 'surveyed'
+                          ? AppColors.green
+                          : selectedTower.status == 'in-progress'
+                              ? AppColors.yellow
+                              : AppColors.red
                   ),
                   child: Text(
                     '${selectedTower.status[0].toUpperCase()}${selectedTower.status.substring(1)}',
