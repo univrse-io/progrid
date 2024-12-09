@@ -28,31 +28,31 @@ class _MapPageState extends State<MapPage> {
   final String _tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   // configure map tiles here
-  Widget _mapThemeTileBuilder(
-    BuildContext context,
-    Widget tileWidget,
-    TileImage tile,
-  ) {
-    // black and white light theme
-    return ColorFiltered(
-      colorFilter: const ColorFilter.mode(
-        Colors.white,
-        BlendMode.saturation,
-      ),
-      child: tileWidget,
-    );
+  // Widget _mapThemeTileBuilder(
+  //   BuildContext context,
+  //   Widget tileWidget,
+  //   TileImage tile,
+  // ) {
+  //   // black and white light theme
+  //   return ColorFiltered(
+  //     colorFilter: const ColorFilter.mode(
+  //       Colors.white,
+  //       BlendMode.saturation,
+  //     ),
+  //     child: tileWidget,
+  //   );
 
-    // dark theme
-    // return ColorFiltered(
-    //   colorFilter: const ColorFilter.matrix(<double>[
-    //     -0.2126, -0.7152, -0.0722, 0, 255, // red channel
-    //     -0.2126, -0.7152, -0.0722, 0, 255, // green channel
-    //     -0.2126, -0.7152, -0.0722, 0, 255, // blue channel
-    //     0, 0, 0, 1, 0, // alpha channel
-    //   ]),
-    //   child: tileWidget,
-    // );
-  }
+  //   // dark theme
+  //   // return ColorFiltered(
+  //   //   colorFilter: const ColorFilter.matrix(<double>[
+  //   //     -0.2126, -0.7152, -0.0722, 0, 255, // red channel
+  //   //     -0.2126, -0.7152, -0.0722, 0, 255, // green channel
+  //   //     -0.2126, -0.7152, -0.0722, 0, 255, // blue channel
+  //   //     0, 0, 0, 1, 0, // alpha channel
+  //   //   ]),
+  //   //   child: tileWidget,
+  //   // );
+  // }
 
   // determing region color here
   Color _getRegionColor(String region) {
@@ -78,7 +78,6 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: updates to the provider doesn't refresh marker?
     final towersProvider = Provider.of<TowersProvider>(context);
 
     final int surveyedCount = towersProvider.towers.where((tower) => tower.status == 'surveyed').length;
@@ -103,7 +102,6 @@ class _MapPageState extends State<MapPage> {
             children: [
               TileLayer(
                 urlTemplate: _tileLayerUrl,
-                tileBuilder: _mapThemeTileBuilder,
               ),
               MarkerLayer(
                 alignment: Alignment.topCenter, // define marker alignment here

@@ -6,41 +6,17 @@ import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/report.dart';
 import 'package:progrid/models/tower.dart';
 
-// TODO: map updates twice???
-
 // Tower List Provider
 class TowersProvider extends ChangeNotifier {
   List<Tower> towers = [];
   StreamSubscription? _towersSubscription;
 
-  // on app start, load entire database
-  // also sets up the stream subscription
+  // setup stream subscription
   Future<void> loadTowers() async {
     try {
       towers = [];
-      // track changes, update local
-      // _towersSubscription = FirebaseFirestore.instance.collection('towers').snapshots().listen((snapshot) async {
-      //   for (final docChange in snapshot.docChanges) {
-      //     if (docChange.type == DocumentChangeType.added) {
-      //       // new tower added
-      //       final newTower = await Tower.fromFirestore(docChange.doc);
-      //       towers.add(newTower);
-      //     } else if (docChange.type == DocumentChangeType.modified) {
-      //       // tower updated
-      //       final index = towers.indexWhere((t) => t.id == docChange.doc.id);
-      //       if (index != -1) {
-      //         final updatedTower = await Tower.fromFirestore(docChange.doc);
-      //         towers[index] = updatedTower;
-      //       }
-      //     } else if (docChange.type == DocumentChangeType.removed) {
-      //       // tower deleted
-      //       towers.removeWhere((t) => t.id == docChange.doc.id);
-      //     }
-      //   }
 
-      //   notifyListeners();
-      // });
-
+      // currently redownloads entire list everytime there is an update
       _towersSubscription = FirebaseFirestore.instance.collection('towers').snapshots().listen((snapshot) async {
         towers = await Future.wait(snapshot.docs.map((doc) async => await Tower.fromFirestore(doc)));
         notifyListeners();
@@ -107,7 +83,7 @@ class TowersProvider extends ChangeNotifier {
     // on the off-chance of 1/onetrillion that same ids are generated
     while (!isUnique) {
       String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      timestamp = timestamp.substring(timestamp.length - 3); // last 3 digits, TODO: REVIEW METHOD
+      timestamp = timestamp.substring(timestamp.length - 3); // last 3 digits
 
       // combine
       id = "$towerId-${timestamp}-$type";

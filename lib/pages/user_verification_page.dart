@@ -52,7 +52,6 @@ class _UserVerificationPageState extends State<UserVerificationPage> {
     }
   }
 
-  // TODO: need to format this page
   @override
   Widget build(BuildContext context) {
     return Scaffold(

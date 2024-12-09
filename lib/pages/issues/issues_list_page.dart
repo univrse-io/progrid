@@ -167,7 +167,7 @@ class IssuesListPage extends StatelessWidget {
                                               ),
                                               const Text(", "),
                                               Text(
-                                                // UNDONE: is type casting really necessary? check model implementation
+                                                // UNDONE: is type casting really necessary? check dynamic model implementation
                                                 '${(status as String)[0].toUpperCase()}${status.substring(1)}',
                                                 style: TextStyle(
                                                   color: Theme.of(context)
