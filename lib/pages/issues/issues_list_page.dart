@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:progrid/models/providers/issues_provider.dart';
 import 'package:progrid/pages/issues/issue_creation_page.dart';
 import 'package:progrid/pages/issues/issue_page.dart';
 import 'package:progrid/utils/themes.dart';
+import 'package:provider/provider.dart';
 
 class IssuesListPage extends StatelessWidget {
   final String towerId; // id of selected tower
@@ -12,6 +14,9 @@ class IssuesListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final issuesProvider = Provider.of<IssuesProvider>(context);
+    final issues = issuesProvider.issues.where((issue) => issue.id.startsWith('$towerId-I'));
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -57,159 +62,126 @@ class IssuesListPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // issues list TODO: replace new stream with provider
+            // issues list
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('towers')
-                    .doc(towerId)
-                    .collection('issues')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return const Center(child: Text("Failed to load issues"));
-                  } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(
-                      child: Text("No Issues Found"),
-                    );
-                  }
+              child: issues.isEmpty
+                  ? Center(child: Text("No Issues Found"))
+                  : ListView.builder(
+                      itemCount: issues.length,
+                      itemBuilder: (context, index) {
+                        final issue = issues.toList()[index];
+                        final tagsDisplay = issue.tags.join(', ');
 
-                  final issues = snapshot.data!.docs;
+                        return FutureBuilder<DocumentSnapshot>(
+                          future: FirebaseFirestore.instance.collection('users').doc(issue.authorId).get(),
+                          builder: (context, authorSnapshot) {
+                            final authorName = authorSnapshot.hasData && authorSnapshot.data!.exists
+                                ? authorSnapshot.data!['name'] as String
+                                : "Unknown Author";
 
-                  return ListView.builder(
-                    itemCount: issues.length,
-                    itemBuilder: (context, index) {
-                      final issueData = issues[index].data()! as Map<String, dynamic>;
-                      final issueId = issues[index].id;
-                      final tagsDisplay = (issueData['tags'] as List).join(', ');
-                      final authorId = issueData['authorId'];
-                      final status = issueData['status'] ?? 'open';
-                      final issueDate = (issueData['dateTime'] as Timestamp).toDate();
-
-                      return FutureBuilder<DocumentSnapshot>(
-                        future: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(authorId as String)
-                            .get(),
-                        builder: (context, authorSnapshot) {
-                          final authorName = authorSnapshot.hasData && authorSnapshot.data!.exists
-                              ? authorSnapshot.data!['name'] as String
-                              : "Unknown Author";
-
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => IssuePage(
-                                    issueId: issueId,
-                                    towerId: towerId,
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => IssuePage(
+                                      issueId: issue.id,
+                                      towerId: towerId,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                margin: const EdgeInsets.symmetric(vertical: 4),
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 70,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  width: 14,
+                                                  height: 14,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: issue.status == 'resolved' ? AppColors.green : AppColors.red,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 7),
+                                                Text(
+                                                  issue.id,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Text(
+                                              tagsDisplay,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  authorName,
+                                                  style: TextStyle(
+                                                    color: Theme.of(context).colorScheme.secondary,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const Text(", "),
+                                                Text(
+                                                  '${issue.status[0].toUpperCase()}${issue.status.substring(1)}',
+                                                  style: TextStyle(
+                                                    color: Theme.of(context).colorScheme.secondary,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 30,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              DateFormat('dd/MM/yy').format(issue.dateTime.toDate()),
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            const Icon(
+                                              Icons.arrow_right,
+                                              size: 36,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              );
-                            },
-                            child: Card(
-                              margin: const EdgeInsets.symmetric(vertical: 4),
-                              elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 70,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Container(
-                                                width: 14,
-                                                height: 14,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: status == 'resolved'
-                                                      ? AppColors.green
-                                                      : AppColors.red,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 7),
-                                              Text(
-                                                issueId,
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Text(
-                                            tagsDisplay,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                            ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                authorName,
-                                                style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              const Text(", "),
-                                              Text(
-                                                // UNDONE: is type casting really necessary? check dynamic model implementation
-                                                '${(status as String)[0].toUpperCase()}${status.substring(1)}',
-                                                style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 30,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            DateFormat('dd/MM/yy').format(issueDate),
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 10),
-                                          const Icon(
-                                            Icons.arrow_right,
-                                            size: 36,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
             )
           ],
         ),

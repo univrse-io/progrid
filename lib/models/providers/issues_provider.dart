@@ -22,6 +22,18 @@ class IssuesProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> addIssue(String towerId, Issue issue) async {
+    try {
+      final issueId = await _generateUniqueId(towerId, 'I');
+      await FirebaseFirestore.instance.collection('issues').doc(issueId).set(issue.toMap());
+
+      issues.add(issue);
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to add issue: $e");
+    }
+  }
+
   @override
   void dispose() {
     _issuesSubscription?.cancel();
@@ -39,7 +51,7 @@ class IssuesProvider extends ChangeNotifier {
       timestamp = timestamp.substring(timestamp.length - 3); // last 3 digits
 
       // combine
-      id = "$towerId-${timestamp}-$type";
+      id = "$towerId-$type-$timestamp";
 
       // collision check
       final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);

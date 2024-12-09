@@ -51,7 +51,7 @@ class ReportsProvider extends ChangeNotifier {
       timestamp = timestamp.substring(timestamp.length - 3); // last 3 digits
 
       // combine
-      id = "$towerId-${timestamp}-$type";
+      id = "$towerId-$type-$timestamp";
 
       // collision check
       final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
