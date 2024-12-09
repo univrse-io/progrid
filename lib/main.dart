@@ -30,7 +30,7 @@ class MainApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Progrid',
           theme: lightTheme,
-          darkTheme: darkTheme,
+          // darkTheme: darkTheme,
           home: const AuthWrapper(),
         ),
       );
