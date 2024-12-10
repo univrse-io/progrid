@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/pages/profile_page.dart';
@@ -100,75 +101,101 @@ class _MapPageState extends State<MapPage> {
               ),
             ),
             children: [
+              // base map layer
               TileLayer(
                 urlTemplate: _tileLayerUrl,
               ),
-              MarkerLayer(
-                alignment: Alignment.topCenter, // define marker alignment here
-                markers: towersProvider.towers.map((tower) {
-                  return Marker(
-                    point: LatLng(tower.position.latitude, tower.position.longitude),
-                    width: 80,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TowerPage(towerId: tower.id),
-                          ),
-                        );
-                      },
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          // marker icon
-                          Icon(
-                            Icons.cell_tower,
-                            color: _getRegionColor(tower.region),
-                            size: 36,
-                          ),
-                          // information box
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.7),
-                              borderRadius: BorderRadius.circular(4),
+
+              // map markers
+              MarkerClusterLayerWidget(
+                options: MarkerClusterLayerOptions(
+                  maxClusterRadius: 30,
+                  size: const Size(25, 25),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(10),
+                  maxZoom: 15,
+                  markers: towersProvider.towers.map((tower) {
+                    return Marker(
+                      point: LatLng(tower.position.latitude, tower.position.longitude),
+                      width: 80,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TowerPage(towerId: tower.id),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // status indicator
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: tower.status == 'surveyed'
-                                          ? AppColors.green
-                                          : tower.status == 'in-progress'
-                                              ? AppColors.yellow
-                                              : AppColors.red),
-                                ),
-                                const SizedBox(width: 4),
-                                // tower id
-                                Text(
-                                  tower.id,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
+                          );
+                        },
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // marker icon
+                            Icon(
+                              Icons.cell_tower,
+                              color: _getRegionColor(tower.region),
+                              size: 36,
+                            ),
+                            // information box
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // status indicator
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: tower.status == 'surveyed'
+                                            ? AppColors.green
+                                            : tower.status == 'in-progress'
+                                                ? AppColors.yellow
+                                                : AppColors.red),
                                   ),
-                                  maxLines: 1,
-                                ),
-                              ],
+                                  const SizedBox(width: 4),
+                                  // tower id
+                                  Text(
+                                    tower.id,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                    ),
+                                    maxLines: 1,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
+                  // TODO: make clusters display statuses of children, as pie chart
+                  builder: (context, markers) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.black.withOpacity(0.7),
+                      ),
+                      child: Center(
+                        child: Text(
+                          markers.length.toString(),
+                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
+
+              // add attributions here
               SimpleAttributionWidget(
                 source: Text('OpenStreetMap'),
                 backgroundColor: Colors.black.withOpacity(0.1),
