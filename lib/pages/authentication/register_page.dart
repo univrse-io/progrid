@@ -43,6 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'email': _emailController.text.trim(),
         'name': _nameController.text,
         'phone': 'not set',
+        'team': 'not set',
         'role': 'basic',
         'lastLogin': Timestamp.now(),
       });

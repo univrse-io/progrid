@@ -43,6 +43,10 @@ class ProfilePage extends StatelessWidget {
                     leading: Icon(Icons.phone_outlined),
                     title: Text(userProvider.phone),
                   ),
+                  ListTile(
+                    leading: Icon(Icons.group),
+                    title: Text(userProvider.team),
+                  ),
                 ],
               ),
             ),

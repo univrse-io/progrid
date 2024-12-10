@@ -12,6 +12,7 @@ class UserProvider extends ChangeNotifier {
   String email = 'undefined';
   String name = 'undefined';
   String phone = 'undefined';
+  String team = 'undefined';
   String role = 'undefined';
   Timestamp? lastLogin;
 
@@ -24,6 +25,7 @@ class UserProvider extends ChangeNotifier {
       email = 'undefined';
       name = 'undefined';
       phone = 'undefined';
+      team = 'undefined';
       role = 'undefined';
       lastLogin = null;
 
@@ -52,6 +54,7 @@ class UserProvider extends ChangeNotifier {
         email = data['email'] as String? ?? 'undefined';
         name = data['name'] as String? ?? 'undefined';
         phone = data['phone'] as String? ?? 'undefined';
+        team = data['team'] as String? ?? 'undefined';
         role = data['role'] as String? ?? 'undefined';
         lastLogin = data['lastLogin'] as Timestamp?;
 
