@@ -106,15 +106,15 @@ class _IssuePageState extends State<IssuePage> {
                 child: DropdownButton(
                   isDense: true,
                   value: issue.status,
-                  onChanged: (newStatus) async {
-                    if (newStatus != null && newStatus != issue.status) {
+                  onChanged: (value) async {
+                    if (value != null && value != issue.status) {
                       await FirebaseFirestore.instance
                           .collection('issues')
                           .doc(issue.id)
-                          .update({'status': newStatus});
+                          .update({'status': value});
 
                       // update local as well
-                      issue.status = newStatus;
+                      issue.status = value;
                     }
                   },
                   items: [
@@ -122,25 +122,26 @@ class _IssuePageState extends State<IssuePage> {
                       value: 'unresolved',
                       child: Text(
                         'Unresolved',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                        // style: TextStyle(
+                        //   color: Theme.of(context).colorScheme.onSurface,
+                        // ),
                       ),
                     ),
                     DropdownMenuItem(
                       value: 'resolved',
                       child: Text(
                         'Resolved',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                        // style: TextStyle(
+                        //   color: Theme.of(context).colorScheme.onSurface,
+                        // ),
                       ),
                     ),
                   ],
                   iconEnabledColor: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  dropdownColor: issue.status == 'resolved' ? AppColors.green : AppColors.red,
                   style: TextStyle(
-                    // UNDONE: text color is still broken
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: Theme.of(context).colorScheme.surface,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

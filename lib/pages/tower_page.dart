@@ -83,21 +83,50 @@ class TowerPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 5),
+
+                // dropdown
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                  padding: const EdgeInsets.only(left: 14, right: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
                     color: selectedTower.status == 'surveyed'
-                          ? AppColors.green
-                          : selectedTower.status == 'in-progress'
-                              ? AppColors.yellow
-                              : AppColors.red
+                        ? AppColors.green
+                        : selectedTower.status == 'in-progress'
+                            ? AppColors.yellow
+                            : AppColors.red,
                   ),
-                  child: Text(
-                    '${selectedTower.status[0].toUpperCase()}${selectedTower.status.substring(1)}',
+                  child: DropdownButton(
+                    isDense: true,
+                    value: selectedTower.status,
+                    onChanged: (value) async {
+                      if (value != null && value != selectedTower.status) {
+                        await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'status': value});
+                        selectedTower.status = value; // update local as well
+                      }
+                    },
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'surveyed',
+                        child: Text('Surveyed'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'in-progress',
+                        child: Text('In-Progress'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'unsurveyed',
+                        child: Text('Unsurveyed'),
+                      ),
+                    ],
+                    iconEnabledColor: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(24),
+                    dropdownColor: selectedTower.status == 'surveyed'
+                        ? AppColors.green
+                        : selectedTower.status == 'in-progress'
+                            ? AppColors.yellow
+                            : AppColors.red,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.surface,
-                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

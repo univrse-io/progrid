@@ -7,7 +7,7 @@ class AppColors {
   static const Color secondary = Color(0xFF908880);
   static const Color tertiary = Color.fromARGB(255, 182, 176, 170);
   static const Color red = Color(0xFFAE4040);
-  static const Color yellow = Color(0xFFE9D148);
+  static const Color yellow = Color.fromARGB(255, 230, 200, 31);
   static const Color green = Color(0xFF7DAC6D);
   static const Color blue = Color(0xFF627B92);
 }
