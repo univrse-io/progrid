@@ -18,8 +18,14 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
-            title: Text('SAPURA GIRN - PROJECT MONITORING REPORT',
-                style: TextStyle(fontWeight: FontWeight.bold))),
+            title: Row(
+          children: [
+            Image.asset('assets/images/sapura.png', height: 40),
+            SizedBox(width: 20),
+            Text('PROJECT MONITORING REPORT',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        )),
         body: FutureBuilder(
             future: FirebaseFirestore.instance.collection('towers').get(),
             builder: (context, snapshot) {
@@ -147,8 +153,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                                     // marker icon
                                                     Icon(
                                                       Icons.cell_tower,
-                                                      color: switch (
-                                                          tower.region.toLowerCase()) {
+                                                      color: switch (tower
+                                                          .region
+                                                          .toLowerCase()) {
                                                         'southern' =>
                                                           Color.fromARGB(
                                                               255, 82, 114, 76),
