@@ -113,9 +113,10 @@ class _MapPageState extends State<MapPage> {
               // map markers
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
-                  maxClusterRadius: 30,
-                  size: const Size(25, 25),
+                  maxClusterRadius: 25,
                   alignment: Alignment.center,
+                  centerMarkerOnClick: false,
+                  size: Size(100, 800), // TODO: make dynamic, cluster click functionality is currently unusable
                   padding: const EdgeInsets.all(10),
                   maxZoom: 15,
                   markers: towersProvider.towers.map((tower) {
@@ -181,21 +182,67 @@ class _MapPageState extends State<MapPage> {
                       ),
                     );
                   }).toList(),
-                  // TODO: make clusters display statuses of children, as pie chart
                   builder: (context, markers) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.black.withOpacity(0.7),
-                      ),
-                      child: Center(
-                        child: Text(
-                          markers.length.toString(),
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
-                        ),
-                      ),
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: markers.map((marker) {
+                        final tower = towersProvider.towers.firstWhere(
+                          (tower) => LatLng(tower.position.latitude, tower.position.longitude) == marker.point,
+                        );
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // status indicator
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: tower.status == 'surveyed'
+                                        ? AppColors.green
+                                        : tower.status == 'in-progress'
+                                            ? AppColors.yellow
+                                            : AppColors.red),
+                              ),
+                              const SizedBox(width: 4),
+                              // tower id
+                              Text(
+                                tower.id,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
+                                maxLines: 1,
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
                     );
                   },
+
+                  // // TODO: make clusters display statuses of children, as pie chart
+                  // builder: (context, markers) {
+                  //   return Container(
+                  //     decoration: BoxDecoration(
+                  //       borderRadius: BorderRadius.circular(20),
+                  //       color: Colors.black.withOpacity(0.7),
+                  //     ),
+                  //     child: Center(
+                  //       child: Text(
+                  //         markers.length.toString(),
+                  //         style: const TextStyle(color: Colors.white, fontSize: 12),
+                  //       ),
+                  //     ),
+                  //   );
+                  // },
                 ),
               ),
 
