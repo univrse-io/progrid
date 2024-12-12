@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:progrid/pages/dashboard/dashboard_page.dart';
@@ -25,10 +26,15 @@ class _DrawingScreenState extends State<DrawingScreen> {
                   child: ListTile(
                     trailing: ToggleButtons(
                         borderRadius: BorderRadius.circular(20),
-                        onPressed: (index) {
+                        onPressed: (index) async {
                           tower.drawingStatus = _drawingStatus[index];
                           towers[towers.indexWhere((x) => x.id == tower.id)] =
                               tower;
+
+                          await FirebaseFirestore.instance
+                              .collection('towers')
+                              .doc(tower.id)
+                              .update({'drawingStatus': _drawingStatus[index]});
 
                           setState(() {});
                         },
