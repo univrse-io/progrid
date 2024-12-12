@@ -7,7 +7,7 @@ import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
-import 'package:progrid/pages/dashboard_page.dart';
+import 'package:progrid/pages/dashboard/dashboard_page.dart';
 import 'package:progrid/pages/map_page.dart';
 import 'package:progrid/pages/user_verification_page.dart';
 import 'package:provider/provider.dart';
@@ -69,14 +69,16 @@ class _AuthWrapperState extends State<AuthWrapper> {
           WidgetsBinding.instance.addPostFrameCallback(
             (_) {
               // load user information
-              final userProvider = Provider.of<UserProvider>(context, listen: false);
+              final userProvider =
+                  Provider.of<UserProvider>(context, listen: false);
               userProvider.setUser(user);
               userProvider.fetchUserInfoFromDatabase(user);
 
               // connect to database
               Provider.of<TowersProvider>(context, listen: false).loadTowers();
               Provider.of<IssuesProvider>(context, listen: false).loadIssues();
-              Provider.of<ReportsProvider>(context, listen: false).loadReports();
+              Provider.of<ReportsProvider>(context, listen: false)
+                  .loadReports();
 
               // reset to login page in background
               _onLoginPage = true;
@@ -87,7 +89,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
         }
 
         // if no user authenticated
-        return _onLoginPage ? LoginPage(onTapSwitchPage: _toggleLoginPage) : RegisterPage(onTapSwitchPage: _toggleLoginPage);
+        return _onLoginPage
+            ? LoginPage(onTapSwitchPage: _toggleLoginPage)
+            : RegisterPage(onTapSwitchPage: _toggleLoginPage);
       },
     );
   }
