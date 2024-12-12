@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_watermark/image_watermark.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/providers/reports_provider.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
@@ -35,7 +37,6 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
   Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= _maxImages) {
-      // picture limit reached
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("You can only upload up to $_maxImages pictures.")),
       );
@@ -46,28 +47,53 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
     if (pickedFile != null) {
       try {
+        // Request location permission
+        final status = await Permission.locationWhenInUse.request();
+        if (!status.isGranted) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(status.isPermanentlyDenied
+                    ? 'Location permission is permanently denied. Please enable it in settings.'
+                    : 'Location permission is required to add location data.'),
+                action: status.isPermanentlyDenied
+                    ? SnackBarAction(
+                        label: 'Settings',
+                        onPressed: () => openAppSettings(),
+                      )
+                    : null,
+              ),
+            );
+          }
+          return;
+        }
+
         // get current date/time
         final now = DateTime.now();
         final formattedDateTime = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
-          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+            '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
-        // get current latitude and longitude
+        // get current device location
         final position = await Geolocator.getCurrentPosition();
         final latitude = position.latitude.toStringAsFixed(6);
         final longitude = position.longitude.toStringAsFixed(6);
 
+        // add watermark
+        final watermarkText = '$formattedDateTime\nLat: $latitude, Lon: $longitude';
         final bytes = await ImageWatermark.addTextWatermark(
           imgBytes: await pickedFile.readAsBytes(),
           dstX: 20,
           dstY: 120,
-          watermarkText: '$formattedDateTime\nLat: $latitude, Lon: $longitude',
+          watermarkText: watermarkText,
         );
-        final duplicateFilePath = (await getTemporaryDirectory()).path;
-        final file = await File('$duplicateFilePath/${pickedFile.name}').writeAsBytes(bytes);
-        setState(() {
-          _images.add(File(file.path)); // add to list
-        });
 
+        // save image with watermark
+        final tempDir = await getTemporaryDirectory();
+        final file = await File('${tempDir.path}/${pickedFile.name}').writeAsBytes(bytes);
+
+        setState(() {
+          _images.add(file);
+        });
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

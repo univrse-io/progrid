@@ -392,6 +392,7 @@ class _MapPageState extends State<MapPage> {
                 // ),
                 const SizedBox(width: 5),
 
+                // TODO: fix hero
                 // search button
                 FloatingActionButton(
                   heroTag: 'searchbar',
