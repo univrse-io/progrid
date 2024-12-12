@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/providers/reports_provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class ReportPage extends StatefulWidget {
@@ -28,11 +30,13 @@ class _ReportPageState extends State<ReportPage> {
     });
   }
 
-  // TODO: fix download permissions, it always returns denied?
   Future<void> _downloadImage(String url) async {
     try {
-      // request storage permission
-      final status = await Permission.photos.status;
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      final permission = Platform.isAndroid && androidInfo.version.sdkInt > 32
+          ? Permission.photos
+          : Permission.storage;
+      final status = await permission.request();
 
       if (await Permission.storage.isRestricted) {
         if (mounted) {
@@ -45,7 +49,9 @@ class _ReportPageState extends State<ReportPage> {
       if (status.isDenied) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Storage permission is required to save the image.')),
+            const SnackBar(
+                content:
+                    Text('Storage permission is required to save the image.')),
           );
         }
         return;
@@ -74,17 +80,20 @@ class _ReportPageState extends State<ReportPage> {
       // download image
       final response = await http.get(Uri.parse(url));
       if (response.statusCode != 200) {
-        throw Exception('Failed to download the image. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to download the image. Status code: ${response.statusCode}');
       }
 
       // get directory
-      final externalDir = Directory('/storage/emulated/0/Download'); // download folder on android
-      if (!await externalDir.exists()) {
-        await externalDir.create(recursive: true);
+      Directory? externalDir = Directory(
+          '/storage/emulated/0/Download'); // download folder on android
+      if (!externalDir.existsSync()) {
+        externalDir = await getExternalStorageDirectory();
       }
 
-      final fileName = url.split('/').last; // extract file name from URL
-      final file = File('${externalDir.path}/$fileName');
+      final fileName =
+          DateTime.now().millisecondsSinceEpoch; // extract file name from URL
+      final file = File('${externalDir!.path}/$fileName');
 
       // write file
       await file.writeAsBytes(response.bodyBytes);
@@ -94,7 +103,6 @@ class _ReportPageState extends State<ReportPage> {
           SnackBar(content: Text('Image saved to ${file.path}')),
         );
       }
-
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -106,7 +114,9 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final report = Provider.of<ReportsProvider>(context).reports.firstWhere((report) => report.id == widget.reportId);
+    final report = Provider.of<ReportsProvider>(context)
+        .reports
+        .firstWhere((report) => report.id == widget.reportId);
 
     return Scaffold(
       appBar: AppBar(
@@ -184,7 +194,8 @@ class _ReportPageState extends State<ReportPage> {
                   children: [
                     const Text(
                       'Description',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                     ),
                     const SizedBox(width: 5),
                     const Icon(Icons.file_copy, size: 24),
