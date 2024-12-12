@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -38,7 +37,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
   Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= _maxImages) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("You can only upload up to $_maxImages pictures.")),
+        SnackBar(
+            content: Text("You can only upload up to $_maxImages pictures.")),
       );
       return;
     }
@@ -70,7 +70,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
         // get current date/time
         final now = DateTime.now();
-        final formattedDateTime = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
+        final formattedDateTime =
+            '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
             '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
         // get current device location
@@ -79,7 +80,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
         final longitude = position.longitude.toStringAsFixed(6);
 
         // add watermark
-        final watermarkText = '$formattedDateTime\nLat: $latitude, Lon: $longitude';
+        final watermarkText =
+            '$formattedDateTime\nLat: $latitude, Lon: $longitude';
         final bytes = await ImageWatermark.addTextWatermark(
           imgBytes: await pickedFile.readAsBytes(),
           dstX: 20,
@@ -89,7 +91,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
         // save image with watermark
         final tempDir = await getTemporaryDirectory();
-        final file = await File('${tempDir.path}/${pickedFile.name}').writeAsBytes(bytes);
+        final file = await File('${tempDir.path}/${pickedFile.name}')
+            .writeAsBytes(bytes);
 
         setState(() {
           _images.add(file);
@@ -107,8 +110,10 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
   // upload to firebase storage
   Future<String> _uploadImage(File imageFile) async {
     try {
-      final String fileName = DateTime.now().microsecondsSinceEpoch.toString(); // unique filename
-      final Reference storageRef = FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
+      final String fileName =
+          DateTime.now().microsecondsSinceEpoch.toString(); // unique filename
+      final Reference storageRef =
+          FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
       final UploadTask uploadTask = storageRef.putFile(imageFile);
       final TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
       final String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -132,7 +137,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final towersProvider = Provider.of<TowersProvider>(context, listen: false);
-    final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
+    final reportsProvider =
+        Provider.of<ReportsProvider>(context, listen: false);
 
     // upload images to Firebase and get URLs
     final List<String> imageUrls = [];
@@ -195,7 +201,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                 Expanded(
                   child: Container(
                     height: 150,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: Theme.of(context).colorScheme.tertiary,
@@ -235,12 +242,17 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                                       child: Container(
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withOpacity(0.7),
                                         ),
                                         padding: EdgeInsets.all(3),
                                         child: Icon(
                                           Icons.close,
-                                          color: Theme.of(context).colorScheme.surface,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .surface,
                                           size: 18,
                                         ),
                                       ),
@@ -282,7 +294,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                               SizedBox(width: 2),
                               FloatingActionButton(
                                 heroTag: 'gallery',
-                                onPressed: () => _pickImage(ImageSource.gallery),
+                                onPressed: () =>
+                                    _pickImage(ImageSource.gallery),
                                 child: Icon(Icons.photo),
                                 mini: true,
                               )
@@ -305,7 +318,10 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                     expands: true,
                     textAlignVertical: TextAlignVertical.top,
                     maxLength: _maxNotesLength,
-                    buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
+                    buildCounter: (context,
+                        {required currentLength,
+                        maxLength,
+                        required isFocused}) {
                       return Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
@@ -320,7 +336,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                     decoration: InputDecoration(
                       hintText: 'Notes',
                       alignLabelWithHint: true,
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                      hintStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
                       contentPadding: EdgeInsets.all(12),
                     ),
                   ),

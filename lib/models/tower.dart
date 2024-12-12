@@ -10,6 +10,7 @@ class Tower {
   String address;
   GeoPoint position;
   String status;
+  String drawingStatus;
   String notes;
 
   // constructor
@@ -22,6 +23,7 @@ class Tower {
     this.address = 'undefined',
     this.position = const GeoPoint(0, 0),
     this.status = 'undefined',
+    this.drawingStatus = 'undefined',
     this.notes = 'no notes',
   });
 

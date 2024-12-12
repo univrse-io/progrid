@@ -6,6 +6,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/dashboard/drawing_page.dart';
 
+List<Tower> towers = []; // TODO: Change to provider later on.
+
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
@@ -16,7 +18,6 @@ class DashboardPage extends StatefulWidget {
 // TOOD: convert to use wrapper provider
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
-  List<Tower> towers = [];
   late final List<Widget> _widgetOptions = <Widget>[
     Padding(
       padding: const EdgeInsets.all(10),
@@ -339,7 +340,7 @@ class _DashboardPageState extends State<DashboardPage> {
         ],
       ),
     ),
-    DrawingScreen(towers: towers),
+    DrawingScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -367,6 +368,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         ? doc['position'] as GeoPoint
                         : GeoPoint(0, 0),
                     status: doc['status'] as String? ?? 'undefined',
+                    drawingStatus:
+                        doc['drawingStatus'] as String? ?? 'undefined',
                     notes: doc['notes'] as String? ?? 'no notes',
                   ))
               .toList();

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:progrid/models/tower.dart';
 
 // Tower List Provider
@@ -11,12 +11,17 @@ class TowersProvider extends ChangeNotifier {
 
   // setup stream subscription
   Future<void> loadTowers() async {
+    if (kIsWeb) return;
     try {
       towers = [];
 
       // currently redownloads entire list everytime there is an update
-      _towersSubscription = FirebaseFirestore.instance.collection('towers').snapshots().listen((snapshot) async {
-        towers = await Future.wait(snapshot.docs.map((doc) async => await Tower.fromFirestore(doc)));
+      _towersSubscription = FirebaseFirestore.instance
+          .collection('towers')
+          .snapshots()
+          .listen((snapshot) async {
+        towers = await Future.wait(
+            snapshot.docs.map((doc) async => await Tower.fromFirestore(doc)));
         notifyListeners();
       });
     } catch (e) {
@@ -27,7 +32,10 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateTowerStatus(String towerId, String status) async {
     try {
       // update database
-      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'status': status});
+      await FirebaseFirestore.instance
+          .collection('towers')
+          .doc(towerId)
+          .update({'status': status});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
