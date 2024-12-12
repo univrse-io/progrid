@@ -32,7 +32,7 @@ class _ReportPageState extends State<ReportPage> {
   Future<void> _downloadImage(String url) async {
     try {
       // request storage permission
-      final status = await Permission.storage.status;
+      final status = await Permission.photos.status;
 
       if (await Permission.storage.isRestricted) {
         if (mounted) {

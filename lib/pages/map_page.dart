@@ -180,6 +180,7 @@ class _MapPageState extends State<MapPage> {
               // clustered map markers
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
+                  polygonOptions: PolygonOptions(color: Colors.black.withOpacity(0.1)),
                   maxClusterRadius: 50,
                   alignment: Alignment.center,
                   centerMarkerOnClick: false,
