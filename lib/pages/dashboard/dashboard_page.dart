@@ -24,6 +24,164 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Row(
         children: [
           Expanded(
+            flex: 2,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text('On-Site Audit',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          SizedBox(height: 10),
+                          Expanded(
+                            child: PieChart(PieChartData(
+                                startDegreeOffset: 20,
+                                sectionsSpace: 0,
+                                centerSpaceRadius: 50,
+                                sections: [
+                                  PieChartSectionData(
+                                    title: 'Completed',
+                                    titlePositionPercentageOffset: 1.8,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.status == 'surveyed')
+                                        .length
+                                        .toDouble(),
+                                    radius: 50,
+                                    color: Colors.green,
+                                  ),
+                                  PieChartSectionData(
+                                    title: 'In Progress',
+                                    titlePositionPercentageOffset: 1.8,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.status == 'in-progress')
+                                        .length
+                                        .toDouble(),
+                                    radius: 50,
+                                    color: Colors.amber,
+                                  ),
+                                  PieChartSectionData(
+                                    title: 'Balance',
+                                    titlePositionPercentageOffset: 1.8,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.status == 'unsurveyed')
+                                        .length
+                                        .toDouble(),
+                                    radius: 50,
+                                    color: Colors.red,
+                                  ),
+                                ])),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Expanded(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text('Regional Breakdown',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          SizedBox(height: 10),
+                          Expanded(
+                            child: PieChart(PieChartData(
+                                sectionsSpace: 0,
+                                centerSpaceRadius: 50,
+                                sections: [
+                                  PieChartSectionData(
+                                    title: 'Southern',
+                                    titlePositionPercentageOffset: 1.8,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.region == 'Southern')
+                                        .length
+                                        .toDouble(),
+                                    radius: 50,
+                                    color: Colors.amber,
+                                  ),
+                                  PieChartSectionData(
+                                    title: 'Northern',
+                                    titlePositionPercentageOffset: 1.8,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.region == 'Northern')
+                                        .length
+                                        .toDouble(),
+                                    radius: 50,
+                                    color: Colors.blue,
+                                  ),
+                                  PieChartSectionData(
+                                    title: 'Eastern',
+                                    titlePositionPercentageOffset: 1.8,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.region == 'Eastern')
+                                        .length
+                                        .toDouble(),
+                                    radius: 50,
+                                    color: Colors.green,
+                                  ),
+                                  PieChartSectionData(
+                                    title: 'Sarawak',
+                                    titlePositionPercentageOffset: 1.8,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.region == 'Sarawak')
+                                        .length
+                                        .toDouble(),
+                                    radius: 50,
+                                    color: Colors.red,
+                                  ),
+                                  PieChartSectionData(
+                                    title: 'Sabah',
+                                    titlePositionPercentageOffset: 1.8,
+                                    value: towers
+                                        .where(
+                                            (tower) => tower.region == 'Sabah')
+                                        .length
+                                        .toDouble(),
+                                    radius: 50,
+                                    color: Colors.orange,
+                                  ),
+                                  PieChartSectionData(
+                                    title: 'Central',
+                                    titlePositionPercentageOffset: 1.8,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.region == 'Central')
+                                        .length
+                                        .toDouble(),
+                                    radius: 50,
+                                    color: Colors.brown,
+                                  ),
+                                ])),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          SizedBox(width: 10),
+          Expanded(
               flex: 5,
               child: Column(
                 children: [
@@ -36,7 +194,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Plan',
+                              Text('Total',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
@@ -56,7 +214,28 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Current',
+                              Text('In Progress',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                              SizedBox(height: 10),
+                              Text(
+                                  '${towers.where((tower) => tower.status == 'in-progress').length}',
+                                  style:
+                                      Theme.of(context).textTheme.displayLarge)
+                            ],
+                          ),
+                        )),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Card(
+                            child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Completed',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
@@ -205,7 +384,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('On-Site Audit',
+                          Text('As-Built Drawing',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           SizedBox(height: 10),
@@ -213,28 +392,40 @@ class _DashboardPageState extends State<DashboardPage> {
                             child: PieChart(PieChartData(
                                 sectionsSpace: 0,
                                 centerSpaceRadius: 50,
+                                startDegreeOffset: 40,
                                 sections: [
                                   PieChartSectionData(
-                                    title: 'Current',
-                                    titlePositionPercentageOffset: 2,
+                                    title: 'Incomplete',
+                                    titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.status == 'surveyed')
+                                            tower.drawingStatus == 'incomplete')
                                         .length
                                         .toDouble(),
                                     radius: 50,
-                                    color: Colors.pink,
+                                    color: Colors.red,
                                   ),
                                   PieChartSectionData(
-                                    title: 'Balance',
-                                    titlePositionPercentageOffset: 2,
+                                    title: 'Completed',
+                                    titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.status == 'unsurveyed')
+                                            tower.drawingStatus == 'completed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
-                                    color: Colors.purple,
+                                    color: Colors.amber,
+                                  ),
+                                  PieChartSectionData(
+                                    title: 'Submitted',
+                                    titlePositionPercentageOffset: 1.8,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.drawingStatus == 'submitted')
+                                        .length
+                                        .toDouble(),
+                                    radius: 50,
+                                    color: Colors.green,
                                   ),
                                 ])),
                           )
