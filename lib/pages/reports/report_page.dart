@@ -1,11 +1,12 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:progrid/models/report.dart';
-import 'package:http/http.dart' as http;
+import 'package:progrid/models/providers/reports_provider.dart';
+import 'package:provider/provider.dart';
 
 class ReportPage extends StatefulWidget {
   final String towerId;
@@ -20,6 +21,8 @@ class ReportPage extends StatefulWidget {
 class _ReportPageState extends State<ReportPage> {
   String? _selectedImageUrl;
 
+  // TODO: make overlay encapsulate whole screen, including appbar (new page?)
+
   // close overlay
   void _closeOverlay() {
     setState(() {
@@ -27,46 +30,80 @@ class _ReportPageState extends State<ReportPage> {
     });
   }
 
-  // TODO: fix download permissions, it always returns denied?
   Future<void> _downloadImage(String url) async {
     try {
-      final PermissionStatus status = await Permission.storage.request();
-  
-      if (status.isGranted) {
-        // download the image
-        final response = await http.get(Uri.parse(url));
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      final permission = Platform.isAndroid && androidInfo.version.sdkInt > 32
+          ? Permission.photos
+          : Permission.storage;
+      final status = await permission.request();
 
-        if (response.statusCode == 200) {
-          final directory = await getExternalStorageDirectory();
-          final downloadDirectory = Directory('${directory!.path}/Progrid'); // custom directory
-
-          if (!await downloadDirectory.exists()) {
-            await downloadDirectory.create(recursive: true);
-          }
-
-          final filePath = '${downloadDirectory.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
-          final file = File(filePath);
-          await file.writeAsBytes(response.bodyBytes);
-
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Image saved to Downloads folder')),
-            );
-          }
-        } else {
-          throw Exception('Failed to download image');
-        }
-      } else if (status.isDenied) {
+      if (await Permission.storage.isRestricted) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Permission to access storage denied.')),
+            const SnackBar(content: Text('Debug Storage Denied')),
           );
         }
-      } else if (status.isPermanentlyDenied) {
-        openAppSettings();
+      }
+
+      if (status.isDenied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content:
+                    Text('Storage permission is required to save the image.')),
+          );
+        }
+        return;
+      }
+
+      if (status.isPermanentlyDenied) {
+        // go to app settings
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'Storage permission permanently denied. Please allow it from settings.',
+              ),
+              action: SnackBarAction(
+                label: 'Settings',
+                onPressed: () {
+                  openAppSettings();
+                },
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
+      // download image
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Failed to download the image. Status code: ${response.statusCode}');
+      }
+
+      // get directory
+      Directory? externalDir = Directory(
+          '/storage/emulated/0/Download'); // download folder on android
+      if (!externalDir.existsSync()) {
+        externalDir = await getExternalStorageDirectory();
+      }
+
+      final fileName =
+          DateTime.now().millisecondsSinceEpoch; // extract file name from URL
+      final file = File('${externalDir!.path}/$fileName');
+
+      // write file
+      await file.writeAsBytes(response.bodyBytes);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image saved to ${file.path}')),
+        );
       }
     } catch (e) {
-      // Handle error
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to save image: $e')),
@@ -77,13 +114,9 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    // fetch reports stream directly given towerId
-    final reportsStream = FirebaseFirestore.instance
-        .collection('towers')
-        .doc(widget.towerId)
-        .collection('reports')
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => Report.fromFirestore(doc)).toList());
+    final report = Provider.of<ReportsProvider>(context)
+        .reports
+        .firstWhere((report) => report.id == widget.reportId);
 
     return Scaffold(
       appBar: AppBar(
@@ -96,104 +129,83 @@ class _ReportPageState extends State<ReportPage> {
         children: [
           SafeArea(
             minimum: EdgeInsets.symmetric(horizontal: 25),
-            child: StreamBuilder<List<Report>>(
-              stream: reportsStream,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No reports data found.'));
-                }
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 5),
 
-                // find report
-                final report = snapshot.data!.firstWhere(
-                  (report) => report.id == widget.reportId,
-                  orElse: () => throw Exception('Report not found'),
-                );
-
-                // display report data
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                // images title
+                Row(
                   children: [
-                    const SizedBox(height: 5),
-
-                    // images title
-                    Row(
-                      children: [
-                        const Text(
-                          'Pictures',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        const Icon(Icons.image, size: 24),
-                      ],
-                    ),
-
-                    // images grid
-                    if (report.images.isNotEmpty)
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.tertiary,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: SizedBox(
-                          height: report.images.length <= 2
-                              ? 170 // height if 1 row
-                              : 250, // height if more
-                          child: GridView.builder(
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, // columns count
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                            ),
-                            itemCount: report.images.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedImageUrl = report.images[index];
-                                  });
-                                },
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    report.images[index],
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                    const Text(
+                      'Pictures',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                    const SizedBox(height: 20),
-
-                    // description
-                    Row(
-                      children: [
-                        const Text(
-                          'Description',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                        ),
-                        const SizedBox(width: 5),
-                        const Icon(Icons.file_copy, size: 24),
-                      ],
                     ),
-                    Text(
-                      report.notes,
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    const SizedBox(width: 5),
+                    const Icon(Icons.image, size: 24),
                   ],
-                );
-              },
+                ),
+
+                // images grid
+                if (report.images.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: SizedBox(
+                      height: report.images.length <= 2
+                          ? 170 // height if 1 row
+                          : 250, // height if more
+                      child: GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2, // columns count
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                        ),
+                        itemCount: report.images.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedImageUrl = report.images[index];
+                              });
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                report.images[index],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 20),
+
+                // description
+                Row(
+                  children: [
+                    const Text(
+                      'Description',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                    ),
+                    const SizedBox(width: 5),
+                    const Icon(Icons.file_copy, size: 24),
+                  ],
+                ),
+                Text(
+                  report.notes,
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
             ),
           ),
 
