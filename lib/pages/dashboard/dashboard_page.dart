@@ -109,7 +109,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.region == 'Southern')
+                                            tower.region == 'Southern' &&
+                                            tower.status == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -120,7 +121,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.region == 'Northern')
+                                            tower.region == 'Northern' &&
+                                            tower.status == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -131,18 +133,20 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.region == 'Eastern')
+                                            tower.region == 'Eastern' &&
+                                            tower.status == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
-                                    color: Colors.green,
+                                    color: Colors.pink,
                                   ),
                                   PieChartSectionData(
                                     title: 'Sarawak',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.region == 'Sarawak')
+                                            tower.region == 'Sarawak' &&
+                                            tower.status == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -152,8 +156,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                     title: 'Sabah',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
-                                        .where(
-                                            (tower) => tower.region == 'Sabah')
+                                        .where((tower) =>
+                                            tower.region == 'Sabah' &&
+                                            tower.status == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -164,11 +169,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.region == 'Central')
+                                            tower.region == 'Central' &&
+                                            tower.status == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
-                                    color: Colors.brown,
+                                    color: Colors.purple,
                                   ),
                                 ])),
                           )
@@ -457,7 +463,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.region == 'Southern')
+                                            tower.region == 'Southern' &&
+                                            tower.drawingStatus == 'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -468,7 +475,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.region == 'Northern')
+                                            tower.region == 'Northern' &&
+                                            tower.drawingStatus == 'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -479,18 +487,20 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.region == 'Eastern')
+                                            tower.region == 'Eastern' &&
+                                            tower.drawingStatus == 'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 50,
-                                    color: Colors.green,
+                                    color: Colors.pink,
                                   ),
                                   PieChartSectionData(
                                     title: 'Sarawak',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.region == 'Sarawak')
+                                            tower.region == 'Sarawak' &&
+                                            tower.drawingStatus == 'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -500,8 +510,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                     title: 'Sabah',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
-                                        .where(
-                                            (tower) => tower.region == 'Sabah')
+                                        .where((tower) =>
+                                            tower.region == 'Sabah' &&
+                                            tower.drawingStatus == 'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -512,11 +523,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.region == 'Central')
+                                            tower.region == 'Central' &&
+                                            tower.drawingStatus == 'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 50,
-                                    color: Colors.brown,
+                                    color: Colors.purple,
                                   ),
                                 ])),
                           )
