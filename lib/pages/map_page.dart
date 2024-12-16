@@ -61,17 +61,6 @@ class _MapPageState extends State<MapPage> {
     'sarawak': LatLng(1.5548, 110.3592),
   };
 
-  // determine region zoom levels here
-  final Map<String, double> _regionZoomLevels = {
-    'southern': 12.0,
-    'northern': 13.0,
-    'eastern': 12.5,
-    'central': 12.0,
-    'western': 13.0,
-    'sabah': 11.0,
-    'sarawak': 11.5,
-  };
-
   @override
   Widget build(BuildContext context) {
     final towersProvider = Provider.of<TowersProvider>(context);
@@ -82,9 +71,8 @@ class _MapPageState extends State<MapPage> {
     // function to go to a specific region
     void _zoomToRegion(String region) {
       final LatLng? position = _regionPositions[region];
-      final double? zoomLevel = _regionZoomLevels[region];
       if (position != null) {
-        _mapController.move(position, zoomLevel!);
+        _mapController.move(position, 8);
       }
     }
 
@@ -97,7 +85,7 @@ class _MapPageState extends State<MapPage> {
             options: MapOptions(
               initialCenter: _defaultPosition,
               initialZoom: 12,
-              maxZoom: 17, // to review
+              maxZoom: 17,
               minZoom: 8,
               backgroundColor: Theme.of(context).colorScheme.surface,
               interactionOptions: const InteractionOptions(
@@ -181,7 +169,7 @@ class _MapPageState extends State<MapPage> {
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
                   polygonOptions: PolygonOptions(color: Colors.black.withOpacity(0.1)),
-                  maxClusterRadius: 50,
+                  maxClusterRadius: 30,
                   alignment: Alignment.center,
                   centerMarkerOnClick: false,
                   // size: Size(100, 800), // TODO: make dynamic, cluster click functionality is currently unusable
@@ -250,6 +238,8 @@ class _MapPageState extends State<MapPage> {
                       ),
                     );
                   }).toList(),
+
+                  // hoi4 style map clustering
                   // builder: (context, markers) {
                   //   return Column(
                   //     mainAxisAlignment: MainAxisAlignment.center,
@@ -390,6 +380,18 @@ class _MapPageState extends State<MapPage> {
                 //     ),
                 //   ),
                 // ),
+
+                // filter button
+                FloatingActionButton(
+                  onPressed: () {},
+                  backgroundColor: Colors.black.withOpacity(0.6),
+                  child: const Icon(
+                    Icons.filter_alt_outlined,
+                    size: 32,
+                  ),
+                  mini: true,
+                ),
+
                 const SizedBox(width: 5),
 
                 // TODO: fix hero
