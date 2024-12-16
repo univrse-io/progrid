@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:progrid/models/pie_chart_painter.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/tower_page.dart';
@@ -97,88 +98,21 @@ class _MapPageState extends State<MapPage> {
               TileLayer(
                 urlTemplate: _tileLayerUrl,
               ),
-
-              // standard map markers, without clustering
-              // MarkerLayer(
-              //   markers: towersProvider.towers.map((tower) {
-              //     return Marker(
-              //       point: LatLng(tower.position.latitude, tower.position.longitude),
-              //       width: 80,
-              //       child: GestureDetector(
-              //         onTap: () {
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(
-              //               builder: (context) => TowerPage(towerId: tower.id),
-              //             ),
-              //           );
-              //         },
-              //         child: Stack(
-              //           alignment: Alignment.center,
-              //           children: [
-              //             // marker icon
-              //             Icon(
-              //               Icons.cell_tower,
-              //               color: _getRegionColor(tower.region),
-              //               size: 36,
-              //             ),
-              //             // information box
-              //             Container(
-              //               padding: EdgeInsets.symmetric(horizontal: 5),
-              //               decoration: BoxDecoration(
-              //                 color: Colors.black.withOpacity(0.7),
-              //                 borderRadius: BorderRadius.circular(4),
-              //               ),
-              //               child: Row(
-              //                 mainAxisAlignment: MainAxisAlignment.center,
-              //                 mainAxisSize: MainAxisSize.min,
-              //                 children: [
-              //                   // status indicator
-              //                   Container(
-              //                     width: 8,
-              //                     height: 8,
-              //                     decoration: BoxDecoration(
-              //                         shape: BoxShape.circle,
-              //                         color: tower.status == 'surveyed'
-              //                             ? AppColors.green
-              //                             : tower.status == 'in-progress'
-              //                                 ? AppColors.yellow
-              //                                 : AppColors.red),
-              //                   ),
-              //                   const SizedBox(width: 4),
-              //                   // tower id
-              //                   Text(
-              //                     tower.id,
-              //                     style: const TextStyle(
-              //                       color: Colors.white,
-              //                       fontSize: 10,
-              //                     ),
-              //                     maxLines: 1,
-              //                   ),
-              //                 ],
-              //               ),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //     );
-              //   }).toList(),
-              // ),
-
               // clustered map markers
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
                   polygonOptions: PolygonOptions(color: Colors.black.withOpacity(0.1)),
-                  maxClusterRadius: 30,
+                  maxClusterRadius: 50,
                   alignment: Alignment.center,
                   centerMarkerOnClick: false,
-                  // size: Size(100, 800), // TODO: make dynamic, cluster click functionality is currently unusable
                   padding: const EdgeInsets.all(10),
-                  maxZoom: 15,
+                  maxZoom: 13,
+                  // spiderfyCluster: false, // TODO: Review, essentially what it does is it moves the markers away from each other to make them more visible
                   markers: towersProvider.towers.map((tower) {
                     return Marker(
                       point: LatLng(tower.position.latitude, tower.position.longitude),
                       width: 80,
+                      key: ValueKey(tower.id), // assign tower id to marker's key
                       child: GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -201,7 +135,7 @@ class _MapPageState extends State<MapPage> {
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.7),
+                                color: Colors.black.withOpacity(0.6),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Row(
@@ -213,12 +147,13 @@ class _MapPageState extends State<MapPage> {
                                     width: 8,
                                     height: 8,
                                     decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: tower.status == 'surveyed'
-                                            ? AppColors.green
-                                            : tower.status == 'in-progress'
-                                                ? AppColors.yellow
-                                                : AppColors.red),
+                                      shape: BoxShape.circle,
+                                      color: tower.status == 'surveyed'
+                                          ? AppColors.green
+                                          : tower.status == 'in-progress'
+                                              ? AppColors.yellow
+                                              : AppColors.red,
+                                    ),
                                   ),
                                   const SizedBox(width: 4),
                                   // tower id
@@ -238,67 +173,52 @@ class _MapPageState extends State<MapPage> {
                       ),
                     );
                   }).toList(),
-
-                  // hoi4 style map clustering
-                  // builder: (context, markers) {
-                  //   return Column(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: markers.map((marker) {
-                  //       final tower = towersProvider.towers.firstWhere(
-                  //         (tower) => LatLng(tower.position.latitude, tower.position.longitude) == marker.point,
-                  //       );
-                  //       return Container(
-                  //         padding: const EdgeInsets.symmetric(horizontal: 5),
-                  //         decoration: BoxDecoration(
-                  //           color: Colors.black.withOpacity(0.7),
-                  //           borderRadius: BorderRadius.circular(4),
-                  //         ),
-                  //         child: Row(
-                  //           mainAxisAlignment: MainAxisAlignment.center,
-                  //           mainAxisSize: MainAxisSize.min,
-                  //           children: [
-                  //             // status indicator
-                  //             Container(
-                  //               width: 8,
-                  //               height: 8,
-                  //               decoration: BoxDecoration(
-                  //                   shape: BoxShape.circle,
-                  //                   color: tower.status == 'surveyed'
-                  //                       ? AppColors.green
-                  //                       : tower.status == 'in-progress'
-                  //                           ? AppColors.yellow
-                  //                           : AppColors.red),
-                  //             ),
-                  //             const SizedBox(width: 4),
-                  //             // tower id
-                  //             Text(
-                  //               tower.id,
-                  //               style: const TextStyle(
-                  //                 color: Colors.white,
-                  //                 fontSize: 10,
-                  //               ),
-                  //               maxLines: 1,
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       );
-                  //     }).toList(),
-                  //   );
-                  // },
-
-                  // // TODO: make clusters display statuses of children, as pie chart
                   builder: (context, markers) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.black.withOpacity(0.7),
-                      ),
-                      child: Center(
-                        child: Text(
-                          markers.length.toString(),
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
-                        ),
-                      ),
+                    // Calculate proportions
+                    final statusCounts = <String, int>{
+                      'surveyed': 0,
+                      'in-progress': 0,
+                      'unsurveyed': 0,
+                    };
+
+                    for (final marker in markers) {
+                      try {
+                        final tower = towersProvider.towers.firstWhere(
+                          (tower) {
+                            // grab the tower id from marker's key
+                            // ensure type safety
+                            final markerId = (marker.key! as ValueKey<String>).value;
+                            return tower.id == markerId;
+                          },
+                        );
+
+                        // increment the status counts based on the tower's status
+                        if (tower.status == 'surveyed') {
+                          statusCounts['surveyed'] = statusCounts['surveyed']! + 1;
+                        } else if (tower.status == 'in-progress') {
+                          statusCounts['in-progress'] = statusCounts['in-progress']! + 1;
+                        } else {
+                          statusCounts['unsurveyed'] = statusCounts['unsurveyed']! + 1;
+                        }
+                      } catch (e) {
+                        // handle case where no tower matches the marker (should not happen)
+                        debugPrint('No matching tower found for marker with key ${marker.key}');
+                      }
+                    }
+
+                    // simplify fraction (may have to be removed to free computation power)
+                    final total = statusCounts.values.reduce((a, b) => a + b);
+
+                    // status colors
+                    final statusColors = {
+                      'surveyed': AppColors.green,
+                      'in-progress': AppColors.yellow,
+                      'unsurveyed': AppColors.red,
+                    };
+
+                    return CustomPaint(
+                      size: const Size(40, 40),
+                      painter: PieChartPainter(statusCounts, total, statusColors),
                     );
                   },
                 ),
@@ -364,23 +284,6 @@ class _MapPageState extends State<MapPage> {
             right: 14,
             child: Row(
               children: [
-                // // debug tower counter
-                // Container(
-                //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                //   decoration: BoxDecoration(
-                //     color: Colors.black.withOpacity(0.6),
-                //     borderRadius: BorderRadius.circular(8),
-                //   ),
-                //   child: Text(
-                //     'Surveyed: $surveyedCount / Total: $towerCount',
-                //     style: const TextStyle(
-                //       color: Colors.white,
-                //       fontSize: 16,
-                //       fontWeight: FontWeight.bold,
-                //     ),
-                //   ),
-                // ),
-
                 // filter button
                 FloatingActionButton(
                   onPressed: () {},
