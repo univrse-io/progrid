@@ -44,7 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'name': _nameController.text,
         'phone': 'not set',
         'team': 'not set',
-        'role': 'basic',
+        'role': 'engineer',
         'lastLogin': Timestamp.now(),
       });
     } on FirebaseAuthException catch (e) {

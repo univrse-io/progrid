@@ -237,6 +237,7 @@ class _MapPageState extends State<MapPage> {
             top: 25,
             left: 14,
             child: FloatingActionButton(
+              heroTag: 'regions',
               onPressed: () async {
                 final String? selectedRegion = await showMenu(
                   elevation: 0,
@@ -286,6 +287,7 @@ class _MapPageState extends State<MapPage> {
               children: [
                 // filter button
                 FloatingActionButton(
+                  heroTag: 'filter',
                   onPressed: () {},
                   backgroundColor: Colors.black.withOpacity(0.6),
                   child: const Icon(
@@ -313,10 +315,6 @@ class _MapPageState extends State<MapPage> {
                           );
                         },
                       ),
-
-                      // MaterialPageRoute(
-                      //   builder: (context) => const TowersListPage(),
-                      // ),
                     );
                   },
                   backgroundColor: Colors.black.withOpacity(0.6),
@@ -329,6 +327,7 @@ class _MapPageState extends State<MapPage> {
 
                 // profile button
                 FloatingActionButton(
+                  heroTag: 'profile',
                   onPressed: () {
                     Navigator.push(
                       context,
