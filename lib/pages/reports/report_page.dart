@@ -20,8 +20,7 @@ class ReportPage extends StatefulWidget {
 
 class _ReportPageState extends State<ReportPage> {
   String? _selectedImageUrl;
-
-  // TODO: make overlay encapsulate whole screen, including appbar (new page?)
+  bool _isLoading = false; // Add a flag to indicate loading status
 
   // close overlay
   void _closeOverlay() {
@@ -30,8 +29,13 @@ class _ReportPageState extends State<ReportPage> {
     });
   }
 
+  // download image and show progress
   Future<void> _downloadImage(String url) async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
+
       final androidInfo = await DeviceInfoPlugin().androidInfo;
       final permission = Platform.isAndroid && androidInfo.version.sdkInt > 32
           ? Permission.photos
@@ -109,6 +113,10 @@ class _ReportPageState extends State<ReportPage> {
           SnackBar(content: Text('Failed to save image: $e')),
         );
       }
+    } finally {
+      setState(() {
+        _isLoading = false; // download complete
+      });
     }
   }
 
@@ -251,6 +259,17 @@ class _ReportPageState extends State<ReportPage> {
                   ),
                 ),
               ],
+            ),
+
+          // loading overlay for downloading
+          if (_isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
             )
         ],
       ),

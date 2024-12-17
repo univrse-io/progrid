@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_watermark/image_watermark.dart';
@@ -32,13 +33,13 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
   final List<File> _images = [];
   final _picker = ImagePicker();
 
+  double _uploadProgress = 0;
   bool _isLoading = false;
 
   Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= _maxImages) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text("You can only upload up to $_maxImages pictures.")),
+        SnackBar(content: Text("You can only upload up to $_maxImages pictures.")),
       );
       return;
     }
@@ -47,7 +48,11 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
     if (pickedFile != null) {
       try {
-        // Request location permission
+        setState(() {
+          _isLoading = true;
+        });
+
+        // request location permission
         final status = await Permission.locationWhenInUse.request();
         if (!status.isGranted) {
           if (mounted) {
@@ -70,8 +75,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
         // get current date/time
         final now = DateTime.now();
-        final formattedDateTime =
-            '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
+        final formattedDateTime = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
             '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
         // get current device location
@@ -79,20 +83,36 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
         final latitude = position.latitude.toStringAsFixed(6);
         final longitude = position.longitude.toStringAsFixed(6);
 
+        // compress if larger than 10mb
+        File imageFile = File(pickedFile.path);
+        final int imageSize = await imageFile.length(); // file size in bytes
+
+        if (imageSize > 10 * 1024 * 1024) {
+          // If image is larger than 10 MB
+          // Compress the image
+          final compressedBytes = await FlutterImageCompress.compressWithFile(
+            imageFile.path,
+            quality: 70, // set the compression quality (0 to 100)
+          );
+
+          if (compressedBytes != null) {
+            imageFile = File('${(await getTemporaryDirectory()).path}/${pickedFile.name}');
+            await imageFile.writeAsBytes(compressedBytes);
+          }
+        }
+
         // add watermark
-        final watermarkText =
-            '$formattedDateTime\nLat: $latitude, Lon: $longitude';
+        final watermarkText = '$formattedDateTime\nLat: $latitude, Lon: $longitude';
         final bytes = await ImageWatermark.addTextWatermark(
-          imgBytes: await pickedFile.readAsBytes(),
-          dstX: 20,
-          dstY: 120,
+          imgBytes: await imageFile.readAsBytes(),
+          dstX: 10,
+          dstY: 10,
           watermarkText: watermarkText,
         );
 
-        // save image with watermark
+        // Save image with watermark
         final tempDir = await getTemporaryDirectory();
-        final file = await File('${tempDir.path}/${pickedFile.name}')
-            .writeAsBytes(bytes);
+        final file = await File('${tempDir.path}/${pickedFile.name}').writeAsBytes(bytes);
 
         setState(() {
           _images.add(file);
@@ -103,6 +123,10 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
             SnackBar(content: Text("Error adding watermark: $e")),
           );
         }
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -114,7 +138,17 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
           DateTime.now().microsecondsSinceEpoch.toString(); // unique filename
       final Reference storageRef =
           FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
+
       final UploadTask uploadTask = storageRef.putFile(imageFile);
+
+      // monitor upload progress
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        setState(() {
+          _uploadProgress = snapshot.bytesTransferred.toDouble() /
+              snapshot.totalBytes.toDouble();
+        });
+      });
+
       final TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
       final String downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
@@ -137,8 +171,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final towersProvider = Provider.of<TowersProvider>(context, listen: false);
-    final reportsProvider =
-        Provider.of<ReportsProvider>(context, listen: false);
+    final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
 
     // upload images to Firebase and get URLs
     final List<String> imageUrls = [];
@@ -201,8 +234,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                 Expanded(
                   child: Container(
                     height: 150,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: Theme.of(context).colorScheme.tertiary,
@@ -242,17 +274,12 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                                       child: Container(
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                              .withOpacity(0.7),
+                                          color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
                                         ),
                                         padding: EdgeInsets.all(3),
                                         child: Icon(
                                           Icons.close,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .surface,
+                                          color: Theme.of(context).colorScheme.surface,
                                           size: 18,
                                         ),
                                       ),
@@ -263,6 +290,17 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                             );
                           },
                         ),
+
+                        if (_uploadProgress > 0 && _uploadProgress < 1)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: LinearProgressIndicator(
+                              value: _uploadProgress, // set progress value
+                              minHeight: 8,
+                              backgroundColor: Colors.grey.withOpacity(0.3),
+                              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+                            ),
+                          ),
 
                         // grid implementation
                         // GridView.builder(
@@ -294,8 +332,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                               SizedBox(width: 2),
                               FloatingActionButton(
                                 heroTag: 'gallery',
-                                onPressed: () =>
-                                    _pickImage(ImageSource.gallery),
+                                onPressed: () => _pickImage(ImageSource.gallery),
                                 child: Icon(Icons.photo),
                                 mini: true,
                               )
@@ -318,10 +355,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                     expands: true,
                     textAlignVertical: TextAlignVertical.top,
                     maxLength: _maxNotesLength,
-                    buildCounter: (context,
-                        {required currentLength,
-                        maxLength,
-                        required isFocused}) {
+                    buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
                       return Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
@@ -336,8 +370,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                     decoration: InputDecoration(
                       hintText: 'Notes',
                       alignLabelWithHint: true,
-                      hintStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
+                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
                       contentPadding: EdgeInsets.all(12),
                     ),
                   ),
