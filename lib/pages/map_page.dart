@@ -51,7 +51,7 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  // detemine region average positions here
+  // determine region average positions here
   final Map<String, LatLng> _regionPositions = {
     'southern': LatLng(2.0953, 103.0404),
     'northern': LatLng(5.1152, 100.4532),
@@ -61,6 +61,41 @@ class _MapPageState extends State<MapPage> {
     'sabah': LatLng(5.9804, 116.0735),
     'sarawak': LatLng(1.5548, 110.3592),
   };
+
+  // configure map tile builder here
+  Widget _tileBuilder(
+    BuildContext context,
+    Widget tileWidget,
+    TileImage image,
+  ) {
+    final saturation = 0.3;
+    final darkness = .9;
+    return ColorFiltered(
+      colorFilter: ColorFilter.matrix([
+        // red channel
+        (0.213 + 0.787 * saturation) * darkness,
+        (0.715 * (1 - saturation)) * darkness,
+        (0.072 * (1 - saturation)) * darkness,
+        0.0, 0.0,
+
+        // green channel
+        (0.213 * (1 - saturation)) * darkness,
+        (0.715 + 0.285 * saturation) * darkness,
+        (0.072 * (1 - saturation)) * darkness,
+        0.0, 0.0,
+
+        // blue channel
+        (0.213 * (1 - saturation)) * darkness,
+        (0.715 * (1 - saturation)) * darkness,
+        (0.072 + 0.928 * saturation) * darkness,
+        0.0, 0.0,
+
+        // alpha (opaque)
+        0.0, 0.0, 0.0, 1.0, 0.0
+      ]),
+      child: tileWidget,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +132,7 @@ class _MapPageState extends State<MapPage> {
               // base map layer
               TileLayer(
                 urlTemplate: _tileLayerUrl,
+                tileBuilder: _tileBuilder,
               ),
               // clustered map markers
               MarkerClusterLayerWidget(
