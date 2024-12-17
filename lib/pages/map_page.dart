@@ -69,29 +69,28 @@ class _MapPageState extends State<MapPage> {
     TileImage image,
   ) {
     final saturation = 0.3;
-    final darkness = .9;
     return ColorFiltered(
       colorFilter: ColorFilter.matrix([
-        // red channel
-        (0.213 + 0.787 * saturation) * darkness,
-        (0.715 * (1 - saturation)) * darkness,
-        (0.072 * (1 - saturation)) * darkness,
-        0.0, 0.0,
-
-        // green channel
-        (0.213 * (1 - saturation)) * darkness,
-        (0.715 + 0.285 * saturation) * darkness,
-        (0.072 * (1 - saturation)) * darkness,
-        0.0, 0.0,
-
-        // blue channel
-        (0.213 * (1 - saturation)) * darkness,
-        (0.715 * (1 - saturation)) * darkness,
-        (0.072 + 0.928 * saturation) * darkness,
-        0.0, 0.0,
-
-        // alpha (opaque)
-        0.0, 0.0, 0.0, 1.0, 0.0
+        0.213 + 0.787 * saturation,
+        0.715 * (1 - saturation),
+        0.072 * (1 - saturation),
+        0.0,
+        0.0,
+        0.213 * (1 - saturation),
+        0.715 + 0.285 * saturation,
+        0.072 * (1 - saturation),
+        0.0,
+        0.0,
+        0.213 * (1 - saturation),
+        0.715 * (1 - saturation),
+        0.072 + 0.928 * saturation,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0
       ]),
       child: tileWidget,
     );
