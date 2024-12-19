@@ -15,7 +15,7 @@ class IssueCreationPage extends StatefulWidget {
 }
 
 class _IssueCreationPageState extends State<IssueCreationPage> {
-  final List<String> _availableTags = ["Permit", "Logistics", "Key", "Access", "Hazard", "FSC"];
+  final List<String> _availableTags = ["Permit", "Logistics", "Key", "Access", "Hazard", "FSC", "Other"];
   final List<String> _selectedTags = [];
   String? _selectedTag;
   final _descriptionController = TextEditingController();
