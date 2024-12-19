@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Record {
   String id;
-  Timestamp dateTime;
+  // Timestamp dateTime;
+  Timestamp createdAt;
+  Timestamp? closedAt;
   String authorId;
   List<String> images;
   String notes;
@@ -11,7 +13,8 @@ class Record {
   // constructor
   Record({
     this.id = '', // will be filled on creation
-    required this.dateTime,
+    required this.createdAt,
+    this.closedAt,
     required this.authorId,
     this.images = const [], // default empty
     this.notes = 'no notes', // default
@@ -22,7 +25,8 @@ class Record {
   // format function
   Map<String, dynamic> toMap() {
     return {
-      'dateTime': dateTime,
+      'createdAt': createdAt,
+      'closedAt': closedAt, // nullable
       'authorId': authorId,
       'notes': notes,
       'images': images,
@@ -35,7 +39,8 @@ class Record {
 
     return Record(
       id: doc.id,
-      dateTime: data['dateTime'] as Timestamp,
+      createdAt: data['createdAt'] as Timestamp,
+      closedAt: data['closedAt'] as Timestamp?,
       authorId: data['authorId'] as String,
       images: (data['images'] as List<dynamic>?)?.cast<String>() ?? [],
       notes: data['notes'] as String? ?? 'no notes',

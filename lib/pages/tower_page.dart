@@ -329,7 +329,7 @@ class TowerPage extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        DateFormat('dd/MM/yy').format(record.dateTime.toDate()),
+                                        DateFormat('dd/MM/yy').format(record.createdAt.toDate()),
                                         style: const TextStyle(fontSize: 15),
                                       ),
                                       const SizedBox(height: 10),

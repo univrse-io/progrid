@@ -1,8 +1,12 @@
+// TODO: rework this page for image adding.
+
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/providers/records_provider.dart';
@@ -20,7 +24,7 @@ class RecordPage extends StatefulWidget {
 
 class _RecordPageState extends State<RecordPage> {
   String? _selectedImageUrl;
-  bool _isLoading = false; // Add a flag to indicate loading status
+  bool _isLoading = false;
 
   // close overlay
   void _closeOverlay() {
@@ -120,6 +124,12 @@ class _RecordPageState extends State<RecordPage> {
     }
   }
 
+  String _formatTimestamp(Timestamp timestamp) {
+    final DateTime dateTime = timestamp.toDate();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    return formatter.format(dateTime);
+  }
+
   @override
   Widget build(BuildContext context) {
     final record = Provider.of<RecordsProvider>(context)
@@ -195,7 +205,39 @@ class _RecordPageState extends State<RecordPage> {
                       ),
                     ),
                   ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
+
+                // dates section
+                Row(
+                  children: [
+                    const Text(
+                      'Signed In:',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      _formatTimestamp(record.createdAt),
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    const Text(
+                      'Signed Out:',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      record.closedAt == null
+                          ? 'Not yet signed out' // closedAt placeholder
+                          : _formatTimestamp(record.closedAt!),
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
 
                 // description
                 Row(

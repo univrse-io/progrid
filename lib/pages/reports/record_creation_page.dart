@@ -30,10 +30,6 @@ class _RecordCreationPageState extends State<RecordCreationPage> {
   final int _maxImages = 2; // maximum number of images
   final int _minImages = 1; // minimum number of images
 
-  // record tag
-  final List<String> _availableTags = ["sign-in", "sign-out"];
-  String? _selectedTag;
-
   // images
   final List<File> _images = [];
   final _picker = ImagePicker();
@@ -42,6 +38,7 @@ class _RecordCreationPageState extends State<RecordCreationPage> {
   bool _isLoading = false;
 
   Future<void> _pickImage(ImageSource source) async {
+    // restrict max images
     if (_images.length >= _maxImages) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("You can only upload up to $_maxImages pictures.")),
@@ -160,9 +157,12 @@ class _RecordCreationPageState extends State<RecordCreationPage> {
   }
 
   Future<void> _createRecord() async {
-    if (_notesController.text.isEmpty) {
+    // require all fields, require min pictures
+    if (_notesController.text.isEmpty || _images.length < _minImages) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill in all fields.")),
+        SnackBar(
+          content: Text(_images.length < _minImages ? "Please upload at least $_minImages image." : "Please fill in all fields."),
+        ),
       );
       return;
     }
@@ -184,13 +184,13 @@ class _RecordCreationPageState extends State<RecordCreationPage> {
 
     // create new record instance
     final record = Record(
-      dateTime: Timestamp.now(),
+      createdAt: Timestamp.now(),
       authorId: userProvider.userId,
       notes: _notesController.text,
       images: imageUrls,
+      // closedAt is null
     );
 
-    // TODO: fix
     try {
       // add record to record provider and associated list
       await recordsProvider.addRecord(widget.towerId, record);
