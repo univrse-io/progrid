@@ -41,6 +41,7 @@ class Tower {
           ? data['position'] as GeoPoint
           : GeoPoint(0, 0),
       status: data['status'] as String? ?? 'undefined',
+      drawingStatus: data['drawingStatus'] as String? ?? 'undefined',
       notes: data['notes'] as String? ?? 'no notes',
     );
   }

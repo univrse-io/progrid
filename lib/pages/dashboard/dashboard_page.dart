@@ -95,7 +95,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('Regional Breakdown',
+                          Text('Regional Breakdown (Survey)',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           SizedBox(height: 10),
@@ -449,7 +449,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('Regional Breakdown',
+                          Text('Regional Breakdown (Drawing)',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           SizedBox(height: 10),

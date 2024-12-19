@@ -105,6 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         hintText: 'Full Name',
                         hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
                       ),
+                      maxLength: 20,
                     ),
                     const SizedBox(height: 10),
                     TextFormField(

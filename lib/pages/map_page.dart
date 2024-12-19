@@ -68,7 +68,7 @@ class _MapPageState extends State<MapPage> {
     Widget tileWidget,
     TileImage image,
   ) {
-    final saturation = 0.3;
+    final saturation = .8;
     return ColorFiltered(
       colorFilter: ColorFilter.matrix([
         0.213 + 0.787 * saturation,
