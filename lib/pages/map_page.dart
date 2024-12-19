@@ -183,9 +183,9 @@ class _MapPageState extends State<MapPage> {
                                     height: 8,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: tower.status == 'surveyed'
+                                      color: tower.surveyStatus == 'surveyed'
                                           ? AppColors.green
-                                          : tower.status == 'in-progress'
+                                          : tower.surveyStatus == 'in-progress'
                                               ? AppColors.yellow
                                               : AppColors.red,
                                     ),
@@ -228,9 +228,9 @@ class _MapPageState extends State<MapPage> {
                         );
 
                         // increment the status counts based on the tower's status
-                        if (tower.status == 'surveyed') {
+                        if (tower.surveyStatus == 'surveyed') {
                           statusCounts['surveyed'] = statusCounts['surveyed']! + 1;
-                        } else if (tower.status == 'in-progress') {
+                        } else if (tower.surveyStatus == 'in-progress') {
                           statusCounts['in-progress'] = statusCounts['in-progress']! + 1;
                         } else {
                           statusCounts['unsurveyed'] = statusCounts['unsurveyed']! + 1;

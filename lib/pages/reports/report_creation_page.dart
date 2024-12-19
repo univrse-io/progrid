@@ -193,8 +193,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
       // add report to report provider and associated list
       await reportsProvider.addReport(widget.towerId, report);
 
-      // update associated tower status to 'in progress'
-      await towersProvider.updateTowerStatus(widget.towerId, 'in-progress');
+      // update associated tower survey status to 'in-progress'
+      await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

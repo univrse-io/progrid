@@ -71,12 +71,12 @@ class TowerPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // tower status
+            // tower survey status
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Status:',
+                  'Survey:',
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     fontSize: 17,
@@ -89,19 +89,19 @@ class TowerPage extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 14, right: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    color: selectedTower.status == 'surveyed'
+                    color: selectedTower.surveyStatus == 'surveyed'
                         ? AppColors.green
-                        : selectedTower.status == 'in-progress'
+                        : selectedTower.surveyStatus == 'in-progress'
                             ? AppColors.yellow
                             : AppColors.red,
                   ),
                   child: DropdownButton(
                     isDense: true,
-                    value: selectedTower.status,
+                    value: selectedTower.surveyStatus,
                     onChanged: (value) async {
-                      if (value != null && value != selectedTower.status) {
-                        await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'status': value});
-                        selectedTower.status = value; // update local as well
+                      if (value != null && value != selectedTower.surveyStatus) {
+                        await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'surveyStatus': value});
+                        selectedTower.surveyStatus = value; // update local as well
                       }
                     },
                     items: const [
@@ -120,9 +120,73 @@ class TowerPage extends StatelessWidget {
                     ],
                     iconEnabledColor: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(24),
-                    dropdownColor: selectedTower.status == 'surveyed'
+                    dropdownColor: selectedTower.surveyStatus == 'surveyed'
                         ? AppColors.green
-                        : selectedTower.status == 'in-progress'
+                        : selectedTower.surveyStatus == 'in-progress'
+                            ? AppColors.yellow
+                            : AppColors.red,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.surface,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 5,),
+
+            // tower drawing status
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Drawing: ',
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 17,
+                  ),
+                ),
+                const SizedBox(width: 5),
+
+                // dropdown
+                Container(
+                  padding: const EdgeInsets.only(left: 14, right: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    color: selectedTower.drawingStatus == 'complete'
+                        ? AppColors.green
+                        : selectedTower.drawingStatus == 'submitted'
+                            ? AppColors.yellow
+                            : AppColors.red,
+                  ),
+                  child: DropdownButton(
+                    isDense: true,
+                    value: selectedTower.drawingStatus,
+                    onChanged: (value) async {
+                      if (value != null && value != selectedTower.drawingStatus) {
+                        await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'drawingStatus': value});
+                        selectedTower.drawingStatus = value; // update local as well
+                      }
+                    },
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'complete',
+                        child: Text('Complete'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'submitted',
+                        child: Text('Submitted'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'incomplete',
+                        child: Text('Incomplete'),
+                      ),
+                    ],
+                    iconEnabledColor: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(24),
+                    dropdownColor: selectedTower.drawingStatus == 'complete'
+                        ? AppColors.green
+                        : selectedTower.drawingStatus == 'submitted'
                             ? AppColors.yellow
                             : AppColors.red,
                     style: TextStyle(

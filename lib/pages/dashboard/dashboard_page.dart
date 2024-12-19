@@ -51,7 +51,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -62,7 +62,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.status == 'in-progress')
+                                            tower.surveyStatus == 'in-progress')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -73,7 +73,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.status == 'unsurveyed')
+                                            tower.surveyStatus == 'unsurveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -110,7 +110,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Southern' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -122,7 +122,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Northern' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -134,7 +134,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Eastern' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -146,7 +146,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Sarawak' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -158,7 +158,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Sabah' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -170,7 +170,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Central' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -226,7 +226,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       fontWeight: FontWeight.w600)),
                               SizedBox(height: 10),
                               Text(
-                                  '${towers.where((tower) => tower.status == 'in-progress').length}',
+                                  '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}',
                                   style:
                                       Theme.of(context).textTheme.displayLarge)
                             ],
@@ -247,7 +247,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       fontWeight: FontWeight.w600)),
                               SizedBox(height: 10),
                               Text(
-                                  '${towers.where((tower) => tower.status == 'surveyed').length}',
+                                  '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}',
                                   style:
                                       Theme.of(context).textTheme.displayLarge)
                             ],
@@ -268,7 +268,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       fontWeight: FontWeight.w600)),
                               SizedBox(height: 10),
                               Text(
-                                  '${towers.where((tower) => tower.status == 'unsurveyed').length}',
+                                  '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}',
                                   style:
                                       Theme.of(context).textTheme.displayLarge)
                             ],
@@ -348,7 +348,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                                 decoration: BoxDecoration(
                                                   shape: BoxShape.circle,
                                                   color:
-                                                      tower.status == 'surveyed'
+                                                      tower.surveyStatus == 'surveyed'
                                                           ? Colors.green
                                                           : Colors.red,
                                                 ),
@@ -570,7 +570,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     position: doc['position'] is GeoPoint
                         ? doc['position'] as GeoPoint
                         : GeoPoint(0, 0),
-                    status: doc['status'] as String? ?? 'undefined',
+                    surveyStatus: doc['status'] as String? ?? 'undefined',
                     drawingStatus:
                         doc['drawingStatus'] as String? ?? 'undefined',
                     notes: doc['notes'] as String? ?? 'no notes',
