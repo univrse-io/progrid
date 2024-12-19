@@ -23,7 +23,8 @@ class TowerPage extends StatelessWidget {
     );
 
     final reportsProvider = Provider.of<ReportsProvider>(context);
-    final reports = reportsProvider.reports.where((report) => report.id.startsWith('$towerId-R'));
+    final reports = reportsProvider.reports
+        .where((report) => report.id.startsWith('$towerId-R'));
 
     return Scaffold(
       appBar: AppBar(
@@ -100,7 +101,10 @@ class TowerPage extends StatelessWidget {
                     value: selectedTower.status,
                     onChanged: (value) async {
                       if (value != null && value != selectedTower.status) {
-                        await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'status': value});
+                        await FirebaseFirestore.instance
+                            .collection('towers')
+                            .doc(selectedTower.id)
+                            .update({'status': value});
                         selectedTower.status = value; // update local as well
                       }
                     },
@@ -173,7 +177,11 @@ class TowerPage extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ReportCreationPage(towerId: selectedTower.id))),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ReportCreationPage(towerId: selectedTower.id))),
               child: Text(
                 'Create New Report',
                 style: TextStyle(
@@ -196,16 +204,24 @@ class TowerPage extends StatelessWidget {
 
                           // future to get author from authorId
                           return FutureBuilder<DocumentSnapshot>(
-                            future: FirebaseFirestore.instance.collection('users').doc(report.authorId).get(),
+                            future: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(report.authorId)
+                                .get(),
                             builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return Center(child: CircularProgressIndicator());
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                    child: CircularProgressIndicator());
                               } else if (snapshot.hasError) {
-                                return Center(child: Text('Error: ${snapshot.error}'));
-                              } else if (!snapshot.hasData || !snapshot.data!.exists) {
+                                return Center(
+                                    child: Text('Error: ${snapshot.error}'));
+                              } else if (!snapshot.hasData ||
+                                  !snapshot.data!.exists) {
                                 return Center(child: Text('Author not found.'));
                               } else {
-                                final authorName = snapshot.data!['name'] as String;
+                                final authorName =
+                                    snapshot.data!['name'] as String;
 
                                 return GestureDetector(
                                   onTap: () {
@@ -220,7 +236,8 @@ class TowerPage extends StatelessWidget {
                                     );
                                   },
                                   child: Card(
-                                    margin: const EdgeInsets.symmetric(vertical: 4),
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 4),
                                     elevation: 5,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -228,11 +245,13 @@ class TowerPage extends StatelessWidget {
                                     child: SafeArea(
                                       minimum: EdgeInsets.all(12),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           // left side
                                           Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               // report id
                                               Text(report.id,
@@ -252,7 +271,9 @@ class TowerPage extends StatelessWidget {
                                               Text(
                                                 '${report.images.length} Photo(s)',
                                                 style: TextStyle(
-                                                  color: Theme.of(context).colorScheme.secondary,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
                                                   fontWeight: FontWeight.bold,
                                                   fontStyle: FontStyle.italic,
                                                   fontSize: 13,
@@ -262,10 +283,12 @@ class TowerPage extends StatelessWidget {
                                           ),
                                           // right side
                                           Column(
-                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
                                             children: [
                                               Text(
-                                                DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
+                                                DateFormat('dd/MM/yy').format(
+                                                    report.dateTime.toDate()),
                                                 style: TextStyle(fontSize: 15),
                                               ),
                                               const SizedBox(height: 10),
@@ -291,7 +314,8 @@ class TowerPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => IssuesListPage(towerId: selectedTower.id),
+                    builder: (context) =>
+                        IssuesListPage(towerId: selectedTower.id),
                   ),
                 );
               },
