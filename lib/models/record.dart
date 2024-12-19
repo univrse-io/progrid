@@ -1,7 +1,7 @@
 // Report Model
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Report {
+class Record {
   String id;
   Timestamp dateTime;
   String authorId;
@@ -9,13 +9,15 @@ class Report {
   String notes;
 
   // constructor
-  Report({
-    this.id = '', // will be filled when created in firestore
+  Record({
+    this.id = '', // will be filled on creation
     required this.dateTime,
     required this.authorId,
     this.images = const [], // default empty
     this.notes = 'no notes', // default
   });
+
+  // TODO: REVIEW, MAY HAVE TO INCLUDE SIGN IN SIGN OUT IN ONE
 
   // format function
   Map<String, dynamic> toMap() {
@@ -28,10 +30,10 @@ class Report {
   }
 
   // factory builder: given a document, return a report instance
-  factory Report.fromFirestore(DocumentSnapshot doc) {
+  factory Record.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data()! as Map<String, dynamic>;
 
-    return Report(
+    return Record(
       id: doc.id,
       dateTime: data['dateTime'] as Timestamp,
       authorId: data['authorId'] as String,

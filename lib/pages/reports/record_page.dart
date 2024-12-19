@@ -5,20 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:progrid/models/providers/reports_provider.dart';
+import 'package:progrid/models/providers/records_provider.dart';
 import 'package:provider/provider.dart';
 
-class ReportPage extends StatefulWidget {
+class RecordPage extends StatefulWidget {
   final String towerId;
-  final String reportId;
+  final String recordId;
 
-  const ReportPage({super.key, required this.reportId, required this.towerId});
+  const RecordPage({super.key, required this.recordId, required this.towerId});
 
   @override
-  State<ReportPage> createState() => _ReportPageState();
+  State<RecordPage> createState() => _RecordPageState();
 }
 
-class _ReportPageState extends State<ReportPage> {
+class _RecordPageState extends State<RecordPage> {
   String? _selectedImageUrl;
   bool _isLoading = false; // Add a flag to indicate loading status
 
@@ -122,14 +122,14 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final report = Provider.of<ReportsProvider>(context)
-        .reports
-        .firstWhere((report) => report.id == widget.reportId);
+    final record = Provider.of<RecordsProvider>(context)
+        .records
+        .firstWhere((record) => record.id == widget.recordId);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.reportId,
+          widget.recordId,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
         ),
       ),
@@ -158,7 +158,7 @@ class _ReportPageState extends State<ReportPage> {
                 ),
 
                 // images grid
-                if (report.images.isNotEmpty)
+                if (record.images.isNotEmpty)
                   Container(
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -166,7 +166,7 @@ class _ReportPageState extends State<ReportPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: SizedBox(
-                      height: report.images.length <= 2
+                      height: record.images.length <= 2
                           ? 170 // height if 1 row
                           : 250, // height if more
                       child: GridView.builder(
@@ -175,18 +175,18 @@ class _ReportPageState extends State<ReportPage> {
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
                         ),
-                        itemCount: report.images.length,
+                        itemCount: record.images.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
                               setState(() {
-                                _selectedImageUrl = report.images[index];
+                                _selectedImageUrl = record.images[index];
                               });
                             },
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
-                                report.images[index],
+                                record.images[index],
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -210,7 +210,7 @@ class _ReportPageState extends State<ReportPage> {
                   ],
                 ),
                 Text(
-                  report.notes,
+                  record.notes,
                   style: TextStyle(fontSize: 16),
                 ),
               ],

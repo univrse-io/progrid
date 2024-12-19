@@ -9,25 +9,30 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_watermark/image_watermark.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:progrid/models/providers/reports_provider.dart';
+import 'package:progrid/models/providers/records_provider.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
-import 'package:progrid/models/report.dart';
+import 'package:progrid/models/record.dart';
 import 'package:provider/provider.dart';
 
-class ReportCreationPage extends StatefulWidget {
+class RecordCreationPage extends StatefulWidget {
   final String towerId; // id of selected tower
 
-  const ReportCreationPage({super.key, required this.towerId});
+  const RecordCreationPage({super.key, required this.towerId});
 
   @override
-  State<ReportCreationPage> createState() => _ReportCreationPageState();
+  State<RecordCreationPage> createState() => _RecordCreationPageState();
 }
 
-class _ReportCreationPageState extends State<ReportCreationPage> {
+class _RecordCreationPageState extends State<RecordCreationPage> {
   final _notesController = TextEditingController();
   final int _maxNotesLength = 500;
-  final int _maxImages = 3; // maximum number of images
+  final int _maxImages = 2; // maximum number of images
+  final int _minImages = 1; // minimum number of images
+
+  // record tag
+  final List<String> _availableTags = ["sign-in", "sign-out"];
+  String? _selectedTag;
 
   // images
   final List<File> _images = [];
@@ -134,18 +139,15 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
   // upload to firebase storage
   Future<String> _uploadImage(File imageFile) async {
     try {
-      final String fileName =
-          DateTime.now().microsecondsSinceEpoch.toString(); // unique filename
-      final Reference storageRef =
-          FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
+      final String fileName = DateTime.now().microsecondsSinceEpoch.toString(); // unique filename
+      final Reference storageRef = FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
 
       final UploadTask uploadTask = storageRef.putFile(imageFile);
 
       // monitor upload progress
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
         setState(() {
-          _uploadProgress = snapshot.bytesTransferred.toDouble() /
-              snapshot.totalBytes.toDouble();
+          _uploadProgress = snapshot.bytesTransferred.toDouble() / snapshot.totalBytes.toDouble();
         });
       });
 
@@ -157,7 +159,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
     }
   }
 
-  Future<void> _createReport() async {
+  Future<void> _createRecord() async {
     if (_notesController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields.")),
@@ -171,7 +173,7 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final towersProvider = Provider.of<TowersProvider>(context, listen: false);
-    final reportsProvider = Provider.of<ReportsProvider>(context, listen: false);
+    final recordsProvider = Provider.of<RecordsProvider>(context, listen: false);
 
     // upload images to Firebase and get URLs
     final List<String> imageUrls = [];
@@ -180,8 +182,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
       imageUrls.add(imageUrl);
     }
 
-    // create new report instance
-    final report = Report(
+    // create new record instance
+    final record = Record(
       dateTime: Timestamp.now(),
       authorId: userProvider.userId,
       notes: _notesController.text,
@@ -190,22 +192,22 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
 
     // TODO: fix
     try {
-      // add report to report provider and associated list
-      await reportsProvider.addReport(widget.towerId, report);
+      // add record to record provider and associated list
+      await recordsProvider.addRecord(widget.towerId, record);
 
       // update associated tower survey status to 'in-progress'
       await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Report Created Successfully!"),
+          content: Text("Record Created Successfully!"),
         ));
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error creating report: $e")),
+          SnackBar(content: Text("Error creating record: $e")),
         );
       }
     } finally {
@@ -377,8 +379,8 @@ class _ReportCreationPageState extends State<ReportCreationPage> {
                 ),
                 const SizedBox(height: 20),
                 FilledButton(
-                  onPressed: () => _createReport(),
-                  child: Text("Create Report"),
+                  onPressed: () => _createRecord(),
+                  child: Text("Create Record"),
                 ),
                 const SizedBox(height: 20),
               ],
