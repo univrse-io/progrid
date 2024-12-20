@@ -296,10 +296,8 @@ class _TowerPageState extends State<TowerPage> {
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         final record = records.toList()[index];
-
-                        // Default author name if not found
                         String authorName = 'Unknown Author';
-
+                        
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -394,7 +392,8 @@ class _TowerPageState extends State<TowerPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => IssuesListPage(towerId: selectedTower.id),
+                    builder: (context) =>
+                        IssuesListPage(towerId: selectedTower.id),
                   ),
                 );
               },

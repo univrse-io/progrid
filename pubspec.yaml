@@ -9,7 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
+  carbon_design_system:
+    path: packages/carbon_design_system
   google_fonts: ^6.2.1
   firebase_core: ^3.8.0
   firebase_auth: ^5.3.3
