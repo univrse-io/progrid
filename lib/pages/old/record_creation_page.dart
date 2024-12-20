@@ -184,7 +184,7 @@ class _RecordCreationPageState extends State<RecordCreationPage> {
 
     // create new record instance
     final record = Record(
-      createdAt: Timestamp.now(),
+      signIn: Timestamp.now(),
       authorId: userProvider.userId,
       notes: _notesController.text,
       images: imageUrls,

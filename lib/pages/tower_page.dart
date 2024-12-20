@@ -3,27 +3,33 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:progrid/models/providers/records_provider.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
+import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
-import 'package:progrid/pages/reports/record_creation_page.dart';
-import 'package:progrid/pages/reports/record_page.dart';
+import 'package:progrid/models/record.dart';
+import 'package:progrid/pages/records/record_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
-class TowerPage extends StatelessWidget {
+class TowerPage extends StatefulWidget {
   final String towerId;
 
   const TowerPage({super.key, required this.towerId});
 
   @override
+  State<TowerPage> createState() => _TowerPageState();
+}
+
+class _TowerPageState extends State<TowerPage> {
+  @override
   Widget build(BuildContext context) {
     final towersProvider = Provider.of<TowersProvider>(context);
     final selectedTower = towersProvider.towers.firstWhere(
-      (tower) => tower.id == towerId,
+      (tower) => tower.id == widget.towerId,
       orElse: () => throw Exception("Tower not found"),
     );
 
     final recordsProvider = Provider.of<RecordsProvider>(context);
-    final records = recordsProvider.records.where((record) => record.id.startsWith('$towerId-R'));
+    final records = recordsProvider.records.where((record) => record.id.startsWith('${widget.towerId}-R'));
 
     return Scaffold(
       appBar: AppBar(
@@ -133,7 +139,9 @@ class TowerPage extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 5,),
+            const SizedBox(
+              height: 5,
+            ),
 
             // tower drawing status
             Row(
@@ -237,7 +245,38 @@ class TowerPage extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RecordCreationPage(towerId: selectedTower.id))),
+              // onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RecordCreationPage(towerId: selectedTower.id))),
+              onTap: () async {
+                // TODO: implement popup
+
+                final userProvider = Provider.of<UserProvider>(context, listen: false);
+                final recordsProvider = Provider.of<RecordsProvider>(context, listen: false);
+
+                // create new record instance
+                final record = Record(
+                  authorId: userProvider.userId,
+                );
+
+                try {
+                  // add record to record provider and local list
+                  await recordsProvider.addRecord(widget.towerId, record);
+
+                  // update associated tower survey status to 'in-progress'
+                  await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
+
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("Record Created Successfully!"),
+                    ));
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Error creating record: $e")),
+                    );
+                  }
+                }
+              },
               child: Text(
                 'Create New Record',
                 style: TextStyle(
@@ -250,7 +289,7 @@ class TowerPage extends StatelessWidget {
             const SizedBox(height: 5),
 
             Expanded(
-                child: records.isEmpty
+              child: records.isEmpty
                   ? Center(child: Text("No Record History"))
                   : ListView.builder(
                       itemCount: records.length,
@@ -329,7 +368,9 @@ class TowerPage extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        DateFormat('dd/MM/yy').format(record.createdAt.toDate()),
+                                        record.signIn != null
+                                            ? DateFormat('dd/MM/yy').format(record.signIn!.toDate())
+                                            : 'Not Signed-In',
                                         style: const TextStyle(fontSize: 15),
                                       ),
                                       const SizedBox(height: 10),
@@ -346,7 +387,6 @@ class TowerPage extends StatelessWidget {
                         );
                       },
                     ),
-
             ),
 
             FilledButton(

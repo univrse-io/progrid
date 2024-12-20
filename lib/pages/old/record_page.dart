@@ -216,7 +216,7 @@ class _RecordPageState extends State<RecordPage> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      _formatTimestamp(record.createdAt),
+                      _formatTimestamp(record.signIn!),
                       style: TextStyle(fontSize: 16),
                     ),
                   ],
@@ -230,9 +230,9 @@ class _RecordPageState extends State<RecordPage> {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      record.closedAt == null
+                      record.signIn == null
                           ? 'Not yet signed out' // closedAt placeholder
-                          : _formatTimestamp(record.closedAt!),
+                          : _formatTimestamp(record.signIn!),
                       style: TextStyle(fontSize: 16),
                     ),
                   ],
