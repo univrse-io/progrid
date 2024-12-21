@@ -9,7 +9,7 @@ class Tower {
   String owner;
   String address;
   GeoPoint position;
-  String status;
+  String surveyStatus;
   String drawingStatus;
   String notes;
 
@@ -22,7 +22,7 @@ class Tower {
     this.owner = 'undefined',
     this.address = 'undefined',
     this.position = const GeoPoint(0, 0),
-    this.status = 'undefined',
+    this.surveyStatus = 'undefined',
     this.drawingStatus = 'undefined',
     this.notes = 'no notes',
   });
@@ -40,7 +40,8 @@ class Tower {
       position: data['position'] is GeoPoint
           ? data['position'] as GeoPoint
           : GeoPoint(0, 0),
-      status: data['status'] as String? ?? 'undefined',
+      surveyStatus: data['surveyStatus'] as String? ?? 'undefined',
+      drawingStatus: data['drawingStatus'] as String? ?? 'undefined',
       notes: data['notes'] as String? ?? 'no notes',
     );
   }

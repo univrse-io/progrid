@@ -2,41 +2,41 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/models/report.dart';
+import 'package:progrid/models/record.dart';
 
-class ReportsProvider extends ChangeNotifier {
-  List<Report> reports = [];
-  StreamSubscription? _reportsSubscription;
+class RecordsProvider extends ChangeNotifier {
+  List<Record> records = [];
+  StreamSubscription? _recordsSubscription;
 
   // setup stream subscription
-  Future<void> loadReports() async {
+  Future<void> loadRecords() async {
     try {
-      reports = [];
+      records = [];
 
-      _reportsSubscription = FirebaseFirestore.instance.collection('reports').snapshots().listen((snapshot) async {
-        reports = await Future.wait(snapshot.docs.map((doc) async => Report.fromFirestore(doc)));
+      _recordsSubscription = FirebaseFirestore.instance.collection('records').snapshots().listen((snapshot) async {
+        records = await Future.wait(snapshot.docs.map((doc) async => Record.fromFirestore(doc)));
         notifyListeners();
       });
     } catch (e) {
-      throw 'Error loading Reports: $e';
+      throw 'Error loading records: $e';
     }
   }
 
-  Future<void> addReport(String towerId, Report report) async {
+  Future<void> addRecord(String towerId, Record record) async {
     try {
-      final reportId = await _generateUniqueId(towerId, 'R');
-      await FirebaseFirestore.instance.collection('reports').doc(reportId).set(report.toMap());
+      final recordId = await _generateUniqueId(towerId, 'R');
+      await FirebaseFirestore.instance.collection('records').doc(recordId).set(record.toMap());
 
-      reports.add(report);
+      records.add(record);
       notifyListeners();
     } catch (e) {
-      throw Exception("Failed to add report: $e");
+      throw Exception("Failed to add record: $e");
     }
   }
 
   @override
   void dispose() {
-    _reportsSubscription?.cancel();
+    _recordsSubscription?.cancel();
     super.dispose();
   }
 
@@ -55,7 +55,7 @@ class ReportsProvider extends ChangeNotifier {
 
       // collision check
       final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
-      final collectionRef = towerRef.collection(type == 'R' ? 'reports' : 'issues');
+      final collectionRef = towerRef.collection(type == 'R' ? 'records' : 'issues');
       final docSnapshot = await collectionRef.doc(id).get();
 
       if (!docSnapshot.exists) {

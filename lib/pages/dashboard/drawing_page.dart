@@ -20,7 +20,7 @@ class _DrawingScreenState extends State<DrawingScreen> {
       child: Column(
         children: [
           ...towers.map((tower) => Visibility(
-                visible: tower.status == 'surveyed',
+                visible: tower.surveyStatus == 'surveyed',
                 child: Card(
                   margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
                   child: ListTile(

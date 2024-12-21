@@ -1,30 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:progrid/models/providers/reports_provider.dart';
+import 'package:progrid/models/providers/records_provider.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
+import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
-import 'package:progrid/pages/reports/report_creation_page.dart';
-import 'package:progrid/pages/reports/report_page.dart';
+import 'package:progrid/models/record.dart';
+import 'package:progrid/pages/records/record_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
-class TowerPage extends StatelessWidget {
+class TowerPage extends StatefulWidget {
   final String towerId;
 
   const TowerPage({super.key, required this.towerId});
 
   @override
+  State<TowerPage> createState() => _TowerPageState();
+}
+
+class _TowerPageState extends State<TowerPage> {
+  @override
   Widget build(BuildContext context) {
     final towersProvider = Provider.of<TowersProvider>(context);
     final selectedTower = towersProvider.towers.firstWhere(
-      (tower) => tower.id == towerId,
+      (tower) => tower.id == widget.towerId,
       orElse: () => throw Exception("Tower not found"),
     );
 
-    final reportsProvider = Provider.of<ReportsProvider>(context);
-    final reports = reportsProvider.reports
-        .where((report) => report.id.startsWith('$towerId-R'));
+    final recordsProvider = Provider.of<RecordsProvider>(context);
+    final records = recordsProvider.records.where((record) => record.id.startsWith('${widget.towerId}-R'));
 
     return Scaffold(
       appBar: AppBar(
@@ -72,12 +77,12 @@ class TowerPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // tower status
+            // tower survey status
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Status:',
+                  'Survey:',
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     fontSize: 17,
@@ -90,22 +95,19 @@ class TowerPage extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 14, right: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    color: selectedTower.status == 'surveyed'
+                    color: selectedTower.surveyStatus == 'surveyed'
                         ? AppColors.green
-                        : selectedTower.status == 'in-progress'
+                        : selectedTower.surveyStatus == 'in-progress'
                             ? AppColors.yellow
                             : AppColors.red,
                   ),
                   child: DropdownButton(
                     isDense: true,
-                    value: selectedTower.status,
+                    value: selectedTower.surveyStatus,
                     onChanged: (value) async {
-                      if (value != null && value != selectedTower.status) {
-                        await FirebaseFirestore.instance
-                            .collection('towers')
-                            .doc(selectedTower.id)
-                            .update({'status': value});
-                        selectedTower.status = value; // update local as well
+                      if (value != null && value != selectedTower.surveyStatus) {
+                        await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'surveyStatus': value});
+                        selectedTower.surveyStatus = value; // update local as well
                       }
                     },
                     items: const [
@@ -124,9 +126,75 @@ class TowerPage extends StatelessWidget {
                     ],
                     iconEnabledColor: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(24),
-                    dropdownColor: selectedTower.status == 'surveyed'
+                    dropdownColor: selectedTower.surveyStatus == 'surveyed'
                         ? AppColors.green
-                        : selectedTower.status == 'in-progress'
+                        : selectedTower.surveyStatus == 'in-progress'
+                            ? AppColors.yellow
+                            : AppColors.red,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.surface,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+
+            // tower drawing status
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Drawing: ',
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 17,
+                  ),
+                ),
+                const SizedBox(width: 5),
+
+                // dropdown
+                Container(
+                  padding: const EdgeInsets.only(left: 14, right: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    color: selectedTower.drawingStatus == 'complete'
+                        ? AppColors.green
+                        : selectedTower.drawingStatus == 'submitted'
+                            ? AppColors.yellow
+                            : AppColors.red,
+                  ),
+                  child: DropdownButton(
+                    isDense: true,
+                    value: selectedTower.drawingStatus,
+                    onChanged: (value) async {
+                      if (value != null && value != selectedTower.drawingStatus) {
+                        await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'drawingStatus': value});
+                        selectedTower.drawingStatus = value; // update local as well
+                      }
+                    },
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'complete',
+                        child: Text('Complete'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'submitted',
+                        child: Text('Submitted'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'incomplete',
+                        child: Text('Incomplete'),
+                      ),
+                    ],
+                    iconEnabledColor: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(24),
+                    dropdownColor: selectedTower.drawingStatus == 'complete'
+                        ? AppColors.green
+                        : selectedTower.drawingStatus == 'submitted'
                             ? AppColors.yellow
                             : AppColors.red,
                     style: TextStyle(
@@ -170,20 +238,47 @@ class TowerPage extends StatelessWidget {
             const SizedBox(height: 20),
 
             const Text(
-              'Site Reports',
+              'Sign-In/Sign-Out',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
             GestureDetector(
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          ReportCreationPage(towerId: selectedTower.id))),
+              // onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RecordCreationPage(towerId: selectedTower.id))),
+              onTap: () async {
+                // TODO: implement popup
+
+                final userProvider = Provider.of<UserProvider>(context, listen: false);
+                final recordsProvider = Provider.of<RecordsProvider>(context, listen: false);
+
+                // create new record instance
+                final record = Record(
+                  authorId: userProvider.userId,
+                );
+
+                try {
+                  // add record to record provider and local list
+                  await recordsProvider.addRecord(widget.towerId, record);
+
+                  // update associated tower survey status to 'in-progress'
+                  await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
+
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("Record Created Successfully!"),
+                    ));
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Error creating record: $e")),
+                    );
+                  }
+                }
+              },
               child: Text(
-                'Create New Report',
+                'Create New Record',
                 style: TextStyle(
                     decoration: TextDecoration.underline,
                     fontStyle: FontStyle.italic,
@@ -194,120 +289,103 @@ class TowerPage extends StatelessWidget {
             const SizedBox(height: 5),
 
             Expanded(
-                child: reports.isEmpty
-                    ? Center(child: Text("No Report History"))
-                    : ListView.builder(
-                        itemCount: reports.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          final report = reports.toList()[index];
-
-                          // future to get author from authorId
-                          return FutureBuilder<DocumentSnapshot>(
-                            future: FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(report.authorId)
-                                .get(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                    child: Text('Error: ${snapshot.error}'));
-                              } else if (!snapshot.hasData ||
-                                  !snapshot.data!.exists) {
-                                return Center(child: Text('Author not found.'));
-                              } else {
-                                final authorName =
-                                    snapshot.data!['name'] as String;
-
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ReportPage(
-                                          towerId: selectedTower.id,
-                                          reportId: report.id,
+              child: records.isEmpty
+                  ? Center(child: Text("No Record History"))
+                  : ListView.builder(
+                      itemCount: records.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final record = records.toList()[index];
+                        String authorName = 'Unknown Author';
+                        
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RecordPage(
+                                  towerId: selectedTower.id,
+                                  recordId: record.id,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Card(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: SafeArea(
+                              minimum: const EdgeInsets.all(12),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // left side
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // record id
+                                      Text(
+                                        record.id,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    );
-                                  },
-                                  child: Card(
-                                    margin:
-                                        const EdgeInsets.symmetric(vertical: 4),
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: SafeArea(
-                                      minimum: EdgeInsets.all(12),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          // left side
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              // report id
-                                              Text(report.id,
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
-                                                  )),
-                                              // author name
-                                              Text(
-                                                authorName,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20,
-                                                ),
-                                              ),
-                                              // photo count
-                                              Text(
-                                                '${report.images.length} Photo(s)',
-                                                style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontStyle: FontStyle.italic,
-                                                  fontSize: 13,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          // right side
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              Text(
-                                                DateFormat('dd/MM/yy').format(
-                                                    report.dateTime.toDate()),
-                                                style: TextStyle(fontSize: 15),
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Icon(
-                                                Icons.arrow_right,
-                                                size: 36,
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                      // author name (fallback to default if FutureBuilder fails)
+                                      FutureBuilder<DocumentSnapshot>(
+                                        future: FirebaseFirestore.instance.collection('users').doc(record.authorId).get(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data!.exists) {
+                                            authorName = snapshot.data!['name'] as String;
+                                          }
+                                          return Text(
+                                            authorName,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                            ),
+                                          );
+                                        },
                                       ),
-                                    ),
+                                      // photo count
+                                      Text(
+                                        '${record.images.length} Photo(s)',
+                                        style: TextStyle(
+                                          color: Theme.of(context).colorScheme.secondary,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.italic,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                );
-                              }
-                            },
-                          );
-                        },
-                      )),
+                                  // right side
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        record.signIn != null
+                                            ? DateFormat('dd/MM/yy').format(record.signIn!.toDate())
+                                            : 'Not Signed-In',
+                                        style: const TextStyle(fontSize: 15),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      const Icon(
+                                        Icons.arrow_right,
+                                        size: 36,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
 
             FilledButton(
               onPressed: () {

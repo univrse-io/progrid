@@ -1,27 +1,30 @@
+// TODO: rework this page for image adding.
+
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:progrid/models/providers/reports_provider.dart';
+import 'package:progrid/models/providers/records_provider.dart';
 import 'package:provider/provider.dart';
 
-class ReportPage extends StatefulWidget {
+class RecordPage extends StatefulWidget {
   final String towerId;
-  final String reportId;
+  final String recordId;
 
-  const ReportPage({super.key, required this.reportId, required this.towerId});
+  const RecordPage({super.key, required this.recordId, required this.towerId});
 
   @override
-  State<ReportPage> createState() => _ReportPageState();
+  State<RecordPage> createState() => _RecordPageState();
 }
 
-class _ReportPageState extends State<ReportPage> {
+class _RecordPageState extends State<RecordPage> {
   String? _selectedImageUrl;
-
-  // TODO: make overlay encapsulate whole screen, including appbar (new page?)
+  bool _isLoading = false;
 
   // close overlay
   void _closeOverlay() {
@@ -30,8 +33,13 @@ class _ReportPageState extends State<ReportPage> {
     });
   }
 
+  // download image and show progress
   Future<void> _downloadImage(String url) async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
+
       final androidInfo = await DeviceInfoPlugin().androidInfo;
       final permission = Platform.isAndroid && androidInfo.version.sdkInt > 32
           ? Permission.photos
@@ -109,19 +117,29 @@ class _ReportPageState extends State<ReportPage> {
           SnackBar(content: Text('Failed to save image: $e')),
         );
       }
+    } finally {
+      setState(() {
+        _isLoading = false; // download complete
+      });
     }
+  }
+
+  String _formatTimestamp(Timestamp timestamp) {
+    final DateTime dateTime = timestamp.toDate();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    return formatter.format(dateTime);
   }
 
   @override
   Widget build(BuildContext context) {
-    final report = Provider.of<ReportsProvider>(context)
-        .reports
-        .firstWhere((report) => report.id == widget.reportId);
+    final record = Provider.of<RecordsProvider>(context)
+        .records
+        .firstWhere((record) => record.id == widget.recordId);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.reportId,
+          widget.recordId,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
         ),
       ),
@@ -150,7 +168,7 @@ class _ReportPageState extends State<ReportPage> {
                 ),
 
                 // images grid
-                if (report.images.isNotEmpty)
+                if (record.images.isNotEmpty)
                   Container(
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -158,7 +176,7 @@ class _ReportPageState extends State<ReportPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: SizedBox(
-                      height: report.images.length <= 2
+                      height: record.images.length <= 2
                           ? 170 // height if 1 row
                           : 250, // height if more
                       child: GridView.builder(
@@ -167,18 +185,18 @@ class _ReportPageState extends State<ReportPage> {
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
                         ),
-                        itemCount: report.images.length,
+                        itemCount: record.images.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
                               setState(() {
-                                _selectedImageUrl = report.images[index];
+                                _selectedImageUrl = record.images[index];
                               });
                             },
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
-                                report.images[index],
+                                record.images[index],
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -187,7 +205,39 @@ class _ReportPageState extends State<ReportPage> {
                       ),
                     ),
                   ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
+
+                // dates section
+                Row(
+                  children: [
+                    const Text(
+                      'Signed In:',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      _formatTimestamp(record.signIn!),
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    const Text(
+                      'Signed Out:',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      record.signIn == null
+                          ? 'Not yet signed out' // closedAt placeholder
+                          : _formatTimestamp(record.signIn!),
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
 
                 // description
                 Row(
@@ -202,7 +252,7 @@ class _ReportPageState extends State<ReportPage> {
                   ],
                 ),
                 Text(
-                  report.notes,
+                  record.notes,
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -251,6 +301,17 @@ class _ReportPageState extends State<ReportPage> {
                   ),
                 ),
               ],
+            ),
+
+          // loading overlay for downloading
+          if (_isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
             )
         ],
       ),

@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "190251764983",
-    "project_id": "sapura-580e1",
-    "storage_bucket": "sapura-580e1.firebasestorage.app"
+    "project_number": "678276190882",
+    "project_id": "progrid-3a41b",
+    "storage_bucket": "progrid-3a41b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:190251764983:android:ee442f199b3726d6dc57f2",
+        "mobilesdk_app_id": "1:678276190882:android:88cbd603453477b3debdfb",
         "android_client_info": {
           "package_name": "com.univrse.progrid"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD9eRmRwCLBrW_2ZguWziaH_syiXdjnV6Y"
+          "current_key": "AIzaSyBuN1qOw580nUATHVsgLQRcU2ncEFuXFIg"
         }
       ],
       "services": {
