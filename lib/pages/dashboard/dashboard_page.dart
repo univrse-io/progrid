@@ -597,7 +597,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       onTap: () => _onItemTapped(0),
                     ),
                     ListTile(
-                      title: const Text('Drawing Status'),
+                      title: const Text('On-Site Audit'),
                       onTap: () => _onItemTapped(1),
                     ),
                   ],
