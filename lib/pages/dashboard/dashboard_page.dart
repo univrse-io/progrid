@@ -347,10 +347,10 @@ class _DashboardPageState extends State<DashboardPage> {
                                                 height: 8,
                                                 decoration: BoxDecoration(
                                                   shape: BoxShape.circle,
-                                                  color:
-                                                      tower.surveyStatus == 'surveyed'
-                                                          ? Colors.green
-                                                          : Colors.red,
+                                                  color: tower.surveyStatus ==
+                                                          'surveyed'
+                                                      ? Colors.green
+                                                      : Colors.red,
                                                 ),
                                               ),
                                               const SizedBox(width: 4),
@@ -570,7 +570,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     position: doc['position'] is GeoPoint
                         ? doc['position'] as GeoPoint
                         : GeoPoint(0, 0),
-                    surveyStatus: doc['status'] as String? ?? 'undefined',
+                    surveyStatus: doc['surveyStatus'] as String? ?? 'undefined',
                     drawingStatus:
                         doc['drawingStatus'] as String? ?? 'undefined',
                     notes: doc['notes'] as String? ?? 'no notes',
