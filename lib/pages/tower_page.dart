@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,6 +30,10 @@ class _TowerPageState extends State<TowerPage> {
     );
 
     final _notesController = TextEditingController();
+    _notesController.text =
+        towersProvider.towers.firstWhere((tower) => tower.id == widget.towerId).notes ?? 'Enter text here...'; // get tower notes
+
+    Timer? _debounceTimer;
     final int _maxNotesLength = 500;
     final int _maxImages = 2; // maximum number of images
     final int _minImages = 1; // minimum number of images
@@ -290,7 +295,7 @@ class _TowerPageState extends State<TowerPage> {
 
               // notes text field
               SizedBox(
-                height: 200, // control text box height here
+                height: 120, // control text box height here
                 child: TextField(
                   controller: _notesController,
                   keyboardType: TextInputType.multiline,
@@ -298,6 +303,7 @@ class _TowerPageState extends State<TowerPage> {
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
                   maxLength: _maxNotesLength,
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14),
                   buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
                     return Padding(
                       padding: const EdgeInsets.only(top: 4),
@@ -311,11 +317,22 @@ class _TowerPageState extends State<TowerPage> {
                     );
                   },
                   decoration: InputDecoration(
-                    hintText: 'Notes',
+                    hintText: 'Enter text here...',
                     alignLabelWithHint: true,
-                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                    contentPadding: EdgeInsets.all(12),
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   ),
+                  onChanged: (text) async {
+                    // cancel any previous debounce timer
+                    if (_debounceTimer?.isActive ?? false) _debounceTimer?.cancel();
+
+                    _debounceTimer = Timer(const Duration(milliseconds: 2000), () {
+                      // update notes every one second of changes
+                      // TODO: check if database updating is happening when there are no updates
+                      // UNDONE: ISSUE, text field loses focus on rebuild; cursor disappears
+                      towersProvider.updateNotes(widget.towerId, text);
+                    });
+                  },
                 ),
               ),
 
@@ -326,23 +343,81 @@ class _TowerPageState extends State<TowerPage> {
                 children: [
                   Expanded(
                     child: FilledButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(
+                                'Select Image Source',
+                                textAlign: TextAlign.center,
+                              ),
+                              titleTextStyle:
+                                  TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                              titlePadding: EdgeInsets.only(top: 20, right: 20, left: 20),
+                              contentPadding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
+                              content: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: FilledButton(
+                                      onPressed: () {
+                                        // TODO: implement camera upload function
+                                        Navigator.pop(context);
+                                      },
+                                      child: Icon(
+                                        Icons.camera_alt_outlined,
+                                        size: 30,
+                                      ),
+                                      style: FilledButton.styleFrom(
+                                        textStyle: TextStyle(fontWeight: FontWeight.w600),
+                                        minimumSize: Size.fromHeight(120),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Expanded(
+                                    child: FilledButton(
+                                      onPressed: () {
+                                        // TODO: implement gallery upload function
+                                        Navigator.pop(context);
+                                      },
+                                      child: Icon(
+                                        Icons.file_upload_outlined,
+                                        size: 30,
+                                      ),
+                                      style: FilledButton.styleFrom(
+                                        textStyle: TextStyle(fontWeight: FontWeight.w600),
+                                        minimumSize: Size.fromHeight(120),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
                       child: Text('Sign-In'),
-                      style: TextButton.styleFrom(
+                      style: FilledButton.styleFrom(
                           textStyle: TextStyle(fontWeight: FontWeight.w600),
                           minimumSize: Size.fromHeight(45),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)))),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)))),
                     ),
                   ),
                   const SizedBox(width: 2),
                   Expanded(
                     child: FilledButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        // TODO: implement sign-out
+                      },
                       child: Text('Sign-Out'),
-                      style: TextButton.styleFrom(
+                      style: FilledButton.styleFrom(
                           textStyle: TextStyle(fontWeight: FontWeight.w600),
                           minimumSize: Size.fromHeight(45),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(10)))),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(10)))),
                     ),
                   ),
                 ],
@@ -367,6 +442,9 @@ class _TowerPageState extends State<TowerPage> {
       ),
     );
   }
+
+  // TODO: make function for image upload; sign-in/sign-out
+  
 
   // UI function to build a detail row format
   Widget _buildDetailRow(String label, String content, bool isLink) {

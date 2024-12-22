@@ -53,6 +53,20 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateNotes(String towerId, String notes) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'notes': notes});
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.notes = notes;
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to update tower notes: $e");
+    }
+  }
+
   @override
   void dispose() {
     _towersSubscription?.cancel(); // safe stop
