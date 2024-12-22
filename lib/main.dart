@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/firebase_options.dart';
 import 'package:progrid/models/providers/issues_provider.dart';
-import 'package:progrid/models/providers/reports_provider.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/services/auth_wrapper.dart';
@@ -23,7 +22,6 @@ class MainApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (_) => UserProvider()),
           ChangeNotifierProvider(create: (_) => TowersProvider()),
-          ChangeNotifierProvider(create: (_) => ReportsProvider()),
           ChangeNotifierProvider(create: (_) => IssuesProvider()),
         ],
         child: MaterialApp(

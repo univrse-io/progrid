@@ -16,12 +16,8 @@ class TowersProvider extends ChangeNotifier {
       towers = [];
 
       // currently redownloads entire list everytime there is an update
-      _towersSubscription = FirebaseFirestore.instance
-          .collection('towers')
-          .snapshots()
-          .listen((snapshot) async {
-        towers = await Future.wait(
-            snapshot.docs.map((doc) async => await Tower.fromFirestore(doc)));
+      _towersSubscription = FirebaseFirestore.instance.collection('towers').snapshots().listen((snapshot) async {
+        towers = await Future.wait(snapshot.docs.map((doc) async => await Tower.fromFirestore(doc)));
         notifyListeners();
       });
     } catch (e) {
@@ -29,20 +25,100 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateTowerStatus(String towerId, String status) async {
+  Future<void> updateSurveyStatus(String towerId, String surveyStatus) async {
     try {
       // update database
-      await FirebaseFirestore.instance
-          .collection('towers')
-          .doc(towerId)
-          .update({'status': status});
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'surveyStatus': surveyStatus});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
-      tower.status = status;
+      tower.surveyStatus = surveyStatus;
       notifyListeners();
     } catch (e) {
-      throw Exception("Failed to update tower status: $e");
+      throw Exception("Failed to update tower survey status: $e");
+    }
+  }
+
+  Future<void> updateDrawingStatus(String towerId, String drawingStatus) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'drawingStatus': drawingStatus});
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.drawingStatus = drawingStatus;
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to update tower drawing status: $e");
+    }
+  }
+
+  Future<void> updateNotes(String towerId, String notes) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'notes': notes});
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.notes = notes;
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to update tower notes: $e");
+    }
+  }
+
+  Future<void> updateSignIn(String towerId, Timestamp signIn) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'signIn': signIn});
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.signIn = signIn;
+    } catch (e) {
+      throw Exception("Failed to add Sign-in Timestamp: $e");
+    }
+  }
+
+  Future<void> updateSignOut(String towerId, Timestamp signOut) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'signOut': signOut});
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.signIn = signOut;
+    } catch (e) {
+      throw Exception("Failed to add Sign-in Timestamp: $e");
+    }
+  }
+
+  Future<void> updateAuthorId(String towerId, String authorId) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'authorId': authorId});
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.authorId = authorId;
+    } catch (e) {
+      throw Exception("Failed to update authorId: $e");
+    }
+  }
+
+  Future<void> addImage(String towerId, String imageUrl) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({
+        'images': FieldValue.arrayUnion([imageUrl]),
+      });
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.images.add(imageUrl); // add to end of array
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to add image URL: $e");
     }
   }
 
@@ -51,29 +127,4 @@ class TowersProvider extends ChangeNotifier {
     _towersSubscription?.cancel(); // safe stop
     super.dispose();
   }
-
-  // Future<String> _generateUniqueId(String towerId, String type) async {
-  //   String id = 'null';
-  //   bool isUnique = false;
-
-  //   // on the off-chance of 1/onetrillion that same ids are generated
-  //   while (!isUnique) {
-  //     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-  //     timestamp = timestamp.substring(timestamp.length - 3); // last 3 digits
-
-  //     // combine
-  //     id = "$towerId-${timestamp}-$type";
-
-  //     // collision check
-  //     final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
-  //     final collectionRef = towerRef.collection(type == 'R' ? 'reports' : 'issues');
-  //     final docSnapshot = await collectionRef.doc(id).get();
-
-  //     if (!docSnapshot.exists) {
-  //       isUnique = true; // unique ID found
-  //     }
-  //   }
-
-  //   return id;
-  // }
 }

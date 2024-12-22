@@ -25,29 +25,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCNSR2YpGI8NQI1OssC5g8WsWAWXv0H4a0',
-    appId: '1:190251764983:web:697f5c1a794f495bdc57f2',
-    messagingSenderId: '190251764983',
-    projectId: 'sapura-580e1',
-    authDomain: 'sapura-580e1.firebaseapp.com',
-    storageBucket: 'sapura-580e1.firebasestorage.app',
-    measurementId: 'G-1T4NQCPFF9',
+    apiKey: 'AIzaSyCkuxwkJcZIzowyQxzMCIP1LtaiYrThjIo',
+    appId: '1:678276190882:web:32ed345fbe02137edebdfb',
+    messagingSenderId: '678276190882',
+    projectId: 'progrid-3a41b',
+    authDomain: 'progrid-3a41b.firebaseapp.com',
+    storageBucket: 'progrid-3a41b.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD9eRmRwCLBrW_2ZguWziaH_syiXdjnV6Y',
-    appId: '1:190251764983:android:ee442f199b3726d6dc57f2',
-    messagingSenderId: '190251764983',
-    projectId: 'sapura-580e1',
-    storageBucket: 'sapura-580e1.firebasestorage.app',
+    apiKey: 'AIzaSyBuN1qOw580nUATHVsgLQRcU2ncEFuXFIg',
+    appId: '1:678276190882:android:88cbd603453477b3debdfb',
+    messagingSenderId: '678276190882',
+    projectId: 'progrid-3a41b',
+    storageBucket: 'progrid-3a41b.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCDjkO30vucz0ntdlIvU0FZc9Z03kV5OKU',
-    appId: '1:190251764983:ios:9d9c3412aaa7f448dc57f2',
-    messagingSenderId: '190251764983',
-    projectId: 'sapura-580e1',
-    storageBucket: 'sapura-580e1.firebasestorage.app',
+    apiKey: 'AIzaSyA1AZOFgjEzXXtUI3yXGNaPIKFaq1W4BTQ',
+    appId: '1:678276190882:ios:8e56ec152d7297afdebdfb',
+    messagingSenderId: '678276190882',
+    projectId: 'progrid-3a41b',
+    storageBucket: 'progrid-3a41b.firebasestorage.app',
     iosBundleId: 'com.univrse.progrid',
   );
+
 }

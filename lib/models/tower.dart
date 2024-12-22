@@ -9,9 +9,14 @@ class Tower {
   String owner;
   String address;
   GeoPoint position;
-  String status;
+  String surveyStatus;
   String drawingStatus;
-  String notes;
+
+  Timestamp? signIn;
+  Timestamp? signOut;
+  String? authorId;
+  List<String> images;
+  String? notes;
 
   // constructor
   Tower({
@@ -22,9 +27,14 @@ class Tower {
     this.owner = 'undefined',
     this.address = 'undefined',
     this.position = const GeoPoint(0, 0),
-    this.status = 'undefined',
+    this.surveyStatus = 'undefined',
     this.drawingStatus = 'undefined',
-    this.notes = 'no notes',
+
+    this.signIn,
+    this.signOut,
+    this.authorId,
+    this.images = const[],
+    this.notes,
   });
 
   // given a tower document, fetch from database
@@ -37,11 +47,15 @@ class Tower {
       type: data['type'] as String? ?? 'undefined',
       owner: data['owner'] as String? ?? 'undefined',
       address: data['address'] as String? ?? 'undefined',
-      position: data['position'] is GeoPoint
-          ? data['position'] as GeoPoint
-          : GeoPoint(0, 0),
-      status: data['status'] as String? ?? 'undefined',
-      notes: data['notes'] as String? ?? 'no notes',
+      position: data['position'] is GeoPoint ? data['position'] as GeoPoint : GeoPoint(0, 0),
+      surveyStatus: data['surveyStatus'] as String? ?? 'undefined',
+      drawingStatus: data['drawingStatus'] as String? ?? 'undefined',
+
+      signIn: data['signIn'] as Timestamp?,
+      signOut: data['signOut'] as Timestamp?,
+      authorId: data['authorId'] as String?,
+      images: (data['images'] as List<dynamic>?)?.cast<String>() ?? [],
+      notes: data['notes'] as String?,
     );
   }
 }

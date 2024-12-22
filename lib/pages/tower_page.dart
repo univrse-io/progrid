@@ -1,29 +1,49 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:progrid/models/providers/reports_provider.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_watermark/image_watermark.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
+import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
-import 'package:progrid/pages/reports/report_creation_page.dart';
-import 'package:progrid/pages/reports/report_page.dart';
+import 'package:progrid/utils/dialog_utils.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
-class TowerPage extends StatelessWidget {
+class TowerPage extends StatefulWidget {
   final String towerId;
 
   const TowerPage({super.key, required this.towerId});
 
   @override
+  State<TowerPage> createState() => _TowerPageState();
+}
+
+class _TowerPageState extends State<TowerPage> {
+  final _notesController = TextEditingController();
+
+  Timer? _debounceTimer;
+  final int _maxNotesLength = 500;
+  final _picker = ImagePicker();
+
+  @override
   Widget build(BuildContext context) {
     final towersProvider = Provider.of<TowersProvider>(context);
     final selectedTower = towersProvider.towers.firstWhere(
-      (tower) => tower.id == towerId,
+      (tower) => tower.id == widget.towerId,
       orElse: () => throw Exception("Tower not found"),
     );
 
-    final reportsProvider = Provider.of<ReportsProvider>(context);
-    final reports = reportsProvider.reports.where((report) => report.id.startsWith('$towerId-R'));
+    _notesController.text = selectedTower.notes ?? 'Enter text here...'; // get tower notes
 
     return Scaffold(
       appBar: AppBar(
@@ -34,278 +54,727 @@ class TowerPage extends StatelessWidget {
       ),
       body: SafeArea(
         minimum: EdgeInsets.symmetric(horizontal: 25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 5),
-            // tower name
-            Text(
-              selectedTower.name,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // tower name
+              Text(
+                selectedTower.name,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 5),
+              const SizedBox(height: 5),
 
-            // tower geopoint
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'LatLong:',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
-                  style: TextStyle(
-                    fontSize: 17,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            // tower status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Status:',
-                  style: TextStyle(
-                    fontStyle: FontStyle.italic,
-                    fontSize: 17,
-                  ),
-                ),
-                const SizedBox(width: 5),
-
-                // dropdown
-                Container(
-                  padding: const EdgeInsets.only(left: 14, right: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    color: selectedTower.status == 'surveyed'
-                        ? AppColors.green
-                        : selectedTower.status == 'in-progress'
-                            ? AppColors.yellow
-                            : AppColors.red,
-                  ),
-                  child: DropdownButton(
-                    isDense: true,
-                    value: selectedTower.status,
-                    onChanged: (value) async {
-                      if (value != null && value != selectedTower.status) {
-                        await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'status': value});
-                        selectedTower.status = value; // update local as well
-                      }
-                    },
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'surveyed',
-                        child: Text('Surveyed'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'in-progress',
-                        child: Text('In-Progress'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'unsurveyed',
-                        child: Text('Unsurveyed'),
-                      ),
-                    ],
-                    iconEnabledColor: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(24),
-                    dropdownColor: selectedTower.status == 'surveyed'
-                        ? AppColors.green
-                        : selectedTower.status == 'in-progress'
-                            ? AppColors.yellow
-                            : AppColors.red,
+              // tower geopoint
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'LatLong:',
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.surface,
+                      fontSize: 17,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 25),
-
-            Divider(),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                const Text(
-                  'Site Details',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  const SizedBox(width: 5),
+                  Text(
+                    '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
+                    style: TextStyle(
+                      fontSize: 17,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 5),
-                Icon(
-                  Icons.list,
-                  size: 32,
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-
-            // site address
-            _buildDetailRow('Address:', selectedTower.address),
-            // site region
-            _buildDetailRow('Region:', selectedTower.region),
-            // site type
-            _buildDetailRow('Type:', selectedTower.type),
-            // site owner
-            _buildDetailRow('Owner:', selectedTower.owner),
-            const SizedBox(height: 20),
-
-            const Text(
-              'Site Reports',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+                ],
               ),
-            ),
-            GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ReportCreationPage(towerId: selectedTower.id))),
-              child: Text(
-                'Create New Report',
+              const SizedBox(height: 8),
+
+              // tower survey status
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Survey:',
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 17,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+
+                  // dropdown
+                  Container(
+                    padding: const EdgeInsets.only(left: 14, right: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: selectedTower.surveyStatus == 'surveyed'
+                          ? AppColors.green
+                          : selectedTower.surveyStatus == 'in-progress'
+                              ? AppColors.yellow
+                              : AppColors.red,
+                    ),
+                    child: DropdownButton(
+                      isDense: true,
+                      value: selectedTower.surveyStatus,
+                      onChanged: (value) async {
+                        if (value != null && value != selectedTower.surveyStatus) {
+                          await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'surveyStatus': value});
+                          selectedTower.surveyStatus = value; // update local as well
+                        }
+                      },
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'surveyed',
+                          child: Text('Surveyed'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'in-progress',
+                          child: Text('In-Progress'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'unsurveyed',
+                          child: Text('Unsurveyed'),
+                        ),
+                      ],
+                      iconEnabledColor: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(24),
+                      dropdownColor: selectedTower.surveyStatus == 'surveyed'
+                          ? AppColors.green
+                          : selectedTower.surveyStatus == 'in-progress'
+                              ? AppColors.yellow
+                              : AppColors.red,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // tower drawing status (temp)
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     Text(
+              //       'Drawing: ',
+              //       style: TextStyle(
+              //         fontStyle: FontStyle.italic,
+              //         fontSize: 17,
+              //       ),
+              //     ),
+              //     const SizedBox(width: 5),
+
+              //     // dropdown
+              //     Container(
+              //       padding: const EdgeInsets.only(left: 14, right: 10),
+              //       decoration: BoxDecoration(
+              //         borderRadius: BorderRadius.circular(24),
+              //         color: selectedTower.drawingStatus == 'complete'
+              //             ? AppColors.green
+              //             : selectedTower.drawingStatus == 'submitted'
+              //                 ? AppColors.yellow
+              //                 : AppColors.red,
+              //       ),
+              //       child: DropdownButton(
+              //         isDense: true,
+              //         value: selectedTower.drawingStatus,
+              //         onChanged: (value) async {
+              //           if (value != null && value != selectedTower.drawingStatus) {
+              //             await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'drawingStatus': value});
+              //             selectedTower.drawingStatus = value; // update local as well
+              //           }
+              //         },
+              //         items: const [
+              //           DropdownMenuItem(
+              //             value: 'complete',
+              //             child: Text('Complete'),
+              //           ),
+              //           DropdownMenuItem(
+              //             value: 'submitted',
+              //             child: Text('Submitted'),
+              //           ),
+              //           DropdownMenuItem(
+              //             value: 'incomplete',
+              //             child: Text('Incomplete'),
+              //           ),
+              //         ],
+              //         iconEnabledColor: Theme.of(context).colorScheme.surface,
+              //         borderRadius: BorderRadius.circular(24),
+              //         dropdownColor: selectedTower.drawingStatus == 'complete'
+              //             ? AppColors.green
+              //             : selectedTower.drawingStatus == 'submitted'
+              //                 ? AppColors.yellow
+              //                 : AppColors.red,
+              //         style: TextStyle(
+              //           color: Theme.of(context).colorScheme.surface,
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              const SizedBox(height: 14),
+
+              Divider(),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  const Text(
+                    'Site Details',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Icon(
+                    Icons.list,
+                    size: 27,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+
+              // site address
+              _buildDetailRow('Address:', selectedTower.address, true),
+              // site region
+              _buildDetailRow('Region:', selectedTower.region, false),
+              // site type
+              _buildDetailRow('Type:', selectedTower.type, false),
+              // site owner
+              _buildDetailRow('Owner:', selectedTower.owner, false),
+              const SizedBox(height: 10),
+
+              // pictures section title
+              const Text(
+                'Pictures',
                 style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontStyle: FontStyle.italic,
-                    fontSize: 15,
-                    color: Theme.of(context).colorScheme.secondary),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 5),
 
-            Expanded(
-                child: reports.isEmpty
-                    ? Center(child: Text("No Report History"))
-                    : ListView.builder(
-                        itemCount: reports.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          final report = reports.toList()[index];
-
-                          // future to get author from authorId
-                          return FutureBuilder<DocumentSnapshot>(
-                            future: FirebaseFirestore.instance.collection('users').doc(report.authorId).get(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return Center(child: CircularProgressIndicator());
-                              } else if (snapshot.hasError) {
-                                return Center(child: Text('Error: ${snapshot.error}'));
-                              } else if (!snapshot.hasData || !snapshot.data!.exists) {
-                                return Center(child: Text('Author not found.'));
-                              } else {
-                                final authorName = snapshot.data!['name'] as String;
-
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ReportPage(
-                                          towerId: selectedTower.id,
-                                          reportId: report.id,
-                                        ),
-                                      ),
-                                    );
+              // gallery
+              Container(
+                height: 130,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedTower.images.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                      child: Stack(
+                        children: [
+                          GestureDetector(
+                            onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], _downloadImage),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(maxHeight: 400),
+                                child: Image.network(
+                                  selectedTower.images[index],
+                                  fit: BoxFit.cover,
+                                  height: 120,
+                                  width: 120,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: Colors.grey,
+                                      child: Icon(Icons.error, color: AppColors.red),
+                                    ); // if image fails to load
                                   },
-                                  child: Card(
-                                    margin: const EdgeInsets.symmetric(vertical: 4),
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: SafeArea(
-                                      minimum: EdgeInsets.all(12),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          // left side
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              // report id
-                                              Text(report.id,
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
-                                                  )),
-                                              // author name
-                                              Text(
-                                                authorName,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20,
-                                                ),
-                                              ),
-                                              // photo count
-                                              Text(
-                                                '${report.images.length} Photo(s)',
-                                                style: TextStyle(
-                                                  color: Theme.of(context).colorScheme.secondary,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontStyle: FontStyle.italic,
-                                                  fontSize: 13,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          // right side
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: [
-                                              Text(
-                                                DateFormat('dd/MM/yy').format(report.dateTime.toDate()),
-                                                style: TextStyle(fontSize: 15),
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Icon(
-                                                Icons.arrow_right,
-                                                size: 36,
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                          );
-                        },
-                      )),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 2),
 
-            FilledButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => IssuesListPage(towerId: selectedTower.id),
+              // sign-in status indicator
+              Row(
+                children: [
+                  Text(
+                    ' Status:',
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary, fontStyle: FontStyle.italic),
                   ),
-                );
-              },
-              child: Text("View Issues"),
-            ),
-            const SizedBox(height: 20),
-          ],
+                  const SizedBox(width: 5),
+                  Text(
+                    selectedTower.images.length == 1
+                        ? 'Signed-in' // if images == 1
+                        : 'Signed-out', // Ootherwise show signed out
+                    style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontStyle: FontStyle.italic),
+                  )
+                ],
+              ),
+              const SizedBox(height: 10),
+
+              // notes section title
+              const Text(
+                'Additional Notes',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              // notes text field
+              SizedBox(
+                height: 120, // control text box height here
+                child: TextField(
+                  controller: _notesController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  expands: true,
+                  textAlignVertical: TextAlignVertical.top,
+                  maxLength: _maxNotesLength,
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14),
+                  buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        '$currentLength/$maxLength',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Enter text here...',
+                    alignLabelWithHint: true,
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                  ),
+                  onChanged: (text) async {
+                    // cancel any previous debounce timer
+                    if (_debounceTimer?.isActive ?? false) _debounceTimer?.cancel();
+
+                    _debounceTimer = Timer(const Duration(milliseconds: 2000), () {
+                      // update notes every one second of changes
+                      // TODO: check if database updating is happening when there are no updates
+                      // UNDONE: ISSUE, text field loses focus on rebuild; cursor disappears
+                      towersProvider.updateNotes(widget.towerId, text);
+                    });
+                  },
+                ),
+              ),
+
+              // Expanded(child: const SizedBox()),
+              const SizedBox(height: 15),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: selectedTower.images.isNotEmpty
+                          ? null
+                          : () async {
+                              await _signIn();
+                            },
+                      child: Text('Sign-In'),
+                      style: FilledButton.styleFrom(
+                          textStyle: TextStyle(fontWeight: FontWeight.w600),
+                          minimumSize: Size.fromHeight(45),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)))),
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: selectedTower.images.length != 1
+                          ? null
+                          : () async {
+                              await _signOut();
+                            },
+                      child: Text('Sign-Out'),
+                      style: FilledButton.styleFrom(
+                          textStyle: TextStyle(fontWeight: FontWeight.w600),
+                          minimumSize: Size.fromHeight(45),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(10)))),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 1),
+
+              FilledButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => IssuesListPage(towerId: selectedTower.id),
+                    ),
+                  );
+                },
+                child: Text("View Issues"),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  Future<void> _signIn() async {
+    try {
+      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+      final selectedTower = towersProvider.towers.firstWhere(
+        (tower) => tower.id == widget.towerId,
+        orElse: () => throw Exception("Tower not found"),
+      );
+
+      // check if there is already one image
+      if (selectedTower.images.length == 1) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Tower has already been signed-in'),
+            ),
+          );
+        }
+        return;
+      }
+
+      // do image upload stuff here
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              'Select Image Source',
+              textAlign: TextAlign.center,
+            ),
+            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+            titlePadding: EdgeInsets.only(top: 20, right: 20, left: 20),
+            contentPadding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      // Navigator.pop(context);
+                      _pickImage(ImageSource.camera, false);
+                    },
+                    child: Icon(
+                      Icons.camera_alt_outlined,
+                      size: 30,
+                    ),
+                    style: FilledButton.styleFrom(
+                      textStyle: TextStyle(fontWeight: FontWeight.w600),
+                      minimumSize: Size.fromHeight(120),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      // Navigator.pop(context);
+                      _pickImage(ImageSource.gallery, false);
+                    },
+                    child: Icon(
+                      Icons.file_upload_outlined,
+                      size: 30,
+                    ),
+                    style: FilledButton.styleFrom(
+                      textStyle: TextStyle(fontWeight: FontWeight.w600),
+                      minimumSize: Size.fromHeight(120),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      throw Exception('failed to call sign-in: $e');
+    }
+  }
+
+  Future<void> _signOut() async {
+    try {
+      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+      final selectedTower = towersProvider.towers.firstWhere(
+        (tower) => tower.id == widget.towerId,
+        orElse: () => throw Exception("Tower not found"),
+      );
+
+      // check if there is already one image
+      if (selectedTower.images.length != 1) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please sign-in first'),
+            ),
+          );
+        }
+        return;
+      }
+
+      // do image upload stuff here
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              'Select Image Source',
+              textAlign: TextAlign.center,
+            ),
+            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+            titlePadding: EdgeInsets.only(top: 20, right: 20, left: 20),
+            contentPadding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      // Navigator.pop(context);
+                      _pickImage(ImageSource.camera, true);
+                    },
+                    child: Icon(
+                      Icons.camera_alt_outlined,
+                      size: 30,
+                    ),
+                    style: FilledButton.styleFrom(
+                      textStyle: TextStyle(fontWeight: FontWeight.w600),
+                      minimumSize: Size.fromHeight(120),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      // Navigator.pop(context);
+                      _pickImage(ImageSource.gallery, true);
+                    },
+                    child: Icon(
+                      Icons.file_upload_outlined,
+                      size: 30,
+                    ),
+                    style: FilledButton.styleFrom(
+                      textStyle: TextStyle(fontWeight: FontWeight.w600),
+                      minimumSize: Size.fromHeight(120),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      throw Exception('failed to call sign-out: $e');
+    }
+  }
+
+  Future<void> _pickImage(ImageSource source, bool isSignOut) async {
+    final XFile? pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile == null) return;
+
+    if (mounted) Navigator.pop(context);
+    if (mounted) DialogUtils.showLoadingDialog(context);
+
+    try {
+      // request location permission
+      final status = await Permission.locationWhenInUse.request();
+      if (!status.isGranted) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(status.isPermanentlyDenied
+                  ? 'Location permission is permanently denied. Please enable it in settings.'
+                  : 'Location permission is required to add location data.'),
+              action: status.isPermanentlyDenied
+                  ? SnackBarAction(
+                      label: 'Settings',
+                      onPressed: () => openAppSettings(),
+                    )
+                  : null,
+            ),
+          );
+        }
+        return;
+      }
+
+      // get current date/time
+      final now = DateTime.now();
+      final formattedDateTime = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
+          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
+      // get current device location
+      final position = await Geolocator.getCurrentPosition();
+      final latitude = position.latitude.toStringAsFixed(6);
+      final longitude = position.longitude.toStringAsFixed(6);
+
+      // compress if larger than 10mb
+      File imageFile = File(pickedFile.path);
+      final int imageSize = await imageFile.length(); // file size in bytes
+
+      if (imageSize > 10 * 1024 * 1024) {
+        final compressedBytes = await FlutterImageCompress.compressWithFile(
+          imageFile.path,
+          quality: 70, // set the compression quality (0 to 100)
+        );
+
+        if (compressedBytes != null) {
+          imageFile = File('${(await getTemporaryDirectory()).path}/${pickedFile.name}');
+          await imageFile.writeAsBytes(compressedBytes);
+        }
+      }
+
+      // add watermark
+      final watermarkText = '$formattedDateTime\nLat: $latitude, Lon: $longitude';
+      final bytes = await ImageWatermark.addTextWatermark(
+        imgBytes: await imageFile.readAsBytes(),
+        dstX: 10,
+        dstY: 10,
+        watermarkText: watermarkText,
+      );
+
+      // save image locally, maybe not needed?
+      final tempDir = await getTemporaryDirectory();
+      await File('${tempDir.path}/${pickedFile.name}').writeAsBytes(bytes);
+
+      // upload image to firebase storage
+      final String fileName = DateTime.now().microsecondsSinceEpoch.toString(); // unique
+      final Reference storageRef = FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
+
+      final UploadTask uploadTask = storageRef.putFile(imageFile);
+
+      final TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
+      final String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // update firebase database and local
+      if (mounted) {
+        final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        await towersProvider.updateAuthorId(widget.towerId, userProvider.userId);
+        await towersProvider.addImage(widget.towerId, downloadUrl);
+
+        // update tower status
+        if (isSignOut) {
+          await towersProvider.updateSurveyStatus(widget.towerId, 'surveyed');
+          await towersProvider.updateSignOut(widget.towerId, Timestamp.fromDate(DateTime.now()));
+        } else {
+          await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
+          await towersProvider.updateSignIn(widget.towerId, Timestamp.fromDate(DateTime.now()));
+        }
+      } else {
+        throw Exception("provider addImage not mounted");
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error Adding Image: $e")),
+        );
+      }
+    } finally {
+      if (mounted) Navigator.pop(context); // close loading thing
+    }
+  }
+
+  // download image from url
+  Future<void> _downloadImage(String url) async {
+    try {
+      if (mounted) DialogUtils.showLoadingDialog(context);
+
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      final permission = Platform.isAndroid && androidInfo.version.sdkInt > 32 ? Permission.photos : Permission.storage;
+      final status = await permission.request();
+
+      if (await Permission.storage.isRestricted) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Debug Storage Denied')),
+          );
+        }
+      }
+
+      if (status.isDenied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission is required to save the image.')),
+          );
+        }
+        return;
+      }
+
+      if (status.isPermanentlyDenied) {
+        // go to app settings
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'Storage permission permanently denied. Please allow it from settings.',
+              ),
+              action: SnackBarAction(
+                label: 'Settings',
+                onPressed: () {
+                  openAppSettings();
+                },
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
+      // download image
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to download the image. Status code: ${response.statusCode}');
+      }
+
+      // get directory
+      Directory? externalDir = Directory('/storage/emulated/0/Download'); // download folder on android
+      if (!externalDir.existsSync()) {
+        externalDir = await getExternalStorageDirectory();
+      }
+
+      final fileName = DateTime.now().millisecondsSinceEpoch; // extract file name from URL
+      final file = File('${externalDir!.path}/$fileName');
+
+      // write file
+      await file.writeAsBytes(response.bodyBytes);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image saved to ${file.path}')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to download image: $e')),
+        );
+      }
+    } finally {
+      if (mounted) Navigator.pop(context);
+    }
+  }
+
   // UI function to build a detail row format
-  Widget _buildDetailRow(String label, String content) {
+  Widget _buildDetailRow(String label, String content, bool isLink) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -318,19 +787,34 @@ class TowerPage extends StatelessWidget {
               label,
               textAlign: TextAlign.right,
               style: TextStyle(
-                decoration: TextDecoration.underline,
+                // decoration: TextDecoration.underline,
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: 16,
               ),
             ),
           ),
           const SizedBox(width: 10),
           // content
           Expanded(
-            child: Text(
-              content,
-              style: TextStyle(fontSize: 16),
-            ),
+            child: isLink
+                ? GestureDetector(
+                    onTap: () async {
+                      // TODO: implement google maps link here
+                    },
+                    child: Text(
+                      content,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.blue,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.blue,
+                      ),
+                    ),
+                  )
+                : Text(
+                    content,
+                    style: TextStyle(fontSize: 16),
+                  ),
           ),
         ],
       ),

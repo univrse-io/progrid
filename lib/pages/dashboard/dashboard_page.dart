@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:excel/excel.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/dashboard/drawing_page.dart';
+import 'package:progrid/pages/profile_page.dart';
 
 List<Tower> towers = []; // TODO: Change to provider later on.
 
@@ -51,7 +53,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -62,7 +64,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.status == 'in-progress')
+                                            tower.surveyStatus == 'in-progress')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -73,7 +75,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.status == 'unsurveyed')
+                                            tower.surveyStatus == 'unsurveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -95,7 +97,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('Regional Breakdown',
+                          Text('Regional Breakdown (Survey)',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           SizedBox(height: 10),
@@ -110,7 +112,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Southern' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -122,7 +124,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Northern' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -134,7 +136,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Eastern' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -146,7 +148,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Sarawak' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -158,7 +160,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Sabah' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -170,7 +172,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Central' &&
-                                            tower.status == 'surveyed')
+                                            tower.surveyStatus == 'surveyed')
                                         .length
                                         .toDouble(),
                                     radius: 50,
@@ -220,13 +222,20 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('In Progress',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                              Row(
+                                children: [
+                                  Text('In Progress',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                  SizedBox(width: 10),
+                                  CircleAvatar(
+                                      backgroundColor: Colors.amber, radius: 5)
+                                ],
+                              ),
                               SizedBox(height: 10),
                               Text(
-                                  '${towers.where((tower) => tower.status == 'in-progress').length}',
+                                  '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}',
                                   style:
                                       Theme.of(context).textTheme.displayLarge)
                             ],
@@ -241,13 +250,20 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Completed',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                              Row(
+                                children: [
+                                  Text('Completed',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                  SizedBox(width: 10),
+                                  CircleAvatar(
+                                      backgroundColor: Colors.green, radius: 5)
+                                ],
+                              ),
                               SizedBox(height: 10),
                               Text(
-                                  '${towers.where((tower) => tower.status == 'surveyed').length}',
+                                  '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}',
                                   style:
                                       Theme.of(context).textTheme.displayLarge)
                             ],
@@ -262,13 +278,20 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Balance',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                              Row(
+                                children: [
+                                  Text('Balance',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                  SizedBox(width: 10),
+                                  CircleAvatar(
+                                      backgroundColor: Colors.red, radius: 5)
+                                ],
+                              ),
                               SizedBox(height: 10),
                               Text(
-                                  '${towers.where((tower) => tower.status == 'unsurveyed').length}',
+                                  '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}',
                                   style:
                                       Theme.of(context).textTheme.displayLarge)
                             ],
@@ -346,12 +369,15 @@ class _DashboardPageState extends State<DashboardPage> {
                                                 width: 8,
                                                 height: 8,
                                                 decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color:
-                                                      tower.status == 'surveyed'
-                                                          ? Colors.green
-                                                          : Colors.red,
-                                                ),
+                                                    shape: BoxShape.circle,
+                                                    color: switch (
+                                                        tower.surveyStatus) {
+                                                      'surveyed' =>
+                                                        Colors.green,
+                                                      'in-progress' =>
+                                                        Colors.amber,
+                                                      _ => Colors.red
+                                                    }),
                                               ),
                                               const SizedBox(width: 4),
 
@@ -449,7 +475,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('Regional Breakdown',
+                          Text('Regional Breakdown (Drawing)',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           SizedBox(height: 10),
@@ -570,7 +596,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     position: doc['position'] is GeoPoint
                         ? doc['position'] as GeoPoint
                         : GeoPoint(0, 0),
-                    status: doc['status'] as String? ?? 'undefined',
+                    surveyStatus: doc['surveyStatus'] as String? ?? 'undefined',
                     drawingStatus:
                         doc['drawingStatus'] as String? ?? 'undefined',
                     notes: doc['notes'] as String? ?? 'no notes',
@@ -580,14 +606,120 @@ class _DashboardPageState extends State<DashboardPage> {
           return Scaffold(
               backgroundColor: Colors.grey.shade100,
               appBar: AppBar(
-                  title: Row(
-                children: [
-                  Image.asset('assets/images/sapura.png', height: 40),
-                  SizedBox(width: 20),
-                  Text('PROJECT MONITORING REPORT',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Row(
+                  children: [
+                    Image.asset('assets/images/sapura.png', height: 40),
+                    SizedBox(width: 20),
+                    Text('PROJECT MONITORING REPORT',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                actions: [
+                  OutlinedButton(
+                      onPressed: () {
+                        final excel = Excel.createExcel();
+                        final sheet = excel[excel.getDefaultSheet()!];
+
+                        sheet
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 0, rowIndex: 0))
+                              .value = TextCellValue('ID')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 1, rowIndex: 0))
+                              .value = TextCellValue('Name')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 2, rowIndex: 0))
+                              .value = TextCellValue('Region')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 3, rowIndex: 0))
+                              .value = TextCellValue('Type')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 4, rowIndex: 0))
+                              .value = TextCellValue('Owner')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 5, rowIndex: 0))
+                              .value = TextCellValue('Address')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 6, rowIndex: 0))
+                              .value = TextCellValue('Position')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 7, rowIndex: 0))
+                              .value = TextCellValue('Survey Status')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 8, rowIndex: 0))
+                              .value = TextCellValue('Drawing Status')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 9, rowIndex: 0))
+                              .value = TextCellValue('Sign In')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 10, rowIndex: 0))
+                              .value = TextCellValue('Sign Out')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 11, rowIndex: 0))
+                              .value = TextCellValue('Author ID')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 12, rowIndex: 0))
+                              .value = TextCellValue('Notes');
+
+                        for (final tower in towers) {
+                          final rowIndex = towers.indexOf(tower) + 1;
+
+                          sheet
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 0, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.id)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 1, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.name)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 2, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.region)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 3, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.type)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 4, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.owner)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 5, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.address)
+                            ..cell(CellIndex.indexByColumnRow(
+                                        columnIndex: 6, rowIndex: rowIndex))
+                                    .value =
+                                TextCellValue(tower.position.toString())
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 7, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.surveyStatus)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 8, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.drawingStatus)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 9, rowIndex: rowIndex))
+                                .value = TextCellValue('${tower.signIn ?? ''}')
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 10, rowIndex: rowIndex))
+                                .value = TextCellValue('${tower.signOut ?? ''}')
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 11, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.authorId ?? '')
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 12, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.notes ?? '');
+                        }
+
+                        excel.save(fileName: 'Reports.xlsx');
+                      },
+                      child: Text('Download')),
+                  SizedBox(width: 10),
+                  IconButton(
+                      onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ProfilePage())),
+                      icon: Icon(Icons.person)),
+                  SizedBox(width: 10),
                 ],
-              )),
+              ),
               drawer: Drawer(
                 child: ListView(
                   padding: EdgeInsets.zero,
@@ -597,7 +729,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       onTap: () => _onItemTapped(0),
                     ),
                     ListTile(
-                      title: const Text('Drawing Status'),
+                      title: const Text('On-Site Audit'),
                       onTap: () => _onItemTapped(1),
                     ),
                   ],

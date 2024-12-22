@@ -119,7 +119,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                               height: 12,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                color: tower.status == 'surveyed' ? AppColors.green : AppColors.red,
+                                                color: tower.surveyStatus == 'surveyed' ? AppColors.green : AppColors.red,
                                               ),
                                             ),
                                             const SizedBox(width: 4),

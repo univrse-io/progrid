@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:progrid/utils/pie_chart_painter.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/tower_page.dart';
@@ -50,7 +51,7 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  // detemine region average positions here
+  // determine region average positions here
   final Map<String, LatLng> _regionPositions = {
     'southern': LatLng(2.0953, 103.0404),
     'northern': LatLng(5.1152, 100.4532),
@@ -61,16 +62,39 @@ class _MapPageState extends State<MapPage> {
     'sarawak': LatLng(1.5548, 110.3592),
   };
 
-  // determine region zoom levels here
-  final Map<String, double> _regionZoomLevels = {
-    'southern': 12.0,
-    'northern': 13.0,
-    'eastern': 12.5,
-    'central': 12.0,
-    'western': 13.0,
-    'sabah': 11.0,
-    'sarawak': 11.5,
-  };
+  // configure map tile builder here
+  Widget _tileBuilder(
+    BuildContext context,
+    Widget tileWidget,
+    TileImage image,
+  ) {
+    final saturation = .8;
+    return ColorFiltered(
+      colorFilter: ColorFilter.matrix([
+        0.213 + 0.787 * saturation,
+        0.715 * (1 - saturation),
+        0.072 * (1 - saturation),
+        0.0,
+        0.0,
+        0.213 * (1 - saturation),
+        0.715 + 0.285 * saturation,
+        0.072 * (1 - saturation),
+        0.0,
+        0.0,
+        0.213 * (1 - saturation),
+        0.715 * (1 - saturation),
+        0.072 + 0.928 * saturation,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ]),
+      child: tileWidget,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +106,8 @@ class _MapPageState extends State<MapPage> {
     // function to go to a specific region
     void _zoomToRegion(String region) {
       final LatLng? position = _regionPositions[region];
-      final double? zoomLevel = _regionZoomLevels[region];
       if (position != null) {
-        _mapController.move(position, zoomLevel!);
+        _mapController.move(position, 8);
       }
     }
 
@@ -97,7 +120,7 @@ class _MapPageState extends State<MapPage> {
             options: MapOptions(
               initialCenter: _defaultPosition,
               initialZoom: 12,
-              maxZoom: 17, // to review
+              maxZoom: 17,
               minZoom: 8,
               backgroundColor: Theme.of(context).colorScheme.surface,
               interactionOptions: const InteractionOptions(
@@ -108,75 +131,8 @@ class _MapPageState extends State<MapPage> {
               // base map layer
               TileLayer(
                 urlTemplate: _tileLayerUrl,
+                tileBuilder: _tileBuilder,
               ),
-
-              // standard map markers, without clustering
-              // MarkerLayer(
-              //   markers: towersProvider.towers.map((tower) {
-              //     return Marker(
-              //       point: LatLng(tower.position.latitude, tower.position.longitude),
-              //       width: 80,
-              //       child: GestureDetector(
-              //         onTap: () {
-              //           Navigator.push(
-              //             context,
-              //             MaterialPageRoute(
-              //               builder: (context) => TowerPage(towerId: tower.id),
-              //             ),
-              //           );
-              //         },
-              //         child: Stack(
-              //           alignment: Alignment.center,
-              //           children: [
-              //             // marker icon
-              //             Icon(
-              //               Icons.cell_tower,
-              //               color: _getRegionColor(tower.region),
-              //               size: 36,
-              //             ),
-              //             // information box
-              //             Container(
-              //               padding: EdgeInsets.symmetric(horizontal: 5),
-              //               decoration: BoxDecoration(
-              //                 color: Colors.black.withOpacity(0.7),
-              //                 borderRadius: BorderRadius.circular(4),
-              //               ),
-              //               child: Row(
-              //                 mainAxisAlignment: MainAxisAlignment.center,
-              //                 mainAxisSize: MainAxisSize.min,
-              //                 children: [
-              //                   // status indicator
-              //                   Container(
-              //                     width: 8,
-              //                     height: 8,
-              //                     decoration: BoxDecoration(
-              //                         shape: BoxShape.circle,
-              //                         color: tower.status == 'surveyed'
-              //                             ? AppColors.green
-              //                             : tower.status == 'in-progress'
-              //                                 ? AppColors.yellow
-              //                                 : AppColors.red),
-              //                   ),
-              //                   const SizedBox(width: 4),
-              //                   // tower id
-              //                   Text(
-              //                     tower.id,
-              //                     style: const TextStyle(
-              //                       color: Colors.white,
-              //                       fontSize: 10,
-              //                     ),
-              //                     maxLines: 1,
-              //                   ),
-              //                 ],
-              //               ),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //     );
-              //   }).toList(),
-              // ),
-
               // clustered map markers
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
@@ -184,13 +140,14 @@ class _MapPageState extends State<MapPage> {
                   maxClusterRadius: 50,
                   alignment: Alignment.center,
                   centerMarkerOnClick: false,
-                  // size: Size(100, 800), // TODO: make dynamic, cluster click functionality is currently unusable
                   padding: const EdgeInsets.all(10),
-                  maxZoom: 15,
+                  maxZoom: 13,
+                  // spiderfyCluster: false, // TODO: Review, essentially what it does is it moves the markers away from each other to make them more visible
                   markers: towersProvider.towers.map((tower) {
                     return Marker(
                       point: LatLng(tower.position.latitude, tower.position.longitude),
                       width: 80,
+                      key: ValueKey(tower.id), // assign tower id to marker's key
                       child: GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -213,7 +170,7 @@ class _MapPageState extends State<MapPage> {
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.7),
+                                color: Colors.black.withOpacity(0.6),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Row(
@@ -225,12 +182,13 @@ class _MapPageState extends State<MapPage> {
                                     width: 8,
                                     height: 8,
                                     decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: tower.status == 'surveyed'
-                                            ? AppColors.green
-                                            : tower.status == 'in-progress'
-                                                ? AppColors.yellow
-                                                : AppColors.red),
+                                      shape: BoxShape.circle,
+                                      color: tower.surveyStatus == 'surveyed'
+                                          ? AppColors.green
+                                          : tower.surveyStatus == 'in-progress'
+                                              ? AppColors.yellow
+                                              : AppColors.red,
+                                    ),
                                   ),
                                   const SizedBox(width: 4),
                                   // tower id
@@ -250,65 +208,52 @@ class _MapPageState extends State<MapPage> {
                       ),
                     );
                   }).toList(),
-                  // builder: (context, markers) {
-                  //   return Column(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: markers.map((marker) {
-                  //       final tower = towersProvider.towers.firstWhere(
-                  //         (tower) => LatLng(tower.position.latitude, tower.position.longitude) == marker.point,
-                  //       );
-                  //       return Container(
-                  //         padding: const EdgeInsets.symmetric(horizontal: 5),
-                  //         decoration: BoxDecoration(
-                  //           color: Colors.black.withOpacity(0.7),
-                  //           borderRadius: BorderRadius.circular(4),
-                  //         ),
-                  //         child: Row(
-                  //           mainAxisAlignment: MainAxisAlignment.center,
-                  //           mainAxisSize: MainAxisSize.min,
-                  //           children: [
-                  //             // status indicator
-                  //             Container(
-                  //               width: 8,
-                  //               height: 8,
-                  //               decoration: BoxDecoration(
-                  //                   shape: BoxShape.circle,
-                  //                   color: tower.status == 'surveyed'
-                  //                       ? AppColors.green
-                  //                       : tower.status == 'in-progress'
-                  //                           ? AppColors.yellow
-                  //                           : AppColors.red),
-                  //             ),
-                  //             const SizedBox(width: 4),
-                  //             // tower id
-                  //             Text(
-                  //               tower.id,
-                  //               style: const TextStyle(
-                  //                 color: Colors.white,
-                  //                 fontSize: 10,
-                  //               ),
-                  //               maxLines: 1,
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       );
-                  //     }).toList(),
-                  //   );
-                  // },
-
-                  // // TODO: make clusters display statuses of children, as pie chart
                   builder: (context, markers) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.black.withOpacity(0.7),
-                      ),
-                      child: Center(
-                        child: Text(
-                          markers.length.toString(),
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
-                        ),
-                      ),
+                    // Calculate proportions
+                    final statusCounts = <String, int>{
+                      'surveyed': 0,
+                      'in-progress': 0,
+                      'unsurveyed': 0,
+                    };
+
+                    for (final marker in markers) {
+                      try {
+                        final tower = towersProvider.towers.firstWhere(
+                          (tower) {
+                            // grab the tower id from marker's key
+                            // ensure type safety
+                            final markerId = (marker.key! as ValueKey<String>).value;
+                            return tower.id == markerId;
+                          },
+                        );
+
+                        // increment the status counts based on the tower's status
+                        if (tower.surveyStatus == 'surveyed') {
+                          statusCounts['surveyed'] = statusCounts['surveyed']! + 1;
+                        } else if (tower.surveyStatus == 'in-progress') {
+                          statusCounts['in-progress'] = statusCounts['in-progress']! + 1;
+                        } else {
+                          statusCounts['unsurveyed'] = statusCounts['unsurveyed']! + 1;
+                        }
+                      } catch (e) {
+                        // handle case where no tower matches the marker (should not happen)
+                        debugPrint('No matching tower found for marker with key ${marker.key}');
+                      }
+                    }
+
+                    // simplify fraction (may have to be removed to free computation power)
+                    final total = statusCounts.values.reduce((a, b) => a + b);
+
+                    // status colors
+                    final statusColors = {
+                      'surveyed': AppColors.green,
+                      'in-progress': AppColors.yellow,
+                      'unsurveyed': AppColors.red,
+                    };
+
+                    return CustomPaint(
+                      size: const Size(40, 40),
+                      painter: PieChartPainter(statusCounts, total, statusColors),
                     );
                   },
                 ),
@@ -327,6 +272,7 @@ class _MapPageState extends State<MapPage> {
             top: 25,
             left: 14,
             child: FloatingActionButton(
+              heroTag: 'regions',
               onPressed: () async {
                 final String? selectedRegion = await showMenu(
                   elevation: 0,
@@ -374,22 +320,18 @@ class _MapPageState extends State<MapPage> {
             right: 14,
             child: Row(
               children: [
-                // // debug tower counter
-                // Container(
-                //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                //   decoration: BoxDecoration(
-                //     color: Colors.black.withOpacity(0.6),
-                //     borderRadius: BorderRadius.circular(8),
-                //   ),
-                //   child: Text(
-                //     'Surveyed: $surveyedCount / Total: $towerCount',
-                //     style: const TextStyle(
-                //       color: Colors.white,
-                //       fontSize: 16,
-                //       fontWeight: FontWeight.bold,
-                //     ),
-                //   ),
-                // ),
+                // filter button
+                FloatingActionButton(
+                  heroTag: 'filter',
+                  onPressed: () {},
+                  backgroundColor: Colors.black.withOpacity(0.6),
+                  child: const Icon(
+                    Icons.filter_alt_outlined,
+                    size: 32,
+                  ),
+                  mini: true,
+                ),
+
                 const SizedBox(width: 5),
 
                 // TODO: fix hero
@@ -408,10 +350,6 @@ class _MapPageState extends State<MapPage> {
                           );
                         },
                       ),
-
-                      // MaterialPageRoute(
-                      //   builder: (context) => const TowersListPage(),
-                      // ),
                     );
                   },
                   backgroundColor: Colors.black.withOpacity(0.6),
@@ -424,6 +362,7 @@ class _MapPageState extends State<MapPage> {
 
                 // profile button
                 FloatingActionButton(
+                  heroTag: 'profile',
                   onPressed: () {
                     Navigator.push(
                       context,
