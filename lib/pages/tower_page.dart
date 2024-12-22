@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
@@ -28,11 +29,10 @@ class _TowerPageState extends State<TowerPage> {
 
   Timer? _debounceTimer;
   final int _maxNotesLength = 500;
-  final int _maxImages = 2; // maximum number of images
-  final int _minImages = 1; // minimum number of images
 
-  final List<File> _images = [];
+  // final List<File> _images = [];
   final _picker = ImagePicker();
+  double _uploadProgress = 0;
 
   // utility
   bool _isLoading = false;
@@ -512,17 +512,35 @@ class _TowerPageState extends State<TowerPage> {
         watermarkText: watermarkText,
       );
 
-      // save image
+      // save image locally
       final tempDir = await getTemporaryDirectory();
       final file = await File('${tempDir.path}/${pickedFile.name}').writeAsBytes(bytes);
 
-      setState(() {
-        _images.add(file);
+      // upload image to firebase storage
+      final String fileName = DateTime.now().microsecondsSinceEpoch.toString(); // unique
+      final Reference storageRef = FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
+
+      final UploadTask uploadTask = storageRef.putFile(imageFile);
+
+      // monitor upload progress
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        setState(() {
+          _uploadProgress = snapshot.bytesTransferred.toDouble() / snapshot.totalBytes.toDouble();
+        });
       });
+
+      final TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
+      final String downloadUrl = await snapshot.ref.getDownloadURL(); // TODO: add this to tower images
+
+      if (mounted) {
+        Provider.of<TowersProvider>(context).addImage(widget.towerId, downloadUrl);
+      } else {
+        throw Exception("provider addImage not mounted");
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error adding watermark: $e")),
+          SnackBar(content: Text("Error Adding Image: $e")),
         );
       }
     } finally {
@@ -533,6 +551,7 @@ class _TowerPageState extends State<TowerPage> {
   }
 
   // TODO: make function for image upload; sign-in/sign-out
+  
 
   // UI function to build a detail row format
   Widget _buildDetailRow(String label, String content, bool isLink) {

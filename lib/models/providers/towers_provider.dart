@@ -67,6 +67,22 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> addImage(String towerId, String imageUrl) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({
+        'images': FieldValue.arrayUnion([imageUrl]),
+      });
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.images.add(imageUrl); // add to end of array
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to add image URL: $e");
+    }
+  }
+
   @override
   void dispose() {
     _towersSubscription?.cancel(); // safe stop
