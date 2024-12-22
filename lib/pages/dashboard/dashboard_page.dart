@@ -220,10 +220,17 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('In Progress',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                              Row(
+                                children: [
+                                  Text('In Progress',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                  SizedBox(width: 10),
+                                  CircleAvatar(
+                                      backgroundColor: Colors.amber, radius: 5)
+                                ],
+                              ),
                               SizedBox(height: 10),
                               Text(
                                   '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}',
@@ -241,10 +248,17 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Completed',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                              Row(
+                                children: [
+                                  Text('Completed',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                  SizedBox(width: 10),
+                                  CircleAvatar(
+                                      backgroundColor: Colors.green, radius: 5)
+                                ],
+                              ),
                               SizedBox(height: 10),
                               Text(
                                   '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}',
@@ -262,10 +276,17 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Balance',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                              Row(
+                                children: [
+                                  Text('Balance',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                  SizedBox(width: 10),
+                                  CircleAvatar(
+                                      backgroundColor: Colors.red, radius: 5)
+                                ],
+                              ),
                               SizedBox(height: 10),
                               Text(
                                   '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}',
@@ -346,12 +367,15 @@ class _DashboardPageState extends State<DashboardPage> {
                                                 width: 8,
                                                 height: 8,
                                                 decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: tower.surveyStatus ==
-                                                          'surveyed'
-                                                      ? Colors.green
-                                                      : Colors.red,
-                                                ),
+                                                    shape: BoxShape.circle,
+                                                    color: switch (
+                                                        tower.surveyStatus) {
+                                                      'surveyed' =>
+                                                        Colors.green,
+                                                      'in-progress' =>
+                                                        Colors.amber,
+                                                      _ => Colors.red
+                                                    }),
                                               ),
                                               const SizedBox(width: 4),
 
