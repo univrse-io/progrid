@@ -3,10 +3,13 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
+import 'package:image_watermark/image_watermark.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
-import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +24,19 @@ class TowerPage extends StatefulWidget {
 }
 
 class _TowerPageState extends State<TowerPage> {
+  final _notesController = TextEditingController();
+
+  Timer? _debounceTimer;
+  final int _maxNotesLength = 500;
+  final int _maxImages = 2; // maximum number of images
+  final int _minImages = 1; // minimum number of images
+
+  final List<File> _images = [];
+  final _picker = ImagePicker();
+
+  // utility
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final towersProvider = Provider.of<TowersProvider>(context);
@@ -29,20 +45,7 @@ class _TowerPageState extends State<TowerPage> {
       orElse: () => throw Exception("Tower not found"),
     );
 
-    final _notesController = TextEditingController();
-    _notesController.text =
-        towersProvider.towers.firstWhere((tower) => tower.id == widget.towerId).notes ?? 'Enter text here...'; // get tower notes
-
-    Timer? _debounceTimer;
-    final int _maxNotesLength = 500;
-    final int _maxImages = 2; // maximum number of images
-    final int _minImages = 1; // minimum number of images
-
-    final List<File> _images = [];
-    final _picker = ImagePicker();
-
-    // utility
-    bool _isLoading = false;
+    _notesController.text = selectedTower.notes ?? 'Enter text here...'; // get tower notes
 
     return Scaffold(
       appBar: AppBar(
@@ -443,8 +446,93 @@ class _TowerPageState extends State<TowerPage> {
     );
   }
 
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? pickedFile = await _picker.pickImage(source: source);
+
+    if (pickedFile == null) return;
+
+    try {
+      setState(() {
+        _isLoading = false;
+      });
+
+      // request location permission
+      final status = await Permission.locationWhenInUse.request();
+      if (!status.isGranted) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(status.isPermanentlyDenied
+                  ? 'Location permission is permanently denied. Please enable it in settings.'
+                  : 'Location permission is required to add location data.'),
+              action: status.isPermanentlyDenied
+                  ? SnackBarAction(
+                      label: 'Settings',
+                      onPressed: () => openAppSettings(),
+                    )
+                  : null,
+            ),
+          );
+        }
+        return;
+      }
+
+      // get current date/time
+      final now = DateTime.now();
+      final formattedDateTime = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
+          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
+      // get current device location
+      final position = await Geolocator.getCurrentPosition();
+      final latitude = position.latitude.toStringAsFixed(6);
+      final longitude = position.longitude.toStringAsFixed(6);
+
+      // compress if larger than 10mb
+      File imageFile = File(pickedFile.path);
+      final int imageSize = await imageFile.length(); // file size in bytes
+
+      if (imageSize > 10 * 1024 * 1024) {
+        final compressedBytes = await FlutterImageCompress.compressWithFile(
+          imageFile.path,
+          quality: 70, // set the compression quality (0 to 100)
+        );
+
+        if (compressedBytes != null) {
+          imageFile = File('${(await getTemporaryDirectory()).path}/${pickedFile.name}');
+          await imageFile.writeAsBytes(compressedBytes);
+        }
+      }
+
+      // add watermark
+      final watermarkText = '$formattedDateTime\nLat: $latitude, Lon: $longitude';
+      final bytes = await ImageWatermark.addTextWatermark(
+        imgBytes: await imageFile.readAsBytes(),
+        dstX: 10,
+        dstY: 10,
+        watermarkText: watermarkText,
+      );
+
+      // save image
+      final tempDir = await getTemporaryDirectory();
+      final file = await File('${tempDir.path}/${pickedFile.name}').writeAsBytes(bytes);
+
+      setState(() {
+        _images.add(file);
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error adding watermark: $e")),
+        );
+      }
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   // TODO: make function for image upload; sign-in/sign-out
-  
 
   // UI function to build a detail row format
   Widget _buildDetailRow(String label, String content, bool isLink) {
