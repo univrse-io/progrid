@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:excel/excel.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -614,13 +615,29 @@ class _DashboardPageState extends State<DashboardPage> {
                   ],
                 ),
                 actions: [
+                  OutlinedButton(
+                      onPressed: () {
+                        final excel = Excel.createExcel();
+                        final sheet = excel[excel.getDefaultSheet()!];
+
+                        for (var i = 0; i < towers.length; i++) {
+                          sheet
+                              .cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 0, rowIndex: i))
+                              .value = TextCellValue(towers[i].id);
+                        }
+
+                        excel.save(fileName: 'Reports.xlsx');
+                      },
+                      child: Text('Download')),
+                  SizedBox(width: 10),
                   IconButton(
                       onPressed: () => Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const ProfilePage())),
                       icon: Icon(Icons.person)),
-                  SizedBox(width: 10)
+                  SizedBox(width: 10),
                 ],
               ),
               drawer: Drawer(
