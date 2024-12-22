@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/dashboard/drawing_page.dart';
+import 'package:progrid/pages/profile_page.dart';
 
 List<Tower> towers = []; // TODO: Change to provider later on.
 
@@ -604,14 +605,24 @@ class _DashboardPageState extends State<DashboardPage> {
           return Scaffold(
               backgroundColor: Colors.grey.shade100,
               appBar: AppBar(
-                  title: Row(
-                children: [
-                  Image.asset('assets/images/sapura.png', height: 40),
-                  SizedBox(width: 20),
-                  Text('PROJECT MONITORING REPORT',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Row(
+                  children: [
+                    Image.asset('assets/images/sapura.png', height: 40),
+                    SizedBox(width: 20),
+                    Text('PROJECT MONITORING REPORT',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                actions: [
+                  IconButton(
+                      onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ProfilePage())),
+                      icon: Icon(Icons.person)),
+                  SizedBox(width: 10)
                 ],
-              )),
+              ),
               drawer: Drawer(
                 child: ListView(
                   padding: EdgeInsets.zero,
