@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:progrid/models/providers/records_provider.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
-import 'package:progrid/models/record.dart';
-import 'package:progrid/pages/records/record_page.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -27,9 +24,6 @@ class _TowerPageState extends State<TowerPage> {
       (tower) => tower.id == widget.towerId,
       orElse: () => throw Exception("Tower not found"),
     );
-
-    final recordsProvider = Provider.of<RecordsProvider>(context);
-    final records = recordsProvider.records.where((record) => record.id.startsWith('${widget.towerId}-R'));
 
     return Scaffold(
       appBar: AppBar(
@@ -237,154 +231,18 @@ class _TowerPageState extends State<TowerPage> {
             _buildDetailRow('Owner:', selectedTower.owner),
             const SizedBox(height: 20),
 
-            const Text(
-              'Sign-In/Sign-Out',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            GestureDetector(
-              // onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RecordCreationPage(towerId: selectedTower.id))),
-              onTap: () async {
-                // TODO: implement popup
-
-                final userProvider = Provider.of<UserProvider>(context, listen: false);
-                final recordsProvider = Provider.of<RecordsProvider>(context, listen: false);
-
-                // create new record instance
-                final record = Record(
-                  authorId: userProvider.userId,
-                );
-
-                try {
-                  // add record to record provider and local list
-                  await recordsProvider.addRecord(widget.towerId, record);
-
-                  // update associated tower survey status to 'in-progress'
-                  await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
-
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Record Created Successfully!"),
-                    ));
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Error creating record: $e")),
-                    );
-                  }
-                }
-              },
-              child: Text(
-                'Create New Record',
-                style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontStyle: FontStyle.italic,
-                    fontSize: 15,
-                    color: Theme.of(context).colorScheme.secondary),
-              ),
-            ),
-            const SizedBox(height: 5),
-
-            Expanded(
-              child: records.isEmpty
-                  ? Center(child: Text("No Record History"))
-                  : ListView.builder(
-                      itemCount: records.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        final record = records.toList()[index];
-                        String authorName = 'Unknown Author';
-                        
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RecordPage(
-                                  towerId: selectedTower.id,
-                                  recordId: record.id,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Card(
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: SafeArea(
-                              minimum: const EdgeInsets.all(12),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // left side
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // record id
-                                      Text(
-                                        record.id,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      // author name (fallback to default if FutureBuilder fails)
-                                      FutureBuilder<DocumentSnapshot>(
-                                        future: FirebaseFirestore.instance.collection('users').doc(record.authorId).get(),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data!.exists) {
-                                            authorName = snapshot.data!['name'] as String;
-                                          }
-                                          return Text(
-                                            authorName,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      // photo count
-                                      Text(
-                                        '${record.images.length} Photo(s)',
-                                        style: TextStyle(
-                                          color: Theme.of(context).colorScheme.secondary,
-                                          fontWeight: FontWeight.bold,
-                                          fontStyle: FontStyle.italic,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  // right side
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        record.signIn != null
-                                            ? DateFormat('dd/MM/yy').format(record.signIn!.toDate())
-                                            : 'Not Signed-In',
-                                        style: const TextStyle(fontSize: 15),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      const Icon(
-                                        Icons.arrow_right,
-                                        size: 36,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Sign-In'),
+                ),
+                const SizedBox(width: 5),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Sign-Out'),
+                ),
+              ],
             ),
 
             FilledButton(
