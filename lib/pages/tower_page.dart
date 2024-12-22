@@ -11,6 +11,7 @@ import 'package:image_watermark/image_watermark.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
+import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
 import 'package:progrid/utils/dialog_utils.dart';
 import 'package:progrid/utils/themes.dart';
@@ -376,9 +377,11 @@ class _TowerPageState extends State<TowerPage> {
                 children: [
                   Expanded(
                     child: FilledButton(
-                      onPressed: () async {
-                        await _signIn();
-                      },
+                      onPressed: selectedTower.images.isNotEmpty
+                          ? null
+                          : () async {
+                              await _signIn();
+                            },
                       child: Text('Sign-In'),
                       style: FilledButton.styleFrom(
                           textStyle: TextStyle(fontWeight: FontWeight.w600),
@@ -390,9 +393,11 @@ class _TowerPageState extends State<TowerPage> {
                   const SizedBox(width: 2),
                   Expanded(
                     child: FilledButton(
-                      onPressed: () async {
-                        await _signOut();
-                      },
+                      onPressed: selectedTower.images.length != 1
+                          ? null
+                          : () async {
+                              await _signOut();
+                            },
                       child: Text('Sign-Out'),
                       style: FilledButton.styleFrom(
                           textStyle: TextStyle(fontWeight: FontWeight.w600),
@@ -660,13 +665,17 @@ class _TowerPageState extends State<TowerPage> {
       // update firebase database and local
       if (mounted) {
         final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        await towersProvider.updateAuthorId(widget.towerId, userProvider.userId);
         await towersProvider.addImage(widget.towerId, downloadUrl);
 
         // update tower status
         if (isSignOut) {
           await towersProvider.updateSurveyStatus(widget.towerId, 'surveyed');
+          await towersProvider.updateSignOut(widget.towerId, Timestamp.fromDate(DateTime.now()));
         } else {
           await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
+          await towersProvider.updateSignIn(widget.towerId, Timestamp.fromDate(DateTime.now()));
         }
       } else {
         throw Exception("provider addImage not mounted");

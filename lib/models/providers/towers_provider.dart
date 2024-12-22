@@ -67,6 +67,45 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateSignIn(String towerId, Timestamp signIn) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'signIn': signIn});
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.signIn = signIn;
+    } catch (e) {
+      throw Exception("Failed to add Sign-in Timestamp: $e");
+    }
+  }
+
+  Future<void> updateSignOut(String towerId, Timestamp signOut) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'signOut': signOut});
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.signIn = signOut;
+    } catch (e) {
+      throw Exception("Failed to add Sign-in Timestamp: $e");
+    }
+  }
+
+  Future<void> updateAuthorId(String towerId, String authorId) async {
+    try {
+      // update database
+      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'authorId': authorId});
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.authorId = authorId;
+    } catch (e) {
+      throw Exception("Failed to update authorId: $e");
+    }
+  }
+
   Future<void> addImage(String towerId, String imageUrl) async {
     try {
       // update database
