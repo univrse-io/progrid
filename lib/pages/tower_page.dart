@@ -60,7 +60,6 @@ class _TowerPageState extends State<TowerPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 5),
               // tower name
               Text(
                 selectedTower.name,
@@ -262,11 +261,42 @@ class _TowerPageState extends State<TowerPage> {
 
               // gallery
               Container(
-                height: 120,
+                height: 130,
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Theme.of(context).colorScheme.tertiary,
+                ),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedTower.images.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(maxHeight: 400),
+                              child: Image.network(
+                                selectedTower.images[index],
+                                fit: BoxFit.cover,
+                                height: 120,
+                                width: 120,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey,
+                                    child: Icon(Icons.error, color: AppColors.red),
+                                  ); // if image fails to load
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 2),
@@ -347,59 +377,7 @@ class _TowerPageState extends State<TowerPage> {
                   Expanded(
                     child: FilledButton(
                       onPressed: () async {
-                        await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text(
-                                'Select Image Source',
-                                textAlign: TextAlign.center,
-                              ),
-                              titleTextStyle:
-                                  TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
-                              titlePadding: EdgeInsets.only(top: 20, right: 20, left: 20),
-                              contentPadding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
-                              content: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: FilledButton(
-                                      onPressed: () {
-                                        // TODO: implement camera upload function
-                                        Navigator.pop(context);
-                                      },
-                                      child: Icon(
-                                        Icons.camera_alt_outlined,
-                                        size: 30,
-                                      ),
-                                      style: FilledButton.styleFrom(
-                                        textStyle: TextStyle(fontWeight: FontWeight.w600),
-                                        minimumSize: Size.fromHeight(120),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Expanded(
-                                    child: FilledButton(
-                                      onPressed: () {
-                                        // TODO: implement gallery upload function
-                                        Navigator.pop(context);
-                                      },
-                                      child: Icon(
-                                        Icons.file_upload_outlined,
-                                        size: 30,
-                                      ),
-                                      style: FilledButton.styleFrom(
-                                        textStyle: TextStyle(fontWeight: FontWeight.w600),
-                                        minimumSize: Size.fromHeight(120),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        );
+                        await _signIn();
                       },
                       child: Text('Sign-In'),
                       style: FilledButton.styleFrom(
@@ -446,14 +424,103 @@ class _TowerPageState extends State<TowerPage> {
     );
   }
 
+  Future<void> _signIn() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+      final selectedTower = towersProvider.towers.firstWhere(
+        (tower) => tower.id == widget.towerId,
+        orElse: () => throw Exception("Tower not found"),
+      );
+
+      // check if there is already one image
+      if (selectedTower.images.length == 1) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Tower already has a sign-in image'),
+            ),
+          );
+        }
+        return;
+      }
+
+      // do image upload stuff here
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              'Select Image Source',
+              textAlign: TextAlign.center,
+            ),
+            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+            titlePadding: EdgeInsets.only(top: 20, right: 20, left: 20),
+            contentPadding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      _pickImage(ImageSource.camera);
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.camera_alt_outlined,
+                      size: 30,
+                    ),
+                    style: FilledButton.styleFrom(
+                      textStyle: TextStyle(fontWeight: FontWeight.w600),
+                      minimumSize: Size.fromHeight(120),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      _pickImage(ImageSource.gallery);
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.file_upload_outlined,
+                      size: 30,
+                    ),
+                    style: FilledButton.styleFrom(
+                      textStyle: TextStyle(fontWeight: FontWeight.w600),
+                      minimumSize: Size.fromHeight(120),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } catch (e) {}
+  }
+
   Future<void> _pickImage(ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
-
     if (pickedFile == null) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing dialog by tapping outside
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
 
     try {
       setState(() {
-        _isLoading = false;
+        _isLoading = true;
       });
 
       // request location permission
@@ -512,9 +579,9 @@ class _TowerPageState extends State<TowerPage> {
         watermarkText: watermarkText,
       );
 
-      // save image locally
+      // save image locally, maybe not needed?
       final tempDir = await getTemporaryDirectory();
-      final file = await File('${tempDir.path}/${pickedFile.name}').writeAsBytes(bytes);
+      await File('${tempDir.path}/${pickedFile.name}').writeAsBytes(bytes);
 
       // upload image to firebase storage
       final String fileName = DateTime.now().microsecondsSinceEpoch.toString(); // unique
@@ -530,10 +597,11 @@ class _TowerPageState extends State<TowerPage> {
       });
 
       final TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
-      final String downloadUrl = await snapshot.ref.getDownloadURL(); // TODO: add this to tower images
+      final String downloadUrl = await snapshot.ref.getDownloadURL();
 
+      // update firebase database and local
       if (mounted) {
-        Provider.of<TowersProvider>(context).addImage(widget.towerId, downloadUrl);
+        await Provider.of<TowersProvider>(context, listen: false).addImage(widget.towerId, downloadUrl);
       } else {
         throw Exception("provider addImage not mounted");
       }
@@ -547,11 +615,9 @@ class _TowerPageState extends State<TowerPage> {
       setState(() {
         _isLoading = false;
       });
+      Navigator.pop(context);
     }
   }
-
-  // TODO: make function for image upload; sign-in/sign-out
-  
 
   // UI function to build a detail row format
   Widget _buildDetailRow(String label, String content, bool isLink) {
