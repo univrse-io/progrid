@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_watermark/image_watermark.dart';
@@ -272,7 +274,7 @@ class _TowerPageState extends State<TowerPage> {
                       child: Stack(
                         children: [
                           GestureDetector(
-                            onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index]),
+                            onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], _downloadImage),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: ConstrainedBox(
@@ -688,6 +690,86 @@ class _TowerPageState extends State<TowerPage> {
       }
     } finally {
       if (mounted) Navigator.pop(context); // close loading thing
+    }
+  }
+
+  // download image from url
+  Future<void> _downloadImage(String url) async {
+    try {
+      if (mounted) DialogUtils.showLoadingDialog(context);
+
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      final permission = Platform.isAndroid && androidInfo.version.sdkInt > 32 ? Permission.photos : Permission.storage;
+      final status = await permission.request();
+
+      if (await Permission.storage.isRestricted) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Debug Storage Denied')),
+          );
+        }
+      }
+
+      if (status.isDenied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission is required to save the image.')),
+          );
+        }
+        return;
+      }
+
+      if (status.isPermanentlyDenied) {
+        // go to app settings
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'Storage permission permanently denied. Please allow it from settings.',
+              ),
+              action: SnackBarAction(
+                label: 'Settings',
+                onPressed: () {
+                  openAppSettings();
+                },
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
+      // download image
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to download the image. Status code: ${response.statusCode}');
+      }
+
+      // get directory
+      Directory? externalDir = Directory('/storage/emulated/0/Download'); // download folder on android
+      if (!externalDir.existsSync()) {
+        externalDir = await getExternalStorageDirectory();
+      }
+
+      final fileName = DateTime.now().millisecondsSinceEpoch; // extract file name from URL
+      final file = File('${externalDir!.path}/$fileName');
+
+      // write file
+      await file.writeAsBytes(response.bodyBytes);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image saved to ${file.path}')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to download image: $e')),
+        );
+      }
+    } finally {
+      if (mounted) Navigator.pop(context);
     }
   }
 

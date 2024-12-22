@@ -12,7 +12,7 @@ class DialogUtils {
     );
   }
 
-  static void showImageDialog(BuildContext context, String imageUrl) {
+  static void showImageDialog(BuildContext context, String imageUrl, Future<void> Function(String) onDownload) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -22,14 +22,30 @@ class DialogUtils {
             width: double.infinity,
             height: double.infinity,
             child: Center(
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Center(
-                    child: Icon(Icons.error, color: AppColors.red),
-                  );
-                },
+              child: Stack(
+                children: [
+                  // image object
+                  Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(
+                        child: Icon(Icons.error, color: AppColors.red),
+                      );
+                    },
+                  ),
+
+                  // download button
+                  Positioned(
+                    bottom: 7,
+                    right: 7,
+                    child: FloatingActionButton(
+                      onPressed: () => onDownload(imageUrl),
+                      child: Icon(Icons.download),
+                      mini: true,
+                    ),
+                  )
+                ],
               ),
             ),
           ),
