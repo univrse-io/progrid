@@ -12,7 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
-import 'package:progrid/utils/loading_circle.dart';
+import 'package:progrid/utils/dialog_utils.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -270,21 +270,24 @@ class _TowerPageState extends State<TowerPage> {
                       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                       child: Stack(
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(maxHeight: 400),
-                              child: Image.network(
-                                selectedTower.images[index],
-                                fit: BoxFit.cover,
-                                height: 120,
-                                width: 120,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: Colors.grey,
-                                    child: Icon(Icons.error, color: AppColors.red),
-                                  ); // if image fails to load
-                                },
+                          GestureDetector(
+                            onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index]),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(maxHeight: 400),
+                                child: Image.network(
+                                  selectedTower.images[index],
+                                  fit: BoxFit.cover,
+                                  height: 120,
+                                  width: 120,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: Colors.grey,
+                                      child: Icon(Icons.error, color: AppColors.red),
+                                    ); // if image fails to load
+                                  },
+                                ),
                               ),
                             ),
                           ),
@@ -305,7 +308,9 @@ class _TowerPageState extends State<TowerPage> {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    'Signed-out', // TODO: replace with actual indicator
+                    selectedTower.images.length == 1
+                        ? 'Signed-in' // if images == 1
+                        : 'Signed-out', // Ootherwise show signed out
                     style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontStyle: FontStyle.italic),
                   )
                 ],
@@ -385,8 +390,8 @@ class _TowerPageState extends State<TowerPage> {
                   const SizedBox(width: 2),
                   Expanded(
                     child: FilledButton(
-                      onPressed: () {
-                        // TODO: implement sign-out
+                      onPressed: () async {
+                        await _signOut();
                       },
                       child: Text('Sign-Out'),
                       style: FilledButton.styleFrom(
@@ -432,7 +437,7 @@ class _TowerPageState extends State<TowerPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Tower already has a sign-in image'),
+              content: Text('Tower has already been signed-in'),
             ),
           );
         }
@@ -458,7 +463,7 @@ class _TowerPageState extends State<TowerPage> {
                   child: FilledButton(
                     onPressed: () {
                       // Navigator.pop(context);
-                      _pickImage(ImageSource.camera);
+                      _pickImage(ImageSource.camera, false);
                     },
                     child: Icon(
                       Icons.camera_alt_outlined,
@@ -475,7 +480,7 @@ class _TowerPageState extends State<TowerPage> {
                   child: FilledButton(
                     onPressed: () {
                       // Navigator.pop(context);
-                      _pickImage(ImageSource.gallery);
+                      _pickImage(ImageSource.gallery, false);
                     },
                     child: Icon(
                       Icons.file_upload_outlined,
@@ -493,16 +498,94 @@ class _TowerPageState extends State<TowerPage> {
         },
       );
     } catch (e) {
-      throw Exception('dont know what to put here, dialog failed to open?');
+      throw Exception('failed to call sign-in: $e');
     }
   }
 
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> _signOut() async {
+    try {
+      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+      final selectedTower = towersProvider.towers.firstWhere(
+        (tower) => tower.id == widget.towerId,
+        orElse: () => throw Exception("Tower not found"),
+      );
+
+      // check if there is already one image
+      if (selectedTower.images.length != 1) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please sign-in first'),
+            ),
+          );
+        }
+        return;
+      }
+
+      // do image upload stuff here
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              'Select Image Source',
+              textAlign: TextAlign.center,
+            ),
+            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+            titlePadding: EdgeInsets.only(top: 20, right: 20, left: 20),
+            contentPadding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      // Navigator.pop(context);
+                      _pickImage(ImageSource.camera, true);
+                    },
+                    child: Icon(
+                      Icons.camera_alt_outlined,
+                      size: 30,
+                    ),
+                    style: FilledButton.styleFrom(
+                      textStyle: TextStyle(fontWeight: FontWeight.w600),
+                      minimumSize: Size.fromHeight(120),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      // Navigator.pop(context);
+                      _pickImage(ImageSource.gallery, true);
+                    },
+                    child: Icon(
+                      Icons.file_upload_outlined,
+                      size: 30,
+                    ),
+                    style: FilledButton.styleFrom(
+                      textStyle: TextStyle(fontWeight: FontWeight.w600),
+                      minimumSize: Size.fromHeight(120),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      throw Exception('failed to call sign-out: $e');
+    }
+  }
+
+  Future<void> _pickImage(ImageSource source, bool isSignOut) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
     if (pickedFile == null) return;
 
     if (mounted) Navigator.pop(context);
-    if (mounted) LoadingCircle.showLoadingDialog(context);
+    if (mounted) DialogUtils.showLoadingDialog(context);
 
     try {
       // request location permission
@@ -579,8 +662,12 @@ class _TowerPageState extends State<TowerPage> {
         final towersProvider = Provider.of<TowersProvider>(context, listen: false);
         await towersProvider.addImage(widget.towerId, downloadUrl);
 
-        // update tower status to 'in-progress'
-        await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
+        // update tower status
+        if (isSignOut) {
+          await towersProvider.updateSurveyStatus(widget.towerId, 'surveyed');
+        } else {
+          await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
+        }
       } else {
         throw Exception("provider addImage not mounted");
       }

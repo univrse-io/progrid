@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/providers/issues_provider.dart';
-import 'package:progrid/models/providers/records_provider.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
@@ -77,8 +76,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
               // connect to database
               Provider.of<TowersProvider>(context, listen: false).loadTowers();
               Provider.of<IssuesProvider>(context, listen: false).loadIssues();
-              Provider.of<RecordsProvider>(context, listen: false)
-                  .loadRecords();
 
               // reset to login page in background
               _onLoginPage = true;
