@@ -620,11 +620,91 @@ class _DashboardPageState extends State<DashboardPage> {
                         final excel = Excel.createExcel();
                         final sheet = excel[excel.getDefaultSheet()!];
 
-                        for (var i = 0; i < towers.length; i++) {
+                        sheet
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 0, rowIndex: 0))
+                              .value = TextCellValue('ID')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 1, rowIndex: 0))
+                              .value = TextCellValue('Name')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 2, rowIndex: 0))
+                              .value = TextCellValue('Region')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 3, rowIndex: 0))
+                              .value = TextCellValue('Type')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 4, rowIndex: 0))
+                              .value = TextCellValue('Owner')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 5, rowIndex: 0))
+                              .value = TextCellValue('Address')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 6, rowIndex: 0))
+                              .value = TextCellValue('Position')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 7, rowIndex: 0))
+                              .value = TextCellValue('Survey Status')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 8, rowIndex: 0))
+                              .value = TextCellValue('Drawing Status')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 9, rowIndex: 0))
+                              .value = TextCellValue('Sign In')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 10, rowIndex: 0))
+                              .value = TextCellValue('Sign Out')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 11, rowIndex: 0))
+                              .value = TextCellValue('Author ID')
+                          ..cell(CellIndex.indexByColumnRow(
+                                  columnIndex: 12, rowIndex: 0))
+                              .value = TextCellValue('Notes');
+
+                        for (final tower in towers) {
+                          final rowIndex = towers.indexOf(tower) + 1;
+
                           sheet
-                              .cell(CellIndex.indexByColumnRow(
-                                  columnIndex: 0, rowIndex: i))
-                              .value = TextCellValue(towers[i].id);
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 0, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.id)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 1, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.name)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 2, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.region)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 3, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.type)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 4, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.owner)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 5, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.address)
+                            ..cell(CellIndex.indexByColumnRow(
+                                        columnIndex: 6, rowIndex: rowIndex))
+                                    .value =
+                                TextCellValue(tower.position.toString())
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 7, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.surveyStatus)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 8, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.drawingStatus)
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 9, rowIndex: rowIndex))
+                                .value = TextCellValue('${tower.signIn ?? ''}')
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 10, rowIndex: rowIndex))
+                                .value = TextCellValue('${tower.signOut ?? ''}')
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 11, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.authorId ?? '')
+                            ..cell(CellIndex.indexByColumnRow(
+                                    columnIndex: 12, rowIndex: rowIndex))
+                                .value = TextCellValue(tower.notes ?? '');
                         }
 
                         excel.save(fileName: 'Reports.xlsx');
