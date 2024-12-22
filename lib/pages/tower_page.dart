@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
+import 'package:progrid/utils/loading_circle.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -29,13 +30,7 @@ class _TowerPageState extends State<TowerPage> {
 
   Timer? _debounceTimer;
   final int _maxNotesLength = 500;
-
-  // final List<File> _images = [];
   final _picker = ImagePicker();
-  double _uploadProgress = 0;
-
-  // utility
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -426,10 +421,6 @@ class _TowerPageState extends State<TowerPage> {
 
   Future<void> _signIn() async {
     try {
-      setState(() {
-        _isLoading = true;
-      });
-
       final towersProvider = Provider.of<TowersProvider>(context, listen: false);
       final selectedTower = towersProvider.towers.firstWhere(
         (tower) => tower.id == widget.towerId,
@@ -466,8 +457,8 @@ class _TowerPageState extends State<TowerPage> {
                 Expanded(
                   child: FilledButton(
                     onPressed: () {
+                      // Navigator.pop(context);
                       _pickImage(ImageSource.camera);
-                      Navigator.pop(context);
                     },
                     child: Icon(
                       Icons.camera_alt_outlined,
@@ -483,8 +474,8 @@ class _TowerPageState extends State<TowerPage> {
                 Expanded(
                   child: FilledButton(
                     onPressed: () {
+                      // Navigator.pop(context);
                       _pickImage(ImageSource.gallery);
-                      Navigator.pop(context);
                     },
                     child: Icon(
                       Icons.file_upload_outlined,
@@ -501,28 +492,19 @@ class _TowerPageState extends State<TowerPage> {
           );
         },
       );
-    } catch (e) {}
+    } catch (e) {
+      throw Exception('dont know what to put here, dialog failed to open?');
+    }
   }
 
   Future<void> _pickImage(ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
     if (pickedFile == null) return;
 
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevent dismissing dialog by tapping outside
-      builder: (BuildContext context) {
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+    if (mounted) Navigator.pop(context);
+    if (mounted) LoadingCircle.showLoadingDialog(context);
 
     try {
-      setState(() {
-        _isLoading = true;
-      });
-
       // request location permission
       final status = await Permission.locationWhenInUse.request();
       if (!status.isGranted) {
@@ -589,19 +571,16 @@ class _TowerPageState extends State<TowerPage> {
 
       final UploadTask uploadTask = storageRef.putFile(imageFile);
 
-      // monitor upload progress
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        setState(() {
-          _uploadProgress = snapshot.bytesTransferred.toDouble() / snapshot.totalBytes.toDouble();
-        });
-      });
-
       final TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
       final String downloadUrl = await snapshot.ref.getDownloadURL();
 
       // update firebase database and local
       if (mounted) {
-        await Provider.of<TowersProvider>(context, listen: false).addImage(widget.towerId, downloadUrl);
+        final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+        await towersProvider.addImage(widget.towerId, downloadUrl);
+
+        // update tower status to 'in-progress'
+        await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
       } else {
         throw Exception("provider addImage not mounted");
       }
@@ -612,10 +591,7 @@ class _TowerPageState extends State<TowerPage> {
         );
       }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.pop(context);
+      if (mounted) Navigator.pop(context); // close loading thing
     }
   }
 
