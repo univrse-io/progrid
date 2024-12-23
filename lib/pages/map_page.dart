@@ -40,8 +40,6 @@ class _MapPageState extends State<MapPage> {
         return Color.fromARGB(255, 134, 124, 79);
       case 'central':
         return Color.fromARGB(255, 63, 81, 100);
-      case 'western':
-        return Color.fromARGB(255, 104, 71, 104);
       case 'sabah':
         return Color.fromARGB(255, 62, 88, 88);
       case 'sarawak':
@@ -57,7 +55,6 @@ class _MapPageState extends State<MapPage> {
     'northern': LatLng(5.1152, 100.4532),
     'eastern': LatLng(4.3120, 102.4632),
     'central': LatLng(3.0147, 101.3747),
-    'western': LatLng(4.1846, 100.6604),
     'sabah': LatLng(5.9804, 116.0735),
     'sarawak': LatLng(1.5548, 110.3592),
   };
