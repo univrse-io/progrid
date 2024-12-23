@@ -353,7 +353,7 @@ class _TowerPageState extends State<TowerPage> {
                     );
                   },
                   decoration: InputDecoration(
-                    hintText: 'Enter text here...',
+                    hintText: 'Enter notes here...',
                     alignLabelWithHint: true,
                     hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
                     contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
@@ -646,8 +646,8 @@ class _TowerPageState extends State<TowerPage> {
       final watermarkText = '$formattedDateTime\nLat: $latitude, Lon: $longitude';
       final bytes = await ImageWatermark.addTextWatermark(
         imgBytes: await imageFile.readAsBytes(),
-        dstX: 10,
-        dstY: 10,
+        dstX: 0,
+        dstY: 0,
         watermarkText: watermarkText,
       );
 
@@ -798,8 +798,15 @@ class _TowerPageState extends State<TowerPage> {
           Expanded(
             child: isLink
                 ? GestureDetector(
-                    onTap: () async {
-                      // TODO: implement google maps link here
+                    onTap: () {
+                      // TODO: fix
+                      // final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+                      // final selectedTower = towersProvider.towers.firstWhere(
+                      //   (tower) => tower.id == widget.towerId,
+                      //   orElse: () => throw Exception("Tower not found"),
+                      // );
+
+                      // MapsLauncher.launchCoordinates(selectedTower.position.latitude, selectedTower.position.longitude);
                     },
                     child: Text(
                       content,
