@@ -3,6 +3,7 @@ import 'package:excel/excel.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/dashboard/drawing_page.dart';
@@ -593,13 +594,14 @@ class _DashboardPageState extends State<DashboardPage> {
                     type: doc['type'] as String? ?? 'undefined',
                     owner: doc['owner'] as String? ?? 'undefined',
                     address: doc['address'] as String? ?? 'undefined',
-                    position: doc['position'] is GeoPoint
-                        ? doc['position'] as GeoPoint
-                        : GeoPoint(0, 0),
+                    position: doc['position'] is GeoPoint ? doc['position'] as GeoPoint : GeoPoint(0, 0),
                     surveyStatus: doc['surveyStatus'] as String? ?? 'undefined',
-                    drawingStatus:
-                        doc['drawingStatus'] as String? ?? 'undefined',
-                    notes: doc['notes'] as String? ?? 'no notes',
+                    drawingStatus: doc['drawingStatus'] as String? ?? 'undefined',
+
+                    signIn: doc.data().containsKey('signIn') ? doc['signIn'] as Timestamp : null,
+                    signOut: doc.data().containsKey('signOut') ? doc['signOut'] as Timestamp : null,
+                    authorId: doc.data().containsKey('authorId') ? doc['authorId'] as String : null,
+                    notes: doc.data().containsKey('notes') ? doc['notes'] as String : '',
                   ))
               .toList();
 
@@ -686,19 +688,18 @@ class _DashboardPageState extends State<DashboardPage> {
                             ..cell(CellIndex.indexByColumnRow(
                                         columnIndex: 6, rowIndex: rowIndex))
                                     .value =
-                                TextCellValue(tower.position.toString())
+                                TextCellValue('${tower.position.latitude}/${tower.position.longitude}')
                             ..cell(CellIndex.indexByColumnRow(
                                     columnIndex: 7, rowIndex: rowIndex))
                                 .value = TextCellValue(tower.surveyStatus)
                             ..cell(CellIndex.indexByColumnRow(
                                     columnIndex: 8, rowIndex: rowIndex))
                                 .value = TextCellValue(tower.drawingStatus)
-                            ..cell(CellIndex.indexByColumnRow(
-                                    columnIndex: 9, rowIndex: rowIndex))
-                                .value = TextCellValue('${tower.signIn ?? ''}')
+                            ..cell(CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: rowIndex)).value = TextCellValue(
+                                tower.signIn != null ? DateFormat('ddMMyy HH:mm:ss').format(tower.signIn!.toDate()) : '')
                             ..cell(CellIndex.indexByColumnRow(
                                     columnIndex: 10, rowIndex: rowIndex))
-                                .value = TextCellValue('${tower.signOut ?? ''}')
+                                .value = TextCellValue(tower.signOut != null ? DateFormat('ddMMyy HH:mm:ss').format(tower.signOut!.toDate()) : '')
                             ..cell(CellIndex.indexByColumnRow(
                                     columnIndex: 11, rowIndex: rowIndex))
                                 .value = TextCellValue(tower.authorId ?? '')

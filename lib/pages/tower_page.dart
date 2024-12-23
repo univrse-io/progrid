@@ -353,7 +353,7 @@ class _TowerPageState extends State<TowerPage> {
                     );
                   },
                   decoration: InputDecoration(
-                    hintText: 'Enter text here...',
+                    hintText: 'Enter notes here...',
                     alignLabelWithHint: true,
                     hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
                     contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
