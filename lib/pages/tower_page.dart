@@ -646,8 +646,8 @@ class _TowerPageState extends State<TowerPage> {
       final watermarkText = '$formattedDateTime\nLat: $latitude, Lon: $longitude';
       final bytes = await ImageWatermark.addTextWatermark(
         imgBytes: await imageFile.readAsBytes(),
-        dstX: 10,
-        dstY: 10,
+        dstX: 0,
+        dstY: 0,
         watermarkText: watermarkText,
       );
 
