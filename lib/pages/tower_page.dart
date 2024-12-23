@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_watermark/image_watermark.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/providers/towers_provider.dart';
@@ -798,8 +799,14 @@ class _TowerPageState extends State<TowerPage> {
           Expanded(
             child: isLink
                 ? GestureDetector(
-                    onTap: () async {
-                      // TODO: implement google maps link here
+                    onTap: () {
+                      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+                      final selectedTower = towersProvider.towers.firstWhere(
+                        (tower) => tower.id == widget.towerId,
+                        orElse: () => throw Exception("Tower not found"),
+                      );
+
+                      MapsLauncher.launchCoordinates(selectedTower.position.latitude, selectedTower.position.longitude);
                     },
                     child: Text(
                       content,
