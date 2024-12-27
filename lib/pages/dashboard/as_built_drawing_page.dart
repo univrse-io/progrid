@@ -15,13 +15,13 @@ class AsBuiltDrawingPage extends StatefulWidget {
 
 class _AsBuiltDrawingPageState extends State<AsBuiltDrawingPage>
     with AutomaticKeepAliveClientMixin {
-  late final towers = Provider.of<List<Tower>>(context);
   @override
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final towers = Provider.of<List<Tower>>(context);
 
     return SingleChildScrollView(
       child: Column(
