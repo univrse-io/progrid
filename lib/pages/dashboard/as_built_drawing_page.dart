@@ -6,14 +6,14 @@ import 'package:provider/provider.dart';
 
 final _drawingStatus = ['completed', 'submitted'];
 
-class DrawingScreen extends StatefulWidget {
-  const DrawingScreen({super.key});
+class AsBuiltDrawingPage extends StatefulWidget {
+  const AsBuiltDrawingPage({super.key});
 
   @override
-  State<DrawingScreen> createState() => _DrawingScreenState();
+  State<AsBuiltDrawingPage> createState() => _AsBuiltDrawingPageState();
 }
 
-class _DrawingScreenState extends State<DrawingScreen> {
+class _AsBuiltDrawingPageState extends State<AsBuiltDrawingPage> {
   late final towers = Provider.of<List<Tower>>(context);
 
   @override

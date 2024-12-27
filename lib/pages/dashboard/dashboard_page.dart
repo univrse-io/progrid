@@ -2,8 +2,9 @@ import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:progrid/models/tower.dart';
-import 'package:progrid/pages/dashboard/drawing_page.dart';
+import 'package:progrid/pages/dashboard/as_built_drawing_page.dart';
 import 'package:progrid/pages/dashboard/home_page.dart';
+import 'package:progrid/pages/dashboard/on_site_audit_page.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:provider/provider.dart';
 
@@ -159,9 +160,16 @@ class _DashboardPageState extends State<DashboardPage> {
                 },
               ),
               ListTile(
-                title: const Text('As-Built Drawing'),
+                title: const Text('On-Site Audit'),
                 onTap: () {
                   setState(() => _selectedIndex = 1);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('As-Built Drawing'),
+                onTap: () {
+                  setState(() => _selectedIndex = 2);
                   Navigator.pop(context);
                 },
               ),
@@ -170,7 +178,8 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         body: [
           HomePage(),
-          DrawingScreen(),
+          OnSiteAuditPage(),
+          AsBuiltDrawingPage(),
         ][_selectedIndex]);
   }
 }
