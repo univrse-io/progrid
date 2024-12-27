@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/dashboard/drawing_page.dart';
 import 'package:progrid/pages/profile_page.dart';
+import 'package:progrid/services/firestore.dart';
 
 List<Tower> towers = []; // TODO: Change to provider later on.
 
@@ -578,12 +579,9 @@ class _DashboardPageState extends State<DashboardPage> {
     Navigator.pop(context);
   }
 
-  late final Future<QuerySnapshot<Map<String, dynamic>>> _future =
-      FirebaseFirestore.instance.collection('towers').get();
-
   @override
-  Widget build(BuildContext context) => FutureBuilder(
-      future: _future,
+  Widget build(BuildContext context) => StreamBuilder(
+      stream: FirestoreService.towersStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           towers = snapshot.data!.docs
@@ -594,14 +592,24 @@ class _DashboardPageState extends State<DashboardPage> {
                     type: doc['type'] as String? ?? 'undefined',
                     owner: doc['owner'] as String? ?? 'undefined',
                     address: doc['address'] as String? ?? 'undefined',
-                    position: doc['position'] is GeoPoint ? doc['position'] as GeoPoint : GeoPoint(0, 0),
+                    position: doc['position'] is GeoPoint
+                        ? doc['position'] as GeoPoint
+                        : GeoPoint(0, 0),
                     surveyStatus: doc['surveyStatus'] as String? ?? 'undefined',
-                    drawingStatus: doc['drawingStatus'] as String? ?? 'undefined',
-
-                    signIn: doc.data().containsKey('signIn') ? doc['signIn'] as Timestamp : null,
-                    signOut: doc.data().containsKey('signOut') ? doc['signOut'] as Timestamp : null,
-                    authorId: doc.data().containsKey('authorId') ? doc['authorId'] as String : null,
-                    notes: doc.data().containsKey('notes') ? doc['notes'] as String : '',
+                    drawingStatus:
+                        doc['drawingStatus'] as String? ?? 'undefined',
+                    signIn: doc.data().containsKey('signIn')
+                        ? doc['signIn'] as Timestamp
+                        : null,
+                    signOut: doc.data().containsKey('signOut')
+                        ? doc['signOut'] as Timestamp
+                        : null,
+                    authorId: doc.data().containsKey('authorId')
+                        ? doc['authorId'] as String
+                        : null,
+                    notes: doc.data().containsKey('notes')
+                        ? doc['notes'] as String
+                        : '',
                   ))
               .toList();
 
@@ -688,18 +696,28 @@ class _DashboardPageState extends State<DashboardPage> {
                             ..cell(CellIndex.indexByColumnRow(
                                         columnIndex: 6, rowIndex: rowIndex))
                                     .value =
-                                TextCellValue('${tower.position.latitude}/${tower.position.longitude}')
+                                TextCellValue(
+                                    '${tower.position.latitude}/${tower.position.longitude}')
                             ..cell(CellIndex.indexByColumnRow(
                                     columnIndex: 7, rowIndex: rowIndex))
                                 .value = TextCellValue(tower.surveyStatus)
                             ..cell(CellIndex.indexByColumnRow(
                                     columnIndex: 8, rowIndex: rowIndex))
                                 .value = TextCellValue(tower.drawingStatus)
-                            ..cell(CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: rowIndex)).value = TextCellValue(
-                                tower.signIn != null ? DateFormat('ddMMyy HH:mm:ss').format(tower.signIn!.toDate()) : '')
                             ..cell(CellIndex.indexByColumnRow(
-                                    columnIndex: 10, rowIndex: rowIndex))
-                                .value = TextCellValue(tower.signOut != null ? DateFormat('ddMMyy HH:mm:ss').format(tower.signOut!.toDate()) : '')
+                                        columnIndex: 9, rowIndex: rowIndex))
+                                    .value =
+                                TextCellValue(tower.signIn != null
+                                    ? DateFormat('ddMMyy HH:mm:ss')
+                                        .format(tower.signIn!.toDate())
+                                    : '')
+                            ..cell(CellIndex.indexByColumnRow(
+                                        columnIndex: 10, rowIndex: rowIndex))
+                                    .value =
+                                TextCellValue(tower.signOut != null
+                                    ? DateFormat('ddMMyy HH:mm:ss')
+                                        .format(tower.signOut!.toDate())
+                                    : '')
                             ..cell(CellIndex.indexByColumnRow(
                                     columnIndex: 11, rowIndex: rowIndex))
                                 .value = TextCellValue(tower.authorId ?? '')
