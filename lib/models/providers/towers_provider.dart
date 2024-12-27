@@ -16,8 +16,12 @@ class TowersProvider extends ChangeNotifier {
       towers = [];
 
       // currently redownloads entire list everytime there is an update
-      _towersSubscription = FirebaseFirestore.instance.collection('towers').snapshots().listen((snapshot) async {
-        towers = await Future.wait(snapshot.docs.map((doc) async => await Tower.fromFirestore(doc)));
+      _towersSubscription = FirebaseFirestore.instance
+          .collection('towers')
+          .snapshots()
+          .listen((snapshot) async {
+        towers = await Future.wait(
+            snapshot.docs.map((doc) async => Tower.fromFirestore(doc)));
         notifyListeners();
       });
     } catch (e) {
@@ -28,7 +32,10 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateSurveyStatus(String towerId, String surveyStatus) async {
     try {
       // update database
-      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'surveyStatus': surveyStatus});
+      await FirebaseFirestore.instance
+          .collection('towers')
+          .doc(towerId)
+          .update({'surveyStatus': surveyStatus});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
@@ -42,7 +49,10 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateDrawingStatus(String towerId, String drawingStatus) async {
     try {
       // update database
-      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'drawingStatus': drawingStatus});
+      await FirebaseFirestore.instance
+          .collection('towers')
+          .doc(towerId)
+          .update({'drawingStatus': drawingStatus});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
@@ -56,7 +66,10 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateNotes(String towerId, String notes) async {
     try {
       // update database
-      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'notes': notes});
+      await FirebaseFirestore.instance
+          .collection('towers')
+          .doc(towerId)
+          .update({'notes': notes});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
@@ -70,7 +83,10 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateSignIn(String towerId, Timestamp signIn) async {
     try {
       // update database
-      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'signIn': signIn});
+      await FirebaseFirestore.instance
+          .collection('towers')
+          .doc(towerId)
+          .update({'signIn': signIn});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
@@ -83,7 +99,10 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateSignOut(String towerId, Timestamp signOut) async {
     try {
       // update database
-      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'signOut': signOut});
+      await FirebaseFirestore.instance
+          .collection('towers')
+          .doc(towerId)
+          .update({'signOut': signOut});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
@@ -96,7 +115,10 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateAuthorId(String towerId, String authorId) async {
     try {
       // update database
-      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({'authorId': authorId});
+      await FirebaseFirestore.instance
+          .collection('towers')
+          .doc(towerId)
+          .update({'authorId': authorId});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
@@ -109,7 +131,10 @@ class TowersProvider extends ChangeNotifier {
   Future<void> addImage(String towerId, String imageUrl) async {
     try {
       // update database
-      await FirebaseFirestore.instance.collection('towers').doc(towerId).update({
+      await FirebaseFirestore.instance
+          .collection('towers')
+          .doc(towerId)
+          .update({
         'images': FieldValue.arrayUnion([imageUrl]),
       });
 

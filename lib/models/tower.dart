@@ -11,50 +11,52 @@ class Tower {
   GeoPoint position;
   String surveyStatus;
   String drawingStatus;
-
+  List<String> images;
   Timestamp? signIn;
   Timestamp? signOut;
   String? authorId;
-  List<String> images;
   String? notes;
 
-  // constructor
   Tower({
-    this.id = 'undefined',
-    this.name = 'undefined',
-    this.region = 'undefined',
-    this.type = 'undefined',
-    this.owner = 'undefined',
-    this.address = 'undefined',
-    this.position = const GeoPoint(0, 0),
-    this.surveyStatus = 'undefined',
-    this.drawingStatus = 'undefined',
-
+    required this.id,
+    required this.name,
+    required this.region,
+    required this.type,
+    required this.owner,
+    required this.address,
+    required this.position,
+    required this.surveyStatus,
+    required this.drawingStatus,
+    required this.images,
     this.signIn,
     this.signOut,
     this.authorId,
-    this.images = const[],
     this.notes,
   });
 
-  // given a tower document, fetch from database
-  static Future<Tower> fromFirestore(DocumentSnapshot doc) async {
+  // TODO: Create a fromJson method that takes a Map<String, dynamic> and returns a Tower instance.
+
+  /// Creates a [Tower] instance from a Firestore document.
+  ///
+  /// This method extracts the data from the provided [DocumentSnapshot]
+  /// and maps it to the corresponding fields of the [Tower] model.
+  static Tower fromFirestore(DocumentSnapshot doc) {
     final data = doc.data()! as Map<String, dynamic>;
+
     return Tower(
       id: doc.id,
-      name: data['name'] as String? ?? 'undefined',
-      region: data['region'] as String? ?? 'undefined',
-      type: data['type'] as String? ?? 'undefined',
-      owner: data['owner'] as String? ?? 'undefined',
-      address: data['address'] as String? ?? 'undefined',
-      position: data['position'] is GeoPoint ? data['position'] as GeoPoint : GeoPoint(0, 0),
-      surveyStatus: data['surveyStatus'] as String? ?? 'undefined',
-      drawingStatus: data['drawingStatus'] as String? ?? 'undefined',
-
+      name: data['name'] as String,
+      region: data['region'] as String,
+      type: data['type'] as String,
+      owner: data['owner'] as String,
+      address: data['address'] as String,
+      position: data['position'] as GeoPoint,
+      surveyStatus: data['surveyStatus'] as String,
+      drawingStatus: data['drawingStatus'] as String,
+      images: (data['images'] as List?)?.cast<String>() ?? [],
       signIn: data['signIn'] as Timestamp?,
       signOut: data['signOut'] as Timestamp?,
       authorId: data['authorId'] as String?,
-      images: (data['images'] as List<dynamic>?)?.cast<String>() ?? [],
       notes: data['notes'] as String?,
     );
   }

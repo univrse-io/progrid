@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:excel/excel.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -585,32 +584,7 @@ class _DashboardPageState extends State<DashboardPage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           towers = snapshot.data!.docs
-              .map((doc) => Tower(
-                    id: doc.id,
-                    name: doc['name'] as String? ?? 'undefined',
-                    region: doc['region'] as String? ?? 'undefined',
-                    type: doc['type'] as String? ?? 'undefined',
-                    owner: doc['owner'] as String? ?? 'undefined',
-                    address: doc['address'] as String? ?? 'undefined',
-                    position: doc['position'] is GeoPoint
-                        ? doc['position'] as GeoPoint
-                        : GeoPoint(0, 0),
-                    surveyStatus: doc['surveyStatus'] as String? ?? 'undefined',
-                    drawingStatus:
-                        doc['drawingStatus'] as String? ?? 'undefined',
-                    signIn: doc.data().containsKey('signIn')
-                        ? doc['signIn'] as Timestamp
-                        : null,
-                    signOut: doc.data().containsKey('signOut')
-                        ? doc['signOut'] as Timestamp
-                        : null,
-                    authorId: doc.data().containsKey('authorId')
-                        ? doc['authorId'] as String
-                        : null,
-                    notes: doc.data().containsKey('notes')
-                        ? doc['notes'] as String
-                        : '',
-                  ))
+              .map((doc) => Tower.fromFirestore(doc))
               .toList();
 
           return Scaffold(
