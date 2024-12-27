@@ -7,9 +7,17 @@ class OnSiteAuditPage extends StatefulWidget {
   State<OnSiteAuditPage> createState() => _OnSiteAuditPageState();
 }
 
-class _OnSiteAuditPageState extends State<OnSiteAuditPage> {
+class _OnSiteAuditPageState extends State<OnSiteAuditPage>
+    with AutomaticKeepAliveClientMixin {
   @override
-  Widget build(BuildContext context) => const Center(
-        child: Text('On-Site Audit Page'),
-      );
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    return const Center(
+      child: Text('On-Site Audit Page'),
+    );
+  }
 }

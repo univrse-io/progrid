@@ -16,7 +16,7 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  int _selectedIndex = 0;
+  final pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
@@ -154,32 +154,26 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               ListTile(
                 title: const Text('Home'),
-                onTap: () {
-                  setState(() => _selectedIndex = 0);
-                  Navigator.pop(context);
-                },
+                onTap: () => pageController.jumpToPage(0),
               ),
               ListTile(
                 title: const Text('On-Site Audit'),
-                onTap: () {
-                  setState(() => _selectedIndex = 1);
-                  Navigator.pop(context);
-                },
+                onTap: () => pageController.jumpToPage(1),
               ),
               ListTile(
                 title: const Text('As-Built Drawing'),
-                onTap: () {
-                  setState(() => _selectedIndex = 2);
-                  Navigator.pop(context);
-                },
+                onTap: () => pageController.jumpToPage(2),
               ),
             ],
           ),
         ),
-        body: [
-          HomePage(),
-          OnSiteAuditPage(),
-          AsBuiltDrawingPage(),
-        ][_selectedIndex]);
+        body: PageView(
+            controller: pageController,
+            children: [
+              HomePage(),
+              OnSiteAuditPage(),
+              AsBuiltDrawingPage(),
+            ],
+            physics: NeverScrollableScrollPhysics()));
   }
 }
