@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/models/providers/user_provider.dart';
+import 'package:progrid/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -22,14 +22,17 @@ class ProfilePage extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        foregroundImage: NetworkImage('https://api.dicebear.com/9.x/dylan/png?seed=${userProvider.name}&scale=80'),
+                        foregroundImage: NetworkImage(
+                            'https://api.dicebear.com/9.x/dylan/png?seed=${userProvider.name}&scale=80'),
                       ),
                       SizedBox(width: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(userProvider.name, style: Theme.of(context).textTheme.headlineSmall),
-                          Text('${userProvider.role[0].toUpperCase()}${userProvider.role.substring(1)}'), // capitalize
+                          Text(userProvider.name,
+                              style: Theme.of(context).textTheme.headlineSmall),
+                          Text(
+                              '${userProvider.role[0].toUpperCase()}${userProvider.role.substring(1)}'), // capitalize
                         ],
                       ),
                     ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/pages/map_page.dart';
 import 'package:progrid/pages/tower_page.dart';
+import 'package:progrid/providers/towers_provider.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -73,10 +73,18 @@ class _TowersListPageState extends State<TowersListPage> {
                         // filter towers based on search query
                         if (_searchQuery.isNotEmpty &&
                             !(tower.name.toLowerCase().contains(_searchQuery) ||
-                                tower.address.toLowerCase().contains(_searchQuery) ||
-                                tower.region.toLowerCase().contains(_searchQuery) ||
-                                tower.owner.toLowerCase().contains(_searchQuery) ||
-                                tower.id.toLowerCase().contains(_searchQuery))) {
+                                tower.address
+                                    .toLowerCase()
+                                    .contains(_searchQuery) ||
+                                tower.region
+                                    .toLowerCase()
+                                    .contains(_searchQuery) ||
+                                tower.owner
+                                    .toLowerCase()
+                                    .contains(_searchQuery) ||
+                                tower.id
+                                    .toLowerCase()
+                                    .contains(_searchQuery))) {
                           return const SizedBox.shrink();
                         }
 
@@ -86,7 +94,8 @@ class _TowersListPageState extends State<TowersListPage> {
                             Navigator.push(
                               context,
                               PageRouteBuilder(
-                                pageBuilder: (_, __, ___) => TowerPage(towerId: tower.id),
+                                pageBuilder: (_, __, ___) =>
+                                    TowerPage(towerId: tower.id),
                                 transitionsBuilder: (_, animation, __, child) {
                                   return FadeTransition(
                                     opacity: animation,
@@ -103,13 +112,15 @@ class _TowersListPageState extends State<TowersListPage> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: SafeArea(
-                              minimum: const EdgeInsets.symmetric(vertical: 6, horizontal: 9),
+                              minimum: const EdgeInsets.symmetric(
+                                  vertical: 6, horizontal: 9),
                               child: Row(
                                 children: [
                                   Expanded(
                                     flex: 70,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
@@ -119,7 +130,10 @@ class _TowersListPageState extends State<TowersListPage> {
                                               height: 12,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                color: tower.surveyStatus == 'surveyed' ? AppColors.green : AppColors.red,
+                                                color: tower.surveyStatus ==
+                                                        'surveyed'
+                                                    ? AppColors.green
+                                                    : AppColors.red,
                                               ),
                                             ),
                                             const SizedBox(width: 4),
@@ -148,17 +162,23 @@ class _TowersListPageState extends State<TowersListPage> {
                                             // owner
                                             Text(
                                               tower.owner,
-                                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                             Text(
                                               ",",
-                                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                             const SizedBox(width: 4),
                                             // region
                                             Text(
                                               tower.region,
-                                              style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontStyle: FontStyle.italic),
                                             ),
                                           ],
                                         ),

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/models/providers/issues_provider.dart';
-import 'package:progrid/models/providers/user_provider.dart';
+import 'package:progrid/providers/issues_provider.dart';
+import 'package:progrid/providers/user_provider.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +18,9 @@ class IssuePage extends StatefulWidget {
 class _IssuePageState extends State<IssuePage> {
   @override
   Widget build(BuildContext context) {
-    final issue = Provider.of<IssuesProvider>(context).issues.firstWhere((issue) => issue.id == widget.issueId);
+    final issue = Provider.of<IssuesProvider>(context)
+        .issues
+        .firstWhere((issue) => issue.id == widget.issueId);
 
     return Scaffold(
       appBar: AppBar(
@@ -50,7 +52,8 @@ class _IssuePageState extends State<IssuePage> {
                 runSpacing: 5,
                 children: issue.tags.map((tag) {
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.secondary,
                       borderRadius: BorderRadius.circular(20),
@@ -101,7 +104,9 @@ class _IssuePageState extends State<IssuePage> {
                 padding: const EdgeInsets.only(left: 14, right: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
-                  color: issue.status == 'resolved' ? AppColors.green : AppColors.red,
+                  color: issue.status == 'resolved'
+                      ? AppColors.green
+                      : AppColors.red,
                 ),
                 child: DropdownButton(
                   isDense: true,
@@ -139,7 +144,9 @@ class _IssuePageState extends State<IssuePage> {
                   ],
                   iconEnabledColor: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
-                  dropdownColor: issue.status == 'resolved' ? AppColors.green : AppColors.red,
+                  dropdownColor: issue.status == 'resolved'
+                      ? AppColors.green
+                      : AppColors.red,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.surface,
                     fontWeight: FontWeight.bold,
@@ -148,10 +155,13 @@ class _IssuePageState extends State<IssuePage> {
               )
             else
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
-                  color: issue.status == 'resolved' ? AppColors.green : AppColors.red,
+                  color: issue.status == 'resolved'
+                      ? AppColors.green
+                      : AppColors.red,
                 ),
                 child: Text(
                   '${issue.status[0].toUpperCase()}${issue.status.substring(1)}',

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:progrid/utils/pie_chart_painter.dart';
-import 'package:progrid/models/providers/towers_provider.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/pages/towers_list_page.dart';
+import 'package:progrid/providers/towers_provider.dart';
+import 'package:progrid/utils/pie_chart_painter.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -133,7 +133,8 @@ class _MapPageState extends State<MapPage> {
               // clustered map markers
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
-                  polygonOptions: PolygonOptions(color: Colors.black.withOpacity(0.1)),
+                  polygonOptions:
+                      PolygonOptions(color: Colors.black.withOpacity(0.1)),
                   maxClusterRadius: 50,
                   alignment: Alignment.center,
                   centerMarkerOnClick: false,
@@ -142,15 +143,18 @@ class _MapPageState extends State<MapPage> {
                   // spiderfyCluster: false, // TODO: Review, essentially what it does is it moves the markers away from each other to make them more visible
                   markers: towersProvider.towers.map((tower) {
                     return Marker(
-                      point: LatLng(tower.position.latitude, tower.position.longitude),
+                      point: LatLng(
+                          tower.position.latitude, tower.position.longitude),
                       width: 80,
-                      key: ValueKey(tower.id), // assign tower id to marker's key
+                      key:
+                          ValueKey(tower.id), // assign tower id to marker's key
                       child: GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TowerPage(towerId: tower.id),
+                              builder: (context) =>
+                                  TowerPage(towerId: tower.id),
                             ),
                           );
                         },
@@ -219,22 +223,27 @@ class _MapPageState extends State<MapPage> {
                           (tower) {
                             // grab the tower id from marker's key
                             // ensure type safety
-                            final markerId = (marker.key! as ValueKey<String>).value;
+                            final markerId =
+                                (marker.key! as ValueKey<String>).value;
                             return tower.id == markerId;
                           },
                         );
 
                         // increment the status counts based on the tower's status
                         if (tower.surveyStatus == 'surveyed') {
-                          statusCounts['surveyed'] = statusCounts['surveyed']! + 1;
+                          statusCounts['surveyed'] =
+                              statusCounts['surveyed']! + 1;
                         } else if (tower.surveyStatus == 'in-progress') {
-                          statusCounts['in-progress'] = statusCounts['in-progress']! + 1;
+                          statusCounts['in-progress'] =
+                              statusCounts['in-progress']! + 1;
                         } else {
-                          statusCounts['unsurveyed'] = statusCounts['unsurveyed']! + 1;
+                          statusCounts['unsurveyed'] =
+                              statusCounts['unsurveyed']! + 1;
                         }
                       } catch (e) {
                         // handle case where no tower matches the marker (should not happen)
-                        debugPrint('No matching tower found for marker with key ${marker.key}');
+                        debugPrint(
+                            'No matching tower found for marker with key ${marker.key}');
                       }
                     }
 
@@ -250,7 +259,8 @@ class _MapPageState extends State<MapPage> {
 
                     return CustomPaint(
                       size: const Size(40, 40),
-                      painter: PieChartPainter(statusCounts, total, statusColors),
+                      painter:
+                          PieChartPainter(statusCounts, total, statusColors),
                     );
                   },
                 ),
@@ -281,7 +291,8 @@ class _MapPageState extends State<MapPage> {
                       height: 35,
                       value: region,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.7),
                           borderRadius: BorderRadius.circular(10),
@@ -339,8 +350,10 @@ class _MapPageState extends State<MapPage> {
                     Navigator.push(
                       context,
                       PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) => const TowersListPage(),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const TowersListPage(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
                           return FadeTransition(
                             opacity: animation,
                             child: child,
@@ -364,13 +377,17 @@ class _MapPageState extends State<MapPage> {
                     Navigator.push(
                       context,
                       PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) => const ProfilePage(),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const ProfilePage(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
                           const begin = Offset(0.0, 1.0); // bottom
                           const end = Offset.zero;
                           const curve = Curves.easeInOut;
 
-                          final offsetAnimation = animation.drive(Tween(begin: begin, end: end).chain(CurveTween(curve: curve)));
+                          final offsetAnimation = animation.drive(
+                              Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve)));
                           return SlideTransition(
                             position: offsetAnimation,
                             child: child,

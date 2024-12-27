@@ -1,14 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/models/providers/issues_provider.dart';
-import 'package:progrid/models/providers/towers_provider.dart';
-import 'package:progrid/models/providers/user_provider.dart';
 import 'package:progrid/pages/authentication/login_page.dart';
 import 'package:progrid/pages/authentication/register_page.dart';
 import 'package:progrid/pages/dashboard/dashboard_page.dart';
 import 'package:progrid/pages/map_page.dart';
 import 'package:progrid/pages/user_verification_page.dart';
+import 'package:progrid/providers/issues_provider.dart';
+import 'package:progrid/providers/towers_provider.dart';
+import 'package:progrid/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class AuthWrapper extends StatefulWidget {
