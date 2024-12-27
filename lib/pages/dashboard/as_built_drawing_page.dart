@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:progrid/models/tower.dart';
+import 'package:progrid/services/firestore.dart';
 import 'package:provider/provider.dart';
 
 final _drawingStatus = ['completed', 'submitted'];
@@ -33,16 +33,13 @@ class _AsBuiltDrawingPageState extends State<AsBuiltDrawingPage>
                   child: ListTile(
                     trailing: ToggleButtons(
                         borderRadius: BorderRadius.circular(20),
-                        onPressed: (index) async {
+                        onPressed: (index) {
                           tower.drawingStatus = _drawingStatus[index];
                           towers[towers.indexWhere((x) => x.id == tower.id)] =
                               tower;
 
-                          await FirebaseFirestore.instance
-                              .collection('towers')
-                              .doc(tower.id)
-                              .update({'drawingStatus': _drawingStatus[index]});
-
+                          FirestoreService.updateTower(tower.id,
+                              data: {'drawingStatus': _drawingStatus[index]});
                           setState(() {});
                         },
                         fillColor: Colors.green.shade100,

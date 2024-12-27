@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:progrid/models/tower.dart';
+import 'package:progrid/services/firestore.dart';
 
 // Tower List Provider
 class TowersProvider extends ChangeNotifier {
@@ -16,8 +17,7 @@ class TowersProvider extends ChangeNotifier {
       towers = [];
 
       // currently redownloads entire list everytime there is an update
-      _towersSubscription = FirebaseFirestore.instance
-          .collection('towers')
+      _towersSubscription = FirestoreService.towersCollection
           .snapshots()
           .listen((snapshot) async {
         towers = await Future.wait(
@@ -32,8 +32,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateSurveyStatus(String towerId, String surveyStatus) async {
     try {
       // update database
-      await FirebaseFirestore.instance
-          .collection('towers')
+      await FirestoreService.towersCollection
           .doc(towerId)
           .update({'surveyStatus': surveyStatus});
 
@@ -49,8 +48,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateDrawingStatus(String towerId, String drawingStatus) async {
     try {
       // update database
-      await FirebaseFirestore.instance
-          .collection('towers')
+      await FirestoreService.towersCollection
           .doc(towerId)
           .update({'drawingStatus': drawingStatus});
 
@@ -66,8 +64,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateNotes(String towerId, String notes) async {
     try {
       // update database
-      await FirebaseFirestore.instance
-          .collection('towers')
+      await FirestoreService.towersCollection
           .doc(towerId)
           .update({'notes': notes});
 
@@ -83,8 +80,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateSignIn(String towerId, Timestamp signIn) async {
     try {
       // update database
-      await FirebaseFirestore.instance
-          .collection('towers')
+      await FirestoreService.towersCollection
           .doc(towerId)
           .update({'signIn': signIn});
 
@@ -99,8 +95,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateSignOut(String towerId, Timestamp signOut) async {
     try {
       // update database
-      await FirebaseFirestore.instance
-          .collection('towers')
+      await FirestoreService.towersCollection
           .doc(towerId)
           .update({'signOut': signOut});
 
@@ -115,8 +110,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateAuthorId(String towerId, String authorId) async {
     try {
       // update database
-      await FirebaseFirestore.instance
-          .collection('towers')
+      await FirestoreService.towersCollection
           .doc(towerId)
           .update({'authorId': authorId});
 
@@ -131,10 +125,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> addImage(String towerId, String imageUrl) async {
     try {
       // update database
-      await FirebaseFirestore.instance
-          .collection('towers')
-          .doc(towerId)
-          .update({
+      await FirestoreService.towersCollection.doc(towerId).update({
         'images': FieldValue.arrayUnion([imageUrl]),
       });
 

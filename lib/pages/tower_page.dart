@@ -15,6 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
 import 'package:progrid/providers/towers_provider.dart';
 import 'package:progrid/providers/user_provider.dart';
+import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/dialog_utils.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
@@ -119,13 +120,11 @@ class _TowerPageState extends State<TowerPage> {
                     child: DropdownButton(
                       isDense: true,
                       value: selectedTower.surveyStatus,
-                      onChanged: (value) async {
+                      onChanged: (value) {
                         if (value != null &&
                             value != selectedTower.surveyStatus) {
-                          await FirebaseFirestore.instance
-                              .collection('towers')
-                              .doc(selectedTower.id)
-                              .update({'surveyStatus': value});
+                          FirestoreService.updateTower(selectedTower.id,
+                              data: {'surveyStatus': value});
                           selectedTower.surveyStatus =
                               value; // update local as well
                         }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/pages/authentication/forgot_password_page.dart';
+import 'package:progrid/services/firestore.dart';
 
 class LoginPage extends StatefulWidget {
   // toggle to register page
@@ -27,21 +28,22 @@ class _LoginPageState extends State<LoginPage> {
     // try to sign in
     try {
       // firebase auth
-      final credentials = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final credentials =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
-      final userId = credentials.user!.uid;
-      print('got auth credentials');
 
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'lastLogin': Timestamp.now(), // update last login
-      });
+      await FirestoreService.updateUser(credentials.user!.uid,
+          data: {'lastLogin': Timestamp.now()});
+
       print('login success');
     } on FirebaseAuthException catch (e) {
       print("Error: ${e.message}");
 
-      if (mounted) showDialog(context: context, builder: (_) => AlertDialog(title: Text(e.code)));
+      if (mounted)
+        showDialog(
+            context: context, builder: (_) => AlertDialog(title: Text(e.code)));
       _passwordController.clear();
     }
   }
@@ -86,7 +88,8 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _emailController,
                     decoration: InputDecoration(
                       hintText: 'Email',
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                      hintStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -94,7 +97,8 @@ class _LoginPageState extends State<LoginPage> {
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: 'Password',
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                      hintStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
                     ),
                     controller: _passwordController,
                   ),
@@ -109,7 +113,9 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const ForgotPasswordPage()),
                           );
                         },
                         child: Text(

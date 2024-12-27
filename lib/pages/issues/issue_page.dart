@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/providers/issues_provider.dart';
 import 'package:progrid/providers/user_provider.dart';
+import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -111,12 +111,10 @@ class _IssuePageState extends State<IssuePage> {
                 child: DropdownButton(
                   isDense: true,
                   value: issue.status,
-                  onChanged: (value) async {
+                  onChanged: (value) {
                     if (value != null && value != issue.status) {
-                      await FirebaseFirestore.instance
-                          .collection('issues')
-                          .doc(issue.id)
-                          .update({'status': value});
+                      FirestoreService.updateIssue(issue.id,
+                          data: {'status': value});
 
                       // update local as well
                       issue.status = value;

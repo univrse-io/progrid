@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/issue.dart';
+import 'package:progrid/services/firestore.dart';
 
 class IssuesProvider extends ChangeNotifier {
   List<Issue> issues = [];
@@ -13,8 +13,11 @@ class IssuesProvider extends ChangeNotifier {
     try {
       issues = [];
 
-      _issuesSubscription = FirebaseFirestore.instance.collection('issues').snapshots().listen((snapshot) async {
-        issues = await Future.wait(snapshot.docs.map((doc) async => Issue.fromFirestore(doc)));
+      _issuesSubscription = FirestoreService.issuesCollection
+          .snapshots()
+          .listen((snapshot) async {
+        issues = await Future.wait(
+            snapshot.docs.map((doc) async => Issue.fromFirestore(doc)));
         notifyListeners();
       });
     } catch (e) {
@@ -25,7 +28,7 @@ class IssuesProvider extends ChangeNotifier {
   Future<void> addIssue(String towerId, Issue issue) async {
     try {
       final issueId = await _generateUniqueId(towerId, 'I');
-      await FirebaseFirestore.instance.collection('issues').doc(issueId).set(issue.toMap());
+      await FirestoreService.issuesCollection.doc(issueId).set(issue.toMap());
 
       issues.add(issue);
       notifyListeners();
@@ -54,8 +57,9 @@ class IssuesProvider extends ChangeNotifier {
       id = "$towerId-$type-$timestamp";
 
       // collision check
-      final towerRef = FirebaseFirestore.instance.collection('towers').doc(towerId);
-      final collectionRef = towerRef.collection(type == 'R' ? 'reports' : 'issues');
+      final collectionRef = FirestoreService.towersCollection
+          .doc(towerId)
+          .collection(type == 'R' ? 'reports' : 'issues');
       final docSnapshot = await collectionRef.doc(id).get();
 
       if (!docSnapshot.exists) {

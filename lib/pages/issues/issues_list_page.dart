@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:progrid/pages/issues/issue_creation_page.dart';
 import 'package:progrid/pages/issues/issue_page.dart';
 import 'package:progrid/providers/issues_provider.dart';
+import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
@@ -74,8 +75,7 @@ class IssuesListPage extends StatelessWidget {
                         final tagsDisplay = issue.tags.join(', ');
 
                         return FutureBuilder<DocumentSnapshot>(
-                          future: FirebaseFirestore.instance
-                              .collection('users')
+                          future: FirestoreService.usersCollection
                               .doc(issue.authorId)
                               .get(),
                           builder: (context, authorSnapshot) {
