@@ -223,17 +223,10 @@ class _HomePageState extends State<HomePage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Text('In Progress',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                  SizedBox(width: 10),
-                                  CircleAvatar(
-                                      backgroundColor: Colors.amber, radius: 5)
-                                ],
-                              ),
+                              Text('In Progress',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
                               SizedBox(height: 10),
                               Text(
                                   '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}',
@@ -251,17 +244,10 @@ class _HomePageState extends State<HomePage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Text('Completed',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                  SizedBox(width: 10),
-                                  CircleAvatar(
-                                      backgroundColor: Colors.green, radius: 5)
-                                ],
-                              ),
+                              Text('Completed',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
                               SizedBox(height: 10),
                               Text(
                                   '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}',
@@ -279,17 +265,10 @@ class _HomePageState extends State<HomePage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Text('Balance',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                  SizedBox(width: 10),
-                                  CircleAvatar(
-                                      backgroundColor: Colors.red, radius: 5)
-                                ],
-                              ),
+                              Text('Balance',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
                               SizedBox(height: 10),
                               Text(
                                   '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}',
