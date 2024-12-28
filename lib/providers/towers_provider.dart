@@ -12,7 +12,6 @@ class TowersProvider extends ChangeNotifier {
 
   // setup stream subscription
   Future<void> loadTowers() async {
-    if (kIsWeb) return;
     try {
       towers = [];
 

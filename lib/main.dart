@@ -29,8 +29,8 @@ class MainApp extends StatelessWidget {
             StreamProvider<List<Tower>>(
                 create: (_) => FirestoreService.towersStream, initialData: []),
           ChangeNotifierProvider(create: (_) => UserProvider()),
-          ChangeNotifierProvider(create: (_) => TowersProvider()),
-          ChangeNotifierProvider(create: (_) => IssuesProvider()),
+          if (!kIsWeb) ChangeNotifierProvider(create: (_) => TowersProvider()),
+          if (!kIsWeb) ChangeNotifierProvider(create: (_) => IssuesProvider()),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
