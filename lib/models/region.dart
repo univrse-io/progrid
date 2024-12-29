@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 enum Region {
   central(Colors.purple),
@@ -14,5 +13,6 @@ enum Region {
   const Region(this.color);
 
   @override
-  String toString() => toBeginningOfSentenceCase(name);
+  String toString() => name.replaceAllMapped(RegExp('^([a-z])|[A-Z]'),
+      (Match m) => m[1] == null ? " ${m[0]}" : m[1]!.toUpperCase());
 }

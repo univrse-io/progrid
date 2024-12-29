@@ -10,6 +10,7 @@ class Tower {
   String owner;
   String address;
   GeoPoint position;
+  // TODO: Change the field type from String to [SurveyStatus] enum.
   String surveyStatus;
   DrawingStatus drawingStatus;
   List<String> images;
@@ -38,27 +39,22 @@ class Tower {
   ///
   /// This method extracts the data from the provided [json]
   /// and maps it to the corresponding fields of the [Tower] model.
-  factory Tower.fromJson(Map<String, dynamic> json) {
-    final region = (json['region'] as String).toLowerCase();
-    final drawingStatus = (json['drawingStatus'] as String).toLowerCase();
-
-    return Tower(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        region: Region.values.singleWhere((e) => e.name == region),
-        type: json['type'] as String,
-        owner: json['owner'] as String,
-        address: json['address'] as String,
-        position: json['position'] as GeoPoint,
-        surveyStatus: json['surveyStatus'] as String,
-        drawingStatus:
-            DrawingStatus.values.singleWhere((e) => e.name == drawingStatus),
-        images: (json['images'] as List?)?.cast<String>() ?? [],
-        signIn: json['signIn'] as Timestamp?,
-        signOut: json['signOut'] as Timestamp?,
-        authorId: json['authorId'] as String?,
-        notes: json['notes'] as String?);
-  }
+  factory Tower.fromJson(Map<String, dynamic> json) => Tower(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      region: Region.values.byName((json['region'] as String).toLowerCase()),
+      type: json['type'] as String,
+      owner: json['owner'] as String,
+      address: json['address'] as String,
+      position: json['position'] as GeoPoint,
+      surveyStatus: json['surveyStatus'] as String,
+      drawingStatus: DrawingStatus.values
+          .byName((json['drawingStatus'] as String).toLowerCase()),
+      images: (json['images'] as List?)?.cast<String>() ?? [],
+      signIn: json['signIn'] as Timestamp?,
+      signOut: json['signOut'] as Timestamp?,
+      authorId: json['authorId'] as String?,
+      notes: json['notes'] as String?);
 
   /// Creates a [Tower] instance from a Firestore document.
   ///

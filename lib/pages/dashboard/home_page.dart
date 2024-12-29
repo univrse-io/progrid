@@ -2,6 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:progrid/models/drawing_status.dart';
+import 'package:progrid/models/region.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:provider/provider.dart';
 
@@ -104,90 +106,31 @@ class _HomePageState extends State<HomePage>
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: PieChart(PieChartData(
-                                sectionsSpace: 0,
-                                centerSpaceRadius: 70,
-                                startDegreeOffset: 45,
-                                sections: [
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'southern' && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'southern' &&
-                                            tower.surveyStatus == 'surveyed')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.amber,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'northern' && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'northern' &&
-                                            tower.surveyStatus == 'surveyed')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.blue,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'eastern' && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'eastern' &&
-                                            tower.surveyStatus == 'surveyed')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.pink,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'sarawak' && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'sarawak' &&
-                                            tower.surveyStatus == 'surveyed')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.red,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'sabah' && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'sabah' &&
-                                            tower.surveyStatus == 'surveyed')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.orange,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'central' && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'central' &&
-                                            tower.surveyStatus == 'surveyed')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.purple,
-                                  ),
-                                ])),
+                            child: PieChart(
+                              PieChartData(
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 70,
+                                  startDegreeOffset: 45,
+                                  sections: [
+                                    ...Region.values
+                                        .map((region) => PieChartSectionData(
+                                              title:
+                                                  '${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
+                                              titlePositionPercentageOffset:
+                                                  1.8,
+                                              value: towers
+                                                  .where((tower) =>
+                                                      tower.region.name ==
+                                                          region.name &&
+                                                      tower.surveyStatus ==
+                                                          'surveyed')
+                                                  .length
+                                                  .toDouble(),
+                                              radius: 30,
+                                              color: region.color,
+                                            )),
+                                  ]),
+                            ),
                           )
                         ],
                       ),
@@ -407,51 +350,30 @@ class _HomePageState extends State<HomePage>
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: PieChart(PieChartData(
-                                sectionsSpace: 0,
-                                centerSpaceRadius: 70,
-                                startDegreeOffset: 45,
-                                sections: [
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.drawingStatus.name == 'incomplete').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.drawingStatus.name ==
-                                            'incomplete')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.red,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.drawingStatus.name == 'completed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.drawingStatus.name ==
-                                            'completed')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.amber,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.drawingStatus.name == 'submitted').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.drawingStatus.name ==
-                                            'submitted')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.green,
-                                  ),
-                                ])),
+                            child: PieChart(
+                              PieChartData(
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 70,
+                                  startDegreeOffset: 45,
+                                  sections: [
+                                    ...DrawingStatus.values.map(
+                                        (drawingStatus) => PieChartSectionData(
+                                              title:
+                                                  '${(towers.where((tower) => tower.drawingStatus.name == drawingStatus.name).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                              titlePositionPercentageOffset:
+                                                  1.8,
+                                              value: towers
+                                                  .where((tower) =>
+                                                      tower
+                                                          .drawingStatus.name ==
+                                                      drawingStatus.name)
+                                                  .length
+                                                  .toDouble(),
+                                              radius: 30,
+                                              color: drawingStatus.color,
+                                            )),
+                                  ]),
+                            ),
                           )
                         ],
                       ),
@@ -471,96 +393,30 @@ class _HomePageState extends State<HomePage>
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: PieChart(PieChartData(
-                                sectionsSpace: 0,
-                                centerSpaceRadius: 70,
-                                startDegreeOffset: 45,
-                                sections: [
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'southern' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'southern' &&
-                                            tower.drawingStatus.name ==
-                                                'submitted')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.amber,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'northern' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'northern' &&
-                                            tower.drawingStatus.name ==
-                                                'submitted')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.blue,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'eastern' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'eastern' &&
-                                            tower.drawingStatus.name ==
-                                                'submitted')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.pink,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'sarawak' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'sarawak' &&
-                                            tower.drawingStatus.name ==
-                                                'submitted')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.red,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'sabah' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'sabah' &&
-                                            tower.drawingStatus.name ==
-                                                'submitted')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.orange,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        '${(towers.where((tower) => tower.region.name == 'central' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.region.name == 'central' &&
-                                            tower.drawingStatus.name ==
-                                                'submitted')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.purple,
-                                  ),
-                                ])),
+                            child: PieChart(
+                              PieChartData(
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 70,
+                                  startDegreeOffset: 45,
+                                  sections: [
+                                    ...Region.values.map((region) =>
+                                        PieChartSectionData(
+                                          title:
+                                              '${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                          titlePositionPercentageOffset: 1.8,
+                                          value: towers
+                                              .where((tower) =>
+                                                  tower.region.name ==
+                                                      region.name &&
+                                                  tower.drawingStatus.name ==
+                                                      'submitted')
+                                              .length
+                                              .toDouble(),
+                                          radius: 30,
+                                          color: region.color,
+                                        )),
+                                  ]),
+                            ),
                           )
                         ],
                       ),

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-enum DrawingStatus {
-  incomplete(Colors.red),
-  completed(Colors.amber),
-  submitted(Colors.green);
+enum SurveyStatus {
+  unsurveyed(Colors.red),
+  inProgress(Colors.amber),
+  surveyed(Colors.green);
 
   final Color color;
 
-  const DrawingStatus(this.color);
+  const SurveyStatus(this.color);
 
   @override
   String toString() => name.replaceAllMapped(RegExp('^([a-z])|[A-Z]'),
