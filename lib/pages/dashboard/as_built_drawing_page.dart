@@ -4,8 +4,6 @@ import 'package:progrid/models/tower.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:provider/provider.dart';
 
-final _drawingStatus = ['completed', 'submitted'];
-
 class AsBuiltDrawingPage extends StatefulWidget {
   const AsBuiltDrawingPage({super.key});
 
@@ -34,25 +32,27 @@ class _AsBuiltDrawingPageState extends State<AsBuiltDrawingPage>
                     trailing: ToggleButtons(
                         borderRadius: BorderRadius.circular(20),
                         onPressed: (index) {
-                          tower.drawingStatus = _drawingStatus[index];
+                          tower.drawingStatus = DrawingStatus.values[index];
                           towers[towers.indexWhere((x) => x.id == tower.id)] =
                               tower;
 
-                          FirestoreService.updateTower(tower.id,
-                              data: {'drawingStatus': _drawingStatus[index]});
+                          FirestoreService.updateTower(tower.id, data: {
+                            'drawingStatus': DrawingStatus.values[index].name
+                          });
                           setState(() {});
                         },
                         fillColor: Colors.green.shade100,
                         selectedBorderColor: Colors.green.shade700,
                         children: [
-                          ..._drawingStatus.map((status) => Padding(
+                          ...DrawingStatus.values.map((status) => Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 10),
-                                child: Text(toBeginningOfSentenceCase(status)),
+                                child: Text(
+                                    toBeginningOfSentenceCase(status.name)),
                               )),
                         ],
                         isSelected: [
-                          ..._drawingStatus
+                          ...DrawingStatus.values
                               .map((status) => tower.drawingStatus == status)
                         ]),
                     title: Text(tower.name),

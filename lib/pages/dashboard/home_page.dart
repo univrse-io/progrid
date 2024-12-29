@@ -415,11 +415,12 @@ class _HomePageState extends State<HomePage>
                                 sections: [
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.drawingStatus == 'incomplete').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        '${(towers.where((tower) => tower.drawingStatus.name == 'incomplete').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.drawingStatus == 'incomplete')
+                                            tower.drawingStatus.name ==
+                                            'incomplete')
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -427,11 +428,12 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.drawingStatus == 'completed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        '${(towers.where((tower) => tower.drawingStatus.name == 'completed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.drawingStatus == 'completed')
+                                            tower.drawingStatus.name ==
+                                            'completed')
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -439,11 +441,12 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.drawingStatus == 'submitted').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        '${(towers.where((tower) => tower.drawingStatus.name == 'submitted').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
-                                            tower.drawingStatus == 'submitted')
+                                            tower.drawingStatus.name ==
+                                            'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -476,12 +479,13 @@ class _HomePageState extends State<HomePage>
                                 sections: [
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.region == 'Southern' && tower.drawingStatus == 'submitted').length / towers.where((tower) => tower.drawingStatus == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                        '${(towers.where((tower) => tower.region == 'Southern' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Southern' &&
-                                            tower.drawingStatus == 'submitted')
+                                            tower.drawingStatus.name ==
+                                                'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -489,12 +493,13 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.region == 'Northern' && tower.drawingStatus == 'submitted').length / towers.where((tower) => tower.drawingStatus == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                        '${(towers.where((tower) => tower.region == 'Northern' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Northern' &&
-                                            tower.drawingStatus == 'submitted')
+                                            tower.drawingStatus.name ==
+                                                'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -502,12 +507,13 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.region == 'Eastern' && tower.drawingStatus == 'submitted').length / towers.where((tower) => tower.drawingStatus == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                        '${(towers.where((tower) => tower.region == 'Eastern' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Eastern' &&
-                                            tower.drawingStatus == 'submitted')
+                                            tower.drawingStatus.name ==
+                                                'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -515,12 +521,13 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.region == 'Sarawak' && tower.drawingStatus == 'submitted').length / towers.where((tower) => tower.drawingStatus == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                        '${(towers.where((tower) => tower.region == 'Sarawak' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Sarawak' &&
-                                            tower.drawingStatus == 'submitted')
+                                            tower.drawingStatus.name ==
+                                                'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -528,12 +535,13 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.region == 'Sabah' && tower.drawingStatus == 'submitted').length / towers.where((tower) => tower.drawingStatus == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                        '${(towers.where((tower) => tower.region == 'Sabah' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Sabah' &&
-                                            tower.drawingStatus == 'submitted')
+                                            tower.drawingStatus.name ==
+                                                'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -541,12 +549,13 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.region == 'Central' && tower.drawingStatus == 'submitted').length / towers.where((tower) => tower.drawingStatus == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                        '${(towers.where((tower) => tower.region == 'Central' && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
                                     titlePositionPercentageOffset: 1.8,
                                     value: towers
                                         .where((tower) =>
                                             tower.region == 'Central' &&
-                                            tower.drawingStatus == 'submitted')
+                                            tower.drawingStatus.name ==
+                                                'submitted')
                                         .length
                                         .toDouble(),
                                     radius: 30,

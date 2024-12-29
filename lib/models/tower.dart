@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum DrawingStatus { incomplete, completed, submitted }
+
 class Tower {
   String id;
   String name;
@@ -9,7 +11,7 @@ class Tower {
   String address;
   GeoPoint position;
   String surveyStatus;
-  String drawingStatus;
+  DrawingStatus drawingStatus;
   List<String> images;
   Timestamp? signIn;
   Timestamp? signOut;
@@ -45,7 +47,8 @@ class Tower {
       address: json['address'] as String,
       position: json['position'] as GeoPoint,
       surveyStatus: json['surveyStatus'] as String,
-      drawingStatus: json['drawingStatus'] as String,
+      drawingStatus: DrawingStatus.values
+          .singleWhere((val) => val.name == json['drawingStatus'] as String),
       images: (json['images'] as List?)?.cast<String>() ?? [],
       signIn: json['signIn'] as Timestamp?,
       signOut: json['signOut'] as Timestamp?,

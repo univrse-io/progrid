@@ -44,22 +44,6 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateDrawingStatus(String towerId, String drawingStatus) async {
-    try {
-      // update database
-      await FirestoreService.towersCollection
-          .doc(towerId)
-          .update({'drawingStatus': drawingStatus});
-
-      // update local
-      final tower = towers.firstWhere((tower) => tower.id == towerId);
-      tower.drawingStatus = drawingStatus;
-      notifyListeners();
-    } catch (e) {
-      throw Exception("Failed to update tower drawing status: $e");
-    }
-  }
-
   Future<void> updateNotes(String towerId, String notes) async {
     try {
       // update database

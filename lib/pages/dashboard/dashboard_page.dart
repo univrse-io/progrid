@@ -109,8 +109,10 @@ class _DashboardPageState extends State<DashboardPage> {
                             columnIndex: 7, rowIndex: rowIndex))
                         .value = TextCellValue(tower.surveyStatus)
                     ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 8, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.drawingStatus)
+                                columnIndex: 8, rowIndex: rowIndex))
+                            .value =
+                        TextCellValue(
+                            toBeginningOfSentenceCase(tower.drawingStatus.name))
                     ..cell(CellIndex.indexByColumnRow(
                                 columnIndex: 9, rowIndex: rowIndex))
                             .value =
