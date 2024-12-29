@@ -24,10 +24,14 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/images/sapura.png', height: 40),
-            SizedBox(width: 20),
             Text('PROJECT MONITORING REPORT',
                 style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(width: 20),
+            Image.asset('assets/images/uos.png', height: 40),
+            SizedBox(width: 20),
+            Image.asset('assets/images/sapura.png', height: 40),
+            SizedBox(width: 20),
+            Image.asset('assets/images/binasat.png', height: 40),
           ],
         ),
         actions: [
