@@ -246,7 +246,8 @@ class _TowerPageState extends State<TowerPage> {
               // site address
               _buildDetailRow('Address:', selectedTower.address, true),
               // site region
-              _buildDetailRow('Region:', selectedTower.region, false),
+              _buildDetailRow(
+                  'Region:', selectedTower.region.toString(), false),
               // site type
               _buildDetailRow('Type:', selectedTower.type, false),
               // site owner

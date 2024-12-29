@@ -76,9 +76,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                 tower.address
                                     .toLowerCase()
                                     .contains(_searchQuery) ||
-                                tower.region
-                                    .toLowerCase()
-                                    .contains(_searchQuery) ||
+                                tower.region.name.contains(_searchQuery) ||
                                 tower.owner
                                     .toLowerCase()
                                     .contains(_searchQuery) ||
@@ -175,7 +173,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                             const SizedBox(width: 4),
                                             // region
                                             Text(
-                                              tower.region,
+                                              tower.region.toString(),
                                               style: const TextStyle(
                                                   fontSize: 14,
                                                   fontStyle: FontStyle.italic),

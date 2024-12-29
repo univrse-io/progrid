@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:progrid/models/drawing_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:provider/provider.dart';
@@ -47,8 +47,7 @@ class _AsBuiltDrawingPageState extends State<AsBuiltDrawingPage>
                           ...DrawingStatus.values.map((status) => Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 10),
-                                child: Text(
-                                    toBeginningOfSentenceCase(status.name)),
+                                child: Text(status.toString()),
                               )),
                         ],
                         isSelected: [

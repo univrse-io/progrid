@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:progrid/models/region.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/pages/towers_list_page.dart';
@@ -30,8 +31,8 @@ class _MapPageState extends State<MapPage> {
   final String _tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   // determine region color here
-  Color _getRegionColor(String region) {
-    switch (region.toLowerCase()) {
+  Color _getRegionColor(Region region) {
+    switch (region.name) {
       case 'southern':
         return Color.fromARGB(255, 82, 114, 76);
       case 'northern':

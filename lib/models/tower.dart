@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-enum DrawingStatus { incomplete, completed, submitted }
+import 'package:progrid/models/drawing_status.dart';
+import 'package:progrid/models/region.dart';
 
 class Tower {
   String id;
   String name;
-  String region;
+  Region region;
   String type;
   String owner;
   String address;
@@ -38,29 +38,35 @@ class Tower {
   ///
   /// This method extracts the data from the provided [json]
   /// and maps it to the corresponding fields of the [Tower] model.
-  factory Tower.fromJson(Map<String, dynamic> json) => Tower(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      region: json['region'] as String,
-      type: json['type'] as String,
-      owner: json['owner'] as String,
-      address: json['address'] as String,
-      position: json['position'] as GeoPoint,
-      surveyStatus: json['surveyStatus'] as String,
-      drawingStatus: DrawingStatus.values
-          .singleWhere((val) => val.name == json['drawingStatus'] as String),
-      images: (json['images'] as List?)?.cast<String>() ?? [],
-      signIn: json['signIn'] as Timestamp?,
-      signOut: json['signOut'] as Timestamp?,
-      authorId: json['authorId'] as String?,
-      notes: json['notes'] as String?);
+  factory Tower.fromJson(Map<String, dynamic> json) {
+    final region = (json['region'] as String).toLowerCase();
+    final drawingStatus = (json['drawingStatus'] as String).toLowerCase();
+
+    return Tower(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        region: Region.values.singleWhere((e) => e.name == region),
+        type: json['type'] as String,
+        owner: json['owner'] as String,
+        address: json['address'] as String,
+        position: json['position'] as GeoPoint,
+        surveyStatus: json['surveyStatus'] as String,
+        drawingStatus:
+            DrawingStatus.values.singleWhere((e) => e.name == drawingStatus),
+        images: (json['images'] as List?)?.cast<String>() ?? [],
+        signIn: json['signIn'] as Timestamp?,
+        signOut: json['signOut'] as Timestamp?,
+        authorId: json['authorId'] as String?,
+        notes: json['notes'] as String?);
+  }
 
   /// Creates a [Tower] instance from a Firestore document.
   ///
   /// This method extracts the data from the provided [DocumentSnapshot]
   /// and maps it to the corresponding fields of the [Tower] model.
   factory Tower.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data()! as Map<String, dynamic>..addAll({'id': doc.id});
+    final data = doc.data()! as Map<String, dynamic>;
+    data['id'] = doc.id;
 
     return Tower.fromJson(data);
   }

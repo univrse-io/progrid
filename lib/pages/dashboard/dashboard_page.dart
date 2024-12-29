@@ -90,7 +90,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         .value = TextCellValue(tower.name)
                     ..cell(CellIndex.indexByColumnRow(
                             columnIndex: 2, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.region)
+                        .value = TextCellValue(tower.region.toString())
                     ..cell(CellIndex.indexByColumnRow(
                             columnIndex: 3, rowIndex: rowIndex))
                         .value = TextCellValue(tower.type)
@@ -109,10 +109,8 @@ class _DashboardPageState extends State<DashboardPage> {
                             columnIndex: 7, rowIndex: rowIndex))
                         .value = TextCellValue(tower.surveyStatus)
                     ..cell(CellIndex.indexByColumnRow(
-                                columnIndex: 8, rowIndex: rowIndex))
-                            .value =
-                        TextCellValue(
-                            toBeginningOfSentenceCase(tower.drawingStatus.name))
+                            columnIndex: 8, rowIndex: rowIndex))
+                        .value = TextCellValue(tower.drawingStatus.toString())
                     ..cell(CellIndex.indexByColumnRow(
                                 columnIndex: 9, rowIndex: rowIndex))
                             .value =
