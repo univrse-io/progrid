@@ -49,6 +49,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
 
     // create new issue instance
     final issue = Issue(
+      id: '',
       dateTime: Timestamp.now(),
       authorId: userProvider.userId,
       tags: _selectedTags,

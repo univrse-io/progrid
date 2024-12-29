@@ -28,7 +28,8 @@ class IssuesProvider extends ChangeNotifier {
   Future<void> addIssue(String towerId, Issue issue) async {
     try {
       final issueId = await _generateUniqueId(towerId, 'I');
-      await FirestoreService.issuesCollection.doc(issueId).set(issue.toMap());
+      issue.id = issueId;
+      await FirestoreService.issuesCollection.doc(issueId).set(issue.toJson());
 
       issues.add(issue);
       notifyListeners();
@@ -54,12 +55,11 @@ class IssuesProvider extends ChangeNotifier {
       timestamp = timestamp.substring(timestamp.length - 3); // last 3 digits
 
       // combine
-      id = "$towerId-$type-$timestamp";
+      id = "$towerId-$type$timestamp";
 
       // collision check
-      final collectionRef = FirestoreService.towersCollection
-          .doc(towerId)
-          .collection(type == 'R' ? 'reports' : 'issues');
+      final collectionRef =
+          FirestoreService.towersCollection.doc(towerId).collection('issues');
       final docSnapshot = await collectionRef.doc(id).get();
 
       if (!docSnapshot.exists) {

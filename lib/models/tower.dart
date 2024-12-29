@@ -36,9 +36,6 @@ class Tower {
       this.notes});
 
   /// Creates a [Tower] instance from a JSON object.
-  ///
-  /// This method extracts the data from the provided [json]
-  /// and maps it to the corresponding fields of the [Tower] model.
   factory Tower.fromJson(Map<String, dynamic> json) => Tower(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -57,9 +54,6 @@ class Tower {
       notes: json['notes'] as String?);
 
   /// Creates a [Tower] instance from a Firestore document.
-  ///
-  /// This method extracts the data from the provided [DocumentSnapshot]
-  /// and maps it to the corresponding fields of the [Tower] model.
   factory Tower.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data()! as Map<String, dynamic>;
     data['id'] = doc.id;

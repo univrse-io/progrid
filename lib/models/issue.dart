@@ -1,17 +1,16 @@
-// Issue Model
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Issue {
   String id;
+  // TODO: Change the field type from String to [IssueStatus] enum.
   String status;
   Timestamp dateTime;
   String authorId;
   String description;
   List<String> tags;
 
-  // constructor
   Issue({
-    this.id = '',
+    required this.id,
     required this.status,
     required this.dateTime,
     required this.authorId,
@@ -19,28 +18,30 @@ class Issue {
     this.tags = const [],
   });
 
-  // format for database
-  Map<String, dynamic> toMap() {
-    return {
-      'status': status,
-      'dateTime': dateTime,
-      'authorId': authorId,
-      'description': description,
-      'tags': tags,
-    };
-  }
+  /// Converts an [Issue] instance to a JSON object.
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'status': status,
+        'dateTime': dateTime,
+        'authorId': authorId,
+        'description': description,
+        'tags': tags,
+      };
 
-  // factory builder: given a document, return an issue instance
+  /// Converts the [Issue] instance to a JSON object.
+  factory Issue.fromJson(Map<String, dynamic> json) => Issue(
+      id: json['id'] as String,
+      status: json['status'] as String,
+      dateTime: json['dateTime'] as Timestamp,
+      authorId: json['authorId'] as String,
+      description: json['description'] as String,
+      tags: (json['tags'] as List?)?.cast<String>() ?? []);
+
+  /// Creates an [Issue] instance from a Firestore document.
   factory Issue.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data()! as Map<String, dynamic>;
+    data['id'] = doc.id;
 
-    return Issue(
-      id: doc.id,
-      status: data['status'] as String,
-      dateTime: data['dateTime'] as Timestamp,
-      authorId: data['authorId'] as String,
-      description: data['description'] as String? ?? 'no description',
-      tags: data['tags'] != null ? List<String>.from(data['tags'] as List<dynamic>) : [],
-    );
+    return Issue.fromJson(data);
   }
 }
