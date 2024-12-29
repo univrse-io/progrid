@@ -52,8 +52,10 @@ class _HomePageState extends State<HomePage>
                                 sections: [
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.surveyStatus == 'surveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
+                                        'Completed\n${(towers.where((tower) => tower.surveyStatus == 'surveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                    titleStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
                                             tower.surveyStatus == 'surveyed')
@@ -64,8 +66,10 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.surveyStatus == 'in-progress').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
+                                        'In Progress\n${(towers.where((tower) => tower.surveyStatus == 'in-progress').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                    titleStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
                                             tower.surveyStatus == 'in-progress')
@@ -76,8 +80,10 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        '${(towers.where((tower) => tower.surveyStatus == 'unsurveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titlePositionPercentageOffset: 1.8,
+                                        'Balance\n${(towers.where((tower) => tower.surveyStatus == 'unsurveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                    titleStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
                                             tower.surveyStatus == 'unsurveyed')
@@ -115,9 +121,11 @@ class _HomePageState extends State<HomePage>
                                     ...Region.values
                                         .map((region) => PieChartSectionData(
                                               title:
-                                                  '${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
-                                              titlePositionPercentageOffset:
-                                                  1.8,
+                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
+                                              titleStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall,
+                                              titlePositionPercentageOffset: 2,
                                               value: towers
                                                   .where((tower) =>
                                                       tower.region.name ==
@@ -359,9 +367,11 @@ class _HomePageState extends State<HomePage>
                                     ...DrawingStatus.values.map(
                                         (drawingStatus) => PieChartSectionData(
                                               title:
-                                                  '${(towers.where((tower) => tower.drawingStatus.name == drawingStatus.name).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                              titlePositionPercentageOffset:
-                                                  1.8,
+                                                  '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus.name == drawingStatus.name).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                              titleStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall,
+                                              titlePositionPercentageOffset: 2,
                                               value: towers
                                                   .where((tower) =>
                                                       tower
@@ -399,22 +409,26 @@ class _HomePageState extends State<HomePage>
                                   centerSpaceRadius: 70,
                                   startDegreeOffset: 45,
                                   sections: [
-                                    ...Region.values.map((region) =>
-                                        PieChartSectionData(
-                                          title:
-                                              '${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
-                                          titlePositionPercentageOffset: 1.8,
-                                          value: towers
-                                              .where((tower) =>
-                                                  tower.region.name ==
-                                                      region.name &&
-                                                  tower.drawingStatus.name ==
-                                                      'submitted')
-                                              .length
-                                              .toDouble(),
-                                          radius: 30,
-                                          color: region.color,
-                                        )),
+                                    ...Region.values
+                                        .map((region) => PieChartSectionData(
+                                              title:
+                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                              titleStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall,
+                                              titlePositionPercentageOffset: 2,
+                                              value: towers
+                                                  .where((tower) =>
+                                                      tower.region.name ==
+                                                          region.name &&
+                                                      tower.drawingStatus
+                                                              .name ==
+                                                          'submitted')
+                                                  .length
+                                                  .toDouble(),
+                                              radius: 30,
+                                              color: region.color,
+                                            )),
                                   ]),
                             ),
                           )
