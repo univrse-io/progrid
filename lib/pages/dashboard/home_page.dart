@@ -7,6 +7,8 @@ import 'package:progrid/models/region.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:provider/provider.dart';
 
+const titleList = <String>['On-Site Audit', 'As-Built Drawing'];
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -16,6 +18,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
+  String dropdownValue = titleList.first;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -41,58 +45,111 @@ class _HomePageState extends State<HomePage>
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('On-Site Audit',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              focusColor: Colors.transparent,
+                              value: dropdownValue,
+                              onChanged: (String? value) =>
+                                  setState(() => dropdownValue = value!),
+                              items: titleList
+                                  .map<DropdownMenuItem<String>>(
+                                      (String value) =>
+                                          DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value,
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w600)),
+                                          ))
+                                  .toList(),
+                            ),
+                          ),
                           Expanded(
-                            child: PieChart(PieChartData(
-                                sectionsSpace: 0,
-                                startDegreeOffset: 45,
-                                centerSpaceRadius: 70,
-                                sections: [
-                                  PieChartSectionData(
-                                    title:
-                                        'Completed\n${(towers.where((tower) => tower.surveyStatus == 'surveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titleStyle:
-                                        Theme.of(context).textTheme.labelSmall,
-                                    titlePositionPercentageOffset: 2,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.surveyStatus == 'surveyed')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.green,
+                            child: dropdownValue == titleList.first
+                                ? PieChart(PieChartData(
+                                    sectionsSpace: 0,
+                                    startDegreeOffset: 45,
+                                    centerSpaceRadius: 70,
+                                    sections: [
+                                        PieChartSectionData(
+                                          title:
+                                              'Completed\n${(towers.where((tower) => tower.surveyStatus == 'surveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                          titleStyle: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall,
+                                          titlePositionPercentageOffset: 2,
+                                          value: towers
+                                              .where((tower) =>
+                                                  tower.surveyStatus ==
+                                                  'surveyed')
+                                              .length
+                                              .toDouble(),
+                                          radius: 30,
+                                          color: Colors.green,
+                                        ),
+                                        PieChartSectionData(
+                                          title:
+                                              'In Progress\n${(towers.where((tower) => tower.surveyStatus == 'in-progress').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                          titleStyle: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall,
+                                          titlePositionPercentageOffset: 2,
+                                          value: towers
+                                              .where((tower) =>
+                                                  tower.surveyStatus ==
+                                                  'in-progress')
+                                              .length
+                                              .toDouble(),
+                                          radius: 30,
+                                          color: Colors.amber,
+                                        ),
+                                        PieChartSectionData(
+                                          title:
+                                              'Balance\n${(towers.where((tower) => tower.surveyStatus == 'unsurveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                          titleStyle: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall,
+                                          titlePositionPercentageOffset: 2,
+                                          value: towers
+                                              .where((tower) =>
+                                                  tower.surveyStatus ==
+                                                  'unsurveyed')
+                                              .length
+                                              .toDouble(),
+                                          radius: 30,
+                                          color: Colors.red,
+                                        ),
+                                      ]))
+                                : PieChart(
+                                    PieChartData(
+                                        sectionsSpace: 0,
+                                        centerSpaceRadius: 70,
+                                        startDegreeOffset: 45,
+                                        sections: [
+                                          ...DrawingStatus.values.map(
+                                              (drawingStatus) =>
+                                                  PieChartSectionData(
+                                                    title:
+                                                        '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus.name == drawingStatus.name).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                                    titleStyle:
+                                                        Theme.of(context)
+                                                            .textTheme
+                                                            .labelSmall,
+                                                    titlePositionPercentageOffset:
+                                                        2,
+                                                    value: towers
+                                                        .where((tower) =>
+                                                            tower.drawingStatus
+                                                                .name ==
+                                                            drawingStatus.name)
+                                                        .length
+                                                        .toDouble(),
+                                                    radius: 30,
+                                                    color: drawingStatus.color,
+                                                  )),
+                                        ]),
                                   ),
-                                  PieChartSectionData(
-                                    title:
-                                        'In Progress\n${(towers.where((tower) => tower.surveyStatus == 'in-progress').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titleStyle:
-                                        Theme.of(context).textTheme.labelSmall,
-                                    titlePositionPercentageOffset: 2,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.surveyStatus == 'in-progress')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.amber,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        'Balance\n${(towers.where((tower) => tower.surveyStatus == 'unsurveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titleStyle:
-                                        Theme.of(context).textTheme.labelSmall,
-                                    titlePositionPercentageOffset: 2,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.surveyStatus == 'unsurveyed')
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.red,
-                                  ),
-                                ])),
                           )
                         ],
                       ),
@@ -112,33 +169,66 @@ class _HomePageState extends State<HomePage>
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: PieChart(
-                              PieChartData(
-                                  sectionsSpace: 0,
-                                  centerSpaceRadius: 70,
-                                  startDegreeOffset: 45,
-                                  sections: [
-                                    ...Region.values
-                                        .map((region) => PieChartSectionData(
-                                              title:
-                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
-                                              titleStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .labelSmall,
-                                              titlePositionPercentageOffset: 2,
-                                              value: towers
-                                                  .where((tower) =>
-                                                      tower.region.name ==
-                                                          region.name &&
-                                                      tower.surveyStatus ==
-                                                          'surveyed')
-                                                  .length
-                                                  .toDouble(),
-                                              radius: 30,
-                                              color: region.color,
-                                            )),
-                                  ]),
-                            ),
+                            child: dropdownValue == titleList.first
+                                ? PieChart(
+                                    PieChartData(
+                                        sectionsSpace: 0,
+                                        centerSpaceRadius: 70,
+                                        startDegreeOffset: 45,
+                                        sections: [
+                                          ...Region.values.map(
+                                              (region) => PieChartSectionData(
+                                                    title:
+                                                        '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
+                                                    titleStyle:
+                                                        Theme.of(context)
+                                                            .textTheme
+                                                            .labelSmall,
+                                                    titlePositionPercentageOffset:
+                                                        2,
+                                                    value: towers
+                                                        .where((tower) =>
+                                                            tower.region.name ==
+                                                                region.name &&
+                                                            tower.surveyStatus ==
+                                                                'surveyed')
+                                                        .length
+                                                        .toDouble(),
+                                                    radius: 30,
+                                                    color: region.color,
+                                                  )),
+                                        ]),
+                                  )
+                                : PieChart(
+                                    PieChartData(
+                                        sectionsSpace: 0,
+                                        centerSpaceRadius: 70,
+                                        startDegreeOffset: 45,
+                                        sections: [
+                                          ...Region.values.map(
+                                              (region) => PieChartSectionData(
+                                                    title:
+                                                        '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                                    titleStyle:
+                                                        Theme.of(context)
+                                                            .textTheme
+                                                            .labelSmall,
+                                                    titlePositionPercentageOffset:
+                                                        2,
+                                                    value: towers
+                                                        .where((tower) =>
+                                                            tower.region.name ==
+                                                                region.name &&
+                                                            tower.drawingStatus
+                                                                    .name ==
+                                                                'submitted')
+                                                        .length
+                                                        .toDouble(),
+                                                    radius: 30,
+                                                    color: region.color,
+                                                  )),
+                                        ]),
+                                  ),
                           )
                         ],
                       ),
@@ -182,13 +272,18 @@ class _HomePageState extends State<HomePage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('In Progress',
+                              Text(
+                                  dropdownValue == titleList.first
+                                      ? 'In Progress'
+                                      : 'Completed',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                               SizedBox(height: 10),
                               Text(
-                                  '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}',
+                                  dropdownValue == titleList.first
+                                      ? '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}'
+                                      : '${towers.where((tower) => tower.drawingStatus == DrawingStatus.completed).length}',
                                   style:
                                       Theme.of(context).textTheme.displayLarge)
                             ],
@@ -203,13 +298,18 @@ class _HomePageState extends State<HomePage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Completed',
+                              Text(
+                                  dropdownValue == titleList.first
+                                      ? 'Completed'
+                                      : 'Submitted',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                               SizedBox(height: 10),
                               Text(
-                                  '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}',
+                                  dropdownValue == titleList.first
+                                      ? '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}'
+                                      : '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
                                   style:
                                       Theme.of(context).textTheme.displayLarge)
                             ],
@@ -224,13 +324,18 @@ class _HomePageState extends State<HomePage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Balance',
+                              Text(
+                                  dropdownValue == titleList.first
+                                      ? 'Balance'
+                                      : 'Incomplete',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                               SizedBox(height: 10),
                               Text(
-                                  '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}',
+                                  dropdownValue == titleList.first
+                                      ? '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}'
+                                      : '${towers.where((tower) => tower.drawingStatus == DrawingStatus.incomplete).length}',
                                   style:
                                       Theme.of(context).textTheme.displayLarge)
                             ],
@@ -343,101 +448,20 @@ class _HomePageState extends State<HomePage>
           SizedBox(width: 10),
           Expanded(
             flex: 2,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text('As-Built Drawing',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
-                          Expanded(
-                            child: PieChart(
-                              PieChartData(
-                                  sectionsSpace: 0,
-                                  centerSpaceRadius: 70,
-                                  startDegreeOffset: 45,
-                                  sections: [
-                                    ...DrawingStatus.values.map(
-                                        (drawingStatus) => PieChartSectionData(
-                                              title:
-                                                  '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus.name == drawingStatus.name).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                              titleStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .labelSmall,
-                                              titlePositionPercentageOffset: 2,
-                                              value: towers
-                                                  .where((tower) =>
-                                                      tower
-                                                          .drawingStatus.name ==
-                                                      drawingStatus.name)
-                                                  .length
-                                                  .toDouble(),
-                                              radius: 30,
-                                              color: drawingStatus.color,
-                                            )),
-                                  ]),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('Recent Issues',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
+                    Expanded(child: Center(child: Text('No recent issues.')))
+                  ],
                 ),
-                SizedBox(height: 8),
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text('Regional Breakdown',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
-                          Expanded(
-                            child: PieChart(
-                              PieChartData(
-                                  sectionsSpace: 0,
-                                  centerSpaceRadius: 70,
-                                  startDegreeOffset: 45,
-                                  sections: [
-                                    ...Region.values
-                                        .map((region) => PieChartSectionData(
-                                              title:
-                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
-                                              titleStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .labelSmall,
-                                              titlePositionPercentageOffset: 2,
-                                              value: towers
-                                                  .where((tower) =>
-                                                      tower.region.name ==
-                                                          region.name &&
-                                                      tower.drawingStatus
-                                                              .name ==
-                                                          'submitted')
-                                                  .length
-                                                  .toDouble(),
-                                              radius: 30,
-                                              color: region.color,
-                                            )),
-                                  ]),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              ],
+              ),
             ),
           )
         ],
