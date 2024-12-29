@@ -31,27 +31,30 @@ class _AsBuiltDrawingPageState extends State<AsBuiltDrawingPage>
                   child: ListTile(
                     trailing: ToggleButtons(
                         borderRadius: BorderRadius.circular(20),
-                        onPressed: (index) {
-                          tower.drawingStatus = DrawingStatus.values[index];
-                          towers[towers.indexWhere((x) => x.id == tower.id)] =
-                              tower;
-
-                          FirestoreService.updateTower(tower.id, data: {
-                            'drawingStatus': DrawingStatus.values[index].name
-                          });
-                          setState(() {});
-                        },
+                        onPressed: (index) =>
+                            FirestoreService.updateTower(tower.id, data: {
+                              'drawingStatus': DrawingStatus.values
+                                  .where((status) =>
+                                      status != DrawingStatus.incomplete)
+                                  .toList()[index]
+                                  .name
+                            }),
                         fillColor: Colors.green.shade100,
                         selectedBorderColor: Colors.green.shade700,
                         children: [
-                          ...DrawingStatus.values.map((status) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Text(status.toString()),
-                              )),
+                          ...DrawingStatus.values
+                              .where((status) =>
+                                  status != DrawingStatus.incomplete)
+                              .map((status) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Text(status.toString()),
+                                  )),
                         ],
                         isSelected: [
                           ...DrawingStatus.values
+                              .where((status) =>
+                                  status != DrawingStatus.incomplete)
                               .map((status) => tower.drawingStatus == status)
                         ]),
                     title: Text(tower.name),

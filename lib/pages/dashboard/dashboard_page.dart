@@ -16,7 +16,8 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  final pageController = PageController();
+  late final pageController = PageController()
+    ..addListener(() => Navigator.pop(context));
 
   @override
   Widget build(BuildContext context) => Scaffold(
