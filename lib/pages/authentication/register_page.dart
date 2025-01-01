@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:progrid/services/firestore.dart';
 
 class RegisterPage extends StatefulWidget {
   // toggle to login page
@@ -29,17 +30,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
     // create the user
     try {
-      final UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final UserCredential credentials =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      final String userId = credentials.user!.uid;
-
       // send verification email
       credentials.user!.sendEmailVerification();
 
-      // save fields to firestore database
-      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+      await FirestoreService.updateUser(credentials.user!.uid, data: {
         'email': _emailController.text.trim(),
         'name': _nameController.text,
         'phone': 'not set',
@@ -49,7 +48,8 @@ class _RegisterPageState extends State<RegisterPage> {
       });
     } on FirebaseAuthException catch (e) {
       if (mounted) {
-        showDialog(context: context, builder: (_) => AlertDialog(title: Text(e.code)));
+        showDialog(
+            context: context, builder: (_) => AlertDialog(title: Text(e.code)));
       }
     }
   }
@@ -95,7 +95,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         hintText: 'Email',
-                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -103,7 +104,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: _nameController,
                       decoration: InputDecoration(
                         hintText: 'Full Name',
-                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
                       ),
                       maxLength: 20,
                     ),
@@ -113,7 +115,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       obscureText: true,
                       decoration: InputDecoration(
                         hintText: 'Password',
-                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -121,10 +124,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       obscureText: true,
                       decoration: InputDecoration(
                         hintText: 'Confirm Password',
-                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
                       ),
                       controller: _confirmPasswordController,
-                      validator: (value) => _passwordController.text != value ? "Passwords don't match" : null,
+                      validator: (value) => _passwordController.text != value
+                          ? "Passwords don't match"
+                          : null,
                     ),
                     const SizedBox(height: 24),
                     FilledButton(onPressed: _register, child: Text('Register')),

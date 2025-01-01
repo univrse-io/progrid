@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/issue.dart';
-import 'package:progrid/models/providers/issues_provider.dart';
-import 'package:progrid/models/providers/user_provider.dart';
+import 'package:progrid/providers/issues_provider.dart';
+import 'package:progrid/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class IssueCreationPage extends StatefulWidget {
@@ -15,7 +15,15 @@ class IssueCreationPage extends StatefulWidget {
 }
 
 class _IssueCreationPageState extends State<IssueCreationPage> {
-  final List<String> _availableTags = ["Permit", "Logistics", "Key", "Access", "Hazard", "FSC", "Other"];
+  final List<String> _availableTags = [
+    "Permit",
+    "Logistics",
+    "Key",
+    "Access",
+    "Hazard",
+    "FSC",
+    "Other"
+  ];
   final List<String> _selectedTags = [];
   String? _selectedTag;
   final _descriptionController = TextEditingController();
@@ -41,6 +49,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
 
     // create new issue instance
     final issue = Issue(
+      id: '',
       dateTime: Timestamp.now(),
       authorId: userProvider.userId,
       tags: _selectedTags,
@@ -117,7 +126,8 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                         });
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.secondary,
                           borderRadius: BorderRadius.circular(20),
@@ -146,7 +156,8 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
                 maxLength: _maxDescriptionLength,
-                buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
+                buildCounter: (context,
+                    {required currentLength, maxLength, required isFocused}) {
                   return Padding(
                     padding: EdgeInsets.only(top: 4),
                     child: Text(
@@ -161,7 +172,8 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                 decoration: InputDecoration(
                   hintText: "Description*",
                   alignLabelWithHint: true,
-                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                  hintStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
                   contentPadding: EdgeInsets.all(12),
                 ),
               ),

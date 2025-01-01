@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:progrid/services/firestore.dart';
 
 // I combined the model and provider into a single class as there should only be a single user logged in at any time
 class UserProvider extends ChangeNotifier {
@@ -44,8 +45,8 @@ class UserProvider extends ChangeNotifier {
   // fetch user information from database given an auth user
   Future<void> fetchUserInfoFromDatabase(User user) async {
     try {
-      final firestore = FirebaseFirestore.instance;
-      final userDoc = await firestore.collection('users').doc(user.uid).get();
+      final userDoc =
+          await FirestoreService.usersCollection.doc(user.uid).get();
 
       if (userDoc.exists) {
         final data = userDoc.data()!;
