@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage>
                             child: PieChart(PieChartData(
                                 sectionsSpace: 0,
                                 startDegreeOffset: 45,
-                                centerSpaceRadius: 70,
+                                centerSpaceRadius: 40,
                                 sections: [
                                   PieChartSectionData(
                                     title:
@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage>
                             child: PieChart(
                               PieChartData(
                                   sectionsSpace: 0,
-                                  centerSpaceRadius: 70,
+                                  centerSpaceRadius: 40,
                                   startDegreeOffset: 45,
                                   sections: [
                                     ...Region.values
@@ -150,7 +150,22 @@ class _HomePageState extends State<HomePage>
                       ),
                     ),
                   ),
-                )
+                ),
+                SizedBox(height: 5),
+                Expanded(
+                    child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text('Recent Issues Tickets',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                ))
               ],
             ),
           ),
@@ -443,7 +458,7 @@ class _HomePageState extends State<HomePage>
                             child: PieChart(
                               PieChartData(
                                   sectionsSpace: 0,
-                                  centerSpaceRadius: 70,
+                                  centerSpaceRadius: 40,
                                   startDegreeOffset: 45,
                                   sections: [
                                     ...DrawingStatus.values.map(
@@ -491,7 +506,7 @@ class _HomePageState extends State<HomePage>
                             child: PieChart(
                               PieChartData(
                                   sectionsSpace: 0,
-                                  centerSpaceRadius: 70,
+                                  centerSpaceRadius: 40,
                                   startDegreeOffset: 45,
                                   sections: [
                                     ...Region.values
@@ -521,7 +536,22 @@ class _HomePageState extends State<HomePage>
                       ),
                     ),
                   ),
-                )
+                ),
+                SizedBox(height: 5),
+                Expanded(
+                    child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text('Complete Graphs',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                ))
               ],
             ),
           )
