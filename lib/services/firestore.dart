@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/tower.dart';
 
 class FirestoreService {
@@ -10,6 +11,9 @@ class FirestoreService {
       FirebaseFirestore.instance.collection('towers');
   static final usersCollection = FirebaseFirestore.instance.collection('users');
 
+  static final issuesStream = issuesCollection
+      .snapshots()
+      .map((list) => list.docs.map((doc) => Issue.fromFirestore(doc)).toList());
   static final towersStream = towersCollection
       .snapshots()
       .map((list) => list.docs.map((doc) => Tower.fromFirestore(doc)).toList());

@@ -1,8 +1,10 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/drawing_status.dart';
+import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/region.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +25,8 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     super.build(context);
     final towers = Provider.of<List<Tower>>(context);
+    final issues = Provider.of<List<Issue>>(context)
+      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
     return Padding(
       padding: const EdgeInsets.all(5),
@@ -162,6 +166,45 @@ class _HomePageState extends State<HomePage>
                         Text('Recent Issues Tickets',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600)),
+                        SizedBox(height: 10),
+                        Expanded(
+                          child: ListView.builder(
+                              itemCount: issues.length,
+                              itemBuilder: (context, index) => Visibility(
+                                    visible:
+                                        issues[index].status == 'unresolved',
+                                    child: Card(
+                                      margin: EdgeInsets.symmetric(vertical: 5),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          side: BorderSide(
+                                              color: Colors.black12, width: 2)),
+                                      child: ListTile(
+                                        dense: true,
+                                        trailing: Text(
+                                            DateFormat('dd/MM/yy HH:mm').format(
+                                                issues[index]
+                                                    .dateTime
+                                                    .toDate())),
+                                        title: Row(
+                                          children: [
+                                            CircleAvatar(
+                                                radius: 5,
+                                                backgroundColor: Colors.red),
+                                            SizedBox(width: 5),
+                                            Text(issues[index].id,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall),
+                                          ],
+                                        ),
+                                        subtitle:
+                                            Text(issues[index].tags.join(', ')),
+                                      ),
+                                    ),
+                                  )),
+                        ),
                       ],
                     ),
                   ),
