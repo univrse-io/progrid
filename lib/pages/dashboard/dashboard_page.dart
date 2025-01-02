@@ -2,9 +2,8 @@ import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:progrid/models/tower.dart';
-import 'package:progrid/pages/dashboard/as_built_drawing_page.dart';
 import 'package:progrid/pages/dashboard/home_page.dart';
-import 'package:progrid/pages/dashboard/on_site_audit_page.dart';
+import 'package:progrid/pages/dashboard/site_progress_page.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:provider/provider.dart';
 
@@ -158,12 +157,8 @@ class _DashboardPageState extends State<DashboardPage> {
               onTap: () => pageController.jumpToPage(0),
             ),
             ListTile(
-              title: const Text('On-Site Audit'),
+              title: const Text('Site Progress'),
               onTap: () => pageController.jumpToPage(1),
-            ),
-            ListTile(
-              title: const Text('As-Built Drawing'),
-              onTap: () => pageController.jumpToPage(2),
             ),
           ],
         ),
@@ -172,7 +167,6 @@ class _DashboardPageState extends State<DashboardPage> {
           controller: pageController,
           children: [
             HomePage(),
-            OnSiteAuditPage(),
             AsBuiltDrawingPage(),
           ],
           physics: NeverScrollableScrollPhysics()));
