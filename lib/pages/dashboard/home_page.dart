@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage>
     final towers = Provider.of<List<Tower>>(context);
 
     return Padding(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(5),
       child: Row(
         children: [
           Expanded(
@@ -35,8 +35,11 @@ class _HomePageState extends State<HomePage>
               children: [
                 Expanded(
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.purple, width: 2)),
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(15),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -99,11 +102,14 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 5),
                 Expanded(
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.purple, width: 2)),
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(15),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -148,98 +154,171 @@ class _HomePageState extends State<HomePage>
               ],
             ),
           ),
-          SizedBox(width: 8),
+          SizedBox(width: 5),
           Expanded(
               flex: 5,
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Card(
-                            child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.purple, width: 2)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('On-Site Audit',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 10),
+                          Row(
                             children: [
-                              Text('Total',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                              SizedBox(height: 10),
-                              Text('${towers.length}',
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge)
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Total',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text('${towers.length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('In Progress',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Completed',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Balance',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        )),
+                        ],
                       ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Card(
-                            child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('In Progress',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                              SizedBox(height: 10),
-                              Text(
-                                  '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}',
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge)
-                            ],
-                          ),
-                        )),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Card(
-                            child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Completed',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                              SizedBox(height: 10),
-                              Text(
-                                  '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}',
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge)
-                            ],
-                          ),
-                        )),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Card(
-                            child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Balance',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                              SizedBox(height: 10),
-                              Text(
-                                  '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}',
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge)
-                            ],
-                          ),
-                        )),
-                      ),
-                    ],
+                    ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: 5),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.green, width: 2)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('As-Built Drawing',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Total',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text('${towers.length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Completed',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.completed).length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Submitted',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Incomplete',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.incomplete).length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 5),
                   Expanded(
                     child: FlutterMap(
                         options: MapOptions(
@@ -340,7 +419,7 @@ class _HomePageState extends State<HomePage>
                   ),
                 ],
               )),
-          SizedBox(width: 10),
+          SizedBox(width: 5),
           Expanded(
             flex: 2,
             child: Column(
@@ -348,8 +427,11 @@ class _HomePageState extends State<HomePage>
               children: [
                 Expanded(
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.green, width: 2)),
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(15),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -390,11 +472,14 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 5),
                 Expanded(
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.green, width: 2)),
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(15),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
