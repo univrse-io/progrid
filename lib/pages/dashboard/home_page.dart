@@ -588,9 +588,135 @@ class _HomePageState extends State<HomePage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('Complete Graphs',
+                        Text('Complete Graph',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600)),
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Spacer(),
+                            CircleAvatar(
+                                backgroundColor: Colors.purple, radius: 5),
+                            SizedBox(width: 5),
+                            Text('On-Site Audit'),
+                            Spacer(),
+                            CircleAvatar(
+                                backgroundColor: Colors.green, radius: 5),
+                            SizedBox(width: 5),
+                            Text('As-Built Drawing'),
+                            Spacer(),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        Expanded(
+                            child: BarChart(BarChartData(
+                          barGroups: [
+                            BarChartGroupData(x: 0, barRods: [
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.type == 'Sharing/collocate')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.purple),
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.drawingStatus ==
+                                              DrawingStatus.completed &&
+                                          tower.type == 'Sharing/collocate')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.green)
+                            ]),
+                            BarChartGroupData(x: 1, barRods: [
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.type == 'Greenfield')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.purple),
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.drawingStatus ==
+                                              DrawingStatus.completed &&
+                                          tower.type == 'Greenfield')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.green)
+                            ]),
+                            BarChartGroupData(x: 2, barRods: [
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.type == 'Roof top')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.purple),
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.drawingStatus ==
+                                              DrawingStatus.completed &&
+                                          tower.type == 'Roof top')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.green)
+                            ]),
+                          ],
+                          titlesData: FlTitlesData(
+                            rightTitles: const AxisTitles(),
+                            topTitles: const AxisTitles(),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) =>
+                                    SideTitleWidget(
+                                  angle: -0.25,
+                                  axisSide: meta.axisSide,
+                                  space: 16,
+                                  child: Text([
+                                    'Sharing/Collocate',
+                                    'Greenfield',
+                                    'Rooftop'
+                                  ][value.toInt()]),
+                                ),
+                                reservedSize: 42,
+                              ),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 28,
+                                getTitlesWidget: (value, meta) =>
+                                    SideTitleWidget(
+                                  axisSide: meta.axisSide,
+                                  space: 0,
+                                  child: Text(value.toString()),
+                                ),
+                              ),
+                            ),
+                          ),
+                          borderData: FlBorderData(show: false),
+                          gridData: const FlGridData(show: false),
+                        ))),
                       ],
                     ),
                   ),
