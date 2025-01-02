@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/firebase_options.dart';
+import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/providers/issues_provider.dart';
 import 'package:progrid/providers/towers_provider.dart';
@@ -25,6 +26,9 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
+          if (kIsWeb)
+            StreamProvider<List<Issue>>(
+                create: (_) => FirestoreService.issuesStream, initialData: []),
           if (kIsWeb)
             StreamProvider<List<Tower>>(
                 create: (_) => FirestoreService.towersStream, initialData: []),

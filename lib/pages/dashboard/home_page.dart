@@ -1,13 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/drawing_status.dart';
+import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/region.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:provider/provider.dart';
-
-const titleList = <String>['On-Site Audit', 'As-Built Drawing'];
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,8 +18,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
-  String dropdownValue = titleList.first;
-
   @override
   bool get wantKeepAlive => true;
 
@@ -27,9 +25,11 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     super.build(context);
     final towers = Provider.of<List<Tower>>(context);
+    final issues = Provider.of<List<Issue>>(context)
+      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
 
     return Padding(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(5),
       child: Row(
         children: [
           Expanded(
@@ -39,128 +39,81 @@ class _HomePageState extends State<HomePage>
               children: [
                 Expanded(
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.purple, width: 2)),
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(15),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              focusColor: Colors.transparent,
-                              value: dropdownValue,
-                              onChanged: (String? value) =>
-                                  setState(() => dropdownValue = value!),
-                              items: titleList
-                                  .map<DropdownMenuItem<String>>(
-                                      (String value) =>
-                                          DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value,
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                          ))
-                                  .toList(),
-                            ),
-                          ),
+                          Text('On-Site Audit',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: dropdownValue == titleList.first
-                                ? PieChart(PieChartData(
-                                    sectionsSpace: 0,
-                                    startDegreeOffset: 45,
-                                    centerSpaceRadius: 70,
-                                    sections: [
-                                        PieChartSectionData(
-                                          title:
-                                              'Completed\n${(towers.where((tower) => tower.surveyStatus == 'surveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                          titleStyle: Theme.of(context)
-                                              .textTheme
-                                              .labelSmall,
-                                          titlePositionPercentageOffset: 2,
-                                          value: towers
-                                              .where((tower) =>
-                                                  tower.surveyStatus ==
-                                                  'surveyed')
-                                              .length
-                                              .toDouble(),
-                                          radius: 30,
-                                          color: Colors.green,
-                                        ),
-                                        PieChartSectionData(
-                                          title:
-                                              'In Progress\n${(towers.where((tower) => tower.surveyStatus == 'in-progress').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                          titleStyle: Theme.of(context)
-                                              .textTheme
-                                              .labelSmall,
-                                          titlePositionPercentageOffset: 2,
-                                          value: towers
-                                              .where((tower) =>
-                                                  tower.surveyStatus ==
-                                                  'in-progress')
-                                              .length
-                                              .toDouble(),
-                                          radius: 30,
-                                          color: Colors.amber,
-                                        ),
-                                        PieChartSectionData(
-                                          title:
-                                              'Balance\n${(towers.where((tower) => tower.surveyStatus == 'unsurveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                          titleStyle: Theme.of(context)
-                                              .textTheme
-                                              .labelSmall,
-                                          titlePositionPercentageOffset: 2,
-                                          value: towers
-                                              .where((tower) =>
-                                                  tower.surveyStatus ==
-                                                  'unsurveyed')
-                                              .length
-                                              .toDouble(),
-                                          radius: 30,
-                                          color: Colors.red,
-                                        ),
-                                      ]))
-                                : PieChart(
-                                    PieChartData(
-                                        sectionsSpace: 0,
-                                        centerSpaceRadius: 70,
-                                        startDegreeOffset: 45,
-                                        sections: [
-                                          ...DrawingStatus.values.map(
-                                              (drawingStatus) =>
-                                                  PieChartSectionData(
-                                                    title:
-                                                        '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus.name == drawingStatus.name).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                                    titleStyle:
-                                                        Theme.of(context)
-                                                            .textTheme
-                                                            .labelSmall,
-                                                    titlePositionPercentageOffset:
-                                                        2,
-                                                    value: towers
-                                                        .where((tower) =>
-                                                            tower.drawingStatus
-                                                                .name ==
-                                                            drawingStatus.name)
-                                                        .length
-                                                        .toDouble(),
-                                                    radius: 30,
-                                                    color: drawingStatus.color,
-                                                  )),
-                                        ]),
+                            child: PieChart(PieChartData(
+                                sectionsSpace: 0,
+                                startDegreeOffset: 45,
+                                centerSpaceRadius: 40,
+                                sections: [
+                                  PieChartSectionData(
+                                    title:
+                                        'Completed\n${(towers.where((tower) => tower.surveyStatus == 'surveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                    titleStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    titlePositionPercentageOffset: 2,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.surveyStatus == 'surveyed')
+                                        .length
+                                        .toDouble(),
+                                    radius: 30,
+                                    color: Colors.green,
                                   ),
+                                  PieChartSectionData(
+                                    title:
+                                        'In Progress\n${(towers.where((tower) => tower.surveyStatus == 'in-progress').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                    titleStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    titlePositionPercentageOffset: 2,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.surveyStatus == 'in-progress')
+                                        .length
+                                        .toDouble(),
+                                    radius: 30,
+                                    color: Colors.amber,
+                                  ),
+                                  PieChartSectionData(
+                                    title:
+                                        'Balance\n${(towers.where((tower) => tower.surveyStatus == 'unsurveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                    titleStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    titlePositionPercentageOffset: 2,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.surveyStatus == 'unsurveyed')
+                                        .length
+                                        .toDouble(),
+                                    radius: 30,
+                                    color: Colors.red,
+                                  ),
+                                ])),
                           )
                         ],
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 5),
                 Expanded(
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.purple, width: 2)),
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(15),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -169,182 +122,261 @@ class _HomePageState extends State<HomePage>
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: dropdownValue == titleList.first
-                                ? PieChart(
-                                    PieChartData(
-                                        sectionsSpace: 0,
-                                        centerSpaceRadius: 70,
-                                        startDegreeOffset: 45,
-                                        sections: [
-                                          ...Region.values.map(
-                                              (region) => PieChartSectionData(
-                                                    title:
-                                                        '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
-                                                    titleStyle:
-                                                        Theme.of(context)
-                                                            .textTheme
-                                                            .labelSmall,
-                                                    titlePositionPercentageOffset:
-                                                        2,
-                                                    value: towers
-                                                        .where((tower) =>
-                                                            tower.region.name ==
-                                                                region.name &&
-                                                            tower.surveyStatus ==
-                                                                'surveyed')
-                                                        .length
-                                                        .toDouble(),
-                                                    radius: 30,
-                                                    color: region.color,
-                                                  )),
-                                        ]),
-                                  )
-                                : PieChart(
-                                    PieChartData(
-                                        sectionsSpace: 0,
-                                        centerSpaceRadius: 70,
-                                        startDegreeOffset: 45,
-                                        sections: [
-                                          ...Region.values.map(
-                                              (region) => PieChartSectionData(
-                                                    title:
-                                                        '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
-                                                    titleStyle:
-                                                        Theme.of(context)
-                                                            .textTheme
-                                                            .labelSmall,
-                                                    titlePositionPercentageOffset:
-                                                        2,
-                                                    value: towers
-                                                        .where((tower) =>
-                                                            tower.region.name ==
-                                                                region.name &&
-                                                            tower.drawingStatus
-                                                                    .name ==
-                                                                'submitted')
-                                                        .length
-                                                        .toDouble(),
-                                                    radius: 30,
-                                                    color: region.color,
-                                                  )),
-                                        ]),
-                                  ),
+                            child: PieChart(
+                              PieChartData(
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 40,
+                                  startDegreeOffset: 45,
+                                  sections: [
+                                    ...Region.values
+                                        .map((region) => PieChartSectionData(
+                                              title:
+                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
+                                              titleStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall,
+                                              titlePositionPercentageOffset: 2,
+                                              value: towers
+                                                  .where((tower) =>
+                                                      tower.region.name ==
+                                                          region.name &&
+                                                      tower.surveyStatus ==
+                                                          'surveyed')
+                                                  .length
+                                                  .toDouble(),
+                                              radius: 30,
+                                              color: region.color,
+                                            )),
+                                  ]),
+                            ),
                           )
                         ],
                       ),
                     ),
                   ),
-                )
+                ),
+                SizedBox(height: 5),
+                Expanded(
+                    child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text('Recent Issues Tickets',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600)),
+                        SizedBox(height: 10),
+                        Expanded(
+                          child: ListView.builder(
+                              itemCount: issues.length,
+                              itemBuilder: (context, index) => Visibility(
+                                    visible:
+                                        issues[index].status == 'unresolved',
+                                    child: Card(
+                                      margin: EdgeInsets.symmetric(vertical: 5),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          side: BorderSide(
+                                              color: Colors.black12, width: 2)),
+                                      child: ListTile(
+                                        dense: true,
+                                        trailing: Text(
+                                            DateFormat('dd/MM/yy HH:mm').format(
+                                                issues[index]
+                                                    .dateTime
+                                                    .toDate())),
+                                        title: Row(
+                                          children: [
+                                            CircleAvatar(
+                                                radius: 5,
+                                                backgroundColor: Colors.red),
+                                            SizedBox(width: 5),
+                                            Text(issues[index].id,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall),
+                                          ],
+                                        ),
+                                        subtitle:
+                                            Text(issues[index].tags.join(', ')),
+                                      ),
+                                    ),
+                                  )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ))
               ],
             ),
           ),
-          SizedBox(width: 8),
+          SizedBox(width: 5),
           Expanded(
               flex: 5,
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Card(
-                            child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.purple, width: 2)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('On-Site Audit',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 10),
+                          Row(
                             children: [
-                              Text('Total',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                              SizedBox(height: 10),
-                              Text('${towers.length}',
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge)
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Total',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text('${towers.length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('In Progress',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Completed',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Balance',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        )),
+                        ],
                       ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Card(
-                            child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  dropdownValue == titleList.first
-                                      ? 'In Progress'
-                                      : 'Completed',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                              SizedBox(height: 10),
-                              Text(
-                                  dropdownValue == titleList.first
-                                      ? '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}'
-                                      : '${towers.where((tower) => tower.drawingStatus == DrawingStatus.completed).length}',
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge)
-                            ],
-                          ),
-                        )),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Card(
-                            child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  dropdownValue == titleList.first
-                                      ? 'Completed'
-                                      : 'Submitted',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                              SizedBox(height: 10),
-                              Text(
-                                  dropdownValue == titleList.first
-                                      ? '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}'
-                                      : '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge)
-                            ],
-                          ),
-                        )),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Card(
-                            child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  dropdownValue == titleList.first
-                                      ? 'Balance'
-                                      : 'Incomplete',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                              SizedBox(height: 10),
-                              Text(
-                                  dropdownValue == titleList.first
-                                      ? '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}'
-                                      : '${towers.where((tower) => tower.drawingStatus == DrawingStatus.incomplete).length}',
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge)
-                            ],
-                          ),
-                        )),
-                      ),
-                    ],
+                    ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: 5),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.green, width: 2)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('As-Built Drawing',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Total',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text('${towers.length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Completed',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.completed).length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Submitted',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text('Incomplete',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600)),
+                                    Text(
+                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.incomplete).length}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall)
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 5),
                   Expanded(
                     child: FlutterMap(
                         options: MapOptions(
@@ -445,23 +477,251 @@ class _HomePageState extends State<HomePage>
                   ),
                 ],
               )),
-          SizedBox(width: 10),
+          SizedBox(width: 5),
           Expanded(
             flex: 2,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text('Recent Issues',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600)),
-                    Expanded(child: Center(child: Text('No recent issues.')))
-                  ],
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.green, width: 2)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text('As-Built Drawing',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          Expanded(
+                            child: PieChart(
+                              PieChartData(
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 40,
+                                  startDegreeOffset: 45,
+                                  sections: [
+                                    ...DrawingStatus.values.map(
+                                        (drawingStatus) => PieChartSectionData(
+                                              title:
+                                                  '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus.name == drawingStatus.name).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                              titleStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall,
+                                              titlePositionPercentageOffset: 2,
+                                              value: towers
+                                                  .where((tower) =>
+                                                      tower
+                                                          .drawingStatus.name ==
+                                                      drawingStatus.name)
+                                                  .length
+                                                  .toDouble(),
+                                              radius: 30,
+                                              color: drawingStatus.color,
+                                            )),
+                                  ]),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                SizedBox(height: 5),
+                Expanded(
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.green, width: 2)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text('Regional Breakdown',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          Expanded(
+                            child: PieChart(
+                              PieChartData(
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 40,
+                                  startDegreeOffset: 45,
+                                  sections: [
+                                    ...Region.values
+                                        .map((region) => PieChartSectionData(
+                                              title:
+                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                              titleStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall,
+                                              titlePositionPercentageOffset: 2,
+                                              value: towers
+                                                  .where((tower) =>
+                                                      tower.region.name ==
+                                                          region.name &&
+                                                      tower.drawingStatus
+                                                              .name ==
+                                                          'submitted')
+                                                  .length
+                                                  .toDouble(),
+                                              radius: 30,
+                                              color: region.color,
+                                            )),
+                                  ]),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 5),
+                Expanded(
+                    child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text('Complete Graph',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600)),
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Spacer(),
+                            CircleAvatar(
+                                backgroundColor: Colors.purple, radius: 5),
+                            SizedBox(width: 5),
+                            Text('On-Site Audit'),
+                            Spacer(),
+                            CircleAvatar(
+                                backgroundColor: Colors.green, radius: 5),
+                            SizedBox(width: 5),
+                            Text('As-Built Drawing'),
+                            Spacer(),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        Expanded(
+                            child: BarChart(BarChartData(
+                          barGroups: [
+                            BarChartGroupData(x: 0, barRods: [
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.type == 'Sharing/collocate')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.purple),
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.drawingStatus ==
+                                              DrawingStatus.completed &&
+                                          tower.type == 'Sharing/collocate')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.green)
+                            ]),
+                            BarChartGroupData(x: 1, barRods: [
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.type == 'Greenfield')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.purple),
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.drawingStatus ==
+                                              DrawingStatus.completed &&
+                                          tower.type == 'Greenfield')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.green)
+                            ]),
+                            BarChartGroupData(x: 2, barRods: [
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.type == 'Roof top')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.purple),
+                              BarChartRodData(
+                                  borderRadius: BorderRadius.zero,
+                                  toY: towers
+                                      .where((tower) =>
+                                          tower.drawingStatus ==
+                                              DrawingStatus.completed &&
+                                          tower.type == 'Roof top')
+                                      .length
+                                      .toDouble(),
+                                  width: 20,
+                                  color: Colors.green)
+                            ]),
+                          ],
+                          titlesData: FlTitlesData(
+                            rightTitles: const AxisTitles(),
+                            topTitles: const AxisTitles(),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) =>
+                                    SideTitleWidget(
+                                  angle: -0.25,
+                                  axisSide: meta.axisSide,
+                                  space: 16,
+                                  child: Text([
+                                    'Sharing/Collocate',
+                                    'Greenfield',
+                                    'Rooftop'
+                                  ][value.toInt()]),
+                                ),
+                                reservedSize: 42,
+                              ),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 28,
+                                getTitlesWidget: (value, meta) =>
+                                    SideTitleWidget(
+                                  axisSide: meta.axisSide,
+                                  space: 0,
+                                  child: Text(value.toString()),
+                                ),
+                              ),
+                            ),
+                          ),
+                          borderData: FlBorderData(show: false),
+                          gridData: const FlGridData(show: false),
+                        ))),
+                      ],
+                    ),
+                  ),
+                ))
+              ],
             ),
           )
         ],
