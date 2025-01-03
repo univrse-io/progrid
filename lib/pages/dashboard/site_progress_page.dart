@@ -61,7 +61,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         controlAffinity: ListTileControlAffinity.leading,
-                        title: Text('Completed'),
+                        title: Text('Surveyed'),
                         value: surveyStatusFilter.contains('surveyed'),
                         onChanged: (value) => setState(() => value!
                             ? surveyStatusFilter.add('surveyed')
@@ -70,7 +70,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         controlAffinity: ListTileControlAffinity.leading,
-                        title: Text('Balance'),
+                        title: Text('Unsurveyed'),
                         value: surveyStatusFilter.contains('unsurveyed'),
                         onChanged: (value) => setState(() => value!
                             ? surveyStatusFilter.add('unsurveyed')
@@ -101,6 +101,20 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                   return Card(
                     margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
                     child: ListTile(
+                      title: Row(
+                        children: [
+                          CircleAvatar(
+                              radius: 5,
+                              backgroundColor: switch (tower.surveyStatus) {
+                                'in-progress' => Colors.amber,
+                                'surveyed' => Colors.green,
+                                _ => Colors.red
+                              }),
+                          SizedBox(width: 10),
+                          Text(tower.name),
+                        ],
+                      ),
+                      subtitle: Text(tower.id),
                       trailing: ToggleButtons(
                           borderRadius: BorderRadius.circular(20),
                           onPressed: (index) =>
@@ -129,8 +143,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                     status != DrawingStatus.incomplete)
                                 .map((status) => tower.drawingStatus == status)
                           ]),
-                      title: Text(tower.name),
-                      subtitle: Text(tower.id),
                     ),
                   );
                 }),
