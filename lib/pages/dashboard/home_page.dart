@@ -627,7 +627,7 @@ class _HomePageState extends State<HomePage>
                                   toY: towers
                                       .where((tower) =>
                                           tower.drawingStatus ==
-                                              DrawingStatus.completed &&
+                                              DrawingStatus.submitted &&
                                           tower.type == 'Sharing/collocate')
                                       .length
                                       .toDouble(),
@@ -650,7 +650,7 @@ class _HomePageState extends State<HomePage>
                                   toY: towers
                                       .where((tower) =>
                                           tower.drawingStatus ==
-                                              DrawingStatus.completed &&
+                                              DrawingStatus.submitted &&
                                           tower.type == 'Greenfield')
                                       .length
                                       .toDouble(),
@@ -673,7 +673,7 @@ class _HomePageState extends State<HomePage>
                                   toY: towers
                                       .where((tower) =>
                                           tower.drawingStatus ==
-                                              DrawingStatus.completed &&
+                                              DrawingStatus.submitted &&
                                           tower.type == 'Roof top')
                                       .length
                                       .toDouble(),

@@ -167,7 +167,7 @@ class _DashboardPageState extends State<DashboardPage> {
           controller: pageController,
           children: [
             HomePage(),
-            AsBuiltDrawingPage(),
+            SiteProgressPage(),
           ],
           physics: NeverScrollableScrollPhysics()));
 }
