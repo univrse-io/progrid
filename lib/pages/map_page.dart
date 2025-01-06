@@ -141,7 +141,7 @@ class _MapPageState extends State<MapPage> {
                   centerMarkerOnClick: false,
                   padding: const EdgeInsets.all(10),
                   maxZoom: 13,
-                  // spiderfyCluster: false, // TODO: Review, essentially what it does is it moves the markers away from each other to make them more visible
+                  // spiderfyCluster: false,
                   markers: towersProvider.towers.map((tower) {
                     return Marker(
                       point: LatLng(
@@ -343,7 +343,6 @@ class _MapPageState extends State<MapPage> {
 
                 // const SizedBox(width: 5),
 
-                // TODO: fix hero
                 // search button
                 FloatingActionButton(
                   heroTag: 'searchbar',
