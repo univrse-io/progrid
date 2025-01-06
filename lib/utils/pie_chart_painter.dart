@@ -22,7 +22,7 @@ class PieChartPainter extends CustomPainter {
     double startAngle = -pi / 2; // start at the top of the circle, -π/2 radians
     
     // center (circle)
-    final centerPaint = Paint()..color = Colors.black.withOpacity(0.7);
+    final centerPaint = Paint()..color = Colors.black.withValues(alpha: 0.7);
     canvas.drawCircle(center, radius, centerPaint); // Fill center with grey
 
     for (final entry in statusCounts.entries) {

@@ -135,7 +135,7 @@ class _MapPageState extends State<MapPage> {
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
                   polygonOptions:
-                      PolygonOptions(color: Colors.black.withOpacity(0.1)),
+                      PolygonOptions(color: Colors.black.withValues(alpha: 0.1)),
                   maxClusterRadius: 50,
                   alignment: Alignment.center,
                   centerMarkerOnClick: false,
@@ -172,7 +172,7 @@ class _MapPageState extends State<MapPage> {
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.6),
+                                color: Colors.black.withValues(alpha: 0.6),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Row(
@@ -270,7 +270,7 @@ class _MapPageState extends State<MapPage> {
               // add attributions here
               SimpleAttributionWidget(
                 source: Text('OpenStreetMap'),
-                backgroundColor: Colors.black.withOpacity(0.1),
+                backgroundColor: Colors.black.withValues(alpha: 0.1),
               ),
             ],
           ),
@@ -284,7 +284,7 @@ class _MapPageState extends State<MapPage> {
               onPressed: () async {
                 final String? selectedRegion = await showMenu(
                   elevation: 0,
-                  color: Colors.black.withOpacity(0),
+                  color: Colors.black.withValues(alpha: 0),
                   context: context,
                   position: RelativeRect.fromLTRB(0, 70, 0, 0),
                   items: _regionPositions.keys.map((region) {
@@ -295,7 +295,7 @@ class _MapPageState extends State<MapPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
+                          color: Colors.black.withValues(alpha: 0.7),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -314,7 +314,7 @@ class _MapPageState extends State<MapPage> {
                   _zoomToRegion(selectedRegion);
                 }
               },
-              backgroundColor: Colors.black.withOpacity(0.6),
+              backgroundColor: Colors.black.withValues(alpha: 0.6),
               child: const Icon(
                 Icons.map,
                 size: 32,
@@ -329,19 +329,19 @@ class _MapPageState extends State<MapPage> {
             right: 14,
             child: Row(
               children: [
-                // filter button
-                FloatingActionButton(
-                  heroTag: 'filter',
-                  onPressed: () {},
-                  backgroundColor: Colors.black.withOpacity(0.6),
-                  child: const Icon(
-                    Icons.filter_alt_outlined,
-                    size: 32,
-                  ),
-                  mini: true,
-                ),
+                // // filter button
+                // FloatingActionButton(
+                //   heroTag: 'filter',
+                //   onPressed: () {},
+                //   backgroundColor: Colors.black.withValues(alpha: 0.6),
+                //   child: const Icon(
+                //     Icons.filter_alt_outlined,
+                //     size: 32,
+                //   ),
+                //   mini: true,
+                // ),
 
-                const SizedBox(width: 5),
+                // const SizedBox(width: 5),
 
                 // TODO: fix hero
                 // search button
@@ -363,7 +363,7 @@ class _MapPageState extends State<MapPage> {
                       ),
                     );
                   },
-                  backgroundColor: Colors.black.withOpacity(0.6),
+                  backgroundColor: Colors.black.withValues(alpha: 0.6),
                   child: const Icon(
                     Icons.search,
                     size: 32,
@@ -401,7 +401,7 @@ class _MapPageState extends State<MapPage> {
                       // ),
                     );
                   },
-                  backgroundColor: Colors.black.withOpacity(0.6),
+                  backgroundColor: Colors.black.withValues(alpha: 0.6),
                   child: const Icon(
                     Icons.person,
                     size: 32,
