@@ -20,6 +20,7 @@ import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/dialog_utils.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TowerPage extends StatefulWidget {
   final String towerId;
@@ -46,7 +47,8 @@ class _TowerPageState extends State<TowerPage> {
     );
 
     final issuesProvider = Provider.of<IssuesProvider>(context);
-    final issues = issuesProvider.issues.where((issue) => issue.id.startsWith('${widget.towerId}-I')); // query all elements in this list, check if any are unresolved
+    final issues = issuesProvider.issues
+        .where((issue) => issue.id.startsWith('${widget.towerId}-I')); // query all elements in this list, check if any are unresolved
 
     _notesController.text = selectedTower.notes ?? 'Enter text here...'; // get tower notes
 
@@ -337,7 +339,7 @@ class _TowerPageState extends State<TowerPage> {
                     child: FilledButton(
                       // added condition to check if there are any unresolved issues
                       onPressed: selectedTower.images.length != 1 || issues.any((issue) => issue.status != 'resolved')
-                          ? null
+                          ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
                           : () async {
                               await _signOut();
                             },
@@ -739,15 +741,22 @@ class _TowerPageState extends State<TowerPage> {
           Expanded(
             child: isLink
                 ? GestureDetector(
-                    onTap: () {
-                      // TODO: fix google maps linking
-                      // final towersProvider = Provider.of<TowersProvider>(context, listen: false);
-                      // final selectedTower = towersProvider.towers.firstWhere(
-                      //   (tower) => tower.id == widget.towerId,
-                      //   orElse: () => throw Exception("Tower not found"),
-                      // );
+                    onTap: () async {
+                      // TODO: implement apple maps
+                      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+                      final selectedTower = towersProvider.towers.firstWhere(
+                        (tower) => tower.id == widget.towerId,
+                        orElse: () => throw Exception("Tower not found"),
+                      );
 
-                      // MapsLauncher.launchCoordinates(selectedTower.position.latitude, selectedTower.position.longitude);
+                      final uri = Uri(
+                          scheme: "google.navigation",
+                          queryParameters: {'q': "${selectedTower.position.latitude}, ${selectedTower.position.longitude}"});
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(uri);
+                      } else {
+                        print('unable to launch google maps');
+                      }
                     },
                     child: Text(
                       content,
