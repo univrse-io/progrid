@@ -44,16 +44,16 @@ sealed class CarbonTheme {
             surfaceTintColor: Colors.transparent,
             shape: const RoundedRectangleBorder()),
         checkboxTheme: CheckboxThemeData(
-            fillColor: MaterialStateColor.resolveWith((states) {
-              if (states.contains(MaterialState.selected)) {
+            fillColor: WidgetStateColor.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
                 return token.iconPrimary;
-              } else if (states.contains(MaterialState.disabled)) {
+              } else if (states.contains(WidgetState.disabled)) {
                 return token.iconDisabled;
               } else {
                 return Colors.transparent;
               }
             }),
-            checkColor: MaterialStatePropertyAll<Color>(token.iconInverse)),
+            checkColor: WidgetStatePropertyAll<Color>(token.iconInverse)),
         dialogTheme: DialogTheme(
             backgroundColor: token.layer01,
             surfaceTintColor: Colors.transparent,
@@ -98,14 +98,14 @@ sealed class CarbonTheme {
             color: token.layer01,
             shape: const RoundedRectangleBorder(),
             surfaceTintColor: Colors.transparent,
-            labelTextStyle: MaterialStatePropertyAll<TextStyle>(
+            labelTextStyle: WidgetStatePropertyAll<TextStyle>(
                 CarbonTextStyle.body01.copyWith(color: token.textPrimary)),
             position: PopupMenuPosition.under,
             iconSize: kIconSize),
         progressIndicatorTheme: ProgressIndicatorThemeData(
             color: token.interactive, circularTrackColor: token.layerAccent01),
         radioTheme: RadioThemeData(
-            fillColor: MaterialStatePropertyAll<Color>(token.iconPrimary)),
+            fillColor: WidgetStatePropertyAll<Color>(token.iconPrimary)),
         tooltipTheme: TooltipThemeData(
           textStyle: CarbonTextStyle.body01.copyWith(color: token.textInverse),
           decoration: BoxDecoration(

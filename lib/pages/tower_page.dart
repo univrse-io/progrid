@@ -386,8 +386,6 @@ class _TowerPageState extends State<TowerPage> {
                     _debounceTimer =
                         Timer(const Duration(milliseconds: 2000), () {
                       // update notes every one second of changes
-                      // TODO: check if database updating is happening when there are no updates
-                      // UNDONE: ISSUE, text field loses focus on rebuild; cursor disappears
                       towersProvider.updateNotes(widget.towerId, text);
                     });
                   },
