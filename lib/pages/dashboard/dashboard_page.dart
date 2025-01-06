@@ -111,7 +111,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             '${tower.position.latitude}/${tower.position.longitude}')
                     ..cell(CellIndex.indexByColumnRow(
                             columnIndex: 7, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.surveyStatus)
+                        .value = TextCellValue(tower.surveyStatus.toString())
                     ..cell(CellIndex.indexByColumnRow(
                             columnIndex: 8, rowIndex: rowIndex))
                         .value = TextCellValue(tower.drawingStatus.toString())

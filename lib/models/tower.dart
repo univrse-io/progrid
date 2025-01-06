@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:progrid/models/drawing_status.dart';
 import 'package:progrid/models/region.dart';
+import 'package:progrid/models/survey_status.dart';
 
 class Tower {
   String id;
@@ -11,7 +12,7 @@ class Tower {
   String address;
   GeoPoint position;
   // TODO: Change the field type from String to [SurveyStatus] enum.
-  String surveyStatus;
+  SurveyStatus surveyStatus;
   DrawingStatus drawingStatus;
   List<String> images;
   Timestamp? signIn;
@@ -44,7 +45,9 @@ class Tower {
       owner: json['owner'] as String,
       address: json['address'] as String,
       position: json['position'] as GeoPoint,
-      surveyStatus: json['surveyStatus'] as String,
+      // surveyStatus: json['surveyStatus'] as String,
+      surveyStatus: SurveyStatus.values
+          .byName((json['surveyStatus'] as String).toLowerCase()),
       drawingStatus: DrawingStatus.values
           .byName((json['drawingStatus'] as String).toLowerCase()),
       images: (json['images'] as List?)?.cast<String>() ?? [],

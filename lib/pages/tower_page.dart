@@ -12,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_watermark/image_watermark.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
 import 'package:progrid/providers/issues_provider.dart';
 import 'package:progrid/providers/towers_provider.dart';
@@ -114,37 +115,23 @@ class _TowerPageState extends State<TowerPage> {
                   // dropdown
                   Container(
                     padding: const EdgeInsets.only(left: 14, right: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      color: selectedTower.surveyStatus == 'surveyed'
-                          ? AppColors.green
-                          : selectedTower.surveyStatus == 'in-progress'
-                              ? AppColors.yellow
-                              : AppColors.red,
-                    ),
-                    child: DropdownButton(
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: selectedTower.surveyStatus.color),
+                    child: DropdownButton<SurveyStatus>(
+                      // type specifics required
                       isDense: true,
                       value: selectedTower.surveyStatus,
                       onChanged: (value) {
                         if (value != null && value != selectedTower.surveyStatus) {
-                          FirestoreService.updateTower(selectedTower.id, data: {'surveyStatus': value});
+                          FirestoreService.updateTower(selectedTower.id, data: {'surveyStatus': value.toString()});
                           selectedTower.surveyStatus = value; // update local as well
                         }
                       },
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'surveyed',
-                          child: Text('Surveyed'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'in-progress',
-                          child: Text('In-Progress'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'unsurveyed',
-                          child: Text('Unsurveyed'),
-                        ),
-                      ],
+                      items: SurveyStatus.values.map((status) {
+                        return DropdownMenuItem(
+                          value: status,
+                          child: Text(status.toString()),
+                        );
+                      }).toList(),
                       iconEnabledColor: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(24),
                       dropdownColor: selectedTower.surveyStatus == 'surveyed'
@@ -616,10 +603,10 @@ class _TowerPageState extends State<TowerPage> {
 
         // update tower status
         if (isSignOut) {
-          await towersProvider.updateSurveyStatus(widget.towerId, 'surveyed');
+          await towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.surveyed);
           await towersProvider.updateSignOut(widget.towerId, Timestamp.fromDate(DateTime.now()));
         } else {
-          await towersProvider.updateSurveyStatus(widget.towerId, 'in-progress');
+          await towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.inProgress);
           await towersProvider.updateSignIn(widget.towerId, Timestamp.fromDate(DateTime.now()));
         }
       } else {

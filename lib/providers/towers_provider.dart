@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/services/firestore.dart';
 
@@ -28,12 +29,12 @@ class TowersProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateSurveyStatus(String towerId, String surveyStatus) async {
+  Future<void> updateSurveyStatus(String towerId, SurveyStatus surveyStatus) async {
     try {
       // update database
       await FirestoreService.towersCollection
           .doc(towerId)
-          .update({'surveyStatus': surveyStatus});
+          .update({'surveyStatus': surveyStatus.toString()});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
