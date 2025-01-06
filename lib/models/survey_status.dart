@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 enum SurveyStatus {
   unsurveyed(Colors.red),
-  inProgress(Colors.amber),
+  inprogress(Colors.amber),
   surveyed(Colors.green);
 
   final Color color;
