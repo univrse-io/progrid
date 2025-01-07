@@ -45,5 +45,18 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Location Usage Permissions -->
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We need location access to add watermarks.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need location access to add watermarks</string>
+
+    <!-- Photo Library Usage Permissions -->
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your Photos to save downloaded images.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need access to add images to your Photos Library.</string>
+	
 </dict>
 </plist>
