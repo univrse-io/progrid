@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/region.dart';
+import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/pages/towers_list_page.dart';
@@ -184,11 +185,7 @@ class _MapPageState extends State<MapPage> {
                                     height: 8,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: tower.surveyStatus == 'surveyed'
-                                          ? AppColors.green
-                                          : tower.surveyStatus == 'in-progress'
-                                              ? AppColors.yellow
-                                              : AppColors.red,
+                                      color: tower.surveyStatus.color
                                     ),
                                   ),
                                   const SizedBox(width: 4),
@@ -230,10 +227,10 @@ class _MapPageState extends State<MapPage> {
                         );
 
                         // increment the status counts based on the tower's status
-                        if (tower.surveyStatus == 'surveyed') {
+                        if (tower.surveyStatus == SurveyStatus.surveyed) {
                           statusCounts['surveyed'] =
                               statusCounts['surveyed']! + 1;
-                        } else if (tower.surveyStatus == 'in-progress') {
+                        } else if (tower.surveyStatus == SurveyStatus.inprogress) {
                           statusCounts['in-progress'] =
                               statusCounts['in-progress']! + 1;
                         } else {

@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/drawing_status.dart';
 import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/region.dart';
+import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:provider/provider.dart';
 
@@ -59,13 +60,13 @@ class _HomePageState extends State<HomePage>
                                 sections: [
                                   PieChartSectionData(
                                     title:
-                                        'Completed\n${(towers.where((tower) => tower.surveyStatus == 'surveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        'Completed\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titleStyle:
                                         Theme.of(context).textTheme.labelSmall,
                                     titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
-                                            tower.surveyStatus == 'surveyed')
+                                            tower.surveyStatus == SurveyStatus.surveyed)
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -73,13 +74,13 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        'In Progress\n${(towers.where((tower) => tower.surveyStatus == 'in-progress').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        'In Progress\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titleStyle:
                                         Theme.of(context).textTheme.labelSmall,
                                     titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
-                                            tower.surveyStatus == 'in-progress')
+                                            tower.surveyStatus == SurveyStatus.inprogress)
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -87,13 +88,13 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        'Balance\n${(towers.where((tower) => tower.surveyStatus == 'unsurveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        'Balance\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.unsurveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titleStyle:
                                         Theme.of(context).textTheme.labelSmall,
                                     titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
-                                            tower.surveyStatus == 'unsurveyed')
+                                            tower.surveyStatus == SurveyStatus.unsurveyed)
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -131,7 +132,7 @@ class _HomePageState extends State<HomePage>
                                     ...Region.values
                                         .map((region) => PieChartSectionData(
                                               title:
-                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
+                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == SurveyStatus.surveyed).length / towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length * 100).toStringAsFixed(2)}%',
                                               titleStyle: Theme.of(context)
                                                   .textTheme
                                                   .labelSmall,
@@ -141,7 +142,7 @@ class _HomePageState extends State<HomePage>
                                                       tower.region.name ==
                                                           region.name &&
                                                       tower.surveyStatus ==
-                                                          'surveyed')
+                                                          SurveyStatus.surveyed)
                                                   .length
                                                   .toDouble(),
                                               radius: 30,
@@ -253,7 +254,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}',
+                                        '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -268,7 +269,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}',
+                                        '${towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -283,7 +284,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}',
+                                        '${towers.where((tower) => tower.surveyStatus == SurveyStatus.unsurveyed).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -445,14 +446,8 @@ class _HomePageState extends State<HomePage>
                                                 height: 8,
                                                 decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
-                                                    color: switch (
-                                                        tower.surveyStatus) {
-                                                      'surveyed' =>
-                                                        Colors.green,
-                                                      'in-progress' =>
-                                                        Colors.amber,
-                                                      _ => Colors.red
-                                                    }),
+                                                    color: tower.surveyStatus.color
+                                                ),
                                               ),
                                               const SizedBox(width: 4),
 
@@ -616,7 +611,7 @@ class _HomePageState extends State<HomePage>
                                   borderRadius: BorderRadius.zero,
                                   toY: towers
                                       .where((tower) =>
-                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.surveyStatus == SurveyStatus.surveyed &&
                                           tower.type == 'Sharing/collocate')
                                       .length
                                       .toDouble(),
@@ -639,7 +634,7 @@ class _HomePageState extends State<HomePage>
                                   borderRadius: BorderRadius.zero,
                                   toY: towers
                                       .where((tower) =>
-                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.surveyStatus == SurveyStatus.surveyed &&
                                           tower.type == 'Greenfield')
                                       .length
                                       .toDouble(),
@@ -662,7 +657,7 @@ class _HomePageState extends State<HomePage>
                                   borderRadius: BorderRadius.zero,
                                   toY: towers
                                       .where((tower) =>
-                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.surveyStatus == SurveyStatus.surveyed &&
                                           tower.type == 'Roof top')
                                       .length
                                       .toDouble(),

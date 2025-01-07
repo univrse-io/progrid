@@ -25,7 +25,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     final towers = Provider.of<List<Tower>>(context)
         .where((tower) =>
             (surveyStatusFilter.isEmpty ||
-                surveyStatusFilter.contains(tower.surveyStatus)) &&
+                surveyStatusFilter.contains(tower.surveyStatus.toString())) &&
             (drawingStatusFilter.isEmpty ||
                 drawingStatusFilter.contains(tower.drawingStatus)))
         .toList();
@@ -105,11 +105,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         children: [
                           CircleAvatar(
                               radius: 5,
-                              backgroundColor: switch (tower.surveyStatus) {
-                                'in-progress' => Colors.amber,
-                                'surveyed' => Colors.green,
-                                _ => Colors.red
-                              }),
+                              backgroundColor: tower.surveyStatus.color),
                           SizedBox(width: 10),
                           Text(tower.name),
                         ],
