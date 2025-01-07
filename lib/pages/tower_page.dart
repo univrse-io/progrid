@@ -630,17 +630,13 @@ class _TowerPageState extends State<TowerPage> {
     try {
       if (mounted) DialogUtils.showLoadingDialog(context);
 
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      final permission = Platform.isAndroid && androidInfo.version.sdkInt > 32 ? Permission.photos : Permission.storage;
-      final status = await permission.request();
+      final permission = Platform.isAndroid
+          ? (await DeviceInfoPlugin().androidInfo).version.sdkInt > 32
+              ? Permission.photos
+              : Permission.storage
+          : Permission.photos;
 
-      if (await Permission.storage.isRestricted) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Debug Storage Denied')),
-          );
-        }
-      }
+      final status = await permission.request();
 
       if (status.isDenied) {
         if (mounted) {
@@ -652,12 +648,11 @@ class _TowerPageState extends State<TowerPage> {
       }
 
       if (status.isPermanentlyDenied) {
-        // go to app settings
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text(
-                'Storage permission permanently denied. Please allow it from settings.',
+                'Permission permanently denied. Please allow it from settings.',
               ),
               action: SnackBarAction(
                 label: 'Settings',
@@ -678,15 +673,24 @@ class _TowerPageState extends State<TowerPage> {
       }
 
       // get directory
-      Directory? externalDir = Directory('/storage/emulated/0/Download'); // download folder on android
-      if (!externalDir.existsSync()) {
-        externalDir = await getExternalStorageDirectory();
+      Directory? directory;
+      if (Platform.isAndroid) {
+        directory = Directory('/storage/emulated/0/Download'); // Default Android download folder
+        if (!directory.existsSync()) {
+          directory = await getExternalStorageDirectory();
+        }
+      } else if (Platform.isIOS) {
+        directory = await getApplicationDocumentsDirectory();
       }
 
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg'; // extract file name from URL
-      final file = File('${externalDir!.path}/$fileName');
+      if (directory == null || directory.path.isEmpty) {
+        throw Exception('Failed to get a valid directory path.');
+      }
 
-      // write file
+      // save the file
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final file = File('${directory.path}/$fileName');
+
       await file.writeAsBytes(response.bodyBytes);
 
       if (mounted) {
