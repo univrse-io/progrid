@@ -9,7 +9,8 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:image_watermark/image_watermark.dart';
+// import 'package:image_watermark/image_watermark.dart';
+import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/survey_status.dart';
@@ -568,24 +569,29 @@ class _TowerPageState extends State<TowerPage> {
         }
       }
 
-      // add watermark
-      final watermarkText = '$formattedDateTime\nLat: $latitude, Lon: $longitude';
-      final bytes = await ImageWatermark.addTextWatermark(
-        imgBytes: await imageFile.readAsBytes(),
-        dstX: 0,
-        dstY: 0,
-        watermarkText: watermarkText,
-      );
+      // add watermark to image
+      final decodeImage = img.decodeImage(imageFile.readAsBytesSync());
+      if (decodeImage == null) {
+        // TODO: handle fail to decode for watermark case here
+        print('Failed to decode image');
+        return;
+      }
 
-      // save image locally, maybe not needed?
-      final tempDir = await getTemporaryDirectory();
-      await File('${tempDir.path}/${pickedFile.name}').writeAsBytes(bytes);
+      final watermarkText = '$formattedDateTime\nLat: $latitude, Lon: $longitude';
+      final x = decodeImage.width - 10;
+      final y = decodeImage.height - 50;
+
+      img.drawString(decodeImage, watermarkText, font: img.arial24, x: x, y: y, color: img.ColorRgb8(0, 0, 0), rightJustify: true);
+
+      // save locally
+      final watermarkedImagePath = '${(await getTemporaryDirectory()).path}/watermarked_${pickedFile.name}';
+      await File(watermarkedImagePath).writeAsBytes(img.encodeJpg(decodeImage));
 
       // upload image to firebase storage
-      final String fileName = DateTime.now().microsecondsSinceEpoch.toString(); // unique
+      final String fileName = '${DateTime.now().microsecondsSinceEpoch}.jpg'; // unique
       final Reference storageRef = FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
 
-      final UploadTask uploadTask = storageRef.putFile(imageFile);
+      final UploadTask uploadTask = storageRef.putFile(File(watermarkedImagePath));
 
       final TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
       final String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -677,7 +683,7 @@ class _TowerPageState extends State<TowerPage> {
         externalDir = await getExternalStorageDirectory();
       }
 
-      final fileName = DateTime.now().millisecondsSinceEpoch; // extract file name from URL
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg'; // extract file name from URL
       final file = File('${externalDir!.path}/$fileName');
 
       // write file

@@ -34,11 +34,12 @@ class DialogUtils {
                       );
                     },
                   ),
+                  // const SizedBox(height: 10),
 
                   // download button
                   Positioned(
-                    bottom: 7,
-                    right: 7,
+                    bottom: 5,
+                    left: 5,
                     child: FloatingActionButton(
                       onPressed: () => onDownload(imageUrl),
                       child: Icon(Icons.download),
