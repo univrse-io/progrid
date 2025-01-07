@@ -51,7 +51,7 @@ class _TowerPageState extends State<TowerPage> {
     final issues = issuesProvider.issues
         .where((issue) => issue.id.startsWith('${widget.towerId}-I')); // query all elements in this list, check if any are unresolved
 
-    _notesController.text = selectedTower.notes ?? 'Enter text here...'; // get tower notes
+    _notesController.text = selectedTower.notes ?? ''; // get tower notes
 
     return Scaffold(
       appBar: AppBar(

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:progrid/utils/themes.dart';
 
 enum SurveyStatus {
-  unsurveyed(Colors.red),
-  inprogress(Colors.amber),
-  surveyed(Colors.green);
+  unsurveyed(AppColors.red),
+  inprogress(AppColors.yellow),
+  surveyed(AppColors.green);
 
   final Color color;
 

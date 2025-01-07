@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:progrid/models/region.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/tower_page.dart';
@@ -29,26 +28,6 @@ class _MapPageState extends State<MapPage> {
 
   // TODO: move this to firebase server, to allow switching incase of tile server crashes
   final String _tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-  // determine region color here
-  Color _getRegionColor(Region region) {
-    switch (region.name) {
-      case 'SOUTHERN':
-        return Color.fromARGB(255, 82, 114, 76);
-      case 'NORTHERN':
-        return Color.fromARGB(255, 100, 68, 68);
-      case 'EASTERN':
-        return Color.fromARGB(255, 134, 124, 79);
-      case 'CENTRAL':
-        return Color.fromARGB(255, 63, 81, 100);
-      case 'SABAH':
-        return Color.fromARGB(255, 62, 88, 88);
-      case 'SARAWAK':
-        return Color.fromARGB(255, 163, 110, 90);
-      default:
-        return Colors.grey;
-    }
-  }
 
   // determine region average positions here
   final Map<String, LatLng> _regionPositions = {
@@ -165,8 +144,7 @@ class _MapPageState extends State<MapPage> {
                             // marker icon
                             Icon(
                               Icons.cell_tower,
-                              // color: _getRegionColor(tower.region),
-                              color: Colors.blue,
+                              color: tower.region.color,
                               size: 36,
                             ),
                             // information box
