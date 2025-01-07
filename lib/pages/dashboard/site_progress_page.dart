@@ -15,6 +15,7 @@ class SiteProgressPage extends StatefulWidget {
 
 class _SiteProgressPageState extends State<SiteProgressPage>
     with AutomaticKeepAliveClientMixin {
+  final searchController = TextEditingController();
   final surveyStatusFilter = <SurveyStatus>[];
   final drawingStatusFilter = <DrawingStatus>[];
   final regionFilter = <Region>[];
@@ -27,6 +28,12 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     super.build(context);
     final towers = Provider.of<List<Tower>>(context)
         .where((tower) =>
+            (tower.name
+                    .toLowerCase()
+                    .contains(searchController.text.toLowerCase()) ||
+                tower.id
+                    .toLowerCase()
+                    .contains(searchController.text.toLowerCase())) &&
             (surveyStatusFilter.isEmpty ||
                 surveyStatusFilter.contains(tower.surveyStatus)) &&
             (drawingStatusFilter.isEmpty ||
@@ -46,6 +53,13 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    TextField(
+                      controller: searchController,
+                      onChanged: (_) => setState(() {}),
+                      decoration:
+                          InputDecoration(prefixIcon: Icon(Icons.search)),
+                    ),
+                    SizedBox(height: 15),
                     Text(
                       'Filters',
                       style: TextStyle(fontWeight: FontWeight.bold),
