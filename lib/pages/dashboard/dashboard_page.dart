@@ -139,7 +139,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 excel.save(fileName: 'Reports.xlsx');
               },
-              child: Text('Download')),
+              child: Text('Report')),
           SizedBox(width: 10),
           IconButton(
               onPressed: () => Navigator.push(context,
