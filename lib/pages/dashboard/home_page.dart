@@ -489,7 +489,7 @@ class _HomePageState extends State<HomePage>
                                   sections: [
                                     PieChartSectionData(
                                       title:
-                                          'Balanced\n${(towers.where((tower) => tower.drawingStatus == null).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                          'Balance\n${(towers.where((tower) => tower.drawingStatus == null).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                       titleStyle: Theme.of(context)
                                           .textTheme
                                           .labelSmall,
