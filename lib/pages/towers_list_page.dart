@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:progrid/pages/map_page.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/providers/towers_provider.dart';
-import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
 class TowersListPage extends StatefulWidget {
@@ -128,10 +127,7 @@ class _TowersListPageState extends State<TowersListPage> {
                                               height: 12,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                color: tower.surveyStatus ==
-                                                        'surveyed'
-                                                    ? AppColors.green
-                                                    : AppColors.red,
+                                                color: tower.surveyStatus.color,
                                               ),
                                             ),
                                             const SizedBox(width: 4),

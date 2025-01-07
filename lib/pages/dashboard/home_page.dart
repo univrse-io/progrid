@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/drawing_status.dart';
 import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/region.dart';
+import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:provider/provider.dart';
 
@@ -38,6 +39,7 @@ class _HomePageState extends State<HomePage>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
+                  flex: 2,
                   child: Card(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -59,13 +61,14 @@ class _HomePageState extends State<HomePage>
                                 sections: [
                                   PieChartSectionData(
                                     title:
-                                        'Completed\n${(towers.where((tower) => tower.surveyStatus == 'surveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        'Completed\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titleStyle:
                                         Theme.of(context).textTheme.labelSmall,
                                     titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
-                                            tower.surveyStatus == 'surveyed')
+                                            tower.surveyStatus ==
+                                            SurveyStatus.surveyed)
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -73,13 +76,14 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        'In Progress\n${(towers.where((tower) => tower.surveyStatus == 'in-progress').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        'In Progress\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titleStyle:
                                         Theme.of(context).textTheme.labelSmall,
                                     titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
-                                            tower.surveyStatus == 'in-progress')
+                                            tower.surveyStatus ==
+                                            SurveyStatus.inprogress)
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -87,37 +91,21 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   PieChartSectionData(
                                     title:
-                                        'Balance\n${(towers.where((tower) => tower.surveyStatus == 'unsurveyed').length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        'Balance\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.unsurveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titleStyle:
                                         Theme.of(context).textTheme.labelSmall,
                                     titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
-                                            tower.surveyStatus == 'unsurveyed')
+                                            tower.surveyStatus ==
+                                            SurveyStatus.unsurveyed)
                                         .length
                                         .toDouble(),
                                     radius: 30,
                                     color: Colors.red,
                                   ),
                                 ])),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 5),
-                Expanded(
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Colors.purple, width: 2)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
+                          ),
                           Text('Regional Breakdown',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
@@ -131,7 +119,7 @@ class _HomePageState extends State<HomePage>
                                     ...Region.values
                                         .map((region) => PieChartSectionData(
                                               title:
-                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == 'surveyed').length / towers.where((tower) => tower.surveyStatus == 'surveyed').length * 100).toStringAsFixed(2)}%',
+                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == SurveyStatus.surveyed).length / towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length * 100).toStringAsFixed(2)}%',
                                               titleStyle: Theme.of(context)
                                                   .textTheme
                                                   .labelSmall,
@@ -141,7 +129,7 @@ class _HomePageState extends State<HomePage>
                                                       tower.region.name ==
                                                           region.name &&
                                                       tower.surveyStatus ==
-                                                          'surveyed')
+                                                          SurveyStatus.surveyed)
                                                   .length
                                                   .toDouble(),
                                               radius: 30,
@@ -253,7 +241,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.surveyStatus == 'in-progress').length}',
+                                        '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -268,7 +256,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.surveyStatus == 'surveyed').length}',
+                                        '${towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -283,7 +271,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.surveyStatus == 'unsurveyed').length}',
+                                        '${towers.where((tower) => tower.surveyStatus == SurveyStatus.unsurveyed).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -329,11 +317,11 @@ class _HomePageState extends State<HomePage>
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('Completed',
+                                    Text('In Progress',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.completed).length}',
+                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -359,11 +347,11 @@ class _HomePageState extends State<HomePage>
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('Incomplete',
+                                    Text('Balance',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.incomplete).length}',
+                                        '${towers.where((tower) => tower.drawingStatus == null).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -429,8 +417,8 @@ class _HomePageState extends State<HomePage>
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 5),
                                           decoration: BoxDecoration(
-                                            color:
-                                                Colors.black.withOpacity(0.7),
+                                            color: Colors.black
+                                                .withValues(alpha: 0.7),
                                             borderRadius:
                                                 BorderRadius.circular(4),
                                           ),
@@ -445,14 +433,8 @@ class _HomePageState extends State<HomePage>
                                                 height: 8,
                                                 decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
-                                                    color: switch (
-                                                        tower.surveyStatus) {
-                                                      'surveyed' =>
-                                                        Colors.green,
-                                                      'in-progress' =>
-                                                        Colors.amber,
-                                                      _ => Colors.red
-                                                    }),
+                                                    color: tower
+                                                        .surveyStatus.color),
                                               ),
                                               const SizedBox(width: 4),
 
@@ -484,6 +466,7 @@ class _HomePageState extends State<HomePage>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
+                  flex: 2,
                   child: Card(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -504,19 +487,33 @@ class _HomePageState extends State<HomePage>
                                   centerSpaceRadius: 40,
                                   startDegreeOffset: 45,
                                   sections: [
+                                    PieChartSectionData(
+                                      title:
+                                          'Balance\n${(towers.where((tower) => tower.drawingStatus == null).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                      titleStyle: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                      titlePositionPercentageOffset: 2,
+                                      value: towers
+                                          .where((tower) =>
+                                              tower.drawingStatus == null)
+                                          .length
+                                          .toDouble(),
+                                      radius: 30,
+                                      color: Colors.red,
+                                    ),
                                     ...DrawingStatus.values.map(
                                         (drawingStatus) => PieChartSectionData(
                                               title:
-                                                  '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus.name == drawingStatus.name).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                                  '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus == drawingStatus).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                               titleStyle: Theme.of(context)
                                                   .textTheme
                                                   .labelSmall,
                                               titlePositionPercentageOffset: 2,
                                               value: towers
                                                   .where((tower) =>
-                                                      tower
-                                                          .drawingStatus.name ==
-                                                      drawingStatus.name)
+                                                      tower.drawingStatus ==
+                                                      drawingStatus)
                                                   .length
                                                   .toDouble(),
                                               radius: 30,
@@ -524,24 +521,7 @@ class _HomePageState extends State<HomePage>
                                             )),
                                   ]),
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 5),
-                Expanded(
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Colors.green, width: 2)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
+                          ),
                           Text('Regional Breakdown',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
@@ -555,7 +535,7 @@ class _HomePageState extends State<HomePage>
                                     ...Region.values
                                         .map((region) => PieChartSectionData(
                                               title:
-                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus == DrawingStatus.submitted).length / towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length * 100).toStringAsFixed(2)}%',
                                               titleStyle: Theme.of(context)
                                                   .textTheme
                                                   .labelSmall,
@@ -564,9 +544,9 @@ class _HomePageState extends State<HomePage>
                                                   .where((tower) =>
                                                       tower.region.name ==
                                                           region.name &&
-                                                      tower.drawingStatus
-                                                              .name ==
-                                                          'submitted')
+                                                      tower.drawingStatus ==
+                                                          DrawingStatus
+                                                              .submitted)
                                                   .length
                                                   .toDouble(),
                                               radius: 30,
@@ -588,7 +568,7 @@ class _HomePageState extends State<HomePage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('Complete Graph',
+                        Text('On-Site Audit vs As-Built Drawing',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600)),
                         SizedBox(height: 10),
@@ -616,8 +596,9 @@ class _HomePageState extends State<HomePage>
                                   borderRadius: BorderRadius.zero,
                                   toY: towers
                                       .where((tower) =>
-                                          tower.surveyStatus == 'surveyed' &&
-                                          tower.type == 'Sharing/collocate')
+                                          tower.surveyStatus ==
+                                              SurveyStatus.surveyed &&
+                                          tower.type == 'Sharing/Co-locate')
                                       .length
                                       .toDouble(),
                                   width: 20,
@@ -628,7 +609,7 @@ class _HomePageState extends State<HomePage>
                                       .where((tower) =>
                                           tower.drawingStatus ==
                                               DrawingStatus.submitted &&
-                                          tower.type == 'Sharing/collocate')
+                                          tower.type == 'Sharing/Co-locate')
                                       .length
                                       .toDouble(),
                                   width: 20,
@@ -639,7 +620,8 @@ class _HomePageState extends State<HomePage>
                                   borderRadius: BorderRadius.zero,
                                   toY: towers
                                       .where((tower) =>
-                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.surveyStatus ==
+                                              SurveyStatus.surveyed &&
                                           tower.type == 'Greenfield')
                                       .length
                                       .toDouble(),
@@ -662,7 +644,8 @@ class _HomePageState extends State<HomePage>
                                   borderRadius: BorderRadius.zero,
                                   toY: towers
                                       .where((tower) =>
-                                          tower.surveyStatus == 'surveyed' &&
+                                          tower.surveyStatus ==
+                                              SurveyStatus.surveyed &&
                                           tower.type == 'Roof top')
                                       .length
                                       .toDouble(),
@@ -693,7 +676,7 @@ class _HomePageState extends State<HomePage>
                                   axisSide: meta.axisSide,
                                   space: 16,
                                   child: Text([
-                                    'Sharing/Collocate',
+                                    'Sharing/Co-locate',
                                     'Greenfield',
                                     'Rooftop'
                                   ][value.toInt()]),

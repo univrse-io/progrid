@@ -43,7 +43,7 @@ class _CarbonTabBarState extends State<CarbonTabBar> {
                       EdgeInsets.only(bottom: 48 + widget.indicatorThickness)),
               labelColor: carbonToken?.textPrimary,
               unselectedLabelColor:
-                  carbonToken?.textSecondary.withOpacity(0.7)),
+                  carbonToken?.textSecondary.withValues(alpha: 0.7)),
         ),
       ]);
 }

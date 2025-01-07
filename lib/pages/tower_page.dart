@@ -9,16 +9,20 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:image_watermark/image_watermark.dart';
+// import 'package:image_watermark/image_watermark.dart';
+import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/pages/issues/issues_list_page.dart';
+import 'package:progrid/providers/issues_provider.dart';
 import 'package:progrid/providers/towers_provider.dart';
 import 'package:progrid/providers/user_provider.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/dialog_utils.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TowerPage extends StatefulWidget {
   final String towerId;
@@ -44,8 +48,11 @@ class _TowerPageState extends State<TowerPage> {
       orElse: () => throw Exception("Tower not found"),
     );
 
-    _notesController.text =
-        selectedTower.notes ?? 'Enter text here...'; // get tower notes
+    final issuesProvider = Provider.of<IssuesProvider>(context);
+    final issues = issuesProvider.issues.where((issue) => issue.id.startsWith(
+        '${widget.towerId}-I')); // query all elements in this list, check if any are unresolved
+
+    _notesController.text = selectedTower.notes ?? ''; // get tower notes
 
     return Scaffold(
       appBar: AppBar(
@@ -110,46 +117,30 @@ class _TowerPageState extends State<TowerPage> {
                   Container(
                     padding: const EdgeInsets.only(left: 14, right: 10),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      color: selectedTower.surveyStatus == 'surveyed'
-                          ? AppColors.green
-                          : selectedTower.surveyStatus == 'in-progress'
-                              ? AppColors.yellow
-                              : AppColors.red,
-                    ),
-                    child: DropdownButton(
+                        borderRadius: BorderRadius.circular(24),
+                        color: selectedTower.surveyStatus.color),
+                    child: DropdownButton<SurveyStatus>(
+                      // type specifics required
                       isDense: true,
                       value: selectedTower.surveyStatus,
                       onChanged: (value) {
                         if (value != null &&
                             value != selectedTower.surveyStatus) {
                           FirestoreService.updateTower(selectedTower.id,
-                              data: {'surveyStatus': value});
+                              data: {'surveyStatus': value.toString()});
                           selectedTower.surveyStatus =
                               value; // update local as well
                         }
                       },
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'surveyed',
-                          child: Text('Surveyed'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'in-progress',
-                          child: Text('In-Progress'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'unsurveyed',
-                          child: Text('Unsurveyed'),
-                        ),
-                      ],
+                      items: SurveyStatus.values.map((status) {
+                        return DropdownMenuItem(
+                          value: status,
+                          child: Text(status.toString()),
+                        );
+                      }).toList(),
                       iconEnabledColor: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(24),
-                      dropdownColor: selectedTower.surveyStatus == 'surveyed'
-                          ? AppColors.green
-                          : selectedTower.surveyStatus == 'in-progress'
-                              ? AppColors.yellow
-                              : AppColors.red,
+                      dropdownColor: selectedTower.surveyStatus.color,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.surface,
                         fontWeight: FontWeight.bold,
@@ -158,69 +149,6 @@ class _TowerPageState extends State<TowerPage> {
                   ),
                 ],
               ),
-
-              // tower drawing status (temp)
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     Text(
-              //       'Drawing: ',
-              //       style: TextStyle(
-              //         fontStyle: FontStyle.italic,
-              //         fontSize: 17,
-              //       ),
-              //     ),
-              //     const SizedBox(width: 5),
-
-              //     // dropdown
-              //     Container(
-              //       padding: const EdgeInsets.only(left: 14, right: 10),
-              //       decoration: BoxDecoration(
-              //         borderRadius: BorderRadius.circular(24),
-              //         color: selectedTower.drawingStatus == 'complete'
-              //             ? AppColors.green
-              //             : selectedTower.drawingStatus == 'submitted'
-              //                 ? AppColors.yellow
-              //                 : AppColors.red,
-              //       ),
-              //       child: DropdownButton(
-              //         isDense: true,
-              //         value: selectedTower.drawingStatus,
-              //         onChanged: (value) async {
-              //           if (value != null && value != selectedTower.drawingStatus) {
-              //             await FirebaseFirestore.instance.collection('towers').doc(selectedTower.id).update({'drawingStatus': value});
-              //             selectedTower.drawingStatus = value; // update local as well
-              //           }
-              //         },
-              //         items: const [
-              //           DropdownMenuItem(
-              //             value: 'complete',
-              //             child: Text('Complete'),
-              //           ),
-              //           DropdownMenuItem(
-              //             value: 'submitted',
-              //             child: Text('Submitted'),
-              //           ),
-              //           DropdownMenuItem(
-              //             value: 'incomplete',
-              //             child: Text('Incomplete'),
-              //           ),
-              //         ],
-              //         iconEnabledColor: Theme.of(context).colorScheme.surface,
-              //         borderRadius: BorderRadius.circular(24),
-              //         dropdownColor: selectedTower.drawingStatus == 'complete'
-              //             ? AppColors.green
-              //             : selectedTower.drawingStatus == 'submitted'
-              //                 ? AppColors.yellow
-              //                 : AppColors.red,
-              //         style: TextStyle(
-              //           color: Theme.of(context).colorScheme.surface,
-              //           fontWeight: FontWeight.bold,
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
               const SizedBox(height: 14),
 
               Divider(),
@@ -386,8 +314,6 @@ class _TowerPageState extends State<TowerPage> {
                     _debounceTimer =
                         Timer(const Duration(milliseconds: 2000), () {
                       // update notes every one second of changes
-                      // TODO: check if database updating is happening when there are no updates
-                      // UNDONE: ISSUE, text field loses focus on rebuild; cursor disappears
                       towersProvider.updateNotes(widget.towerId, text);
                     });
                   },
@@ -419,8 +345,10 @@ class _TowerPageState extends State<TowerPage> {
                   const SizedBox(width: 2),
                   Expanded(
                     child: FilledButton(
-                      onPressed: selectedTower.images.length != 1
-                          ? null
+                      // added condition to check if there are any unresolved issues
+                      onPressed: selectedTower.images.length != 1 ||
+                              issues.any((issue) => issue.status != 'resolved')
+                          ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
                           : () async {
                               await _signOut();
                             },
@@ -681,27 +609,39 @@ class _TowerPageState extends State<TowerPage> {
         }
       }
 
-      // add watermark
+      // add watermark to image
+      final decodeImage = img.decodeImage(imageFile.readAsBytesSync());
+      if (decodeImage == null) {
+        // TODO: handle fail to decode for watermark case here
+        print('Failed to decode image');
+        return;
+      }
+
       final watermarkText =
           '$formattedDateTime\nLat: $latitude, Lon: $longitude';
-      final bytes = await ImageWatermark.addTextWatermark(
-        imgBytes: await imageFile.readAsBytes(),
-        dstX: 0,
-        dstY: 0,
-        watermarkText: watermarkText,
-      );
+      final x = decodeImage.width - 10;
+      final y = decodeImage.height - 50;
 
-      // save image locally, maybe not needed?
-      final tempDir = await getTemporaryDirectory();
-      await File('${tempDir.path}/${pickedFile.name}').writeAsBytes(bytes);
+      img.drawString(decodeImage, watermarkText,
+          font: img.arial24,
+          x: x,
+          y: y,
+          color: img.ColorRgb8(0, 0, 0),
+          rightJustify: true);
+
+      // save locally
+      final watermarkedImagePath =
+          '${(await getTemporaryDirectory()).path}/watermarked_${pickedFile.name}';
+      await File(watermarkedImagePath).writeAsBytes(img.encodeJpg(decodeImage));
 
       // upload image to firebase storage
       final String fileName =
-          DateTime.now().microsecondsSinceEpoch.toString(); // unique
+          '${DateTime.now().microsecondsSinceEpoch}'; // unique
       final Reference storageRef =
           FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
 
-      final UploadTask uploadTask = storageRef.putFile(imageFile);
+      final UploadTask uploadTask =
+          storageRef.putFile(File(watermarkedImagePath));
 
       final TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
       final String downloadUrl = await snapshot.ref.getDownloadURL();
@@ -717,12 +657,13 @@ class _TowerPageState extends State<TowerPage> {
 
         // update tower status
         if (isSignOut) {
-          await towersProvider.updateSurveyStatus(widget.towerId, 'surveyed');
+          await towersProvider.updateSurveyStatus(
+              widget.towerId, SurveyStatus.surveyed);
           await towersProvider.updateSignOut(
               widget.towerId, Timestamp.fromDate(DateTime.now()));
         } else {
           await towersProvider.updateSurveyStatus(
-              widget.towerId, 'in-progress');
+              widget.towerId, SurveyStatus.inprogress);
           await towersProvider.updateSignIn(
               widget.towerId, Timestamp.fromDate(DateTime.now()));
         }
@@ -745,19 +686,13 @@ class _TowerPageState extends State<TowerPage> {
     try {
       if (mounted) DialogUtils.showLoadingDialog(context);
 
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      final permission = Platform.isAndroid && androidInfo.version.sdkInt > 32
-          ? Permission.photos
-          : Permission.storage;
-      final status = await permission.request();
+      final permission = Platform.isAndroid
+          ? (await DeviceInfoPlugin().androidInfo).version.sdkInt > 32
+              ? Permission.photos
+              : Permission.storage
+          : Permission.photos;
 
-      if (await Permission.storage.isRestricted) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Debug Storage Denied')),
-          );
-        }
-      }
+      final status = await permission.request();
 
       if (status.isDenied) {
         if (mounted) {
@@ -771,12 +706,11 @@ class _TowerPageState extends State<TowerPage> {
       }
 
       if (status.isPermanentlyDenied) {
-        // go to app settings
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text(
-                'Storage permission permanently denied. Please allow it from settings.',
+                'Permission permanently denied. Please allow it from settings.',
               ),
               action: SnackBarAction(
                 label: 'Settings',
@@ -798,17 +732,25 @@ class _TowerPageState extends State<TowerPage> {
       }
 
       // get directory
-      Directory? externalDir = Directory(
-          '/storage/emulated/0/Download'); // download folder on android
-      if (!externalDir.existsSync()) {
-        externalDir = await getExternalStorageDirectory();
+      Directory? directory;
+      if (Platform.isAndroid) {
+        directory = Directory(
+            '/storage/emulated/0/Download'); // Default Android download folder
+        if (!directory.existsSync()) {
+          directory = await getExternalStorageDirectory();
+        }
+      } else if (Platform.isIOS) {
+        directory = await getApplicationDocumentsDirectory();
       }
 
-      final fileName =
-          DateTime.now().millisecondsSinceEpoch; // extract file name from URL
-      final file = File('${externalDir!.path}/$fileName');
+      if (directory == null || directory.path.isEmpty) {
+        throw Exception('Failed to get a valid directory path.');
+      }
 
-      // write file
+      // save the file
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final file = File('${directory.path}/$fileName');
+
       await file.writeAsBytes(response.bodyBytes);
 
       if (mounted) {
@@ -852,15 +794,26 @@ class _TowerPageState extends State<TowerPage> {
           Expanded(
             child: isLink
                 ? GestureDetector(
-                    onTap: () {
-                      // TODO: fix
-                      // final towersProvider = Provider.of<TowersProvider>(context, listen: false);
-                      // final selectedTower = towersProvider.towers.firstWhere(
-                      //   (tower) => tower.id == widget.towerId,
-                      //   orElse: () => throw Exception("Tower not found"),
-                      // );
+                    onTap: () async {
+                      // TODO: implement apple maps
+                      final towersProvider =
+                          Provider.of<TowersProvider>(context, listen: false);
+                      final selectedTower = towersProvider.towers.firstWhere(
+                        (tower) => tower.id == widget.towerId,
+                        orElse: () => throw Exception("Tower not found"),
+                      );
 
-                      // MapsLauncher.launchCoordinates(selectedTower.position.latitude, selectedTower.position.longitude);
+                      final uri = Uri(
+                          scheme: "google.navigation",
+                          queryParameters: {
+                            'q':
+                                "${selectedTower.position.latitude}, ${selectedTower.position.longitude}"
+                          });
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(uri);
+                      } else {
+                        print('unable to launch google maps');
+                      }
                     },
                     child: Text(
                       content,

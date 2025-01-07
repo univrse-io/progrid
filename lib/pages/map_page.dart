@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:progrid/models/region.dart';
+import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/pages/profile_page.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/pages/towers_list_page.dart';
@@ -12,9 +12,7 @@ import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
 // uses openstreetmap
-
 // TODO: implement map marker filter
-// TODO: implement map region jump selection
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -29,26 +27,6 @@ class _MapPageState extends State<MapPage> {
 
   // TODO: move this to firebase server, to allow switching incase of tile server crashes
   final String _tileLayerUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-  // determine region color here
-  Color _getRegionColor(Region region) {
-    switch (region.name) {
-      case 'southern':
-        return Color.fromARGB(255, 82, 114, 76);
-      case 'northern':
-        return Color.fromARGB(255, 100, 68, 68);
-      case 'eastern':
-        return Color.fromARGB(255, 134, 124, 79);
-      case 'central':
-        return Color.fromARGB(255, 63, 81, 100);
-      case 'sabah':
-        return Color.fromARGB(255, 62, 88, 88);
-      case 'sarawak':
-        return Color.fromARGB(255, 163, 110, 90);
-      default:
-        return Colors.grey;
-    }
-  }
 
   // determine region average positions here
   final Map<String, LatLng> _regionPositions = {
@@ -135,13 +113,13 @@ class _MapPageState extends State<MapPage> {
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
                   polygonOptions:
-                      PolygonOptions(color: Colors.black.withOpacity(0.1)),
+                      PolygonOptions(color: Colors.black.withValues(alpha: 0.1)),
                   maxClusterRadius: 50,
                   alignment: Alignment.center,
                   centerMarkerOnClick: false,
                   padding: const EdgeInsets.all(10),
                   maxZoom: 13,
-                  // spiderfyCluster: false, // TODO: Review, essentially what it does is it moves the markers away from each other to make them more visible
+                  // spiderfyCluster: false,
                   markers: towersProvider.towers.map((tower) {
                     return Marker(
                       point: LatLng(
@@ -165,14 +143,14 @@ class _MapPageState extends State<MapPage> {
                             // marker icon
                             Icon(
                               Icons.cell_tower,
-                              color: _getRegionColor(tower.region),
+                              color: tower.region.color,
                               size: 36,
                             ),
                             // information box
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.6),
+                                color: Colors.black.withValues(alpha: 0.6),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Row(
@@ -185,11 +163,7 @@ class _MapPageState extends State<MapPage> {
                                     height: 8,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: tower.surveyStatus == 'surveyed'
-                                          ? AppColors.green
-                                          : tower.surveyStatus == 'in-progress'
-                                              ? AppColors.yellow
-                                              : AppColors.red,
+                                      color: tower.surveyStatus.color
                                     ),
                                   ),
                                   const SizedBox(width: 4),
@@ -214,7 +188,7 @@ class _MapPageState extends State<MapPage> {
                     // Calculate proportions
                     final statusCounts = <String, int>{
                       'surveyed': 0,
-                      'in-progress': 0,
+                      'inprogress': 0,
                       'unsurveyed': 0,
                     };
 
@@ -231,12 +205,12 @@ class _MapPageState extends State<MapPage> {
                         );
 
                         // increment the status counts based on the tower's status
-                        if (tower.surveyStatus == 'surveyed') {
+                        if (tower.surveyStatus == SurveyStatus.surveyed) {
                           statusCounts['surveyed'] =
                               statusCounts['surveyed']! + 1;
-                        } else if (tower.surveyStatus == 'in-progress') {
-                          statusCounts['in-progress'] =
-                              statusCounts['in-progress']! + 1;
+                        } else if (tower.surveyStatus == SurveyStatus.inprogress) {
+                          statusCounts['inprogress'] =
+                              statusCounts['inprogress']! + 1;
                         } else {
                           statusCounts['unsurveyed'] =
                               statusCounts['unsurveyed']! + 1;
@@ -254,7 +228,7 @@ class _MapPageState extends State<MapPage> {
                     // status colors
                     final statusColors = {
                       'surveyed': AppColors.green,
-                      'in-progress': AppColors.yellow,
+                      'inprogress': AppColors.yellow,
                       'unsurveyed': AppColors.red,
                     };
 
@@ -270,7 +244,7 @@ class _MapPageState extends State<MapPage> {
               // add attributions here
               SimpleAttributionWidget(
                 source: Text('OpenStreetMap'),
-                backgroundColor: Colors.black.withOpacity(0.1),
+                backgroundColor: Colors.black.withValues(alpha: 0.1),
               ),
             ],
           ),
@@ -284,7 +258,7 @@ class _MapPageState extends State<MapPage> {
               onPressed: () async {
                 final String? selectedRegion = await showMenu(
                   elevation: 0,
-                  color: Colors.black.withOpacity(0),
+                  color: Colors.black.withValues(alpha: 0),
                   context: context,
                   position: RelativeRect.fromLTRB(0, 70, 0, 0),
                   items: _regionPositions.keys.map((region) {
@@ -295,7 +269,7 @@ class _MapPageState extends State<MapPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
+                          color: Colors.black.withValues(alpha: 0.7),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -314,7 +288,7 @@ class _MapPageState extends State<MapPage> {
                   _zoomToRegion(selectedRegion);
                 }
               },
-              backgroundColor: Colors.black.withOpacity(0.6),
+              backgroundColor: Colors.black.withValues(alpha: 0.6),
               child: const Icon(
                 Icons.map,
                 size: 32,
@@ -329,21 +303,20 @@ class _MapPageState extends State<MapPage> {
             right: 14,
             child: Row(
               children: [
-                // filter button
-                FloatingActionButton(
-                  heroTag: 'filter',
-                  onPressed: () {},
-                  backgroundColor: Colors.black.withOpacity(0.6),
-                  child: const Icon(
-                    Icons.filter_alt_outlined,
-                    size: 32,
-                  ),
-                  mini: true,
-                ),
+                // // filter button
+                // FloatingActionButton(
+                //   heroTag: 'filter',
+                //   onPressed: () {},
+                //   backgroundColor: Colors.black.withValues(alpha: 0.6),
+                //   child: const Icon(
+                //     Icons.filter_alt_outlined,
+                //     size: 32,
+                //   ),
+                //   mini: true,
+                // ),
 
-                const SizedBox(width: 5),
+                // const SizedBox(width: 5),
 
-                // TODO: fix hero
                 // search button
                 FloatingActionButton(
                   heroTag: 'searchbar',
@@ -363,7 +336,7 @@ class _MapPageState extends State<MapPage> {
                       ),
                     );
                   },
-                  backgroundColor: Colors.black.withOpacity(0.6),
+                  backgroundColor: Colors.black.withValues(alpha: 0.6),
                   child: const Icon(
                     Icons.search,
                     size: 32,
@@ -401,7 +374,7 @@ class _MapPageState extends State<MapPage> {
                       // ),
                     );
                   },
-                  backgroundColor: Colors.black.withOpacity(0.6),
+                  backgroundColor: Colors.black.withValues(alpha: 0.6),
                   child: const Icon(
                     Icons.person,
                     size: 32,
