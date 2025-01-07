@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
+                  flex: 2,
                   child: Card(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -66,7 +67,8 @@ class _HomePageState extends State<HomePage>
                                     titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
-                                            tower.surveyStatus == SurveyStatus.surveyed)
+                                            tower.surveyStatus ==
+                                            SurveyStatus.surveyed)
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -80,7 +82,8 @@ class _HomePageState extends State<HomePage>
                                     titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
-                                            tower.surveyStatus == SurveyStatus.inprogress)
+                                            tower.surveyStatus ==
+                                            SurveyStatus.inprogress)
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -94,31 +97,15 @@ class _HomePageState extends State<HomePage>
                                     titlePositionPercentageOffset: 2,
                                     value: towers
                                         .where((tower) =>
-                                            tower.surveyStatus == SurveyStatus.unsurveyed)
+                                            tower.surveyStatus ==
+                                            SurveyStatus.unsurveyed)
                                         .length
                                         .toDouble(),
                                     radius: 30,
                                     color: Colors.red,
                                   ),
                                 ])),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 5),
-                Expanded(
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Colors.purple, width: 2)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
+                          ),
                           Text('Regional Breakdown',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
@@ -430,8 +417,8 @@ class _HomePageState extends State<HomePage>
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 5),
                                           decoration: BoxDecoration(
-                                            color:
-                                                Colors.black.withValues(alpha: 0.7),
+                                            color: Colors.black
+                                                .withValues(alpha: 0.7),
                                             borderRadius:
                                                 BorderRadius.circular(4),
                                           ),
@@ -446,8 +433,8 @@ class _HomePageState extends State<HomePage>
                                                 height: 8,
                                                 decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
-                                                    color: tower.surveyStatus.color
-                                                ),
+                                                    color: tower
+                                                        .surveyStatus.color),
                                               ),
                                               const SizedBox(width: 4),
 
@@ -479,6 +466,7 @@ class _HomePageState extends State<HomePage>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
+                  flex: 2,
                   child: Card(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -519,24 +507,7 @@ class _HomePageState extends State<HomePage>
                                             )),
                                   ]),
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 5),
-                Expanded(
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(color: Colors.green, width: 2)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
+                          ),
                           Text('Regional Breakdown',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
@@ -611,7 +582,8 @@ class _HomePageState extends State<HomePage>
                                   borderRadius: BorderRadius.zero,
                                   toY: towers
                                       .where((tower) =>
-                                          tower.surveyStatus == SurveyStatus.surveyed &&
+                                          tower.surveyStatus ==
+                                              SurveyStatus.surveyed &&
                                           tower.type == 'Sharing/collocate')
                                       .length
                                       .toDouble(),
@@ -634,7 +606,8 @@ class _HomePageState extends State<HomePage>
                                   borderRadius: BorderRadius.zero,
                                   toY: towers
                                       .where((tower) =>
-                                          tower.surveyStatus == SurveyStatus.surveyed &&
+                                          tower.surveyStatus ==
+                                              SurveyStatus.surveyed &&
                                           tower.type == 'Greenfield')
                                       .length
                                       .toDouble(),
@@ -657,7 +630,8 @@ class _HomePageState extends State<HomePage>
                                   borderRadius: BorderRadius.zero,
                                   toY: towers
                                       .where((tower) =>
-                                          tower.surveyStatus == SurveyStatus.surveyed &&
+                                          tower.surveyStatus ==
+                                              SurveyStatus.surveyed &&
                                           tower.type == 'Roof top')
                                       .length
                                       .toDouble(),
