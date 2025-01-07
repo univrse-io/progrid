@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 enum DrawingStatus {
-  incomplete(Colors.red),
-  completed(Colors.amber),
-  submitted(Colors.green);
+  incomplete(Colors.red, 'Incomplete'),
+  completed(Colors.amber, 'Completed'),
+  submitted(Colors.green, 'Submitted');
 
   final Color color;
+  final String text;
 
-  const DrawingStatus(this.color);
+  const DrawingStatus(this.color, this.text);
 
   @override
-  String toString() => name.replaceAllMapped(RegExp('^([a-z])|[A-Z]'),
-      (Match m) => m[1] == null ? " ${m[0]}" : m[1]!.toUpperCase());
+  String toString() => text;
 }
