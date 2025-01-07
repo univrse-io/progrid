@@ -45,8 +45,7 @@ class UserProvider extends ChangeNotifier {
   // fetch user information from database given an auth user
   Future<void> fetchUserInfoFromDatabase(User user) async {
     try {
-      final userDoc =
-          await FirestoreService.usersCollection.doc(user.uid).get();
+      final userDoc = await FirestoreService.usersCollection.doc(user.uid).get();
 
       if (userDoc.exists) {
         final data = userDoc.data()!;
@@ -65,6 +64,7 @@ class UserProvider extends ChangeNotifier {
       }
     } catch (e) {
       print("Failed to fetch user info: $e");
+      logout();
     }
   }
 }

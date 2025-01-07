@@ -12,7 +12,6 @@ import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
 // uses openstreetmap
-
 // TODO: implement map marker filter
 
 class MapPage extends StatefulWidget {
@@ -31,12 +30,12 @@ class _MapPageState extends State<MapPage> {
 
   // determine region average positions here
   final Map<String, LatLng> _regionPositions = {
-    'SOUTHERN': LatLng(2.0953, 103.0404),
-    'NORTHERN': LatLng(5.1152, 100.4532),
-    'EASTERN': LatLng(4.3120, 102.4632),
-    'CENTRAL': LatLng(3.0147, 101.3747),
-    'SABAH': LatLng(5.9804, 116.0735),
-    'SARAWAK': LatLng(1.5548, 110.3592),
+    'southern': LatLng(2.0953, 103.0404),
+    'northern': LatLng(5.1152, 100.4532),
+    'eastern': LatLng(4.3120, 102.4632),
+    'central': LatLng(3.0147, 101.3747),
+    'sabah': LatLng(5.9804, 116.0735),
+    'sarawak': LatLng(1.5548, 110.3592),
   };
 
   // configure map tile builder here

@@ -11,7 +11,6 @@ class Tower {
   String owner = 'null';
   String address;
   GeoPoint position;
-  // TODO: Change the field type from String to [SurveyStatus] enum.
   SurveyStatus surveyStatus;
   DrawingStatus drawingStatus;
   List<String> images;
