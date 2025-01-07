@@ -57,6 +57,10 @@
     <string>We need access to your Photos to save downloaded images.</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>We need access to add images to your Photos Library.</string>
+
+	<!-- Camera Usage Permission -->
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera to take photos or record videos.</string>
 	
 </dict>
 </plist>
