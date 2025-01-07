@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 enum DrawingStatus {
   incomplete(Colors.red, 'Incomplete'),
-  completed(Colors.amber, 'Completed'),
+  inprogress(Colors.amber, 'In Progress'),
   submitted(Colors.green, 'Submitted');
 
   final Color color;
-  final String text;
+  final String _text;
 
-  const DrawingStatus(this.color, this.text);
+  const DrawingStatus(this.color, this._text);
 
   @override
-  String toString() => text;
+  String toString() => _text;
 }

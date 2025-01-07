@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:progrid/models/drawing_status.dart';
+import 'package:progrid/models/region.dart';
+import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:provider/provider.dart';
@@ -13,8 +15,9 @@ class SiteProgressPage extends StatefulWidget {
 
 class _SiteProgressPageState extends State<SiteProgressPage>
     with AutomaticKeepAliveClientMixin {
-  final surveyStatusFilter = <String>[];
+  final surveyStatusFilter = <SurveyStatus>[];
   final drawingStatusFilter = <DrawingStatus>[];
+  final regionFilter = <Region>[];
 
   @override
   bool get wantKeepAlive => true;
@@ -25,9 +28,10 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     final towers = Provider.of<List<Tower>>(context)
         .where((tower) =>
             (surveyStatusFilter.isEmpty ||
-                surveyStatusFilter.contains(tower.surveyStatus.toString())) &&
+                surveyStatusFilter.contains(tower.surveyStatus)) &&
             (drawingStatusFilter.isEmpty ||
-                drawingStatusFilter.contains(tower.drawingStatus)))
+                drawingStatusFilter.contains(tower.drawingStatus)) &&
+            (regionFilter.isEmpty || regionFilter.contains(tower.region)))
         .toList();
 
     return Padding(
@@ -48,33 +52,15 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                     ),
                     SizedBox(height: 15),
                     Text('On-Site Audit'),
-                    CheckboxListTile(
+                    ...SurveyStatus.values.map((status) => CheckboxListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         controlAffinity: ListTileControlAffinity.leading,
-                        title: Text('In Progress'),
-                        value: surveyStatusFilter.contains('in-progress'),
+                        title: Text(status.toString()),
+                        value: surveyStatusFilter.contains(status),
                         onChanged: (value) => setState(() => value!
-                            ? surveyStatusFilter.add('in-progress')
-                            : surveyStatusFilter.remove('in-progress'))),
-                    CheckboxListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: Text('Surveyed'),
-                        value: surveyStatusFilter.contains('surveyed'),
-                        onChanged: (value) => setState(() => value!
-                            ? surveyStatusFilter.add('surveyed')
-                            : surveyStatusFilter.remove('surveyed'))),
-                    CheckboxListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: Text('Unsurveyed'),
-                        value: surveyStatusFilter.contains('unsurveyed'),
-                        onChanged: (value) => setState(() => value!
-                            ? surveyStatusFilter.add('unsurveyed')
-                            : surveyStatusFilter.remove('unsurveyed'))),
+                            ? surveyStatusFilter.add(status)
+                            : surveyStatusFilter.remove(status)))),
                     SizedBox(height: 15),
                     Text('As-Built Drawing'),
                     ...DrawingStatus.values.map((status) => CheckboxListTile(
@@ -85,7 +71,18 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         value: drawingStatusFilter.contains(status),
                         onChanged: (value) => setState(() => value!
                             ? drawingStatusFilter.add(status)
-                            : drawingStatusFilter.remove(status))))
+                            : drawingStatusFilter.remove(status)))),
+                    SizedBox(height: 15),
+                    Text('Region'),
+                    ...Region.values.map((region) => CheckboxListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(region.toString()),
+                        value: regionFilter.contains(region),
+                        onChanged: (value) => setState(() => value!
+                            ? regionFilter.add(region)
+                            : regionFilter.remove(region))))
                   ],
                 ),
               ),

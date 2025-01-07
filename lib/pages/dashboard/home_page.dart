@@ -321,7 +321,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.completed).length}',
+                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)

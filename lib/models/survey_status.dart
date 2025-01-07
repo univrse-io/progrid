@@ -7,10 +7,10 @@ enum SurveyStatus {
   surveyed(AppColors.green, 'Surveyed');
 
   final Color color;
-  final String text;
+  final String _text;
 
-  const SurveyStatus(this.color, this.text);
+  const SurveyStatus(this.color, this._text);
 
   @override
-  String toString() => text;
+  String toString() => _text;
 }
