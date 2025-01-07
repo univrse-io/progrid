@@ -584,7 +584,7 @@ class _HomePageState extends State<HomePage>
                                       .where((tower) =>
                                           tower.surveyStatus ==
                                               SurveyStatus.surveyed &&
-                                          tower.type == 'Sharing/collocate')
+                                          tower.type == 'Sharing/Co-locate')
                                       .length
                                       .toDouble(),
                                   width: 20,
@@ -595,7 +595,7 @@ class _HomePageState extends State<HomePage>
                                       .where((tower) =>
                                           tower.drawingStatus ==
                                               DrawingStatus.submitted &&
-                                          tower.type == 'Sharing/collocate')
+                                          tower.type == 'Sharing/Co-locate')
                                       .length
                                       .toDouble(),
                                   width: 20,
@@ -662,7 +662,7 @@ class _HomePageState extends State<HomePage>
                                   axisSide: meta.axisSide,
                                   space: 16,
                                   child: Text([
-                                    'Sharing/Collocate',
+                                    'Sharing/Co-locate',
                                     'Greenfield',
                                     'Rooftop'
                                   ][value.toInt()]),
