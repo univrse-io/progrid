@@ -8,7 +8,7 @@ class Tower {
   String name;
   Region region;
   String type;
-  String owner;
+  String owner = 'null';
   String address;
   GeoPoint position;
   // TODO: Change the field type from String to [SurveyStatus] enum.
@@ -42,7 +42,7 @@ class Tower {
       name: json['name'] as String,
       region: Region.values.byName((json['region'] as String).toLowerCase()),
       type: json['type'] as String,
-      owner: json['owner'] as String,
+      owner: (json['owner'] as String?) ?? 'no owner',
       address: json['address'] as String,
       position: json['position'] as GeoPoint,
       // surveyStatus: json['surveyStatus'] as String,

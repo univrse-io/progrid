@@ -134,11 +134,7 @@ class _TowerPageState extends State<TowerPage> {
                       }).toList(),
                       iconEnabledColor: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(24),
-                      dropdownColor: selectedTower.surveyStatus == 'surveyed'
-                          ? AppColors.green
-                          : selectedTower.surveyStatus == 'in-progress'
-                              ? AppColors.yellow
-                              : AppColors.red,
+                      dropdownColor: selectedTower.surveyStatus.color,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.surface,
                         fontWeight: FontWeight.bold,

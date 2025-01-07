@@ -33,17 +33,17 @@ class _MapPageState extends State<MapPage> {
   // determine region color here
   Color _getRegionColor(Region region) {
     switch (region.name) {
-      case 'southern':
+      case 'SOUTHERN':
         return Color.fromARGB(255, 82, 114, 76);
-      case 'northern':
+      case 'NORTHERN':
         return Color.fromARGB(255, 100, 68, 68);
-      case 'eastern':
+      case 'EASTERN':
         return Color.fromARGB(255, 134, 124, 79);
-      case 'central':
+      case 'CENTRAL':
         return Color.fromARGB(255, 63, 81, 100);
-      case 'sabah':
+      case 'SABAH':
         return Color.fromARGB(255, 62, 88, 88);
-      case 'sarawak':
+      case 'SARAWAK':
         return Color.fromARGB(255, 163, 110, 90);
       default:
         return Colors.grey;
@@ -52,12 +52,12 @@ class _MapPageState extends State<MapPage> {
 
   // determine region average positions here
   final Map<String, LatLng> _regionPositions = {
-    'southern': LatLng(2.0953, 103.0404),
-    'northern': LatLng(5.1152, 100.4532),
-    'eastern': LatLng(4.3120, 102.4632),
-    'central': LatLng(3.0147, 101.3747),
-    'sabah': LatLng(5.9804, 116.0735),
-    'sarawak': LatLng(1.5548, 110.3592),
+    'SOUTHERN': LatLng(2.0953, 103.0404),
+    'NORTHERN': LatLng(5.1152, 100.4532),
+    'EASTERN': LatLng(4.3120, 102.4632),
+    'CENTRAL': LatLng(3.0147, 101.3747),
+    'SABAH': LatLng(5.9804, 116.0735),
+    'SARAWAK': LatLng(1.5548, 110.3592),
   };
 
   // configure map tile builder here
@@ -165,7 +165,8 @@ class _MapPageState extends State<MapPage> {
                             // marker icon
                             Icon(
                               Icons.cell_tower,
-                              color: _getRegionColor(tower.region),
+                              // color: _getRegionColor(tower.region),
+                              color: Colors.blue,
                               size: 36,
                             ),
                             // information box
@@ -210,7 +211,7 @@ class _MapPageState extends State<MapPage> {
                     // Calculate proportions
                     final statusCounts = <String, int>{
                       'surveyed': 0,
-                      'in-progress': 0,
+                      'inprogress': 0,
                       'unsurveyed': 0,
                     };
 
@@ -231,8 +232,8 @@ class _MapPageState extends State<MapPage> {
                           statusCounts['surveyed'] =
                               statusCounts['surveyed']! + 1;
                         } else if (tower.surveyStatus == SurveyStatus.inprogress) {
-                          statusCounts['in-progress'] =
-                              statusCounts['in-progress']! + 1;
+                          statusCounts['inprogress'] =
+                              statusCounts['inprogress']! + 1;
                         } else {
                           statusCounts['unsurveyed'] =
                               statusCounts['unsurveyed']! + 1;
@@ -250,7 +251,7 @@ class _MapPageState extends State<MapPage> {
                     // status colors
                     final statusColors = {
                       'surveyed': AppColors.green,
-                      'in-progress': AppColors.yellow,
+                      'inprogress': AppColors.yellow,
                       'unsurveyed': AppColors.red,
                     };
 
