@@ -122,26 +122,29 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         ],
                       ),
                       subtitle: Text(tower.id),
-                      trailing: ToggleButtons(
-                          borderRadius: BorderRadius.circular(20),
-                          onPressed: (index) =>
-                              FirestoreService.updateTower(tower.id, data: {
-                                'drawingStatus':
-                                    DrawingStatus.values.toList()[index].name
-                              }),
-                          fillColor: Colors.green.shade100,
-                          selectedBorderColor: Colors.green.shade700,
-                          children: [
-                            ...DrawingStatus.values.map((status) => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: Text(status.toString()),
-                                )),
-                          ],
-                          isSelected: [
-                            ...DrawingStatus.values
-                                .map((status) => tower.drawingStatus == status)
-                          ]),
+                      trailing: Visibility(
+                        visible: tower.surveyStatus == SurveyStatus.surveyed,
+                        child: ToggleButtons(
+                            borderRadius: BorderRadius.circular(20),
+                            onPressed: (index) =>
+                                FirestoreService.updateTower(tower.id, data: {
+                                  'drawingStatus':
+                                      DrawingStatus.values[index].name
+                                }),
+                            fillColor: Colors.green.shade100,
+                            selectedBorderColor: Colors.green.shade700,
+                            children: [
+                              ...DrawingStatus.values.map((status) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Text(status.toString()),
+                                  )),
+                            ],
+                            isSelected: [
+                              ...DrawingStatus.values.map(
+                                  (status) => tower.drawingStatus == status)
+                            ]),
+                      ),
                     ),
                   );
                 }),
