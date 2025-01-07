@@ -12,7 +12,7 @@ class Tower {
   String address;
   GeoPoint position;
   SurveyStatus surveyStatus;
-  DrawingStatus drawingStatus;
+  DrawingStatus? drawingStatus;
   List<String> images;
   Timestamp? signIn;
   Timestamp? signOut;
@@ -44,11 +44,12 @@ class Tower {
       owner: (json['owner'] as String?) ?? 'no owner',
       address: json['address'] as String,
       position: json['position'] as GeoPoint,
-      // surveyStatus: json['surveyStatus'] as String,
       surveyStatus: SurveyStatus.values
           .byName((json['surveyStatus'] as String).toLowerCase()),
-      drawingStatus: DrawingStatus.values
-          .byName((json['drawingStatus'] as String).toLowerCase()),
+      drawingStatus: json['drawingStatus'] != null
+          ? DrawingStatus.values
+              .byName((json['drawingStatus'] as String).toLowerCase())
+          : null,
       images: (json['images'] as List?)?.cast<String>() ?? [],
       signIn: json['signIn'] as Timestamp?,
       signOut: json['signOut'] as Timestamp?,

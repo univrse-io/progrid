@@ -112,28 +112,20 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                           borderRadius: BorderRadius.circular(20),
                           onPressed: (index) =>
                               FirestoreService.updateTower(tower.id, data: {
-                                'drawingStatus': DrawingStatus.values
-                                    .where((status) =>
-                                        status != DrawingStatus.incomplete)
-                                    .toList()[index]
-                                    .name
+                                'drawingStatus':
+                                    DrawingStatus.values.toList()[index].name
                               }),
                           fillColor: Colors.green.shade100,
                           selectedBorderColor: Colors.green.shade700,
                           children: [
-                            ...DrawingStatus.values
-                                .where((status) =>
-                                    status != DrawingStatus.incomplete)
-                                .map((status) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      child: Text(status.toString()),
-                                    )),
+                            ...DrawingStatus.values.map((status) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Text(status.toString()),
+                                )),
                           ],
                           isSelected: [
                             ...DrawingStatus.values
-                                .where((status) =>
-                                    status != DrawingStatus.incomplete)
                                 .map((status) => tower.drawingStatus == status)
                           ]),
                     ),

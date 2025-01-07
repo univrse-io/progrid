@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 enum DrawingStatus {
-  incomplete(Colors.red, 'Incomplete'),
   inprogress(Colors.amber, 'In Progress'),
   submitted(Colors.green, 'Submitted');
 

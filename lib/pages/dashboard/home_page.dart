@@ -317,7 +317,7 @@ class _HomePageState extends State<HomePage>
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('Completed',
+                                    Text('In Progress',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
@@ -347,11 +347,11 @@ class _HomePageState extends State<HomePage>
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('Incomplete',
+                                    Text('Balance',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.incomplete).length}',
+                                        '${towers.where((tower) => tower.drawingStatus == null).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -487,19 +487,33 @@ class _HomePageState extends State<HomePage>
                                   centerSpaceRadius: 40,
                                   startDegreeOffset: 45,
                                   sections: [
+                                    PieChartSectionData(
+                                      title:
+                                          'Balanced\n${(towers.where((tower) => tower.drawingStatus == null).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                      titleStyle: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                      titlePositionPercentageOffset: 2,
+                                      value: towers
+                                          .where((tower) =>
+                                              tower.drawingStatus == null)
+                                          .length
+                                          .toDouble(),
+                                      radius: 30,
+                                      color: Colors.red,
+                                    ),
                                     ...DrawingStatus.values.map(
                                         (drawingStatus) => PieChartSectionData(
                                               title:
-                                                  '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus.name == drawingStatus.name).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                                  '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus == drawingStatus).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                               titleStyle: Theme.of(context)
                                                   .textTheme
                                                   .labelSmall,
                                               titlePositionPercentageOffset: 2,
                                               value: towers
                                                   .where((tower) =>
-                                                      tower
-                                                          .drawingStatus.name ==
-                                                      drawingStatus.name)
+                                                      tower.drawingStatus ==
+                                                      drawingStatus)
                                                   .length
                                                   .toDouble(),
                                               radius: 30,
@@ -521,7 +535,7 @@ class _HomePageState extends State<HomePage>
                                     ...Region.values
                                         .map((region) => PieChartSectionData(
                                               title:
-                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus.name == 'submitted').length / towers.where((tower) => tower.drawingStatus.name == 'submitted').length * 100).toStringAsFixed(2)}%',
+                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus == DrawingStatus.submitted).length / towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length * 100).toStringAsFixed(2)}%',
                                               titleStyle: Theme.of(context)
                                                   .textTheme
                                                   .labelSmall,
@@ -530,9 +544,9 @@ class _HomePageState extends State<HomePage>
                                                   .where((tower) =>
                                                       tower.region.name ==
                                                           region.name &&
-                                                      tower.drawingStatus
-                                                              .name ==
-                                                          'submitted')
+                                                      tower.drawingStatus ==
+                                                          DrawingStatus
+                                                              .submitted)
                                                   .length
                                                   .toDouble(),
                                               radius: 30,
