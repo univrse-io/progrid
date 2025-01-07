@@ -554,7 +554,7 @@ class _HomePageState extends State<HomePage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('Complete Graph',
+                        Text('On-Site Audit vs As-Built Drawing',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600)),
                         SizedBox(height: 10),
