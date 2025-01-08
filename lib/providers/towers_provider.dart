@@ -17,12 +17,10 @@ class TowersProvider extends ChangeNotifier {
       towers = [];
 
       // currently redownloads entire list everytime there is an update
-      _towersSubscription = FirestoreService.towersCollection
-          .snapshots()
-          .listen((snapshot) async {
-        towers = await Future.wait(
-            snapshot.docs.map((doc) async => Tower.fromFirestore(doc)));
+      _towersSubscription = FirestoreService.towersCollection.snapshots().listen((snapshot) async {
+        towers = await Future.wait(snapshot.docs.map((doc) async => Tower.fromFirestore(doc)));
         notifyListeners();
+        print("Successfully Loaded Towers");
       });
     } catch (e) {
       throw 'Error loading Towers: $e';
@@ -32,9 +30,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateSurveyStatus(String towerId, SurveyStatus surveyStatus) async {
     try {
       // update database
-      await FirestoreService.towersCollection
-          .doc(towerId)
-          .update({'surveyStatus': surveyStatus.toString()});
+      await FirestoreService.towersCollection.doc(towerId).update({'surveyStatus': surveyStatus.toString().toLowerCase()});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
@@ -48,9 +44,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateNotes(String towerId, String notes) async {
     try {
       // update database
-      await FirestoreService.towersCollection
-          .doc(towerId)
-          .update({'notes': notes});
+      await FirestoreService.towersCollection.doc(towerId).update({'notes': notes});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
@@ -64,9 +58,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateSignIn(String towerId, Timestamp signIn) async {
     try {
       // update database
-      await FirestoreService.towersCollection
-          .doc(towerId)
-          .update({'signIn': signIn});
+      await FirestoreService.towersCollection.doc(towerId).update({'signIn': signIn});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
@@ -79,9 +71,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateSignOut(String towerId, Timestamp signOut) async {
     try {
       // update database
-      await FirestoreService.towersCollection
-          .doc(towerId)
-          .update({'signOut': signOut});
+      await FirestoreService.towersCollection.doc(towerId).update({'signOut': signOut});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
@@ -94,9 +84,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateAuthorId(String towerId, String authorId) async {
     try {
       // update database
-      await FirestoreService.towersCollection
-          .doc(towerId)
-          .update({'authorId': authorId});
+      await FirestoreService.towersCollection.doc(towerId).update({'authorId': authorId});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);

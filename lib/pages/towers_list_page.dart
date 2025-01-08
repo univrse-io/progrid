@@ -194,30 +194,6 @@ class _TowersListPageState extends State<TowersListPage> {
                       },
                     ),
             ),
-            const SizedBox(height: 10),
-            Center(
-                child: const Text(
-              "or...",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            )),
-            const SizedBox(height: 6),
-            FilledButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => MapPage(),
-                        transitionsBuilder: (_, animation, __, child) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        }));
-              },
-              child: const Text("Open Map"),
-            ),
             const SizedBox(height: 25),
           ],
         ),
