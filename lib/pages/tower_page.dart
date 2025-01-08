@@ -89,12 +89,35 @@ class _TowerPageState extends State<TowerPage> {
                     ),
                   ),
                   const SizedBox(width: 5),
-                  Text(
-                    '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
-                    style: TextStyle(
-                      fontSize: 17,
+                  GestureDetector(
+                    onTap: () async {
+                      // TODO: implement apple maps
+                      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+                      final selectedTower = towersProvider.towers.firstWhere(
+                        (tower) => tower.id == widget.towerId,
+                        orElse: () => throw Exception("Tower not found"),
+                      );
+
+                      final uri = Uri(
+                          scheme: "google.navigation",
+                          queryParameters: {'q': "${selectedTower.position.latitude}, ${selectedTower.position.longitude}"});
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(uri);
+                      } else {
+                        print('unable to launch google maps');
+                      }
+                    },
+                    child: Text(
+                      '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.blue,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.blue,
+                        fontWeight: FontWeight.bold
+                      ),
                     ),
-                  ),
+                  )
                 ],
               ),
               const SizedBox(height: 8),
@@ -171,14 +194,14 @@ class _TowerPageState extends State<TowerPage> {
               const SizedBox(height: 4),
 
               // site address
-              _buildDetailRow('Address:', selectedTower.address, true),
+              _buildDetailRow('Address:', selectedTower.address),
               // site region
               _buildDetailRow(
-                  'Region:', selectedTower.region.toString(), false),
+                  'Region:', selectedTower.region.toString()),
               // site type
-              _buildDetailRow('Type:', selectedTower.type, false),
+              _buildDetailRow('Type:', selectedTower.type),
               // site owner
-              _buildDetailRow('Owner:', selectedTower.owner, false),
+              _buildDetailRow('Owner:', selectedTower.owner),
               const SizedBox(height: 10),
 
               // pictures section title
@@ -769,7 +792,7 @@ class _TowerPageState extends State<TowerPage> {
   }
 
   // UI function to build a detail row format
-  Widget _buildDetailRow(String label, String content, bool isLink) {
+  Widget _buildDetailRow(String label, String content) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -791,43 +814,10 @@ class _TowerPageState extends State<TowerPage> {
           const SizedBox(width: 10),
           // content
           Expanded(
-            child: isLink
-                ? GestureDetector(
-                    onTap: () async {
-                      // TODO: implement apple maps
-                      final towersProvider =
-                          Provider.of<TowersProvider>(context, listen: false);
-                      final selectedTower = towersProvider.towers.firstWhere(
-                        (tower) => tower.id == widget.towerId,
-                        orElse: () => throw Exception("Tower not found"),
-                      );
-
-                      final uri = Uri(
-                          scheme: "google.navigation",
-                          queryParameters: {
-                            'q':
-                                "${selectedTower.position.latitude}, ${selectedTower.position.longitude}"
-                          });
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri);
-                      } else {
-                        print('unable to launch google maps');
-                      }
-                    },
-                    child: Text(
-                      content,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.blue,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.blue,
-                      ),
-                    ),
-                  )
-                : Text(
-                    content,
-                    style: TextStyle(fontSize: 16),
-                  ),
+            child: Text(
+              content,
+              style: TextStyle(fontSize: 16),
+            ),
           ),
         ],
       ),
