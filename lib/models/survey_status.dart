@@ -13,4 +13,8 @@ enum SurveyStatus {
 
   @override
   String toString() => _text;
+
+  String toEnumString() {
+    return name;
+  }
 }

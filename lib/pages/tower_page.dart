@@ -273,13 +273,17 @@ class _TowerPageState extends State<TowerPage> {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    selectedTower.images.length == 1
-                        ? 'Signed-in' // if images == 1
-                        : 'Signed-out', // Ootherwise show signed out
+                    selectedTower.images.isEmpty
+                        ? 'Unsurveyed' // No images
+                        : selectedTower.images.length == 1
+                            ? 'Signed-in' // Exactly 1 image
+                            : 'Signed-out', // More than 1 image
                     style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontStyle: FontStyle.italic),
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontStyle: FontStyle.italic,
+                    ),
                   )
+
                 ],
               ),
               const SizedBox(height: 10),

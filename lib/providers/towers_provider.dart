@@ -30,7 +30,7 @@ class TowersProvider extends ChangeNotifier {
   Future<void> updateSurveyStatus(String towerId, SurveyStatus surveyStatus) async {
     try {
       // update database
-      await FirestoreService.towersCollection.doc(towerId).update({'surveyStatus': surveyStatus.toString().toLowerCase()});
+      await FirestoreService.towersCollection.doc(towerId).update({'surveyStatus': surveyStatus.name.toLowerCase()});
 
       // update local
       final tower = towers.firstWhere((tower) => tower.id == towerId);
