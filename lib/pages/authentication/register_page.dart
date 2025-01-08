@@ -59,157 +59,161 @@ class _RegisterPageState extends State<RegisterPage> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         minimum: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // app logo
-            Image.asset(
-              'assets/images/progrid_black.png',
-              width: 300,
-              // fit: BoxFit.cover,
-            ),
-            const SizedBox(height: 15),
-
-            Container(
-              width: 350,
-              padding: const EdgeInsets.all(20), // padding inside the box
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    offset: Offset(0, 4),
-                    blurRadius: 10,
-                  ),
-                ],
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // app logo
+              Image.asset(
+                'assets/images/progrid_black.png',
+                width: 300,
+                // fit: BoxFit.cover,
               ),
-              child: Form(
-                key: _formKey,
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Welcome!\nCreate an Account.',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          hintText: 'Full Name',
-                          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                        ),
-                        maxLength: 20,
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: 'Confirm Password',
-                          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                        ),
-                        controller: _confirmPasswordController,
-                        validator: (value) => _passwordController.text != value ? "Passwords don't match" : null,
-                      ),
-                      const SizedBox(height: 24),
-                      FilledButton(onPressed: _register, child: Text('Register')),
-                      const SizedBox(height: 14),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Have an account? ",
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+              const SizedBox(height: 15),
+          
+              Container(
+                width: 350,
+                padding: const EdgeInsets.all(20), // padding inside the box
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      offset: Offset(0, 4),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Welcome!\nCreate an Account.',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
-                          GestureDetector(
-                            onTap: widget.onTapSwitchPage,
-                            child: Text(
-                              "Login Now",
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            hintText: 'Email',
+                            hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            hintText: 'Full Name',
+                            hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                          ),
+                          maxLength: 20,
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: 'Password',
+                            hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: 'Confirm Password',
+                            hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                          ),
+                          controller: _confirmPasswordController,
+                          validator: (value) => _passwordController.text != value ? "Passwords don't match" : null,
+                        ),
+                        const SizedBox(height: 24),
+                        FilledButton(onPressed: _register, child: Text('Register')),
+                        const SizedBox(height: 14),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Have an account? ",
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
-                          )
-                        ],
-                      ),
-                    ],
+                            GestureDetector(
+                              onTap: widget.onTapSwitchPage,
+                              child: Text(
+                                "Login Now",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-
-            // logos bottom set
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // sapura logo
-                Image.asset(
-                  'assets/images/sapura.png',
-                  width: 100,
-                  fit: BoxFit.cover,
-                ),
-                const SizedBox(width: 10),
-
-                // binasat logo
-                Image.asset(
-                  'assets/images/binasat.png',
-                  width: 80,
-                  fit: BoxFit.cover,
-                ),
-                const SizedBox(width: 10),
-
-                // uos logo
-                Image.asset(
-                  'assets/images/uos.png',
-                  width: 80,
-                  fit: BoxFit.cover,
-                ),
-                const SizedBox(width: 10),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Text(
-                  'Powered by ',
-                  style: TextStyle(color: AppColors.onSurface),
-                ),
-                Text(
-                  'UniVRse',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.onSurface),
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(height: 15),
+          
+              // logos bottom set
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // sapura logo
+                  Image.asset(
+                    'assets/images/sapura.png',
+                    width: 100,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(width: 10),
+          
+                  // binasat logo
+                  Image.asset(
+                    'assets/images/binasat.png',
+                    width: 55,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(width: 10),
+          
+                  // uos logo
+                  Image.asset(
+                    'assets/images/uos.png',
+                    width: 55,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
+              const SizedBox(height: 12),
+          
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    'Powered by ',
+                    style: TextStyle(color: AppColors.onSurface),
+                  ),
+                  Text(
+                    'UniVRse',
+                    style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.onSurface),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
