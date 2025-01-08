@@ -41,4 +41,16 @@ class FirestoreService {
           .update(data)
           .then((_) => log('Successfully updated user.'))
           .catchError((e) => log('Failed updating user.', error: e));
+
+  static Future<void> createUser(String id, {required Map<String, dynamic> data}) async {
+    try {
+      await usersCollection
+          .doc(id)
+          .set(data)
+          .then((_) => log('Successfully created user.'))
+          .catchError((e) => log('Failed creating user.', error: e));
+    } catch (e) {
+      log('Error creating user: $e');
+    }
+  }
 }

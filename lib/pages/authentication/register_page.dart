@@ -38,7 +38,7 @@ class _RegisterPageState extends State<RegisterPage> {
       // send verification email
       credentials.user!.sendEmailVerification();
 
-      await FirestoreService.updateUser(credentials.user!.uid, data: {
+      await FirestoreService.createUser(credentials.user!.uid, data: {
         'email': _emailController.text.trim(),
         'name': _nameController.text,
         'phone': 'not set',
@@ -46,6 +46,8 @@ class _RegisterPageState extends State<RegisterPage> {
         'role': 'engineer',
         'lastLogin': Timestamp.now(),
       });
+
+      // add to firebase 
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         showDialog(context: context, builder: (_) => AlertDialog(title: Text(e.code)));
