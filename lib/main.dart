@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:progrid/firebase_options.dart';
 import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/tower.dart';
@@ -15,6 +16,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []); // disable ios top bar
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
   runApp(const MainApp());
@@ -26,12 +28,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
-          if (kIsWeb)
-            StreamProvider<List<Issue>>(
-                create: (_) => FirestoreService.issuesStream, initialData: []),
-          if (kIsWeb)
-            StreamProvider<List<Tower>>(
-                create: (_) => FirestoreService.towersStream, initialData: []),
+          if (kIsWeb) StreamProvider<List<Issue>>(create: (_) => FirestoreService.issuesStream, initialData: []),
+          if (kIsWeb) StreamProvider<List<Tower>>(create: (_) => FirestoreService.towersStream, initialData: []),
           ChangeNotifierProvider(create: (_) => UserProvider()),
           if (!kIsWeb) ChangeNotifierProvider(create: (_) => TowersProvider()),
           if (!kIsWeb) ChangeNotifierProvider(create: (_) => IssuesProvider()),
