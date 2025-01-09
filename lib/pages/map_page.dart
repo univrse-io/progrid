@@ -299,7 +299,7 @@ class _MapPageState extends State<MapPage> {
 
           // top right row
           Positioned(
-            top: 40,
+            top: 25,
             right: 14,
             child: Row(
               children: [

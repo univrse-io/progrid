@@ -152,13 +152,22 @@ class _TowersListPageState extends State<TowersListPage> {
                                         ),
                                         Row(
                                           children: [
-                                            // owner
+                                            // // owner
+                                            // Text(
+                                            //   tower.owner,
+                                            //   style: const TextStyle(
+                                            //       fontSize: 14,
+                                            //       fontWeight: FontWeight.bold),
+                                            // ),
+
+                                            // type
                                             Text(
-                                              tower.owner,
+                                              tower.type,
                                               style: const TextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold),
                                             ),
+
                                             Text(
                                               ",",
                                               style: const TextStyle(

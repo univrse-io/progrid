@@ -203,8 +203,6 @@ class _TowerPageState extends State<TowerPage> {
               _buildDetailRow('Region:', selectedTower.region.toString()),
               // site type
               _buildDetailRow('Type:', selectedTower.type),
-              // site owner
-              _buildDetailRow('Owner:', selectedTower.owner),
               const SizedBox(height: 10),
 
               // pictures section title
@@ -645,8 +643,8 @@ class _TowerPageState extends State<TowerPage> {
 
       // compress if image is larger than 10mb
       final tempDir = await getTemporaryDirectory();
-      String tempImagePath = '${tempDir.path}/temp_${pickedFile.name}';
-      File tempImageFile = File(tempImagePath);
+      final String tempImagePath = '${tempDir.path}/temp_${pickedFile.name}';
+      final File tempImageFile = File(tempImagePath);
       await tempImageFile.writeAsBytes(img.encodeJpg(scaledImage));
 
       final int scaledImageSize = await tempImageFile.length();
@@ -685,6 +683,8 @@ class _TowerPageState extends State<TowerPage> {
           '$formattedDateTime\nLat: $latitude, Lon: $longitude';
       final x = compressedImage.width - 10;
       final y = compressedImage.height - 50;
+
+      // img.drawRect(dst, x1: x1, y1: y1, x2: x2, y2: y2, color: color)
 
       img.drawString(compressedImage, watermarkText,
           font: img.arial24,
