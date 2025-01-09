@@ -45,10 +45,10 @@ class Tower {
       address: json['address'] as String,
       position: json['position'] as GeoPoint,
       surveyStatus: SurveyStatus.values
-          .byName((json['surveyStatus'] as String).toLowerCase()),
+          .byName((json['surveyStatus'] as String).replaceAll(RegExp(r'[\s-]'), '').toLowerCase()), // removes all whitespaces and hyphens, for backwards compatibility
       drawingStatus: json['drawingStatus'] != null
           ? DrawingStatus.values
-              .byName((json['drawingStatus'] as String).toLowerCase())
+              .byName((json['drawingStatus'] as String).replaceAll(RegExp(r'[\s-]'), '').toLowerCase())
           : null,
       images: (json['images'] as List?)?.cast<String>() ?? [],
       signIn: json['signIn'] as Timestamp?,

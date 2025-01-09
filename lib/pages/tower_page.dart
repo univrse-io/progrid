@@ -149,7 +149,7 @@ class _TowerPageState extends State<TowerPage> {
                         if (value != null &&
                             value != selectedTower.surveyStatus) {
                           FirestoreService.updateTower(selectedTower.id,
-                              data: {'surveyStatus': value.toEnumString()});
+                              data: {'surveyStatus': value.name});
                           selectedTower.surveyStatus =
                               value; // update local as well
                         }
