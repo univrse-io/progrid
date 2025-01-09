@@ -112,8 +112,8 @@ class _MapPageState extends State<MapPage> {
               // clustered map markers
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
-                  polygonOptions:
-                      PolygonOptions(color: Colors.black.withValues(alpha: 0.1)),
+                  polygonOptions: PolygonOptions(
+                      color: Colors.black.withValues(alpha: 0.1)),
                   maxClusterRadius: 50,
                   alignment: Alignment.center,
                   centerMarkerOnClick: false,
@@ -162,9 +162,8 @@ class _MapPageState extends State<MapPage> {
                                     width: 8,
                                     height: 8,
                                     decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: tower.surveyStatus.color
-                                    ),
+                                        shape: BoxShape.circle,
+                                        color: tower.surveyStatus.color),
                                   ),
                                   const SizedBox(width: 4),
                                   // tower id
@@ -208,7 +207,8 @@ class _MapPageState extends State<MapPage> {
                         if (tower.surveyStatus == SurveyStatus.surveyed) {
                           statusCounts['surveyed'] =
                               statusCounts['surveyed']! + 1;
-                        } else if (tower.surveyStatus == SurveyStatus.inprogress) {
+                        } else if (tower.surveyStatus ==
+                            SurveyStatus.inprogress) {
                           statusCounts['inprogress'] =
                               statusCounts['inprogress']! + 1;
                         } else {
@@ -299,24 +299,10 @@ class _MapPageState extends State<MapPage> {
 
           // top right row
           Positioned(
-            top: 25,
+            top: 40,
             right: 14,
             child: Row(
               children: [
-                // // filter button
-                // FloatingActionButton(
-                //   heroTag: 'filter',
-                //   onPressed: () {},
-                //   backgroundColor: Colors.black.withValues(alpha: 0.6),
-                //   child: const Icon(
-                //     Icons.filter_alt_outlined,
-                //     size: 32,
-                //   ),
-                //   mini: true,
-                // ),
-
-                // const SizedBox(width: 5),
-
                 // search button
                 FloatingActionButton(
                   heroTag: 'searchbar',
