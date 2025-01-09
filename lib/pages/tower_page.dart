@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:gal/gal.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -727,36 +729,25 @@ class _TowerPageState extends State<TowerPage> {
         return;
       }
 
-      // download image
+      // get image
       final response = await http.get(Uri.parse(url));
       if (response.statusCode != 200) {
         throw Exception('Failed to download the image. Status code: ${response.statusCode}');
       }
 
-      // get directory
-      Directory? directory;
-      if (Platform.isAndroid) {
-        directory = Directory('/storage/emulated/0/Download'); // Default Android download folder
-        if (!directory.existsSync()) {
-          directory = await getExternalStorageDirectory();
-        }
-      } else if (Platform.isIOS) {
-        directory = await getApplicationDocumentsDirectory();
-      }
+      // get temp directory, save there
+      final tempDir = await getTemporaryDirectory();
+      final filePath = "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
 
-      if (directory == null || directory.path.isEmpty) {
-        throw Exception('Failed to get a valid directory path.');
-      }
-
-      // save the file
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final file = File('${directory.path}/$fileName');
-
+      final file = File(filePath);
       await file.writeAsBytes(response.bodyBytes);
+
+      // save to main gallery
+      await Gal.putImage(filePath);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image saved to ${file.path}')),
+          SnackBar(content: Text('Image saved to Gallery')),
         );
       }
     } catch (e) {
