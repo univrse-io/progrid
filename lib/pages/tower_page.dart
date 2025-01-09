@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -50,8 +49,8 @@ class _TowerPageState extends State<TowerPage> {
     );
 
     final issuesProvider = Provider.of<IssuesProvider>(context);
-    final issues = issuesProvider.issues
-        .where((issue) => issue.id.startsWith('${widget.towerId}-I')); // query all elements in this list, check if any are unresolved
+    final issues = issuesProvider.issues.where((issue) => issue.id.startsWith(
+        '${widget.towerId}-I')); // query all elements in this list, check if any are unresolved
 
     _notesController.text = selectedTower.notes ?? ''; // get tower notes
 
@@ -94,7 +93,8 @@ class _TowerPageState extends State<TowerPage> {
                   GestureDetector(
                     onTap: () async {
                       // TODO: implement apple maps
-                      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+                      final towersProvider =
+                          Provider.of<TowersProvider>(context, listen: false);
                       final selectedTower = towersProvider.towers.firstWhere(
                         (tower) => tower.id == widget.towerId,
                         orElse: () => throw Exception("Tower not found"),
@@ -102,7 +102,10 @@ class _TowerPageState extends State<TowerPage> {
 
                       final uri = Uri(
                           scheme: "google.navigation",
-                          queryParameters: {'q': "${selectedTower.position.latitude}, ${selectedTower.position.longitude}"});
+                          queryParameters: {
+                            'q':
+                                "${selectedTower.position.latitude}, ${selectedTower.position.longitude}"
+                          });
                       if (await canLaunchUrl(uri)) {
                         await launchUrl(uri);
                       } else {
@@ -139,15 +142,20 @@ class _TowerPageState extends State<TowerPage> {
                   // dropdown
                   Container(
                     padding: const EdgeInsets.only(left: 14, right: 10),
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: selectedTower.surveyStatus.color),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        color: selectedTower.surveyStatus.color),
                     child: DropdownButton<SurveyStatus>(
                       // type specifics required
                       isDense: true,
                       value: selectedTower.surveyStatus,
                       onChanged: (value) {
-                        if (value != null && value != selectedTower.surveyStatus) {
-                          FirestoreService.updateTower(selectedTower.id, data: {'surveyStatus': value.name});
-                          selectedTower.surveyStatus = value; // update local as well
+                        if (value != null &&
+                            value != selectedTower.surveyStatus) {
+                          FirestoreService.updateTower(selectedTower.id,
+                              data: {'surveyStatus': value.name});
+                          selectedTower.surveyStatus =
+                              value; // update local as well
                         }
                       },
                       items: SurveyStatus.values.map((status) {
@@ -211,7 +219,8 @@ class _TowerPageState extends State<TowerPage> {
               // gallery
               Container(
                 height: 130,
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Theme.of(context).colorScheme.tertiary,
@@ -225,7 +234,8 @@ class _TowerPageState extends State<TowerPage> {
                       child: Stack(
                         children: [
                           GestureDetector(
-                            onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], _downloadImage),
+                            onTap: () => DialogUtils.showImageDialog(context,
+                                selectedTower.images[index], _downloadImage),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: ConstrainedBox(
@@ -238,7 +248,8 @@ class _TowerPageState extends State<TowerPage> {
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
                                       color: Colors.grey,
-                                      child: Icon(Icons.error, color: AppColors.red),
+                                      child: Icon(Icons.error,
+                                          color: AppColors.red),
                                     ); // if image fails to load
                                   },
                                 ),
@@ -258,7 +269,10 @@ class _TowerPageState extends State<TowerPage> {
                 children: [
                   Text(
                     ' Status:',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary, fontStyle: FontStyle.italic),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontStyle: FontStyle.italic),
                   ),
                   const SizedBox(width: 5),
                   Text(
@@ -295,8 +309,11 @@ class _TowerPageState extends State<TowerPage> {
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
                   maxLength: _maxNotesLength,
-                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14),
-                  buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 14),
+                  buildCounter: (context,
+                      {required currentLength, maxLength, required isFocused}) {
                     return Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
@@ -311,14 +328,19 @@ class _TowerPageState extends State<TowerPage> {
                   decoration: InputDecoration(
                     hintText: 'Enter notes here...',
                     alignLabelWithHint: true,
-                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                    hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 14),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                   ),
                   onChanged: (text) async {
                     // cancel any previous debounce timer
-                    if (_debounceTimer?.isActive ?? false) _debounceTimer?.cancel();
+                    if (_debounceTimer?.isActive ?? false)
+                      _debounceTimer?.cancel();
 
-                    _debounceTimer = Timer(const Duration(milliseconds: 2000), () {
+                    _debounceTimer =
+                        Timer(const Duration(milliseconds: 2000), () {
                       // update notes every one second of changes
                       towersProvider.updateNotes(widget.towerId, text);
                     });
@@ -343,14 +365,17 @@ class _TowerPageState extends State<TowerPage> {
                           textStyle: TextStyle(fontWeight: FontWeight.w600),
                           minimumSize: Size.fromHeight(45),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)))),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10),
+                                  bottomLeft: Radius.circular(10)))),
                     ),
                   ),
                   const SizedBox(width: 2),
                   Expanded(
                     child: FilledButton(
                       // added condition to check if there are any unresolved issues
-                      onPressed: selectedTower.images.length != 1 || issues.any((issue) => issue.status != 'resolved')
+                      onPressed: selectedTower.images.length != 1 ||
+                              issues.any((issue) => issue.status != 'resolved')
                           ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
                           : () async {
                               await _signOut();
@@ -360,7 +385,9 @@ class _TowerPageState extends State<TowerPage> {
                           textStyle: TextStyle(fontWeight: FontWeight.w600),
                           minimumSize: Size.fromHeight(45),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(10)))),
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(10),
+                                  bottomRight: Radius.circular(10)))),
                     ),
                   ),
                 ],
@@ -372,7 +399,8 @@ class _TowerPageState extends State<TowerPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => IssuesListPage(towerId: selectedTower.id),
+                      builder: (context) =>
+                          IssuesListPage(towerId: selectedTower.id),
                     ),
                   );
                 },
@@ -388,7 +416,8 @@ class _TowerPageState extends State<TowerPage> {
 
   Future<void> _signIn() async {
     try {
-      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+      final towersProvider =
+          Provider.of<TowersProvider>(context, listen: false);
       final selectedTower = towersProvider.towers.firstWhere(
         (tower) => tower.id == widget.towerId,
         orElse: () => throw Exception("Tower not found"),
@@ -415,9 +444,13 @@ class _TowerPageState extends State<TowerPage> {
               'Select Image Source',
               textAlign: TextAlign.center,
             ),
-            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+            titleTextStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface),
             titlePadding: EdgeInsets.only(top: 20, right: 20, left: 20),
-            contentPadding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
+            contentPadding:
+                EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
             content: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -466,7 +499,8 @@ class _TowerPageState extends State<TowerPage> {
 
   Future<void> _signOut() async {
     try {
-      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+      final towersProvider =
+          Provider.of<TowersProvider>(context, listen: false);
       final selectedTower = towersProvider.towers.firstWhere(
         (tower) => tower.id == widget.towerId,
         orElse: () => throw Exception("Tower not found"),
@@ -493,9 +527,13 @@ class _TowerPageState extends State<TowerPage> {
               'Select Image Source',
               textAlign: TextAlign.center,
             ),
-            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+            titleTextStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface),
             titlePadding: EdgeInsets.only(top: 20, right: 20, left: 20),
-            contentPadding: EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
+            contentPadding:
+                EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
             content: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -579,9 +617,9 @@ class _TowerPageState extends State<TowerPage> {
       }
 
       // scale image if too small or too big
-      const minWidth = 600;   // min width
-      const maxWidth = 1080;  // max width
-      const minHeight = 600;  // min height
+      const minWidth = 600; // min width
+      const maxWidth = 1080; // max width
+      const minHeight = 600; // min height
       const maxHeight = 1920; // max height
 
       img.Image scaledImage = decodeImage;
@@ -594,7 +632,8 @@ class _TowerPageState extends State<TowerPage> {
           width: minWidth,
           height: (minWidth * aspectRatio).toInt(),
         );
-      } else if (decodeImage.width > maxWidth || decodeImage.height > maxHeight) {
+      } else if (decodeImage.width > maxWidth ||
+          decodeImage.height > maxHeight) {
         // scale down
         final aspectRatio = decodeImage.height / decodeImage.width;
         scaledImage = img.copyResize(
@@ -623,7 +662,8 @@ class _TowerPageState extends State<TowerPage> {
       }
 
       // reload image
-      final compressedImage = img.decodeImage(await tempImageFile.readAsBytes());
+      final compressedImage =
+          img.decodeImage(await tempImageFile.readAsBytes());
       if (compressedImage == null) {
         print('Failed to decode compressed image');
         return;
@@ -631,7 +671,8 @@ class _TowerPageState extends State<TowerPage> {
 
       // get current date/time
       final now = DateTime.now();
-      final formattedDateTime = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
+      final formattedDateTime =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
           '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
       // get current device location
@@ -640,39 +681,56 @@ class _TowerPageState extends State<TowerPage> {
       final longitude = position.longitude.toStringAsFixed(6);
 
       // add watermark to image
-      final watermarkText = '$formattedDateTime\nLat: $latitude, Lon: $longitude';
+      final watermarkText =
+          '$formattedDateTime\nLat: $latitude, Lon: $longitude';
       final x = compressedImage.width - 10;
       final y = compressedImage.height - 50;
 
-      img.drawString(compressedImage, watermarkText, font: img.arial24, x: x, y: y, color: img.ColorRgb8(0, 0, 0), rightJustify: true);
+      img.drawString(compressedImage, watermarkText,
+          font: img.arial24,
+          x: x,
+          y: y,
+          color: img.ColorRgb8(0, 0, 0),
+          rightJustify: true);
 
       // save image locally
-      final watermarkedImagePath = '${(await getTemporaryDirectory()).path}/watermarked_${pickedFile.name}';
-      await File(watermarkedImagePath).writeAsBytes(img.encodeJpg(compressedImage));
+      final watermarkedImagePath =
+          '${(await getTemporaryDirectory()).path}/watermarked_${pickedFile.name}';
+      await File(watermarkedImagePath)
+          .writeAsBytes(img.encodeJpg(compressedImage));
 
       // upload image to firebase storage
-      final String fileName = '${DateTime.now().microsecondsSinceEpoch}'; // unique
-      final Reference storageRef = FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
+      final String fileName =
+          '${DateTime.now().microsecondsSinceEpoch}'; // unique
+      final Reference storageRef =
+          FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
 
-      final UploadTask uploadTask = storageRef.putFile(File(watermarkedImagePath));
+      final UploadTask uploadTask =
+          storageRef.putFile(File(watermarkedImagePath));
 
       final TaskSnapshot snapshot = await uploadTask.whenComplete(() {});
       final String downloadUrl = await snapshot.ref.getDownloadURL();
 
       // update Firebase database and local
       if (mounted) {
-        final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+        final towersProvider =
+            Provider.of<TowersProvider>(context, listen: false);
         final userProvider = Provider.of<UserProvider>(context, listen: false);
-        await towersProvider.updateAuthorId(widget.towerId, userProvider.userId);
+        await towersProvider.updateAuthorId(
+            widget.towerId, userProvider.userId);
         await towersProvider.addImage(widget.towerId, downloadUrl);
 
         // Update tower status
         if (isSignOut) {
-          await towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.surveyed);
-          await towersProvider.updateSignOut(widget.towerId, Timestamp.fromDate(DateTime.now()));
+          await towersProvider.updateSurveyStatus(
+              widget.towerId, SurveyStatus.surveyed);
+          await towersProvider.updateSignOut(
+              widget.towerId, Timestamp.fromDate(DateTime.now()));
         } else {
-          await towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.inprogress);
-          await towersProvider.updateSignIn(widget.towerId, Timestamp.fromDate(DateTime.now()));
+          await towersProvider.updateSurveyStatus(
+              widget.towerId, SurveyStatus.inprogress);
+          await towersProvider.updateSignIn(
+              widget.towerId, Timestamp.fromDate(DateTime.now()));
         }
       } else {
         throw Exception("provider addImage not mounted");
@@ -704,7 +762,9 @@ class _TowerPageState extends State<TowerPage> {
       if (status.isDenied) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Storage permission is required to save the image.')),
+            const SnackBar(
+                content:
+                    Text('Storage permission is required to save the image.')),
           );
         }
         return;
@@ -732,12 +792,14 @@ class _TowerPageState extends State<TowerPage> {
       // get image
       final response = await http.get(Uri.parse(url));
       if (response.statusCode != 200) {
-        throw Exception('Failed to download the image. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to download the image. Status code: ${response.statusCode}');
       }
 
       // get temp directory, save there
       final tempDir = await getTemporaryDirectory();
-      final filePath = "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+      final filePath =
+          "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
 
       final file = File(filePath);
       await file.writeAsBytes(response.bodyBytes);
