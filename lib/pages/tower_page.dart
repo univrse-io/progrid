@@ -673,10 +673,10 @@ class _TowerPageState extends State<TowerPage> {
         // update tower status
         if (isSignOut) {
           await towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.surveyed);
-          await towersProvider.updateDrawingStatus(widget.towerId, DrawingStatus.inprogress);
           await towersProvider.updateSignOut(widget.towerId, Timestamp.fromDate(DateTime.now()));
         } else {
           await towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.inprogress);
+          await towersProvider.updateDrawingStatus(widget.towerId, DrawingStatus.inprogress);
           await towersProvider.updateSignIn(widget.towerId, Timestamp.fromDate(DateTime.now()));
         }
       } else {
