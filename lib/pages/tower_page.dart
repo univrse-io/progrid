@@ -642,9 +642,13 @@ class _TowerPageState extends State<TowerPage> {
       final x = compressedImage.width - 10;
       final y = compressedImage.height - 50;
 
-      // img.drawRect(dst, x1: x1, y1: y1, x2: x2, y2: y2, color: color)
-
-      img.drawString(compressedImage, watermarkText, font: img.arial24, x: x, y: y, color: img.ColorRgb8(0, 0, 0), rightJustify: true);
+      img.fillRect(compressedImage,
+          x1: compressedImage.width - 400,
+          y1: compressedImage.height - 60,
+          x2: compressedImage.width,
+          y2: compressedImage.height,
+          color: img.ColorRgb8(0, 0, 0));
+      img.drawString(compressedImage, watermarkText, font: img.arial24, x: x, y: y, color: img.ColorRgb8(255, 255, 255), rightJustify: true);
 
       // save image locally
       final watermarkedImagePath = '${(await getTemporaryDirectory()).path}/watermarked_${pickedFile.name}';
