@@ -6,10 +6,10 @@ import 'package:progrid/models/tower.dart';
 
 class FirestoreService {
   static final issuesCollection =
-      FirebaseFirestore.instance.collection('issues_dev');
+      FirebaseFirestore.instance.collection('issues');
   static final towersCollection =
-      FirebaseFirestore.instance.collection('towers_dev');
-  static final usersCollection = FirebaseFirestore.instance.collection('users_dev');
+      FirebaseFirestore.instance.collection('towers');
+  static final usersCollection = FirebaseFirestore.instance.collection('users');
 
   static final issuesStream = issuesCollection
       .snapshots()
