@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:progrid/models/drawing_status.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/services/firestore.dart';
@@ -38,6 +39,20 @@ class TowersProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       throw Exception("Failed to update tower survey status: $e");
+    }
+  }
+
+  Future<void> updateDrawingStatus(String towerId, DrawingStatus drawingStatus) async {
+    try {
+      // update database
+      await FirestoreService.towersCollection.doc(towerId).update({'drawingStatus': drawingStatus.name.toLowerCase()});
+
+      // update local
+      final tower = towers.firstWhere((tower) => tower.id == towerId);
+      tower.drawingStatus = drawingStatus;
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to update tower drawing status: $e");
     }
   }
 
