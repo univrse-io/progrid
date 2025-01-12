@@ -104,50 +104,127 @@ class _SiteProgressPageState extends State<SiteProgressPage>
           ),
           Expanded(
             flex: 4,
-            child: ListView.builder(
-                itemCount: towers.length,
-                itemBuilder: (context, index) {
-                  final tower = towers[index];
-
-                  return Card(
-                    margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
-                    child: ListTile(
-                      title: Row(
+            child: Column(
+              children: [
+                Card(
+                    margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                    shape: RoundedRectangleBorder(),
+                    elevation: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Row(
                         children: [
-                          CircleAvatar(
-                              radius: 5,
-                              backgroundColor: tower.surveyStatus.color),
                           SizedBox(width: 10),
-                          Text(tower.name),
+                          Text('Tower'),
+                          Spacer(),
+                          Text('Survey Status'),
+                          SizedBox(width: 100),
+                          Text('Drawing Status'),
+                          SizedBox(width: 50),
                         ],
                       ),
-                      subtitle: Text(tower.id),
-                      trailing: Visibility(
-                        visible: tower.surveyStatus == SurveyStatus.surveyed,
-                        child: ToggleButtons(
-                            borderRadius: BorderRadius.circular(20),
-                            onPressed: (index) =>
-                                FirestoreService.updateTower(tower.id, data: {
-                                  'drawingStatus':
-                                      DrawingStatus.values[index].name
-                                }),
-                            fillColor: Colors.green.shade100,
-                            selectedBorderColor: Colors.green.shade700,
-                            children: [
-                              ...DrawingStatus.values.map((status) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: Text(status.toString()),
-                                  )),
-                            ],
-                            isSelected: [
-                              ...DrawingStatus.values.map(
-                                  (status) => tower.drawingStatus == status)
-                            ]),
-                      ),
-                    ),
-                  );
-                }),
+                    )),
+                SizedBox(height: 5),
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: towers.length,
+                      itemBuilder: (context, index) {
+                        final tower = towers[index];
+
+                        return Card(
+                          margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                          child: ListTile(
+                              title: Row(
+                                children: [
+                                  CircleAvatar(
+                                      radius: 5,
+                                      backgroundColor:
+                                          tower.surveyStatus.color),
+                                  SizedBox(width: 10),
+                                  Text(tower.name),
+                                ],
+                              ),
+                              subtitle: Text(tower.id),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  DropdownMenu<SurveyStatus>(
+                                      requestFocusOnTap: false,
+                                      textAlign: TextAlign.center,
+                                      initialSelection: tower.surveyStatus,
+                                      inputDecorationTheme:
+                                          InputDecorationTheme(
+                                        filled: true,
+                                        fillColor: tower.surveyStatus.color
+                                            .withValues(alpha: 0.1),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: tower.surveyStatus.color
+                                                    .withValues(alpha: 0.5)),
+                                            borderRadius:
+                                                BorderRadius.circular(25)),
+                                      ),
+                                      textStyle: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                      onSelected: (value) {
+                                        if (value != null) {
+                                          FirestoreService.updateTower(tower.id,
+                                              data: {
+                                                'surveyStatus': value.name
+                                              });
+                                        }
+                                      },
+                                      dropdownMenuEntries: [
+                                        ...SurveyStatus.values.map((status) =>
+                                            DropdownMenuEntry(
+                                                value: status,
+                                                label: status.toString()))
+                                      ]),
+                                  SizedBox(width: 20),
+                                  DropdownMenu<DrawingStatus>(
+                                      requestFocusOnTap: false,
+                                      textAlign: TextAlign.center,
+                                      initialSelection: tower.drawingStatus,
+                                      inputDecorationTheme:
+                                          InputDecorationTheme(
+                                        filled: true,
+                                        fillColor: tower.drawingStatus?.color
+                                            .withValues(alpha: 0.1),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: tower
+                                                        .drawingStatus?.color
+                                                        .withValues(
+                                                            alpha: 0.5) ??
+                                                    Colors.black12),
+                                            borderRadius:
+                                                BorderRadius.circular(25)),
+                                      ),
+                                      textStyle: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
+                                      onSelected: (value) {
+                                        if (value != null) {
+                                          FirestoreService.updateTower(tower.id,
+                                              data: {
+                                                'drawingStatus': value.name
+                                              });
+                                        }
+                                      },
+                                      dropdownMenuEntries: [
+                                        ...DrawingStatus.values.map((status) =>
+                                            DropdownMenuEntry(
+                                                value: status,
+                                                label: status.toString()))
+                                      ]),
+                                ],
+                              )),
+                        );
+                      }),
+                ),
+              ],
+            ),
           ),
         ],
       ),
