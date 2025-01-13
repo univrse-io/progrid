@@ -743,8 +743,8 @@ class _TowerPageState extends State<TowerPage> {
         if (selectedTower.images.length == 1) {
           // delete image reference, image file, signIn time, and authorId
           await FirebaseStorage.instance.refFromURL(url).delete();
-          await FirebaseFirestore.instance.collection('towers_dev').doc(widget.towerId).update({
-            // TODO: change to towers_dev when development
+          await FirebaseFirestore.instance.collection('towers').doc(widget.towerId).update({
+            // TODO: change to towers_dev when development, make this switch universal somehow
             'images': FieldValue.delete(),
             'signIn': FieldValue.delete(),
             'authorId': FieldValue.delete(),
@@ -761,7 +761,7 @@ class _TowerPageState extends State<TowerPage> {
           // delete image reference, image file, and signOut time
           await FirebaseStorage.instance.refFromURL(url).delete();
           final _updatedImages = List<String>.from(selectedTower.images)..remove(url);
-          await FirebaseFirestore.instance.collection('towers_dev').doc(widget.towerId).update({
+          await FirebaseFirestore.instance.collection('towers').doc(widget.towerId).update({
             // TODO: change to towers_dev when development
             'images': _updatedImages,
             'signOut': FieldValue.delete(),
