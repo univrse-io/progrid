@@ -195,6 +195,7 @@ class _TowerPageState extends State<TowerPage> {
               _buildDetailRow('Region:', selectedTower.region.toString()),
               // site type
               _buildDetailRow('Type:', selectedTower.type),
+
               const SizedBox(height: 10),
 
               // pictures section title
@@ -223,7 +224,8 @@ class _TowerPageState extends State<TowerPage> {
                       child: Stack(
                         children: [
                           GestureDetector(
-                            onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], _downloadImage),
+                            onTap: () => DialogUtils.showImageDialog(
+                                context, selectedTower.images[index], _downloadImage, _deleteImage), // TODO: pass a deleteImage function
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: ConstrainedBox(
@@ -690,6 +692,43 @@ class _TowerPageState extends State<TowerPage> {
       }
     } finally {
       if (mounted) Navigator.pop(context); // close loading dialog
+    }
+  }
+
+  // delete image from tower
+  Future<void> _deleteImage(String url) async {
+    try {
+      if (mounted) DialogUtils.showLoadingDialog(context);
+
+      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+      final selectedTower = towersProvider.towers.firstWhere(
+        (tower) => tower.id == widget.towerId,
+        orElse: () => throw Exception("Tower not found"),
+      );
+
+      // check if tower has 1 image
+      if (selectedTower.images.length == 1) {
+        // delete image reference, image file, signIn time, and authorId
+      } else {
+        if (url == selectedTower.images.first) {
+          Navigator.pop(context);
+          throw Exception('Can only delete the latest image');
+        }
+
+        // delete image reference, image file, and signOut time
+      }
+
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Image deleted successfully')),
+      );
+
+      // if tower has 1 image, delete image reference and signIn time
+      // else, check if url matches 1st image; if matching throw 'can only delete latest', else delete image reference and signOut time
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete image: $e')),
+      );
     }
   }
 

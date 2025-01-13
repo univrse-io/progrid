@@ -5,10 +5,12 @@ import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/tower.dart';
 
 class FirestoreService {
+
+  // select database here
   static final issuesCollection =
-      FirebaseFirestore.instance.collection('issues');
+      FirebaseFirestore.instance.collection('issues_dev');
   static final towersCollection =
-      FirebaseFirestore.instance.collection('towers');
+      FirebaseFirestore.instance.collection('towers_dev');
   static final usersCollection = FirebaseFirestore.instance.collection('users');
 
   static final issuesStream = issuesCollection
