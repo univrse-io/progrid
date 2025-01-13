@@ -709,6 +709,16 @@ class _TowerPageState extends State<TowerPage> {
       // check if tower has 1 image
       if (selectedTower.images.length == 1) {
         // delete image reference, image file, signIn time, and authorId
+        await FirebaseStorage.instance.refFromURL(url).delete();
+        await FirebaseFirestore.instance.collection('towers_dev').doc(widget.towerId).update({
+          // TODO: change to towers_dev when development
+          'images': FieldValue.delete(),
+          'signIn': FieldValue.delete(),
+          'authorId': FieldValue.delete(),
+        });
+
+        // reset tower status to unsurveyed
+        towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.unsurveyed);
       } else {
         if (url == selectedTower.images.first) {
           Navigator.pop(context);
@@ -716,19 +726,35 @@ class _TowerPageState extends State<TowerPage> {
         }
 
         // delete image reference, image file, and signOut time
+        await FirebaseStorage.instance.refFromURL(url).delete();
+        final _updatedImages = List<String>.from(selectedTower.images)..remove(url);
+        await FirebaseFirestore.instance.collection('towers_dev').doc(widget.towerId).update({
+          // TODO: change to towers_dev when development
+          'images': _updatedImages,
+          'signOut': FieldValue.delete(),
+        });
+
+        // set tower status to inprogress
+        towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.inprogress);
       }
 
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Image deleted successfully')),
-      );
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image deleted successfully')),
+        );
+      }
 
       // if tower has 1 image, delete image reference and signIn time
       // else, check if url matches 1st image; if matching throw 'can only delete latest', else delete image reference and signOut time
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete image: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete image: $e')),
+        );
+      }
+    } finally {
+      if (mounted) Navigator.pop(context);
     }
   }
 
