@@ -9,8 +9,8 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:gal/gal.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/drawing_status.dart';
@@ -743,8 +743,7 @@ class _TowerPageState extends State<TowerPage> {
         if (selectedTower.images.length == 1) {
           // delete image reference, image file, signIn time, and authorId
           await FirebaseStorage.instance.refFromURL(url).delete();
-          await FirebaseFirestore.instance.collection('towers').doc(widget.towerId).update({
-            // TODO: change to towers_dev when development, make this switch universal somehow
+          await FirestoreService.updateTower(widget.towerId, data: { 
             'images': FieldValue.delete(),
             'signIn': FieldValue.delete(),
             'authorId': FieldValue.delete(),
@@ -761,8 +760,7 @@ class _TowerPageState extends State<TowerPage> {
           // delete image reference, image file, and signOut time
           await FirebaseStorage.instance.refFromURL(url).delete();
           final _updatedImages = List<String>.from(selectedTower.images)..remove(url);
-          await FirebaseFirestore.instance.collection('towers').doc(widget.towerId).update({
-            // TODO: change to towers_dev when development
+          await FirestoreService.updateTower(widget.towerId, data: {
             'images': _updatedImages,
             'signOut': FieldValue.delete(),
           });
