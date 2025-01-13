@@ -31,7 +31,6 @@ class IssuesProvider extends ChangeNotifier {
       issue.id = issueId;
       await FirestoreService.issuesCollection.doc(issueId).set(issue.toJson());
 
-      issues.add(issue);
       notifyListeners();
     } catch (e) {
       throw Exception("Failed to add issue: $e");

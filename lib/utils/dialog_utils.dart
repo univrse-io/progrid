@@ -12,7 +12,12 @@ class DialogUtils {
     );
   }
 
-  static void showImageDialog(BuildContext context, String imageUrl, Future<void> Function(String) onDownload) {
+  static void showImageDialog(
+    BuildContext context,
+    String imageUrl,
+    Future<void> Function(String) onDownload,
+    Future<void> Function(String) onDelete,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -34,18 +39,29 @@ class DialogUtils {
                       );
                     },
                   ),
-                  // const SizedBox(height: 10),
 
-                  // download button
                   Positioned(
                     bottom: 5,
                     left: 5,
-                    child: FloatingActionButton(
-                      onPressed: () => onDownload(imageUrl),
-                      child: Icon(Icons.download),
-                      mini: true,
+                    child: Row(
+                      children: [
+                        // download button
+                        FloatingActionButton(
+                          onPressed: () => onDownload(imageUrl),
+                          child: Icon(Icons.download),
+                          mini: true,
+                        ),
+                        SizedBox(width: 2),
+
+                        // delete button
+                        FloatingActionButton(
+                          onPressed: () => onDelete(imageUrl),
+                          child: Icon(Icons.delete, color: AppColors.red),
+                          mini: true,
+                        ),
+                      ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

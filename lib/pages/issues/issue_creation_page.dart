@@ -22,7 +22,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     "Access",
     "Hazard",
     "FSC",
-    "Other"
+    "Other(s)"
   ];
   final List<String> _selectedTags = [];
   String? _selectedTag;

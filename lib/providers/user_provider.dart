@@ -64,7 +64,7 @@ class UserProvider extends ChangeNotifier {
       }
     } catch (e) {
       print("Failed to fetch user info: $e");
-      logout();
+      // logout();
     }
   }
 }

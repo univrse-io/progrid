@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/pages/map_page.dart';
 import 'package:progrid/pages/tower_page.dart';
 import 'package:progrid/providers/towers_provider.dart';
 import 'package:provider/provider.dart';
@@ -153,13 +152,22 @@ class _TowersListPageState extends State<TowersListPage> {
                                         ),
                                         Row(
                                           children: [
-                                            // owner
+                                            // // owner
+                                            // Text(
+                                            //   tower.owner,
+                                            //   style: const TextStyle(
+                                            //       fontSize: 14,
+                                            //       fontWeight: FontWeight.bold),
+                                            // ),
+
+                                            // type
                                             Text(
-                                              tower.owner,
+                                              tower.type,
                                               style: const TextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold),
                                             ),
+
                                             Text(
                                               ",",
                                               style: const TextStyle(
@@ -193,30 +201,6 @@ class _TowersListPageState extends State<TowersListPage> {
                         );
                       },
                     ),
-            ),
-            const SizedBox(height: 10),
-            Center(
-                child: const Text(
-              "or...",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            )),
-            const SizedBox(height: 6),
-            FilledButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                        pageBuilder: (_, __, ___) => MapPage(),
-                        transitionsBuilder: (_, animation, __, child) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        }));
-              },
-              child: const Text("Open Map"),
             ),
             const SizedBox(height: 25),
           ],

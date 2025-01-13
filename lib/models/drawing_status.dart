@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:progrid/utils/themes.dart';
 
 enum DrawingStatus {
-  inprogress(Colors.amber, 'In Progress'),
-  submitted(Colors.green, 'Submitted');
+  inprogress(AppColors.yellow, 'In Progress'),
+  submitted(AppColors.green, 'Submitted');
 
   final Color color;
   final String _text;
