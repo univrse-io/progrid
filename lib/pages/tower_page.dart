@@ -698,51 +698,85 @@ class _TowerPageState extends State<TowerPage> {
   // delete image from tower
   Future<void> _deleteImage(String url) async {
     try {
-      if (mounted) DialogUtils.showLoadingDialog(context);
-
-      final towersProvider = Provider.of<TowersProvider>(context, listen: false);
-      final selectedTower = towersProvider.towers.firstWhere(
-        (tower) => tower.id == widget.towerId,
-        orElse: () => throw Exception("Tower not found"),
+      // confirmation dialog
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Confirm Deletion"),
+            content: Text("Are you sure you want to delete this image? This action cannot be undone."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, false), // cancel
+                child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold),),
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true), // confirm
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: AppColors.red, fontWeight: FontWeight.bold),
+                ),
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+              ),
+            ],
+          );
+        },
       );
 
-      // check if tower has 1 image
-      if (selectedTower.images.length == 1) {
-        // delete image reference, image file, signIn time, and authorId
-        await FirebaseStorage.instance.refFromURL(url).delete();
-        await FirebaseFirestore.instance.collection('towers_dev').doc(widget.towerId).update({
-          // TODO: change to towers_dev when development
-          'images': FieldValue.delete(),
-          'signIn': FieldValue.delete(),
-          'authorId': FieldValue.delete(),
-        });
-
-        // reset tower status to unsurveyed
-        towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.unsurveyed);
-      } else {
-        if (url == selectedTower.images.first) {
-          Navigator.pop(context);
-          throw Exception('Can only delete the latest image');
-        }
-
-        // delete image reference, image file, and signOut time
-        await FirebaseStorage.instance.refFromURL(url).delete();
-        final _updatedImages = List<String>.from(selectedTower.images)..remove(url);
-        await FirebaseFirestore.instance.collection('towers_dev').doc(widget.towerId).update({
-          // TODO: change to towers_dev when development
-          'images': _updatedImages,
-          'signOut': FieldValue.delete(),
-        });
-
-        // set tower status to inprogress
-        towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.inprogress);
-      }
+      if (confirm != true) return;
 
       if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image deleted successfully')),
+        DialogUtils.showLoadingDialog(context);
+
+        final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+        final selectedTower = towersProvider.towers.firstWhere(
+          (tower) => tower.id == widget.towerId,
+          orElse: () => throw Exception("Tower not found"),
         );
+
+        // check if tower has 1 image
+        if (selectedTower.images.length == 1) {
+          // delete image reference, image file, signIn time, and authorId
+          await FirebaseStorage.instance.refFromURL(url).delete();
+          await FirebaseFirestore.instance.collection('towers_dev').doc(widget.towerId).update({
+            // TODO: change to towers_dev when development
+            'images': FieldValue.delete(),
+            'signIn': FieldValue.delete(),
+            'authorId': FieldValue.delete(),
+          });
+
+          // reset tower status to unsurveyed
+          towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.unsurveyed);
+        } else {
+          if (url == selectedTower.images.first) {
+            Navigator.pop(context);
+            throw Exception('Can only delete the latest image');
+          }
+
+          // delete image reference, image file, and signOut time
+          await FirebaseStorage.instance.refFromURL(url).delete();
+          final _updatedImages = List<String>.from(selectedTower.images)..remove(url);
+          await FirebaseFirestore.instance.collection('towers_dev').doc(widget.towerId).update({
+            // TODO: change to towers_dev when development
+            'images': _updatedImages,
+            'signOut': FieldValue.delete(),
+          });
+
+          // set tower status to inprogress
+          towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.inprogress);
+        }
+
+        if (mounted) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Image deleted successfully')),
+          );
+        }
       }
 
       // if tower has 1 image, delete image reference and signIn time
