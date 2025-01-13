@@ -271,7 +271,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.surveyStatus == SurveyStatus.unsurveyed).length}',
+                                        '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress || tower.surveyStatus == SurveyStatus.unsurveyed).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -351,7 +351,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.drawingStatus == null).length}',
+                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress || tower.drawingStatus == null).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
