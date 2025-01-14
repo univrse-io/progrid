@@ -91,7 +91,6 @@ class DialogUtils {
         );
 
         final notesController = TextEditingController(text: selectedTower.notes);
-        final int _maxNotesLength = 500;
         Timer? _debounceTimer;
 
         return Dialog(
