@@ -78,101 +78,108 @@ class DialogUtils {
   // TODO: fix context inheritance issue
   static void showTowerDialog(
     BuildContext context,
-    // List<Tower> towers,
-    Tower selectedTower,
+    List<Tower> towers,
+    String towerId,
   ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Center(
-          child: Container(
-            width: 500,
-            height: 500,
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      // tower id
-                      Text(
-                        selectedTower.id,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                      ),
-                      const SizedBox(width: 5),
+        final selectedTower = towers.firstWhere(
+          (tower) => tower.id == towerId,
+          orElse: () => throw Exception("Tower not found"),
+        );
 
-                      // survey status dropdown
-                      // Container(
-                      //   padding: const EdgeInsets.only(left: 14, right: 10),
-                      //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: selectedTower.surveyStatus.color),
-                      //   child: DropdownButton<SurveyStatus>(
-                      //     // require type specifics
-                      //     isDense: true,
-                      //     value: selectedTower.surveyStatus,
-                      //     onChanged: (value) {
-                      //       if (value != null && value != selectedTower.surveyStatus) {
-                      //         FirestoreService.updateTower(selectedTower.id, data: {'surveyStatus': value.name});
-                      //         selectedTower.surveyStatus = value; // update local as well
-                      //       }
-                      //     },
-                      //     items: SurveyStatus.values.map((status) {
-                      //       return DropdownMenuItem(
-                      //         value: status,
-                      //         child: Text(status.toString()),
-                      //       );
-                      //     }).toList(),
-                      //     iconEnabledColor: Theme.of(context).colorScheme.surface,
-                      //     borderRadius: BorderRadius.circular(24),
-                      //     dropdownColor: selectedTower.surveyStatus.color,
-                      //     style: TextStyle(
-                      //       color: Theme.of(context).colorScheme.surface,
-                      //       fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // )
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-
-                  // tower name
-                  Text(
-                    selectedTower.name,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-
-                  // tower geolocation
-                  Text(
-                    '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // site address
-                  _buildDetailRow('Address:', selectedTower.address),
-                  // site region
-                  _buildDetailRow('Region:', selectedTower.region.toString()),
-                  // site type
-                  _buildDetailRow('Type:', selectedTower.type),
-
-                  
-                ],
+        return Dialog(
+          elevation: 10,
+          child: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 500, // set a max width
               ),
-            ),
-          ),
+              child: Padding(
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        // tower id
+                        Text(
+                          selectedTower.id,
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                        ),
+                        const SizedBox(width: 5),
+
+                        // survey status dropdown
+                        Container(
+                          padding: const EdgeInsets.only(left: 14, right: 10),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: selectedTower.surveyStatus.color),
+                          child: DropdownButton<SurveyStatus>(
+                            // require type specifics
+                            isDense: true,
+                            value: selectedTower.surveyStatus,
+                            onChanged: (value) {
+                              if (value != null && value != selectedTower.surveyStatus) {
+                                FirestoreService.updateTower(selectedTower.id, data: {'surveyStatus': value.name});
+                                setState(() {
+                                  selectedTower.surveyStatus = value;
+                                });
+                              }
+                            },
+                            items: SurveyStatus.values.map((status) {
+                              return DropdownMenuItem(
+                                value: status,
+                                child: Text(status.toString()),
+                              );
+                            }).toList(),
+                            iconEnabledColor: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(24),
+                            dropdownColor: selectedTower.surveyStatus.color,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+
+                    // tower name
+                    Text(
+                      selectedTower.name,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+
+                    // tower geolocation
+                    Text(
+                      '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // site address
+                    _buildDetailRow('Address:', selectedTower.address),
+                    // site region
+                    _buildDetailRow('Region:', selectedTower.region.toString()),
+                    // site type
+                    _buildDetailRow('Type:', selectedTower.type),
+
+                    // images
+                  ],
+                ),
+              ),
+            );
+          }),
         );
       },
     );

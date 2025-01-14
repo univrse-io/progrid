@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                   child: GestureDetector(
                                     onTap: () {
                                       // TODO: implement map dialog here
-                                      DialogUtils.showTowerDialog(context, tower);
+                                      DialogUtils.showTowerDialog(context, towers, tower.id);
                                     },
                                     child: Stack(
                                       alignment: Alignment.center,
