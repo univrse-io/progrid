@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:progrid/models/survey_status.dart';
+import 'package:progrid/models/tower.dart';
+import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/themes.dart';
 
 class DialogUtils {
@@ -68,6 +71,146 @@ class DialogUtils {
           ),
         );
       },
+    );
+  }
+
+  // TODO: fix context inheritance issue
+  static void showTowerDialog(
+    BuildContext context,
+    List<Tower> towers,
+    String towerId,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final selectedTower = towers.firstWhere(
+          (tower) => tower.id == towerId,
+          orElse: () => throw Exception("Tower not found"),
+        );
+
+        return Center(
+          child: Container(
+            width: 500,
+            height: 500,
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(15),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      // tower id
+                      Text(
+                        selectedTower.id,
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                      ),
+                      const SizedBox(width: 5),
+
+                      // survey status dropdown
+                      // Container(
+                      //   padding: const EdgeInsets.only(left: 14, right: 10),
+                      //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: selectedTower.surveyStatus.color),
+                      //   child: DropdownButton<SurveyStatus>(
+                      //     // require type specifics
+                      //     isDense: true,
+                      //     value: selectedTower.surveyStatus,
+                      //     onChanged: (value) {
+                      //       if (value != null && value != selectedTower.surveyStatus) {
+                      //         FirestoreService.updateTower(selectedTower.id, data: {'surveyStatus': value.name});
+                      //         selectedTower.surveyStatus = value; // update local as well
+                      //       }
+                      //     },
+                      //     items: SurveyStatus.values.map((status) {
+                      //       return DropdownMenuItem(
+                      //         value: status,
+                      //         child: Text(status.toString()),
+                      //       );
+                      //     }).toList(),
+                      //     iconEnabledColor: Theme.of(context).colorScheme.surface,
+                      //     borderRadius: BorderRadius.circular(24),
+                      //     dropdownColor: selectedTower.surveyStatus.color,
+                      //     style: TextStyle(
+                      //       color: Theme.of(context).colorScheme.surface,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // )
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+
+                  // tower name
+                  Text(
+                    selectedTower.name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+
+                  // tower geolocation
+                  Text(
+                    '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // site address
+                  _buildDetailRow('Address:', selectedTower.address),
+                  // site region
+                  _buildDetailRow('Region:', selectedTower.region.toString()),
+                  // site type
+                  _buildDetailRow('Type:', selectedTower.type),
+
+                  
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static Widget _buildDetailRow(String label, String content) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // label
+          SizedBox(
+            width: 90,
+            child: Text(
+              label,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                // decoration: TextDecoration.underline,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          // content
+          Expanded(
+            child: Text(
+              content,
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
