@@ -1,9 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/themes.dart';
-import 'package:provider/provider.dart';
 
 class DialogUtils {
   static void showLoadingDialog(BuildContext context) {
@@ -89,6 +90,10 @@ class DialogUtils {
           orElse: () => throw Exception("Tower not found"),
         );
 
+        final notesController = TextEditingController(text: selectedTower.notes);
+        final int _maxNotesLength = 500;
+        Timer? _debounceTimer;
+
         return Dialog(
           elevation: 10,
           child: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
@@ -109,7 +114,7 @@ class DialogUtils {
                           selectedTower.id,
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                         ),
-                        const SizedBox(width: 5),
+                        const SizedBox(width: 10),
 
                         // survey status dropdown
                         Container(
@@ -144,7 +149,6 @@ class DialogUtils {
                         )
                       ],
                     ),
-                    const SizedBox(height: 5),
 
                     // tower name
                     Text(
@@ -165,7 +169,7 @@ class DialogUtils {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 3),
 
                     // site address
                     _buildDetailRow('Address:', selectedTower.address),
@@ -173,8 +177,121 @@ class DialogUtils {
                     _buildDetailRow('Region:', selectedTower.region.toString()),
                     // site type
                     _buildDetailRow('Type:', selectedTower.type),
+                    const SizedBox(height: 10),
 
-                    // images
+                    // gallery
+                    Container(
+                      height: 130,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Theme.of(context).colorScheme.tertiary,
+                      ),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: selectedTower.images.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                              child: Stack(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {},
+                                    // onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], onDownload, onDelete),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: ConstrainedBox(
+                                        constraints: BoxConstraints(maxHeight: 400),
+                                        child: Image.network(
+                                          selectedTower.images[index],
+                                          fit: BoxFit.cover,
+                                          height: 120,
+                                          width: 120,
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return Container(
+                                              color: Colors.grey,
+                                              child: Icon(Icons.error, color: AppColors.red),
+                                            ); // if image fails to load
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ));
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+
+                    // sign-in status indicator
+                    Row(
+                      children: [
+                        Text(
+                          ' Status:',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary, fontStyle: FontStyle.italic),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          selectedTower.images.isEmpty
+                              ? 'Unsurveyed' // No images
+                              : selectedTower.images.length == 1
+                                  ? 'Signed-in' // Exactly 1 image
+                                  : 'Signed-out', // More than 1 image
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+
+                    // notes
+                    SizedBox(
+                      height: 120,
+                      child: TextField(
+                        controller: notesController,
+                        maxLines: null,
+                        expands: true,
+                        textAlignVertical: TextAlignVertical.top,
+                        maxLength: 500,
+                        style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14),
+                        buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              '$currentLength/$maxLength',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          );
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Enter notes here...',
+                          alignLabelWithHint: true,
+                          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                        ),
+                        onChanged: (text) async {
+                          // cancel any previous debounce timer
+                          if (_debounceTimer?.isActive ?? false) _debounceTimer?.cancel();
+
+                          _debounceTimer = Timer(const Duration(milliseconds: 2000), () {
+                            // update notes every one second of changes
+                            FirestoreService.towersCollection.doc(towerId).update({'notes': text});
+
+                            // update local
+                            setState(() {
+                              selectedTower.notes = text;
+                            });
+                          });
+                        },
+                      ),
+                    )
                   ],
                 ),
               ),
