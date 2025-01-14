@@ -3,6 +3,7 @@ import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/themes.dart';
+import 'package:provider/provider.dart';
 
 class DialogUtils {
   static void showLoadingDialog(BuildContext context) {
@@ -77,17 +78,12 @@ class DialogUtils {
   // TODO: fix context inheritance issue
   static void showTowerDialog(
     BuildContext context,
-    List<Tower> towers,
-    String towerId,
+    // List<Tower> towers,
+    Tower selectedTower,
   ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        final selectedTower = towers.firstWhere(
-          (tower) => tower.id == towerId,
-          orElse: () => throw Exception("Tower not found"),
-        );
-
         return Center(
           child: Container(
             width: 500,
