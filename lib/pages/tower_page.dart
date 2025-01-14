@@ -225,7 +225,7 @@ class _TowerPageState extends State<TowerPage> {
                         children: [
                           GestureDetector(
                             onTap: () => DialogUtils.showImageDialog(
-                                context, selectedTower.images[index], _downloadImage, _deleteImage), // TODO: pass a deleteImage function
+                                context, selectedTower.images[index], _downloadImage, _deleteImage),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: ConstrainedBox(

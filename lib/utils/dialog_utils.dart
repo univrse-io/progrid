@@ -89,11 +89,7 @@ class DialogUtils {
       context: context,
       builder: (BuildContext context) {
         final towers = Provider.of<List<Tower>>(context);
-        final selectedTower =
-            towers.firstWhere(
-          (tower) => tower.id == towerId,
-          orElse: () => throw Exception("Tower not found")
-        );
+        final selectedTower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
 
         // final selectedTower = towers.firstWhere(
         //   (tower) => tower.id == towerId,
@@ -205,13 +201,17 @@ class DialogUtils {
                               child: Stack(
                                 children: [
                                   GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      print(selectedTower.images[index]); // debug
+                                    },
+                                    // TODO: implement image onTap
                                     // onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], onDownload, onDelete),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
                                       child: ConstrainedBox(
                                         constraints: BoxConstraints(maxHeight: 400),
                                         child: Image.network(
+                                          // UNDONE: not sure why image won't show, though the url works
                                           selectedTower.images[index],
                                           fit: BoxFit.cover,
                                           height: 120,

@@ -338,7 +338,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                                     ),
                                   ),
                                 ))
-                          ])
+                          ]),
+
+                          // add attributions here
+                          SimpleAttributionWidget(
+                            source: Text('OpenStreetMap'),
+                            backgroundColor: Colors.black.withValues(alpha: 0.1),
+                          ),
                         ]),
                   ),
                 ],
