@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
+import 'package:progrid/providers/towers_provider.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/themes.dart';
+import 'package:provider/provider.dart';
 
 class DialogUtils {
   static void showLoadingDialog(BuildContext context) {
@@ -77,6 +79,7 @@ class DialogUtils {
   }
 
   // TODO: fix context inheritance issue
+  // TODO: implement live provider here instead
   static void showTowerDialog(
     BuildContext context,
     List<Tower> towers,
@@ -85,6 +88,13 @@ class DialogUtils {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        // final towersProvider = Provider.of<TowersProvider>(context, listen: true);
+        // final selectedTower =
+        //     towersProvider.towers.firstWhere(
+        //   (tower) => tower.id == towerId,
+        //   orElse: () => throw Exception("Tower not found"),
+        // );
+
         final selectedTower = towers.firstWhere(
           (tower) => tower.id == towerId,
           orElse: () => throw Exception("Tower not found"),
