@@ -11,7 +11,8 @@ class FirestoreService {
   static final towersCollection = FirebaseFirestore.instance
       .collection(kDebugMode ? 'towers_dev' : 'towers');
   static final usersCollection =
-      FirebaseFirestore.instance.collection(kDebugMode ? 'users_dev' : 'users');
+      FirebaseFirestore.instance.collection('users');
+      // FirebaseFirestore.instance.collection(kDebugMode ? 'users_dev' : 'users');
 
   static final issuesStream = issuesCollection
       .snapshots()
