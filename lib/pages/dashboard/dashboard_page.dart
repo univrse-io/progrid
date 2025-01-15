@@ -405,8 +405,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         'Site Name',
                         'Region',
                         'Site Type',
-                        'Base',
-                        'Equipment Shelter',
+                        // 'Base',
+                        // 'Equipment Shelter',
                         'Latitude',
                         'Longitude',
                         'Date'
@@ -421,8 +421,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           tower.name,
                           tower.region,
                           tower.type,
-                          tower.base,
-                          tower.equipmentShelter,
+                          // tower.base,
+                          // tower.equipmentShelter,
                           tower.position.latitude.toString(),
                           tower.position.longitude.toString(),
                           if (tower.signOut == null)
@@ -446,8 +446,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         'Site Name',
                         'Region',
                         'Site Type',
-                        'Base',
-                        'Equipment Shelter',
+                        // 'Base',
+                        // 'Equipment Shelter',
                         'Latitude',
                         'Longitude',
                         'Date'
@@ -463,8 +463,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           tower.name,
                           tower.region,
                           tower.type,
-                          tower.base,
-                          tower.equipmentShelter,
+                          // tower.base,
+                          // tower.equipmentShelter,
                           tower.position.latitude.toString(),
                           tower.position.longitude.toString(),
                           if (tower.signOut == null)
