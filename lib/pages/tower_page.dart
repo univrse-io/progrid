@@ -9,8 +9,8 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:gal/gal.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/drawing_status.dart';
@@ -224,8 +224,7 @@ class _TowerPageState extends State<TowerPage> {
                       child: Stack(
                         children: [
                           GestureDetector(
-                            onTap: () => DialogUtils.showImageDialog(
-                                context, selectedTower.images[index], _downloadImage, _deleteImage), // TODO: pass a deleteImage function
+                            onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], _downloadImage, _deleteImage),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: ConstrainedBox(
@@ -696,7 +695,7 @@ class _TowerPageState extends State<TowerPage> {
   }
 
   // delete image from tower
-  Future<void> _deleteImage(String url) async {
+  Future<void> _deleteImage(BuildContext context, String url) async {
     try {
       // confirmation dialog
       final confirm = await showDialog<bool>(
@@ -708,7 +707,10 @@ class _TowerPageState extends State<TowerPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.pop(context, false), // cancel
-                child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold),),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 style: TextButton.styleFrom(
                   textStyle: Theme.of(context).textTheme.labelLarge,
                 ),
@@ -743,8 +745,7 @@ class _TowerPageState extends State<TowerPage> {
         if (selectedTower.images.length == 1) {
           // delete image reference, image file, signIn time, and authorId
           await FirebaseStorage.instance.refFromURL(url).delete();
-          await FirebaseFirestore.instance.collection('towers').doc(widget.towerId).update({
-            // TODO: change to towers_dev when development, make this switch universal somehow
+          await FirestoreService.updateTower(widget.towerId, data: {
             'images': FieldValue.delete(),
             'signIn': FieldValue.delete(),
             'authorId': FieldValue.delete(),
@@ -761,8 +762,7 @@ class _TowerPageState extends State<TowerPage> {
           // delete image reference, image file, and signOut time
           await FirebaseStorage.instance.refFromURL(url).delete();
           final _updatedImages = List<String>.from(selectedTower.images)..remove(url);
-          await FirebaseFirestore.instance.collection('towers').doc(widget.towerId).update({
-            // TODO: change to towers_dev when development
+          await FirestoreService.updateTower(widget.towerId, data: {
             'images': _updatedImages,
             'signOut': FieldValue.delete(),
           });
@@ -793,7 +793,7 @@ class _TowerPageState extends State<TowerPage> {
   }
 
   // download image from url
-  Future<void> _downloadImage(String url) async {
+  Future<void> _downloadImage(BuildContext context, String url) async {
     try {
       if (mounted) DialogUtils.showLoadingDialog(context);
 
@@ -862,6 +862,7 @@ class _TowerPageState extends State<TowerPage> {
       }
     } finally {
       if (mounted) Navigator.pop(context);
+      if (mounted) Navigator.pop(context); // pop out of image
     }
   }
 

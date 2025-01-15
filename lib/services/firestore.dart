@@ -1,17 +1,18 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/tower.dart';
 
 class FirestoreService {
-
-  // select database here
-  static final issuesCollection =
-      FirebaseFirestore.instance.collection('issues');
-  static final towersCollection =
-      FirebaseFirestore.instance.collection('towers');
-  static final usersCollection = FirebaseFirestore.instance.collection('users');
+  static final issuesCollection = FirebaseFirestore.instance
+      .collection(kDebugMode ? 'issues_dev' : 'issues');
+  static final towersCollection = FirebaseFirestore.instance
+      .collection(kDebugMode ? 'towers_dev' : 'towers');
+  static final usersCollection =
+      FirebaseFirestore.instance.collection('users');
+      // FirebaseFirestore.instance.collection(kDebugMode ? 'users_dev' : 'users');
 
   static final issuesStream = issuesCollection
       .snapshots()
@@ -44,15 +45,11 @@ class FirestoreService {
           .then((_) => log('Successfully updated user.'))
           .catchError((e) => log('Failed updating user.', error: e));
 
-  static Future<void> createUser(String id, {required Map<String, dynamic> data}) async {
-    try {
-      await usersCollection
+  static Future<void> createUser(String id,
+          {required Map<String, dynamic> data}) async =>
+      usersCollection
           .doc(id)
           .set(data)
           .then((_) => log('Successfully created user.'))
           .catchError((e) => log('Failed creating user.', error: e));
-    } catch (e) {
-      log('Error creating user: $e');
-    }
-  }
 }

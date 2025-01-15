@@ -8,7 +8,18 @@ import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/region.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
+import 'package:progrid/utils/dialog_utils.dart';
+import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
+
+final screenshotController1 = ScreenshotController();
+final screenshotController2 = ScreenshotController();
+final screenshotController3 = ScreenshotController();
+final screenshotController4 = ScreenshotController();
+final screenshotController5 = ScreenshotController();
+final screenshotController6 = ScreenshotController();
+final screenshotController7 = ScreenshotController();
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -54,88 +65,97 @@ class _HomePageState extends State<HomePage>
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: PieChart(PieChartData(
-                                sectionsSpace: 0,
-                                startDegreeOffset: 45,
-                                centerSpaceRadius: 40,
-                                sections: [
-                                  PieChartSectionData(
-                                    title:
-                                        'Completed\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titleStyle:
-                                        Theme.of(context).textTheme.labelSmall,
-                                    titlePositionPercentageOffset: 2,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.surveyStatus ==
-                                            SurveyStatus.surveyed)
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.green,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        'In Progress\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titleStyle:
-                                        Theme.of(context).textTheme.labelSmall,
-                                    titlePositionPercentageOffset: 2,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.surveyStatus ==
-                                            SurveyStatus.inprogress)
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.amber,
-                                  ),
-                                  PieChartSectionData(
-                                    title:
-                                        'Balance\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.unsurveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                    titleStyle:
-                                        Theme.of(context).textTheme.labelSmall,
-                                    titlePositionPercentageOffset: 2,
-                                    value: towers
-                                        .where((tower) =>
-                                            tower.surveyStatus ==
-                                            SurveyStatus.unsurveyed)
-                                        .length
-                                        .toDouble(),
-                                    radius: 30,
-                                    color: Colors.red,
-                                  ),
-                                ])),
+                            child: Screenshot(
+                              controller: screenshotController1,
+                              child: PieChart(PieChartData(
+                                  sectionsSpace: 0,
+                                  startDegreeOffset: 45,
+                                  centerSpaceRadius: 40,
+                                  sections: [
+                                    PieChartSectionData(
+                                      title:
+                                          'Completed\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                      titleStyle: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                      titlePositionPercentageOffset: 2,
+                                      value: towers
+                                          .where((tower) =>
+                                              tower.surveyStatus ==
+                                              SurveyStatus.surveyed)
+                                          .length
+                                          .toDouble(),
+                                      radius: 30,
+                                      color: Colors.green,
+                                    ),
+                                    PieChartSectionData(
+                                      title:
+                                          'In Progress\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                      titleStyle: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                      titlePositionPercentageOffset: 2,
+                                      value: towers
+                                          .where((tower) =>
+                                              tower.surveyStatus ==
+                                              SurveyStatus.inprogress)
+                                          .length
+                                          .toDouble(),
+                                      radius: 30,
+                                      color: Colors.amber,
+                                    ),
+                                    PieChartSectionData(
+                                      title:
+                                          'Balance\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.unsurveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                      titleStyle: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                      titlePositionPercentageOffset: 2,
+                                      value: towers
+                                          .where((tower) =>
+                                              tower.surveyStatus ==
+                                              SurveyStatus.unsurveyed)
+                                          .length
+                                          .toDouble(),
+                                      radius: 30,
+                                      color: Colors.red,
+                                    ),
+                                  ])),
+                            ),
                           ),
                           Text('Regional Breakdown',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: PieChart(
-                              PieChartData(
-                                  sectionsSpace: 0,
-                                  centerSpaceRadius: 40,
-                                  startDegreeOffset: 45,
-                                  sections: [
-                                    ...Region.values
-                                        .map((region) => PieChartSectionData(
-                                              title:
-                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == SurveyStatus.surveyed).length / towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length * 100).toStringAsFixed(2)}%',
-                                              titleStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .labelSmall,
-                                              titlePositionPercentageOffset: 2,
-                                              value: towers
-                                                  .where((tower) =>
-                                                      tower.region.name ==
-                                                          region.name &&
-                                                      tower.surveyStatus ==
-                                                          SurveyStatus.surveyed)
-                                                  .length
-                                                  .toDouble(),
-                                              radius: 30,
-                                              color: region.color,
-                                            )),
-                                  ]),
+                            child: Screenshot(
+                              controller: screenshotController2,
+                              child: PieChart(
+                                PieChartData(
+                                    sectionsSpace: 0,
+                                    centerSpaceRadius: 40,
+                                    startDegreeOffset: 45,
+                                    sections: [
+                                      ...Region.values.map((region) =>
+                                          PieChartSectionData(
+                                            title:
+                                                '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == SurveyStatus.surveyed).length / towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length * 100).toStringAsFixed(2)}%',
+                                            titleStyle: Theme.of(context)
+                                                .textTheme
+                                                .labelSmall,
+                                            titlePositionPercentageOffset: 2,
+                                            value: towers
+                                                .where((tower) =>
+                                                    tower.region.name ==
+                                                        region.name &&
+                                                    tower.surveyStatus ==
+                                                        SurveyStatus.surveyed)
+                                                .length
+                                                .toDouble(),
+                                            radius: 30,
+                                            color: region.color,
+                                          )),
+                                    ]),
+                              ),
                             ),
                           )
                         ],
@@ -156,42 +176,47 @@ class _HomePageState extends State<HomePage>
                                 fontSize: 16, fontWeight: FontWeight.w600)),
                         SizedBox(height: 10),
                         Expanded(
-                          child: ListView.builder(
-                              itemCount: issues.length,
-                              itemBuilder: (context, index) => Visibility(
-                                    visible:
-                                        issues[index].status == 'unresolved',
-                                    child: Card(
-                                      margin: EdgeInsets.symmetric(vertical: 5),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          side: BorderSide(
-                                              color: Colors.black12, width: 2)),
-                                      child: ListTile(
-                                        dense: true,
-                                        trailing: Text(
-                                            DateFormat('dd/MM/yy HH:mm').format(
-                                                issues[index]
-                                                    .dateTime
-                                                    .toDate())),
-                                        title: Row(
-                                          children: [
-                                            CircleAvatar(
-                                                radius: 5,
-                                                backgroundColor: Colors.red),
-                                            SizedBox(width: 5),
-                                            Text(issues[index].id,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleSmall),
-                                          ],
+                          child: Screenshot(
+                            controller: screenshotController7,
+                            child: ListView.builder(
+                                itemCount: issues.length,
+                                itemBuilder: (context, index) => Visibility(
+                                      visible:
+                                          issues[index].status == 'unresolved',
+                                      child: Card(
+                                        margin:
+                                            EdgeInsets.symmetric(vertical: 5),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            side: BorderSide(
+                                                color: Colors.black12,
+                                                width: 2)),
+                                        child: ListTile(
+                                          dense: true,
+                                          trailing: Text(
+                                              DateFormat('dd/MM/yy HH:mm')
+                                                  .format(issues[index]
+                                                      .dateTime
+                                                      .toDate())),
+                                          title: Row(
+                                            children: [
+                                              CircleAvatar(
+                                                  radius: 5,
+                                                  backgroundColor: Colors.red),
+                                              SizedBox(width: 5),
+                                              Text(issues[index].id,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleSmall),
+                                            ],
+                                          ),
+                                          subtitle: Text(
+                                              issues[index].tags.join(', ')),
                                         ),
-                                        subtitle:
-                                            Text(issues[index].tags.join(', ')),
                                       ),
-                                    ),
-                                  )),
+                                    )),
+                          ),
                         ),
                       ],
                     ),
@@ -271,7 +296,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.surveyStatus == SurveyStatus.unsurveyed).length}',
+                                        '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress || tower.surveyStatus == SurveyStatus.unsurveyed).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -351,7 +376,7 @@ class _HomePageState extends State<HomePage>
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600)),
                                     Text(
-                                        '${towers.where((tower) => tower.drawingStatus == null).length}',
+                                        '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress || tower.drawingStatus == null).length}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .displaySmall)
@@ -366,96 +391,111 @@ class _HomePageState extends State<HomePage>
                   ),
                   SizedBox(height: 5),
                   Expanded(
-                    child: FlutterMap(
-                        options: MapOptions(
-                            initialCenter: LatLng(3.1408, 101.6932),
-                            initialZoom: 11,
-                            interactionOptions: InteractionOptions(
-                                flags: ~InteractiveFlag.doubleTapZoom)),
-                        children: [
-                          TileLayer(
-                            urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName:
-                                'dev.fleaflet.flutter_map.example',
-                          ),
-                          MarkerLayer(markers: [
-                            ...towers.map((tower) => Marker(
-                                  point: LatLng(tower.position.latitude,
-                                      tower.position.longitude),
-                                  width: 80,
-                                  child: GestureDetector(
-                                    onTap: () {},
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        // marker icon
-                                        Icon(
-                                          Icons.cell_tower,
-                                          color: switch (tower.region.name) {
-                                            'southern' =>
-                                              Color.fromARGB(255, 82, 114, 76),
-                                            'northern' =>
-                                              Color.fromARGB(255, 100, 68, 68),
-                                            'eastern' =>
-                                              Color.fromARGB(255, 134, 124, 79),
-                                            'central' =>
-                                              Color.fromARGB(255, 63, 81, 100),
-                                            'western' =>
-                                              Color.fromARGB(255, 104, 71, 104),
-                                            'sabah' =>
-                                              Color.fromARGB(255, 62, 88, 88),
-                                            'sarawak' =>
-                                              Color.fromARGB(255, 163, 110, 90),
-                                            _ => Colors.grey
-                                          },
-                                          size: 36,
-                                        ),
-
-                                        // information box
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 5),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black
-                                                .withValues(alpha: 0.7),
-                                            borderRadius:
-                                                BorderRadius.circular(4),
+                    child: Screenshot(
+                      controller: screenshotController5,
+                      child: FlutterMap(
+                          options: MapOptions(
+                              initialCenter: LatLng(3.1408, 101.6932),
+                              initialZoom: 11,
+                              interactionOptions: InteractionOptions(
+                                  flags: ~InteractiveFlag.doubleTapZoom)),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName:
+                                  'dev.fleaflet.flutter_map.example',
+                            ),
+                            MarkerLayer(markers: [
+                              ...towers.map((tower) => Marker(
+                                    point: LatLng(tower.position.latitude,
+                                        tower.position.longitude),
+                                    width: 80,
+                                    // key: ValueKey(tower.id),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        // TODO: implement map dialog here
+                                        DialogUtils.showTowerDialog(
+                                            context, tower.id);
+                                      },
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          // marker icon
+                                          Icon(
+                                            Icons.cell_tower,
+                                            color: switch (tower.region.name) {
+                                              'southern' => Color.fromARGB(
+                                                  255, 82, 114, 76),
+                                              'northern' => Color.fromARGB(
+                                                  255, 100, 68, 68),
+                                              'eastern' => Color.fromARGB(
+                                                  255, 134, 124, 79),
+                                              'central' => Color.fromARGB(
+                                                  255, 63, 81, 100),
+                                              'western' => Color.fromARGB(
+                                                  255, 104, 71, 104),
+                                              'sabah' =>
+                                                Color.fromARGB(255, 62, 88, 88),
+                                              'sarawak' => Color.fromARGB(
+                                                  255, 163, 110, 90),
+                                              _ => Colors.grey
+                                            },
+                                            size: 36,
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              // status indicator
-                                              Container(
-                                                width: 8,
-                                                height: 8,
-                                                decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: tower
-                                                        .surveyStatus.color),
-                                              ),
-                                              const SizedBox(width: 4),
 
-                                              // tower id
-                                              Text(
-                                                tower.id,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 10,
+                                          // information box
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.onSurface
+                                                  .withValues(alpha: 0.7),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                // status indicator
+                                                Container(
+                                                  width: 8,
+                                                  height: 8,
+                                                  decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: tower
+                                                          .surveyStatus.color),
                                                 ),
-                                                maxLines: 1,
-                                              ),
-                                            ],
+                                                const SizedBox(width: 4),
+
+                                                // tower id
+                                                Text(
+                                                  tower.id,
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 10,
+                                                  ),
+                                                  maxLines: 1,
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ))
-                          ])
-                        ]),
+                                  ))
+                            ]),
+
+                            // add attributions here
+                            SimpleAttributionWidget(
+                              source: Text('OpenStreetMap'),
+                              backgroundColor:
+                                  Colors.black.withValues(alpha: 0.1),
+                            ),
+                          ]),
+                    ),
                   ),
                 ],
               )),
@@ -481,78 +521,85 @@ class _HomePageState extends State<HomePage>
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: PieChart(
-                              PieChartData(
-                                  sectionsSpace: 0,
-                                  centerSpaceRadius: 40,
-                                  startDegreeOffset: 45,
-                                  sections: [
-                                    PieChartSectionData(
-                                      title:
-                                          'Balance\n${(towers.where((tower) => tower.drawingStatus == null).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                      titleStyle: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall,
-                                      titlePositionPercentageOffset: 2,
-                                      value: towers
-                                          .where((tower) =>
-                                              tower.drawingStatus == null)
-                                          .length
-                                          .toDouble(),
-                                      radius: 30,
-                                      color: Colors.red,
-                                    ),
-                                    ...DrawingStatus.values.map(
-                                        (drawingStatus) => PieChartSectionData(
-                                              title:
-                                                  '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus == drawingStatus).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                              titleStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .labelSmall,
-                                              titlePositionPercentageOffset: 2,
-                                              value: towers
-                                                  .where((tower) =>
-                                                      tower.drawingStatus ==
-                                                      drawingStatus)
-                                                  .length
-                                                  .toDouble(),
-                                              radius: 30,
-                                              color: drawingStatus.color,
-                                            )),
-                                  ]),
+                            child: Screenshot(
+                              controller: screenshotController3,
+                              child: PieChart(
+                                PieChartData(
+                                    sectionsSpace: 0,
+                                    centerSpaceRadius: 40,
+                                    startDegreeOffset: 45,
+                                    sections: [
+                                      PieChartSectionData(
+                                        title:
+                                            'Balance\n${(towers.where((tower) => tower.drawingStatus == null).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        titleStyle: Theme.of(context)
+                                            .textTheme
+                                            .labelSmall,
+                                        titlePositionPercentageOffset: 2,
+                                        value: towers
+                                            .where((tower) =>
+                                                tower.drawingStatus == null)
+                                            .length
+                                            .toDouble(),
+                                        radius: 30,
+                                        color: Colors.red,
+                                      ),
+                                      ...DrawingStatus.values.map(
+                                          (drawingStatus) =>
+                                              PieChartSectionData(
+                                                title:
+                                                    '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus == drawingStatus).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                                titleStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .labelSmall,
+                                                titlePositionPercentageOffset:
+                                                    2,
+                                                value: towers
+                                                    .where((tower) =>
+                                                        tower.drawingStatus ==
+                                                        drawingStatus)
+                                                    .length
+                                                    .toDouble(),
+                                                radius: 30,
+                                                color: drawingStatus.color,
+                                              )),
+                                    ]),
+                              ),
                             ),
                           ),
                           Text('Regional Breakdown',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: PieChart(
-                              PieChartData(
-                                  sectionsSpace: 0,
-                                  centerSpaceRadius: 40,
-                                  startDegreeOffset: 45,
-                                  sections: [
-                                    ...Region.values
-                                        .map((region) => PieChartSectionData(
-                                              title:
-                                                  '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus == DrawingStatus.submitted).length / towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length * 100).toStringAsFixed(2)}%',
-                                              titleStyle: Theme.of(context)
-                                                  .textTheme
-                                                  .labelSmall,
-                                              titlePositionPercentageOffset: 2,
-                                              value: towers
-                                                  .where((tower) =>
-                                                      tower.region.name ==
-                                                          region.name &&
-                                                      tower.drawingStatus ==
-                                                          DrawingStatus
-                                                              .submitted)
-                                                  .length
-                                                  .toDouble(),
-                                              radius: 30,
-                                              color: region.color,
-                                            )),
-                                  ]),
+                            child: Screenshot(
+                              controller: screenshotController4,
+                              child: PieChart(
+                                PieChartData(
+                                    sectionsSpace: 0,
+                                    centerSpaceRadius: 40,
+                                    startDegreeOffset: 45,
+                                    sections: [
+                                      ...Region.values.map((region) =>
+                                          PieChartSectionData(
+                                            title:
+                                                '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus == DrawingStatus.submitted).length / towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length * 100).toStringAsFixed(2)}%',
+                                            titleStyle: Theme.of(context)
+                                                .textTheme
+                                                .labelSmall,
+                                            titlePositionPercentageOffset: 2,
+                                            value: towers
+                                                .where((tower) =>
+                                                    tower.region.name ==
+                                                        region.name &&
+                                                    tower.drawingStatus ==
+                                                        DrawingStatus.submitted)
+                                                .length
+                                                .toDouble(),
+                                            radius: 30,
+                                            color: region.color,
+                                          )),
+                                    ]),
+                              ),
                             ),
                           )
                         ],
@@ -572,134 +619,148 @@ class _HomePageState extends State<HomePage>
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600)),
                         SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Spacer(),
-                            CircleAvatar(
-                                backgroundColor: Colors.purple, radius: 5),
-                            SizedBox(width: 5),
-                            Text('On-Site Audit'),
-                            Spacer(),
-                            CircleAvatar(
-                                backgroundColor: Colors.green, radius: 5),
-                            SizedBox(width: 5),
-                            Text('As-Built Drawing'),
-                            Spacer(),
-                          ],
-                        ),
-                        SizedBox(height: 20),
                         Expanded(
-                            child: BarChart(BarChartData(
-                          barGroups: [
-                            BarChartGroupData(x: 0, barRods: [
-                              BarChartRodData(
-                                  borderRadius: BorderRadius.zero,
-                                  toY: towers
-                                      .where((tower) =>
-                                          tower.surveyStatus ==
-                                              SurveyStatus.surveyed &&
-                                          tower.type == 'Sharing/Co-locate')
-                                      .length
-                                      .toDouble(),
-                                  width: 20,
-                                  color: Colors.purple),
-                              BarChartRodData(
-                                  borderRadius: BorderRadius.zero,
-                                  toY: towers
-                                      .where((tower) =>
-                                          tower.drawingStatus ==
-                                              DrawingStatus.submitted &&
-                                          tower.type == 'Sharing/Co-locate')
-                                      .length
-                                      .toDouble(),
-                                  width: 20,
-                                  color: Colors.green)
-                            ]),
-                            BarChartGroupData(x: 1, barRods: [
-                              BarChartRodData(
-                                  borderRadius: BorderRadius.zero,
-                                  toY: towers
-                                      .where((tower) =>
-                                          tower.surveyStatus ==
-                                              SurveyStatus.surveyed &&
-                                          tower.type == 'Greenfield')
-                                      .length
-                                      .toDouble(),
-                                  width: 20,
-                                  color: Colors.purple),
-                              BarChartRodData(
-                                  borderRadius: BorderRadius.zero,
-                                  toY: towers
-                                      .where((tower) =>
-                                          tower.drawingStatus ==
-                                              DrawingStatus.submitted &&
-                                          tower.type == 'Greenfield')
-                                      .length
-                                      .toDouble(),
-                                  width: 20,
-                                  color: Colors.green)
-                            ]),
-                            BarChartGroupData(x: 2, barRods: [
-                              BarChartRodData(
-                                  borderRadius: BorderRadius.zero,
-                                  toY: towers
-                                      .where((tower) =>
-                                          tower.surveyStatus ==
-                                              SurveyStatus.surveyed &&
-                                          tower.type == 'Roof top')
-                                      .length
-                                      .toDouble(),
-                                  width: 20,
-                                  color: Colors.purple),
-                              BarChartRodData(
-                                  borderRadius: BorderRadius.zero,
-                                  toY: towers
-                                      .where((tower) =>
-                                          tower.drawingStatus ==
-                                              DrawingStatus.submitted &&
-                                          tower.type == 'Roof top')
-                                      .length
-                                      .toDouble(),
-                                  width: 20,
-                                  color: Colors.green)
-                            ]),
-                          ],
-                          titlesData: FlTitlesData(
-                            rightTitles: const AxisTitles(),
-                            topTitles: const AxisTitles(),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: (value, meta) =>
-                                    SideTitleWidget(
-                                  angle: -0.25,
-                                  axisSide: meta.axisSide,
-                                  space: 16,
-                                  child: Text([
-                                    'Sharing/Co-locate',
-                                    'Greenfield',
-                                    'Rooftop'
-                                  ][value.toInt()]),
+                          child: Screenshot(
+                            controller: screenshotController6,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    Spacer(),
+                                    CircleAvatar(
+                                        backgroundColor: Colors.purple,
+                                        radius: 5),
+                                    SizedBox(width: 5),
+                                    Text('On-Site Audit'),
+                                    Spacer(),
+                                    CircleAvatar(
+                                        backgroundColor: Colors.green,
+                                        radius: 5),
+                                    SizedBox(width: 5),
+                                    Text('As-Built Drawing'),
+                                    Spacer(),
+                                  ],
                                 ),
-                                reservedSize: 42,
-                              ),
-                            ),
-                            leftTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 28,
-                                getTitlesWidget: (value, meta) =>
-                                    SideTitleWidget(
-                                  axisSide: meta.axisSide,
-                                  space: 0,
-                                  child: Text(value.toString()),
-                                ),
-                              ),
+                                SizedBox(height: 20),
+                                Expanded(
+                                    child: BarChart(BarChartData(
+                                  barGroups: [
+                                    BarChartGroupData(x: 0, barRods: [
+                                      BarChartRodData(
+                                          borderRadius: BorderRadius.zero,
+                                          toY: towers
+                                              .where((tower) =>
+                                                  tower.surveyStatus ==
+                                                      SurveyStatus.surveyed &&
+                                                  tower.type ==
+                                                      'Sharing/Co-locate')
+                                              .length
+                                              .toDouble(),
+                                          width: 20,
+                                          color: Colors.purple),
+                                      BarChartRodData(
+                                          borderRadius: BorderRadius.zero,
+                                          toY: towers
+                                              .where((tower) =>
+                                                  tower.drawingStatus ==
+                                                      DrawingStatus.submitted &&
+                                                  tower.type ==
+                                                      'Sharing/Co-locate')
+                                              .length
+                                              .toDouble(),
+                                          width: 20,
+                                          color: Colors.green)
+                                    ]),
+                                    BarChartGroupData(x: 1, barRods: [
+                                      BarChartRodData(
+                                          borderRadius: BorderRadius.zero,
+                                          toY: towers
+                                              .where((tower) =>
+                                                  tower.surveyStatus ==
+                                                      SurveyStatus.surveyed &&
+                                                  tower.type == 'Greenfield')
+                                              .length
+                                              .toDouble(),
+                                          width: 20,
+                                          color: Colors.purple),
+                                      BarChartRodData(
+                                          borderRadius: BorderRadius.zero,
+                                          toY: towers
+                                              .where((tower) =>
+                                                  tower.drawingStatus ==
+                                                      DrawingStatus.submitted &&
+                                                  tower.type == 'Greenfield')
+                                              .length
+                                              .toDouble(),
+                                          width: 20,
+                                          color: Colors.green)
+                                    ]),
+                                    BarChartGroupData(x: 2, barRods: [
+                                      BarChartRodData(
+                                          borderRadius: BorderRadius.zero,
+                                          toY: towers
+                                              .where((tower) =>
+                                                  tower.surveyStatus ==
+                                                      SurveyStatus.surveyed &&
+                                                  tower.type == 'Roof top')
+                                              .length
+                                              .toDouble(),
+                                          width: 20,
+                                          color: Colors.purple),
+                                      BarChartRodData(
+                                          borderRadius: BorderRadius.zero,
+                                          toY: towers
+                                              .where((tower) =>
+                                                  tower.drawingStatus ==
+                                                      DrawingStatus.submitted &&
+                                                  tower.type == 'Roof top')
+                                              .length
+                                              .toDouble(),
+                                          width: 20,
+                                          color: Colors.green)
+                                    ]),
+                                  ],
+                                  titlesData: FlTitlesData(
+                                    rightTitles: const AxisTitles(),
+                                    topTitles: const AxisTitles(),
+                                    bottomTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: true,
+                                        getTitlesWidget: (value, meta) =>
+                                            SideTitleWidget(
+                                          angle: -0.25,
+                                          axisSide: meta.axisSide,
+                                          space: 16,
+                                          child: Text([
+                                            'Sharing/Co-locate',
+                                            'Greenfield',
+                                            'Rooftop'
+                                          ][value.toInt()]),
+                                        ),
+                                        reservedSize: 42,
+                                      ),
+                                    ),
+                                    leftTitles: AxisTitles(
+                                      sideTitles: SideTitles(
+                                        showTitles: true,
+                                        reservedSize: 28,
+                                        getTitlesWidget: (value, meta) =>
+                                            SideTitleWidget(
+                                          axisSide: meta.axisSide,
+                                          space: 0,
+                                          child: Text(value.toString()),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  borderData: FlBorderData(show: false),
+                                  gridData: const FlGridData(show: false),
+                                ))),
+                              ],
                             ),
                           ),
-                          borderData: FlBorderData(show: false),
-                          gridData: const FlGridData(show: false),
-                        ))),
+                        )
                       ],
                     ),
                   ),

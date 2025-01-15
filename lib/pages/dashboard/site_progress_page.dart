@@ -4,6 +4,7 @@ import 'package:progrid/models/region.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/services/firestore.dart';
+import 'package:progrid/utils/dialog_utils.dart';
 import 'package:provider/provider.dart';
 
 class SiteProgressPage extends StatefulWidget {
@@ -117,9 +118,9 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                           SizedBox(width: 10),
                           Text('Tower'),
                           Spacer(),
-                          Text('Survey Status'),
+                          Text('On-Site Audit'),
                           SizedBox(width: 100),
-                          Text('Drawing Status'),
+                          Text('As-Built Drawing'),
                           SizedBox(width: 50),
                         ],
                       ),
@@ -134,6 +135,8 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         return Card(
                           margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
                           child: ListTile(
+                              onTap: () => DialogUtils.showTowerDialog(
+                                  context, tower.id),
                               title: Row(
                                 children: [
                                   CircleAvatar(
