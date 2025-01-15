@@ -1,11 +1,19 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gal/gal.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class DialogUtils {
   static void showLoadingDialog(BuildContext context) {
@@ -21,8 +29,8 @@ class DialogUtils {
   static void showImageDialog(
     BuildContext context,
     String imageUrl,
-    Future<void> Function(String) onDownload,
-    Future<void> Function(String) onDelete,
+    Future<void> Function(BuildContext, String) onDownload,
+    Future<void> Function(BuildContext, String) onDelete,
   ) {
     showDialog(
       context: context,
@@ -53,7 +61,7 @@ class DialogUtils {
                       children: [
                         // download button
                         FloatingActionButton(
-                          onPressed: () => onDownload(imageUrl),
+                          onPressed: () => onDownload(context, imageUrl),
                           child: Icon(Icons.download),
                           mini: true,
                         ),
@@ -61,7 +69,7 @@ class DialogUtils {
 
                         // delete button
                         FloatingActionButton(
-                          onPressed: () => onDelete(imageUrl),
+                          onPressed: () => onDelete(context, imageUrl),
                           child: Icon(Icons.delete, color: AppColors.red),
                           mini: true,
                         ),
@@ -201,7 +209,7 @@ class DialogUtils {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      print(selectedTower.images[index]); // debug
+                                      showImageDialog(context, selectedTower.images[index], _downloadImage, _deleteImage);
                                     },
                                     // TODO: implement image onTap
                                     // onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], onDownload, onDelete),
@@ -340,5 +348,126 @@ class DialogUtils {
         ],
       ),
     );
+  }
+
+  static Future<void> _deleteImage(BuildContext context, String url) async {
+    try {
+      // confirmation dialog
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Confirm Deletion"),
+            content: Text("Are you sure you want to delete this image? This action cannot be undone."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, false), // cancel
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true), // confirm
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: AppColors.red, fontWeight: FontWeight.bold),
+                ),
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (confirm != true) return;
+
+      showLoadingDialog(context);
+
+      // check if tower has 1 image
+    } catch (e) {
+    } finally {}
+  }
+
+  static Future<void> _downloadImage(BuildContext context, String url) async {
+    try {
+      showLoadingDialog(context);
+
+      if (!kIsWeb) {
+        final permission = Platform.isAndroid
+            ? (await DeviceInfoPlugin().androidInfo).version.sdkInt > 32
+                ? Permission.photos
+                : Permission.storage
+            : Permission.photos;
+
+        final status = await permission.request();
+
+        if (status.isDenied) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Storage permission is required to save the image.')),
+          );
+          return;
+        }
+
+        if (status.isPermanentlyDenied) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                'Permission permanently denied. Please allow it from settings.',
+              ),
+              action: SnackBarAction(
+                label: 'Settings',
+                onPressed: () {
+                  openAppSettings();
+                },
+              ),
+            ),
+          );
+          return;
+        }
+      }
+
+      // get image
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to download the image. Status code: ${response.statusCode}');
+      }
+
+      if (kIsWeb) {
+        // download file via browser
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Downloading via browser...')),
+        );
+
+        final Uri uri = Uri.parse(url);
+        await launchUrl(uri);
+        // return;
+      } else {
+        final tempDir = await getTemporaryDirectory();
+        final filePath = "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+
+        final file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
+
+        // Save to gallery (implement your Gal.putImage logic here)
+        await Gal.putImage(filePath);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image saved to Gallery')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to download image: $e')),
+      );
+    } finally {
+      Navigator.pop(context);
+      Navigator.pop(context); // exit image
+    }
   }
 }

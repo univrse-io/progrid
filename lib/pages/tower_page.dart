@@ -224,8 +224,7 @@ class _TowerPageState extends State<TowerPage> {
                       child: Stack(
                         children: [
                           GestureDetector(
-                            onTap: () => DialogUtils.showImageDialog(
-                                context, selectedTower.images[index], _downloadImage, _deleteImage),
+                            onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], _downloadImage, _deleteImage),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: ConstrainedBox(
@@ -696,7 +695,7 @@ class _TowerPageState extends State<TowerPage> {
   }
 
   // delete image from tower
-  Future<void> _deleteImage(String url) async {
+  Future<void> _deleteImage(BuildContext context, String url) async {
     try {
       // confirmation dialog
       final confirm = await showDialog<bool>(
@@ -708,7 +707,10 @@ class _TowerPageState extends State<TowerPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.pop(context, false), // cancel
-                child: Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold),),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 style: TextButton.styleFrom(
                   textStyle: Theme.of(context).textTheme.labelLarge,
                 ),
@@ -743,7 +745,7 @@ class _TowerPageState extends State<TowerPage> {
         if (selectedTower.images.length == 1) {
           // delete image reference, image file, signIn time, and authorId
           await FirebaseStorage.instance.refFromURL(url).delete();
-          await FirestoreService.updateTower(widget.towerId, data: { 
+          await FirestoreService.updateTower(widget.towerId, data: {
             'images': FieldValue.delete(),
             'signIn': FieldValue.delete(),
             'authorId': FieldValue.delete(),
@@ -791,7 +793,7 @@ class _TowerPageState extends State<TowerPage> {
   }
 
   // download image from url
-  Future<void> _downloadImage(String url) async {
+  Future<void> _downloadImage(BuildContext context, String url) async {
     try {
       if (mounted) DialogUtils.showLoadingDialog(context);
 
@@ -860,6 +862,7 @@ class _TowerPageState extends State<TowerPage> {
       }
     } finally {
       if (mounted) Navigator.pop(context);
+      if (mounted) Navigator.pop(context); // pop out of image
     }
   }
 
