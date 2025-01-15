@@ -2,6 +2,7 @@
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:progrid/models/drawing_status.dart';
@@ -27,7 +28,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> downloadReport() async {
     final towers = Provider.of<List<Tower>>(context, listen: false);
     final issues = Provider.of<List<Issue>>(context, listen: false);
-    final pdf = pw.Document();
+    final pdf1 = pw.Document();
+    final pdf2 = pw.Document();
     final sapuraImg = await rootBundle
         .load('assets/images/sapura.png')
         .then((img) => img.buffer.asUint8List());
@@ -44,7 +46,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final mapDisplay = await screenshotController5.capture();
     final onSiteAuditVsAsBuiltDrawing = await screenshotController6.capture();
 
-    pdf.addPage(pw.Page(
+    pdf1.addPage(pw.Page(
         build: (context) => pw.Column(children: [
               pw.Row(
                 children: [
@@ -248,7 +250,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ]),
             ])));
 
-    pdf.addPage(pw.Page(
+    pdf1.addPage(pw.Page(
         build: (context) => pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                 children: [
@@ -278,12 +280,108 @@ class _DashboardPageState extends State<DashboardPage> {
                           pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
                       headerStyle:
                           pw.TextStyle(color: PdfColor.fromInt(0xFFFFFFFF))),
+                  pw.SizedBox(height: 20),
+                  pw.Text(
+                      'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
+                      textAlign: pw.TextAlign.right),
                 ])));
 
-    final pdfBytes = await pdf.save();
+    final pdf1Bytes = await pdf1.save();
     try {
       await FileSaver.instance.saveFile(
-          name: 'Report', bytes: pdfBytes, mimeType: MimeType.pdf, ext: ".pdf");
+          name: 'Daily Progress Report',
+          bytes: pdf1Bytes,
+          mimeType: MimeType.pdf,
+          ext: ".pdf");
+      print('PDF saved successfully');
+    } catch (e) {
+      print('Error saving PDF: $e');
+    }
+
+    pdf2.addPage(pw.Page(
+        build: (context) => pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                children: [
+                  pw.Row(
+                    children: [
+                      pw.Image(pw.MemoryImage(sapuraImg), height: 40),
+                      pw.SizedBox(width: 30),
+                      pw.Text('Site Completed',
+                          style: pw.TextStyle(fontSize: 20)),
+                      pw.SizedBox(width: 30),
+                      pw.Image(pw.MemoryImage(binasatImg), height: 40),
+                      pw.SizedBox(width: 30),
+                      pw.Image(pw.MemoryImage(uosImg), height: 40),
+                      pw.SizedBox(width: 30),
+                    ],
+                  ),
+                  pw.SizedBox(height: 20),
+                  pw.Text('On-Site Audit'),
+                  pw.SizedBox(height: 10),
+                  pw.TableHelper.fromTextArray(
+                      headers: [
+                        'Site ID',
+                        'Site Name',
+                        'Region',
+                        'Site Type',
+                        'Issues'
+                      ],
+                      data: issues.map((issue) {
+                        final tower = towers.singleWhere(
+                            (tower) => tower.id == issue.id.split('-').first);
+
+                        return [
+                          tower.id,
+                          tower.name,
+                          tower.region,
+                          tower.type,
+                          issue.tags.join()
+                        ];
+                      }).toList(),
+                      headerDecoration:
+                          pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
+                      headerStyle:
+                          pw.TextStyle(color: PdfColor.fromInt(0xFFFFFFFF))),
+                  pw.SizedBox(height: 20),
+                  pw.Text('As-Built Drawing'),
+                  pw.SizedBox(height: 10),
+                  pw.TableHelper.fromTextArray(
+                      headers: [
+                        'Site ID',
+                        'Site Name',
+                        'Region',
+                        'Site Type',
+                        'Issues'
+                      ],
+                      data: issues.map((issue) {
+                        final tower = towers.singleWhere(
+                            (tower) => tower.id == issue.id.split('-').first);
+
+                        return [
+                          tower.id,
+                          tower.name,
+                          tower.region,
+                          tower.type,
+                          issue.tags.join()
+                        ];
+                      }).toList(),
+                      headerDecoration:
+                          pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
+                      headerStyle:
+                          pw.TextStyle(color: PdfColor.fromInt(0xFFFFFFFF))),
+                  pw.SizedBox(height: 20),
+                  pw.Text(
+                      'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
+                      textAlign: pw.TextAlign.right),
+                ])));
+
+    final pdf2Bytes = await pdf2.save();
+    try {
+      await FileSaver.instance.saveFile(
+          name: 'Site Completed',
+          bytes: pdf2Bytes,
+          mimeType: MimeType.pdf,
+          ext: ".pdf");
       print('PDF saved successfully');
     } catch (e) {
       print('Error saving PDF: $e');
