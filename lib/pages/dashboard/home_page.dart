@@ -9,6 +9,7 @@ import 'package:progrid/models/region.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/utils/dialog_utils.dart';
+import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -441,7 +442,7 @@ class _HomePageState extends State<HomePage>
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 5),
                                             decoration: BoxDecoration(
-                                              color: Colors.grey
+                                              color: AppColors.onSurface
                                                   .withValues(alpha: 0.7),
                                               borderRadius:
                                                   BorderRadius.circular(4),

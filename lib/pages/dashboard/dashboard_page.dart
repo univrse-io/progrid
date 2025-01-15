@@ -1,4 +1,5 @@
-import 'dart:html' as html;
+// import 'dart:html' as html;
+import 'package:file_saver/file_saver.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,21 +21,14 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  late final pageController = PageController()
-    ..addListener(() => Navigator.pop(context));
+  late final pageController = PageController()..addListener(() => Navigator.pop(context));
 
   Future<void> downloadReport() async {
     final towers = Provider.of<List<Tower>>(context, listen: false);
     final pdf = pw.Document();
-    final sapuraImg = await rootBundle
-        .load('assets/images/sapura.png')
-        .then((img) => img.buffer.asUint8List());
-    final binasatImg = await rootBundle
-        .load('assets/images/binasat.png')
-        .then((img) => img.buffer.asUint8List());
-    final uosImg = await rootBundle
-        .load('assets/images/uos.png')
-        .then((img) => img.buffer.asUint8List());
+    final sapuraImg = await rootBundle.load('assets/images/sapura.png').then((img) => img.buffer.asUint8List());
+    final binasatImg = await rootBundle.load('assets/images/binasat.png').then((img) => img.buffer.asUint8List());
+    final uosImg = await rootBundle.load('assets/images/uos.png').then((img) => img.buffer.asUint8List());
     final onSiteAuditStatusChart = await screenshotController1.capture();
     final onSiteAuditRegionalChart = await screenshotController2.capture();
     final asBuiltDrawingStatusChart = await screenshotController3.capture();
@@ -47,8 +41,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 children: [
                   pw.Image(pw.MemoryImage(sapuraImg), height: 40),
                   pw.SizedBox(width: 30),
-                  pw.Text('Daily Progress Report',
-                      style: pw.TextStyle(fontSize: 20)),
+                  pw.Text('Daily Progress Report', style: pw.TextStyle(fontSize: 20)),
                   pw.SizedBox(width: 30),
                   pw.Image(pw.MemoryImage(binasatImg), height: 40),
                   pw.SizedBox(width: 30),
@@ -58,177 +51,144 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               pw.SizedBox(height: 15),
               pw.Container(
-                  decoration: pw.BoxDecoration(
-                      borderRadius: pw.BorderRadius.circular(12),
-                      border:
-                          pw.Border.all(color: PdfColor.fromInt(0xFF9C27B0))),
-                  child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                  decoration:
+                      pw.BoxDecoration(borderRadius: pw.BorderRadius.circular(12), border: pw.Border.all(color: PdfColor.fromInt(0xFF9C27B0))),
+                  child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
+                    pw.Padding(padding: pw.EdgeInsets.all(10), child: pw.Text('On-Site Audit')),
+                    pw.Row(
                       children: [
-                        pw.Padding(
-                            padding: pw.EdgeInsets.all(10),
-                            child: pw.Text('On-Site Audit')),
-                        pw.Row(
-                          children: [
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Total'),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text('${towers.length}',
-                                      style: pw.TextStyle(fontSize: 20))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('In Progress'),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length}',
-                                      style: pw.TextStyle(fontSize: 20))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Completed'),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length}',
-                                      style: pw.TextStyle(fontSize: 20))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Balance'),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress || tower.surveyStatus == SurveyStatus.unsurveyed).length}',
-                                      style: pw.TextStyle(fontSize: 20))
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                        pw.Expanded(
+                          child: pw.Column(
                             children: [
-                              pw.SizedBox.square(
-                                  dimension: 200,
-                                  child: pw.Image(
-                                      pw.MemoryImage(onSiteAuditStatusChart!))),
-                              pw.SizedBox.square(
-                                  dimension: 200,
-                                  child: pw.Image(pw.MemoryImage(
-                                      onSiteAuditRegionalChart!)))
-                            ])
-                      ])),
+                              pw.Text('Total'),
+                              pw.SizedBox(height: 5),
+                              pw.Text('${towers.length}', style: pw.TextStyle(fontSize: 20))
+                            ],
+                          ),
+                        ),
+                        pw.SizedBox(width: 10),
+                        pw.Expanded(
+                          child: pw.Column(
+                            children: [
+                              pw.Text('In Progress'),
+                              pw.SizedBox(height: 5),
+                              pw.Text('${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length}',
+                                  style: pw.TextStyle(fontSize: 20))
+                            ],
+                          ),
+                        ),
+                        pw.SizedBox(width: 10),
+                        pw.Expanded(
+                          child: pw.Column(
+                            children: [
+                              pw.Text('Completed'),
+                              pw.SizedBox(height: 5),
+                              pw.Text('${towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length}',
+                                  style: pw.TextStyle(fontSize: 20))
+                            ],
+                          ),
+                        ),
+                        pw.SizedBox(width: 10),
+                        pw.Expanded(
+                          child: pw.Column(
+                            children: [
+                              pw.Text('Balance'),
+                              pw.SizedBox(height: 5),
+                              pw.Text(
+                                  '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress || tower.surveyStatus == SurveyStatus.unsurveyed).length}',
+                                  style: pw.TextStyle(fontSize: 20))
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly, children: [
+                      pw.SizedBox.square(dimension: 200, child: pw.Image(pw.MemoryImage(onSiteAuditStatusChart!))),
+                      pw.SizedBox.square(dimension: 200, child: pw.Image(pw.MemoryImage(onSiteAuditRegionalChart!)))
+                    ])
+                  ])),
               pw.SizedBox(height: 15),
               pw.Container(
-                  decoration: pw.BoxDecoration(
-                      borderRadius: pw.BorderRadius.circular(12),
-                      border:
-                          pw.Border.all(color: PdfColor.fromInt(0xFF4CAF50))),
-                  child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                  decoration:
+                      pw.BoxDecoration(borderRadius: pw.BorderRadius.circular(12), border: pw.Border.all(color: PdfColor.fromInt(0xFF4CAF50))),
+                  child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
+                    pw.Padding(padding: pw.EdgeInsets.all(10), child: pw.Text('As-Built Drawing')),
+                    pw.Row(
                       children: [
-                        pw.Padding(
-                            padding: pw.EdgeInsets.all(10),
-                            child: pw.Text('As-Built Drawing')),
-                        pw.Row(
-                          children: [
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Total'),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text('${towers.length}',
-                                      style: pw.TextStyle(fontSize: 20))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('In Progress'),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress).length}',
-                                      style: pw.TextStyle(fontSize: 20))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Submitted'),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
-                                      style: pw.TextStyle(fontSize: 20))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Balance'),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress || tower.drawingStatus == null).length}',
-                                      style: pw.TextStyle(fontSize: 20))
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                        pw.Expanded(
+                          child: pw.Column(
                             children: [
-                              pw.SizedBox.square(
-                                  dimension: 200,
-                                  child: pw.Image(pw.MemoryImage(
-                                      asBuiltDrawingStatusChart!))),
-                              pw.SizedBox.square(
-                                  dimension: 200,
-                                  child: pw.Image(pw.MemoryImage(
-                                      asBuiltDrawingRegionalChart!)))
-                            ])
-                      ])),
+                              pw.Text('Total'),
+                              pw.SizedBox(height: 5),
+                              pw.Text('${towers.length}', style: pw.TextStyle(fontSize: 20))
+                            ],
+                          ),
+                        ),
+                        pw.SizedBox(width: 10),
+                        pw.Expanded(
+                          child: pw.Column(
+                            children: [
+                              pw.Text('In Progress'),
+                              pw.SizedBox(height: 5),
+                              pw.Text('${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress).length}',
+                                  style: pw.TextStyle(fontSize: 20))
+                            ],
+                          ),
+                        ),
+                        pw.SizedBox(width: 10),
+                        pw.Expanded(
+                          child: pw.Column(
+                            children: [
+                              pw.Text('Submitted'),
+                              pw.SizedBox(height: 5),
+                              pw.Text('${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
+                                  style: pw.TextStyle(fontSize: 20))
+                            ],
+                          ),
+                        ),
+                        pw.SizedBox(width: 10),
+                        pw.Expanded(
+                          child: pw.Column(
+                            children: [
+                              pw.Text('Balance'),
+                              pw.SizedBox(height: 5),
+                              pw.Text(
+                                  '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress || tower.drawingStatus == null).length}',
+                                  style: pw.TextStyle(fontSize: 20))
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly, children: [
+                      pw.SizedBox.square(dimension: 200, child: pw.Image(pw.MemoryImage(asBuiltDrawingStatusChart!))),
+                      pw.SizedBox.square(dimension: 200, child: pw.Image(pw.MemoryImage(asBuiltDrawingRegionalChart!)))
+                    ])
+                  ])),
               pw.Container(
-                decoration: pw.BoxDecoration(
-                    borderRadius: pw.BorderRadius.circular(12),
-                    border: pw.Border.all(color: PdfColor.fromInt(0xFF4CAF50))),
+                decoration:
+                    pw.BoxDecoration(borderRadius: pw.BorderRadius.circular(12), border: pw.Border.all(color: PdfColor.fromInt(0xFF4CAF50))),
                 child: pw.Column(children: [
-                  pw.Padding(
-                      padding: pw.EdgeInsets.all(10),
-                      child: pw.Text('As-Built Drawing')),
-                  pw.SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: pw.Image(pw.MemoryImage(mapDisplay!))),
+                  pw.Padding(padding: pw.EdgeInsets.all(10), child: pw.Text('As-Built Drawing')),
+                  pw.SizedBox(height: 200, width: 200, child: pw.Image(pw.MemoryImage(mapDisplay!))),
                 ]),
               ),
             ])));
 
     final pdfBytes = await pdf.save();
-    final blob = html.Blob([pdfBytes], 'application/pdf');
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    html.AnchorElement(href: url)
-      ..setAttribute('download', 'Report.pdf')
-      ..click();
-    html.Url.revokeObjectUrl(url);
+    try {
+      await FileSaver.instance.saveFile(name: 'Report', bytes: pdfBytes, mimeType: MimeType.pdf, ext: ".pdf");
+      print('PDF saved successfully');
+    } catch (e) {
+      print('Error saving PDF: $e');
+    }
+
+    // final blob = html.Blob([pdfBytes], 'application/pdf');
+    // final url = html.Url.createObjectUrlFromBlob(blob);
+    // html.AnchorElement(href: url)
+    //   ..setAttribute('download', 'Report.pdf')
+    //   ..click();
+    // html.Url.revokeObjectUrl(url);
   }
 
   @override
@@ -243,17 +203,14 @@ class _DashboardPageState extends State<DashboardPage> {
             SizedBox(width: 20),
             Image.asset('assets/images/uos.png', height: 40),
             SizedBox(width: 20),
-            Text('PROJECT MONITORING REPORT',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('PROJECT MONITORING REPORT', style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
           OutlinedButton(onPressed: downloadReport, child: Text('Report')),
           SizedBox(width: 10),
           IconButton(
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage())),
-              icon: Icon(Icons.person)),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage())), icon: Icon(Icons.person)),
           SizedBox(width: 10),
         ],
       ),
