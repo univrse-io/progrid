@@ -1,4 +1,6 @@
 // import 'dart:html' as html;
+import 'dart:developer';
+
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -324,24 +326,38 @@ class _DashboardPageState extends State<DashboardPage> {
                         'Site Name',
                         'Region',
                         'Site Type',
-                        'Issues'
+                        'Base',
+                        'Equipment Shelter',
+                        'Latitude',
+                        'Longitude',
+                        'Date'
                       ],
-                      data: issues.map((issue) {
-                        final tower = towers.singleWhere(
-                            (tower) => tower.id == issue.id.split('-').first);
-
+                      data: towers
+                          .where((tower) =>
+                              tower.surveyStatus == SurveyStatus.surveyed)
+                          .map((tower) {
+                        log(tower.id);
                         return [
                           tower.id,
                           tower.name,
                           tower.region,
                           tower.type,
-                          issue.tags.join()
+                          tower.base,
+                          tower.equipmentShelter,
+                          tower.position.latitude.toString(),
+                          tower.position.longitude.toString(),
+                          if (tower.signOut == null)
+                            ''
+                          else
+                            DateFormat('dd.M.yyyy')
+                                .format(tower.signOut!.toDate())
                         ];
                       }).toList(),
                       headerDecoration:
                           pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
-                      headerStyle:
-                          pw.TextStyle(color: PdfColor.fromInt(0xFFFFFFFF))),
+                      cellStyle: pw.TextStyle(fontSize: 5),
+                      headerStyle: pw.TextStyle(
+                          fontSize: 5, color: PdfColor.fromInt(0xFFFFFFFF))),
                   pw.SizedBox(height: 20),
                   pw.Text('As-Built Drawing'),
                   pw.SizedBox(height: 10),
@@ -351,24 +367,39 @@ class _DashboardPageState extends State<DashboardPage> {
                         'Site Name',
                         'Region',
                         'Site Type',
-                        'Issues'
+                        'Base',
+                        'Equipment Shelter',
+                        'Latitude',
+                        'Longitude',
+                        'Date'
                       ],
-                      data: issues.map((issue) {
-                        final tower = towers.singleWhere(
-                            (tower) => tower.id == issue.id.split('-').first);
+                      data: towers
+                          .where((tower) =>
+                              tower.drawingStatus == DrawingStatus.submitted)
+                          .map((tower) {
+                        log(tower.id);
 
                         return [
                           tower.id,
                           tower.name,
                           tower.region,
                           tower.type,
-                          issue.tags.join()
+                          tower.base,
+                          tower.equipmentShelter,
+                          tower.position.latitude.toString(),
+                          tower.position.longitude.toString(),
+                          if (tower.signOut == null)
+                            ''
+                          else
+                            DateFormat('dd.M.yyyy')
+                                .format(tower.signOut!.toDate()),
                         ];
                       }).toList(),
                       headerDecoration:
                           pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
-                      headerStyle:
-                          pw.TextStyle(color: PdfColor.fromInt(0xFFFFFFFF))),
+                      cellStyle: pw.TextStyle(fontSize: 5),
+                      headerStyle: pw.TextStyle(
+                          fontSize: 5, color: PdfColor.fromInt(0xFFFFFFFF))),
                   pw.SizedBox(height: 20),
                   pw.Text(
                       'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
