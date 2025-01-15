@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:progrid/models/drawing_status.dart';
+import 'package:progrid/models/issue.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/dashboard/home_page.dart';
@@ -25,6 +26,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> downloadReport() async {
     final towers = Provider.of<List<Tower>>(context, listen: false);
+    final issues = Provider.of<List<Issue>>(context, listen: false);
     final pdf = pw.Document();
     final sapuraImg = await rootBundle
         .load('assets/images/sapura.png')
@@ -245,6 +247,38 @@ class _DashboardPageState extends State<DashboardPage> {
                 )),
               ]),
             ])));
+
+    pdf.addPage(pw.Page(
+        build: (context) => pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                children: [
+                  pw.Text('Ticket Issues'),
+                  pw.SizedBox(height: 10),
+                  pw.TableHelper.fromTextArray(
+                      headers: [
+                        'Site ID',
+                        'Site Name',
+                        'Region',
+                        'Site Type',
+                        'Issues'
+                      ],
+                      data: issues.map((issue) {
+                        final tower = towers.singleWhere(
+                            (tower) => tower.id == issue.id.split('-').first);
+
+                        return [
+                          tower.id,
+                          tower.name,
+                          tower.region,
+                          tower.type,
+                          issue.tags.join()
+                        ];
+                      }).toList(),
+                      headerDecoration:
+                          pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
+                      headerStyle:
+                          pw.TextStyle(color: PdfColor.fromInt(0xFFFFFFFF))),
+                ])));
 
     final pdfBytes = await pdf.save();
     try {
