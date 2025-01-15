@@ -19,6 +19,7 @@ final screenshotController3 = ScreenshotController();
 final screenshotController4 = ScreenshotController();
 final screenshotController5 = ScreenshotController();
 final screenshotController6 = ScreenshotController();
+final screenshotController7 = ScreenshotController();
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -175,42 +176,47 @@ class _HomePageState extends State<HomePage>
                                 fontSize: 16, fontWeight: FontWeight.w600)),
                         SizedBox(height: 10),
                         Expanded(
-                          child: ListView.builder(
-                              itemCount: issues.length,
-                              itemBuilder: (context, index) => Visibility(
-                                    visible:
-                                        issues[index].status == 'unresolved',
-                                    child: Card(
-                                      margin: EdgeInsets.symmetric(vertical: 5),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          side: BorderSide(
-                                              color: Colors.black12, width: 2)),
-                                      child: ListTile(
-                                        dense: true,
-                                        trailing: Text(
-                                            DateFormat('dd/MM/yy HH:mm').format(
-                                                issues[index]
-                                                    .dateTime
-                                                    .toDate())),
-                                        title: Row(
-                                          children: [
-                                            CircleAvatar(
-                                                radius: 5,
-                                                backgroundColor: Colors.red),
-                                            SizedBox(width: 5),
-                                            Text(issues[index].id,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleSmall),
-                                          ],
+                          child: Screenshot(
+                            controller: screenshotController7,
+                            child: ListView.builder(
+                                itemCount: issues.length,
+                                itemBuilder: (context, index) => Visibility(
+                                      visible:
+                                          issues[index].status == 'unresolved',
+                                      child: Card(
+                                        margin:
+                                            EdgeInsets.symmetric(vertical: 5),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            side: BorderSide(
+                                                color: Colors.black12,
+                                                width: 2)),
+                                        child: ListTile(
+                                          dense: true,
+                                          trailing: Text(
+                                              DateFormat('dd/MM/yy HH:mm')
+                                                  .format(issues[index]
+                                                      .dateTime
+                                                      .toDate())),
+                                          title: Row(
+                                            children: [
+                                              CircleAvatar(
+                                                  radius: 5,
+                                                  backgroundColor: Colors.red),
+                                              SizedBox(width: 5),
+                                              Text(issues[index].id,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleSmall),
+                                            ],
+                                          ),
+                                          subtitle: Text(
+                                              issues[index].tags.join(', ')),
                                         ),
-                                        subtitle:
-                                            Text(issues[index].tags.join(', ')),
                                       ),
-                                    ),
-                                  )),
+                                    )),
+                          ),
                         ),
                       ],
                     ),
