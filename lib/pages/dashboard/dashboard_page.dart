@@ -1,6 +1,11 @@
-import 'package:excel/excel.dart';
+import 'dart:html' as html;
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:progrid/models/drawing_status.dart';
+import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/dashboard/home_page.dart';
 import 'package:progrid/pages/dashboard/site_progress_page.dart';
@@ -17,6 +22,214 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   late final pageController = PageController()
     ..addListener(() => Navigator.pop(context));
+
+  Future<void> downloadReport() async {
+    final towers = Provider.of<List<Tower>>(context, listen: false);
+    final pdf = pw.Document();
+    final sapuraImg = await rootBundle
+        .load('assets/images/sapura.png')
+        .then((img) => img.buffer.asUint8List());
+    final binasatImg = await rootBundle
+        .load('assets/images/binasat.png')
+        .then((img) => img.buffer.asUint8List());
+    final uosImg = await rootBundle
+        .load('assets/images/uos.png')
+        .then((img) => img.buffer.asUint8List());
+    final onSiteAuditStatusChart = await screenshotController1.capture();
+    final onSiteAuditRegionalChart = await screenshotController2.capture();
+    final asBuiltDrawingStatusChart = await screenshotController3.capture();
+    final asBuiltDrawingRegionalChart = await screenshotController4.capture();
+    final mapDisplay = await screenshotController5.capture();
+
+    pdf.addPage(pw.Page(
+        build: (context) => pw.Column(children: [
+              pw.Row(
+                children: [
+                  pw.Image(pw.MemoryImage(sapuraImg), height: 40),
+                  pw.SizedBox(width: 30),
+                  pw.Text('Daily Progress Report',
+                      style: pw.TextStyle(fontSize: 20)),
+                  pw.SizedBox(width: 30),
+                  pw.Image(pw.MemoryImage(binasatImg), height: 40),
+                  pw.SizedBox(width: 30),
+                  pw.Image(pw.MemoryImage(uosImg), height: 40),
+                  pw.SizedBox(width: 30),
+                ],
+              ),
+              pw.SizedBox(height: 15),
+              pw.Container(
+                  decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(12),
+                      border:
+                          pw.Border.all(color: PdfColor.fromInt(0xFF9C27B0))),
+                  child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                      children: [
+                        pw.Padding(
+                            padding: pw.EdgeInsets.all(10),
+                            child: pw.Text('On-Site Audit')),
+                        pw.Row(
+                          children: [
+                            pw.Expanded(
+                              child: pw.Column(
+                                children: [
+                                  pw.Text('Total'),
+                                  pw.SizedBox(height: 5),
+                                  pw.Text('${towers.length}',
+                                      style: pw.TextStyle(fontSize: 20))
+                                ],
+                              ),
+                            ),
+                            pw.SizedBox(width: 10),
+                            pw.Expanded(
+                              child: pw.Column(
+                                children: [
+                                  pw.Text('In Progress'),
+                                  pw.SizedBox(height: 5),
+                                  pw.Text(
+                                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length}',
+                                      style: pw.TextStyle(fontSize: 20))
+                                ],
+                              ),
+                            ),
+                            pw.SizedBox(width: 10),
+                            pw.Expanded(
+                              child: pw.Column(
+                                children: [
+                                  pw.Text('Completed'),
+                                  pw.SizedBox(height: 5),
+                                  pw.Text(
+                                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length}',
+                                      style: pw.TextStyle(fontSize: 20))
+                                ],
+                              ),
+                            ),
+                            pw.SizedBox(width: 10),
+                            pw.Expanded(
+                              child: pw.Column(
+                                children: [
+                                  pw.Text('Balance'),
+                                  pw.SizedBox(height: 5),
+                                  pw.Text(
+                                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress || tower.surveyStatus == SurveyStatus.unsurveyed).length}',
+                                      style: pw.TextStyle(fontSize: 20))
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            children: [
+                              pw.SizedBox.square(
+                                  dimension: 200,
+                                  child: pw.Image(
+                                      pw.MemoryImage(onSiteAuditStatusChart!))),
+                              pw.SizedBox.square(
+                                  dimension: 200,
+                                  child: pw.Image(pw.MemoryImage(
+                                      onSiteAuditRegionalChart!)))
+                            ])
+                      ])),
+              pw.SizedBox(height: 15),
+              pw.Container(
+                  decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(12),
+                      border:
+                          pw.Border.all(color: PdfColor.fromInt(0xFF4CAF50))),
+                  child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                      children: [
+                        pw.Padding(
+                            padding: pw.EdgeInsets.all(10),
+                            child: pw.Text('As-Built Drawing')),
+                        pw.Row(
+                          children: [
+                            pw.Expanded(
+                              child: pw.Column(
+                                children: [
+                                  pw.Text('Total'),
+                                  pw.SizedBox(height: 5),
+                                  pw.Text('${towers.length}',
+                                      style: pw.TextStyle(fontSize: 20))
+                                ],
+                              ),
+                            ),
+                            pw.SizedBox(width: 10),
+                            pw.Expanded(
+                              child: pw.Column(
+                                children: [
+                                  pw.Text('In Progress'),
+                                  pw.SizedBox(height: 5),
+                                  pw.Text(
+                                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress).length}',
+                                      style: pw.TextStyle(fontSize: 20))
+                                ],
+                              ),
+                            ),
+                            pw.SizedBox(width: 10),
+                            pw.Expanded(
+                              child: pw.Column(
+                                children: [
+                                  pw.Text('Submitted'),
+                                  pw.SizedBox(height: 5),
+                                  pw.Text(
+                                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
+                                      style: pw.TextStyle(fontSize: 20))
+                                ],
+                              ),
+                            ),
+                            pw.SizedBox(width: 10),
+                            pw.Expanded(
+                              child: pw.Column(
+                                children: [
+                                  pw.Text('Balance'),
+                                  pw.SizedBox(height: 5),
+                                  pw.Text(
+                                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress || tower.drawingStatus == null).length}',
+                                      style: pw.TextStyle(fontSize: 20))
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                            children: [
+                              pw.SizedBox.square(
+                                  dimension: 200,
+                                  child: pw.Image(pw.MemoryImage(
+                                      asBuiltDrawingStatusChart!))),
+                              pw.SizedBox.square(
+                                  dimension: 200,
+                                  child: pw.Image(pw.MemoryImage(
+                                      asBuiltDrawingRegionalChart!)))
+                            ])
+                      ])),
+              pw.Container(
+                decoration: pw.BoxDecoration(
+                    borderRadius: pw.BorderRadius.circular(12),
+                    border: pw.Border.all(color: PdfColor.fromInt(0xFF4CAF50))),
+                child: pw.Column(children: [
+                  pw.Padding(
+                      padding: pw.EdgeInsets.all(10),
+                      child: pw.Text('As-Built Drawing')),
+                  pw.SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: pw.Image(pw.MemoryImage(mapDisplay!))),
+                ]),
+              ),
+            ])));
+
+    final pdfBytes = await pdf.save();
+    final blob = html.Blob([pdfBytes], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    html.AnchorElement(href: url)
+      ..setAttribute('download', 'Report.pdf')
+      ..click();
+    html.Url.revokeObjectUrl(url);
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -35,111 +248,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ],
         ),
         actions: [
-          OutlinedButton(
-              onPressed: () {
-                final towers = Provider.of<List<Tower>>(context, listen: false);
-                final excel = Excel.createExcel();
-                final sheet = excel[excel.getDefaultSheet()!];
-
-                sheet
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 0, rowIndex: 0))
-                      .value = TextCellValue('ID')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 1, rowIndex: 0))
-                      .value = TextCellValue('Name')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 2, rowIndex: 0))
-                      .value = TextCellValue('Region')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 3, rowIndex: 0))
-                      .value = TextCellValue('Type')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 4, rowIndex: 0))
-                      .value = TextCellValue('Owner')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 5, rowIndex: 0))
-                      .value = TextCellValue('Address')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 6, rowIndex: 0))
-                      .value = TextCellValue('Position')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 7, rowIndex: 0))
-                      .value = TextCellValue('Survey Status')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 8, rowIndex: 0))
-                      .value = TextCellValue('Drawing Status')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 9, rowIndex: 0))
-                      .value = TextCellValue('Sign In')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 10, rowIndex: 0))
-                      .value = TextCellValue('Sign Out')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 11, rowIndex: 0))
-                      .value = TextCellValue('Author ID')
-                  ..cell(CellIndex.indexByColumnRow(
-                          columnIndex: 12, rowIndex: 0))
-                      .value = TextCellValue('Notes');
-
-                for (final tower in towers) {
-                  final rowIndex = towers.indexOf(tower) + 1;
-
-                  sheet
-                    ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 0, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.id)
-                    ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 1, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.name)
-                    ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 2, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.region.toString())
-                    ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 3, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.type)
-                    ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 4, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.owner)
-                    ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 5, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.address)
-                    ..cell(CellIndex.indexByColumnRow(
-                                columnIndex: 6, rowIndex: rowIndex))
-                            .value =
-                        TextCellValue(
-                            '${tower.position.latitude}/${tower.position.longitude}')
-                    ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 7, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.surveyStatus.toString())
-                    ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 8, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.drawingStatus.toString())
-                    ..cell(CellIndex.indexByColumnRow(
-                                columnIndex: 9, rowIndex: rowIndex))
-                            .value =
-                        TextCellValue(tower.signIn != null
-                            ? DateFormat('ddMMyy HH:mm:ss')
-                                .format(tower.signIn!.toDate())
-                            : '')
-                    ..cell(CellIndex.indexByColumnRow(
-                                columnIndex: 10, rowIndex: rowIndex))
-                            .value =
-                        TextCellValue(tower.signOut != null
-                            ? DateFormat('ddMMyy HH:mm:ss')
-                                .format(tower.signOut!.toDate())
-                            : '')
-                    ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 11, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.authorId ?? '')
-                    ..cell(CellIndex.indexByColumnRow(
-                            columnIndex: 12, rowIndex: rowIndex))
-                        .value = TextCellValue(tower.notes ?? '');
-                }
-
-                excel.save(fileName: 'Reports.xlsx');
-              },
-              child: Text('Report')),
+          OutlinedButton(onPressed: downloadReport, child: Text('Report')),
           SizedBox(width: 10),
           IconButton(
               onPressed: () => Navigator.push(context,
