@@ -29,9 +29,11 @@ class DialogUtils {
   static void showImageDialog(
     BuildContext context,
     String imageUrl,
-    Future<void> Function(BuildContext, String) onDownload,
-    Future<void> Function(BuildContext, String) onDelete,
+    String towerId,
+    // Future<void> Function(BuildContext, String) onDownload,
+    // Future<void> Function(BuildContext, String) onDelete,
   ) {
+    print(imageUrl);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -61,7 +63,8 @@ class DialogUtils {
                       children: [
                         // download button
                         FloatingActionButton(
-                          onPressed: () => onDownload(context, imageUrl),
+                          // onPressed: () => onDownload(context, imageUrl),
+                          onPressed: () => _downloadImage(context, imageUrl),
                           child: Icon(Icons.download),
                           mini: true,
                         ),
@@ -69,7 +72,8 @@ class DialogUtils {
 
                         // delete button
                         FloatingActionButton(
-                          onPressed: () => onDelete(context, imageUrl),
+                          // onPressed: () => onDelete(context, imageUrl),
+                          onPressed: () => _deleteImage(context, imageUrl),
                           child: Icon(Icons.delete, color: AppColors.red),
                           mini: true,
                         ),
@@ -209,7 +213,7 @@ class DialogUtils {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      showImageDialog(context, selectedTower.images[index], _downloadImage, _deleteImage);
+                                      showImageDialog(context, selectedTower.images[index], towerId);
                                     },
                                     // TODO: implement image onTap
                                     // onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], onDownload, onDelete),
@@ -387,7 +391,14 @@ class DialogUtils {
 
       if (confirm != true) return;
 
-      showLoadingDialog(context);
+      if (context.mounted) showLoadingDialog(context);
+
+      // do deletion here
+      // final towers = Provider.of<List<Tower>>(context, listen: false);
+      // final selectedTower = towers.firstWhere(
+      //   (tower) => tower.id == towerId,
+      //   orElse: () => throw Exception("Tower not found"),
+      // );
 
       // check if tower has 1 image
     } catch (e) {
@@ -408,26 +419,30 @@ class DialogUtils {
         final status = await permission.request();
 
         if (status.isDenied) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Storage permission is required to save the image.')),
-          );
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Storage permission is required to save the image.')),
+            );
+          }
           return;
         }
 
         if (status.isPermanentlyDenied) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                'Permission permanently denied. Please allow it from settings.',
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text(
+                  'Permission permanently denied. Please allow it from settings.',
+                ),
+                action: SnackBarAction(
+                  label: 'Settings',
+                  onPressed: () {
+                    openAppSettings();
+                  },
+                ),
               ),
-              action: SnackBarAction(
-                label: 'Settings',
-                onPressed: () {
-                  openAppSettings();
-                },
-              ),
-            ),
-          );
+            );
+          }
           return;
         }
       }
@@ -440,9 +455,11 @@ class DialogUtils {
 
       if (kIsWeb) {
         // download file via browser
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Downloading via browser...')),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Downloading via browser...')),
+          );
+        }
 
         final Uri uri = Uri.parse(url);
         await launchUrl(uri);
@@ -457,17 +474,23 @@ class DialogUtils {
         // Save to gallery (implement your Gal.putImage logic here)
         await Gal.putImage(filePath);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image saved to Gallery')),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Image saved to Gallery')),
+          );
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to download image: $e')),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to download image: $e')),
+        );
+      }
     } finally {
-      Navigator.pop(context);
-      Navigator.pop(context); // exit image
+      if (context.mounted) {
+        Navigator.pop(context);
+        Navigator.pop(context); // exit image
+      }
     }
   }
 }

@@ -224,7 +224,7 @@ class _TowerPageState extends State<TowerPage> {
                       child: Stack(
                         children: [
                           GestureDetector(
-                            onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], _downloadImage, _deleteImage),
+                            onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], widget.towerId),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: ConstrainedBox(
@@ -695,176 +695,176 @@ class _TowerPageState extends State<TowerPage> {
   }
 
   // delete image from tower
-  Future<void> _deleteImage(BuildContext context, String url) async {
-    try {
-      // confirmation dialog
-      final confirm = await showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Confirm Deletion"),
-            content: Text("Are you sure you want to delete this image? This action cannot be undone."),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, false), // cancel
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true), // confirm
-                child: Text(
-                  'Delete',
-                  style: TextStyle(color: AppColors.red, fontWeight: FontWeight.bold),
-                ),
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-            ],
-          );
-        },
-      );
+  // Future<void> _deleteImage(BuildContext context, String url) async {
+  //   try {
+  //     // confirmation dialog
+  //     final confirm = await showDialog<bool>(
+  //       context: context,
+  //       builder: (context) {
+  //         return AlertDialog(
+  //           title: Text("Confirm Deletion"),
+  //           content: Text("Are you sure you want to delete this image? This action cannot be undone."),
+  //           actions: <Widget>[
+  //             TextButton(
+  //               onPressed: () => Navigator.pop(context, false), // cancel
+  //               child: Text(
+  //                 'Cancel',
+  //                 style: TextStyle(fontWeight: FontWeight.bold),
+  //               ),
+  //               style: TextButton.styleFrom(
+  //                 textStyle: Theme.of(context).textTheme.labelLarge,
+  //               ),
+  //             ),
+  //             TextButton(
+  //               onPressed: () => Navigator.pop(context, true), // confirm
+  //               child: Text(
+  //                 'Delete',
+  //                 style: TextStyle(color: AppColors.red, fontWeight: FontWeight.bold),
+  //               ),
+  //               style: TextButton.styleFrom(
+  //                 textStyle: Theme.of(context).textTheme.labelLarge,
+  //               ),
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
 
-      if (confirm != true) return;
+  //     if (confirm != true) return;
 
-      if (mounted) {
-        DialogUtils.showLoadingDialog(context);
+  //     if (mounted) {
+  //       DialogUtils.showLoadingDialog(context);
 
-        final towersProvider = Provider.of<TowersProvider>(context, listen: false);
-        final selectedTower = towersProvider.towers.firstWhere(
-          (tower) => tower.id == widget.towerId,
-          orElse: () => throw Exception("Tower not found"),
-        );
+  //       final towersProvider = Provider.of<TowersProvider>(context, listen: false);
+  //       final selectedTower = towersProvider.towers.firstWhere(
+  //         (tower) => tower.id == widget.towerId,
+  //         orElse: () => throw Exception("Tower not found"),
+  //       );
 
-        // check if tower has 1 image
-        if (selectedTower.images.length == 1) {
-          // delete image reference, image file, signIn time, and authorId
-          await FirebaseStorage.instance.refFromURL(url).delete();
-          await FirestoreService.updateTower(widget.towerId, data: {
-            'images': FieldValue.delete(),
-            'signIn': FieldValue.delete(),
-            'authorId': FieldValue.delete(),
-          });
+  //       // check if tower has 1 image
+  //       if (selectedTower.images.length == 1) {
+  //         // delete image reference, image file, signIn time, and authorId
+  //         await FirebaseStorage.instance.refFromURL(url).delete();
+  //         await FirestoreService.updateTower(widget.towerId, data: {
+  //           'images': FieldValue.delete(),
+  //           'signIn': FieldValue.delete(),
+  //           'authorId': FieldValue.delete(),
+  //         });
 
-          // reset tower status to unsurveyed
-          towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.unsurveyed);
-        } else {
-          if (url == selectedTower.images.first) {
-            Navigator.pop(context);
-            throw Exception('Can only delete the latest image');
-          }
+  //         // reset tower status to unsurveyed
+  //         towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.unsurveyed);
+  //       } else {
+  //         if (url == selectedTower.images.first) {
+  //           Navigator.pop(context);
+  //           throw Exception('Can only delete the latest image');
+  //         }
 
-          // delete image reference, image file, and signOut time
-          await FirebaseStorage.instance.refFromURL(url).delete();
-          final _updatedImages = List<String>.from(selectedTower.images)..remove(url);
-          await FirestoreService.updateTower(widget.towerId, data: {
-            'images': _updatedImages,
-            'signOut': FieldValue.delete(),
-          });
+  //         // delete image reference, image file, and signOut time
+  //         await FirebaseStorage.instance.refFromURL(url).delete();
+  //         final _updatedImages = List<String>.from(selectedTower.images)..remove(url);
+  //         await FirestoreService.updateTower(widget.towerId, data: {
+  //           'images': _updatedImages,
+  //           'signOut': FieldValue.delete(),
+  //         });
 
-          // set tower status to inprogress
-          towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.inprogress);
-        }
+  //         // set tower status to inprogress
+  //         towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.inprogress);
+  //       }
 
-        if (mounted) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Image deleted successfully')),
-          );
-        }
-      }
+  //       if (mounted) {
+  //         Navigator.pop(context);
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(content: Text('Image deleted successfully')),
+  //         );
+  //       }
+  //     }
 
-      // if tower has 1 image, delete image reference and signIn time
-      // else, check if url matches 1st image; if matching throw 'can only delete latest', else delete image reference and signOut time
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete image: $e')),
-        );
-      }
-    } finally {
-      if (mounted) Navigator.pop(context);
-    }
-  }
+  //     // if tower has 1 image, delete image reference and signIn time
+  //     // else, check if url matches 1st image; if matching throw 'can only delete latest', else delete image reference and signOut time
+  //   } catch (e) {
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Failed to delete image: $e')),
+  //       );
+  //     }
+  //   } finally {
+  //     if (mounted) Navigator.pop(context);
+  //   }
+  // }
 
-  // download image from url
-  Future<void> _downloadImage(BuildContext context, String url) async {
-    try {
-      if (mounted) DialogUtils.showLoadingDialog(context);
+  // // download image from url
+  // Future<void> _downloadImage(BuildContext context, String url) async {
+  //   try {
+  //     if (mounted) DialogUtils.showLoadingDialog(context);
 
-      final permission = Platform.isAndroid
-          ? (await DeviceInfoPlugin().androidInfo).version.sdkInt > 32
-              ? Permission.photos
-              : Permission.storage
-          : Permission.photos;
+  //     final permission = Platform.isAndroid
+  //         ? (await DeviceInfoPlugin().androidInfo).version.sdkInt > 32
+  //             ? Permission.photos
+  //             : Permission.storage
+  //         : Permission.photos;
 
-      final status = await permission.request();
+  //     final status = await permission.request();
 
-      if (status.isDenied) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Storage permission is required to save the image.')),
-          );
-        }
-        return;
-      }
+  //     if (status.isDenied) {
+  //       if (mounted) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('Storage permission is required to save the image.')),
+  //         );
+  //       }
+  //       return;
+  //     }
 
-      if (status.isPermanentlyDenied) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                'Permission permanently denied. Please allow it from settings.',
-              ),
-              action: SnackBarAction(
-                label: 'Settings',
-                onPressed: () {
-                  openAppSettings();
-                },
-              ),
-            ),
-          );
-        }
-        return;
-      }
+  //     if (status.isPermanentlyDenied) {
+  //       if (mounted) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(
+  //             content: const Text(
+  //               'Permission permanently denied. Please allow it from settings.',
+  //             ),
+  //             action: SnackBarAction(
+  //               label: 'Settings',
+  //               onPressed: () {
+  //                 openAppSettings();
+  //               },
+  //             ),
+  //           ),
+  //         );
+  //       }
+  //       return;
+  //     }
 
-      // get image
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode != 200) {
-        throw Exception('Failed to download the image. Status code: ${response.statusCode}');
-      }
+  //     // get image
+  //     final response = await http.get(Uri.parse(url));
+  //     if (response.statusCode != 200) {
+  //       throw Exception('Failed to download the image. Status code: ${response.statusCode}');
+  //     }
 
-      // get temp directory, save there
-      final tempDir = await getTemporaryDirectory();
-      final filePath = "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+  //     // get temp directory, save there
+  //     final tempDir = await getTemporaryDirectory();
+  //     final filePath = "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
 
-      final file = File(filePath);
-      await file.writeAsBytes(response.bodyBytes);
+  //     final file = File(filePath);
+  //     await file.writeAsBytes(response.bodyBytes);
 
-      // save to main gallery
-      await Gal.putImage(filePath);
+  //     // save to main gallery
+  //     await Gal.putImage(filePath);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image saved to Gallery')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to download image: $e')),
-        );
-      }
-    } finally {
-      if (mounted) Navigator.pop(context);
-      if (mounted) Navigator.pop(context); // pop out of image
-    }
-  }
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Image saved to Gallery')),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Failed to download image: $e')),
+  //       );
+  //     }
+  //   } finally {
+  //     if (mounted) Navigator.pop(context);
+  //     if (mounted) Navigator.pop(context); // pop out of image
+  //   }
+  // }
 
   // UI function to build a detail row format
   Widget _buildDetailRow(String label, String content) {
