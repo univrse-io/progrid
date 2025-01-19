@@ -517,7 +517,7 @@ class _DashboardPageState extends State<DashboardPage> {
             SizedBox(width: 20),
             Image.asset('assets/images/uos.png', height: 40),
             SizedBox(width: 20),
-            Text('PROJECT MONITORING REPORT',
+            Text('PROJECT MONITORING REPORT SYSTEM',
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
