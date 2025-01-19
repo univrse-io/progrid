@@ -5,6 +5,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/survey_status.dart';
@@ -12,7 +14,6 @@ import 'package:progrid/models/tower.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 class DialogUtils {
@@ -100,19 +101,22 @@ class DialogUtils {
       context: context,
       builder: (BuildContext context) {
         final towers = Provider.of<List<Tower>>(context);
-        final selectedTower = towers.firstWhere((tower) => tower.id == towerId, orElse: () => throw Exception("Tower not found"));
+        final selectedTower = towers.firstWhere((tower) => tower.id == towerId,
+            orElse: () => throw Exception("Tower not found"));
 
         // final selectedTower = towers.firstWhere(
         //   (tower) => tower.id == towerId,
         //   orElse: () => throw Exception("Tower not found"),
         // );
 
-        final notesController = TextEditingController(text: selectedTower.notes);
+        final notesController =
+            TextEditingController(text: selectedTower.notes);
         Timer? _debounceTimer;
 
         return Dialog(
           elevation: 10,
-          child: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+          child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
             return ConstrainedBox(
               constraints: BoxConstraints(
                 maxWidth: 500, // set a max width
@@ -128,21 +132,26 @@ class DialogUtils {
                         // tower id
                         Text(
                           selectedTower.id,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 25),
                         ),
                         const SizedBox(width: 10),
 
                         // survey status dropdown
                         Container(
                           padding: const EdgeInsets.only(left: 14, right: 10),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: selectedTower.surveyStatus.color),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(24),
+                              color: selectedTower.surveyStatus.color),
                           child: DropdownButton<SurveyStatus>(
                             // require type specifics
                             isDense: true,
                             value: selectedTower.surveyStatus,
                             onChanged: (value) {
-                              if (value != null && value != selectedTower.surveyStatus) {
-                                FirestoreService.updateTower(selectedTower.id, data: {'surveyStatus': value.name});
+                              if (value != null &&
+                                  value != selectedTower.surveyStatus) {
+                                FirestoreService.updateTower(selectedTower.id,
+                                    data: {'surveyStatus': value.name});
                                 setState(() {
                                   selectedTower.surveyStatus = value;
                                 });
@@ -154,7 +163,8 @@ class DialogUtils {
                                 child: Text(status.toString()),
                               );
                             }).toList(),
-                            iconEnabledColor: Theme.of(context).colorScheme.surface,
+                            iconEnabledColor:
+                                Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(24),
                             dropdownColor: selectedTower.surveyStatus.color,
                             style: TextStyle(
@@ -198,7 +208,8 @@ class DialogUtils {
                     // gallery
                     Container(
                       height: 130,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 2),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: Theme.of(context).colorScheme.tertiary,
@@ -208,29 +219,34 @@ class DialogUtils {
                         itemCount: selectedTower.images.length,
                         itemBuilder: (context, index) {
                           return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 5),
                               child: Stack(
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      showImageDialog(context, selectedTower.images[index], towerId);
+                                      showImageDialog(context,
+                                          selectedTower.images[index], towerId);
                                     },
                                     // TODO: implement image onTap
                                     // onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], onDownload, onDelete),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
                                       child: ConstrainedBox(
-                                        constraints: BoxConstraints(maxHeight: 400),
+                                        constraints:
+                                            BoxConstraints(maxHeight: 400),
                                         child: Image.network(
                                           // UNDONE: not sure why image won't show, though the url works
                                           selectedTower.images[index],
                                           fit: BoxFit.cover,
                                           height: 120,
                                           width: 120,
-                                          errorBuilder: (context, error, stackTrace) {
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
                                             return Container(
                                               color: Colors.grey,
-                                              child: Icon(Icons.error, color: AppColors.red),
+                                              child: Icon(Icons.error,
+                                                  color: AppColors.red),
                                             ); // if image fails to load
                                           },
                                         ),
@@ -250,15 +266,17 @@ class DialogUtils {
                         Text(
                           ' Status:',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary, fontStyle: FontStyle.italic),
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontStyle: FontStyle.italic),
                         ),
                         const SizedBox(width: 5),
                         Text(
                           selectedTower.images.isEmpty
                               ? 'Unsurveyed' // No images
                               : selectedTower.images.length == 1
-                                  ? 'Signed-in' // Exactly 1 image
-                                  : 'Signed-out', // More than 1 image
+                                  ? 'Signed in at ${DateFormat('hh:mm a, d MMM y').format(selectedTower.signIn!.toDate())}' // Exactly 1 image
+                                  : 'Signed out at ${DateFormat('hh:mm a, d MMM y').format(selectedTower.signOut!.toDate())}', // More than 1 image
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary,
                             fontStyle: FontStyle.italic,
@@ -277,8 +295,13 @@ class DialogUtils {
                         expands: true,
                         textAlignVertical: TextAlignVertical.top,
                         maxLength: 500,
-                        style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 14),
-                        buildCounter: (context, {required currentLength, maxLength, required isFocused}) {
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 14),
+                        buildCounter: (context,
+                            {required currentLength,
+                            maxLength,
+                            required isFocused}) {
                           return Padding(
                             padding: const EdgeInsets.only(top: 4),
                             child: Text(
@@ -293,16 +316,23 @@ class DialogUtils {
                         decoration: InputDecoration(
                           hintText: 'Enter notes here...',
                           alignLabelWithHint: true,
-                          hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 14),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                          hintStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontSize: 14),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                         ),
                         onChanged: (text) async {
                           // cancel any previous debounce timer
-                          if (_debounceTimer?.isActive ?? false) _debounceTimer?.cancel();
+                          if (_debounceTimer?.isActive ?? false)
+                            _debounceTimer?.cancel();
 
-                          _debounceTimer = Timer(const Duration(milliseconds: 2000), () {
+                          _debounceTimer =
+                              Timer(const Duration(milliseconds: 2000), () {
                             // update notes every one second of changes
-                            FirestoreService.towersCollection.doc(towerId).update({'notes': text});
+                            FirestoreService.towersCollection
+                                .doc(towerId)
+                                .update({'notes': text});
 
                             // update local
                             setState(() {
@@ -362,7 +392,8 @@ class DialogUtils {
         builder: (context) {
           return AlertDialog(
             title: Text("Confirm Deletion"),
-            content: Text("Are you sure you want to delete this image? This action cannot be undone."),
+            content: Text(
+                "Are you sure you want to delete this image? This action cannot be undone."),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.pop(context, false), // cancel
@@ -378,7 +409,8 @@ class DialogUtils {
                 onPressed: () => Navigator.pop(context, true), // confirm
                 child: Text(
                   'Delete',
-                  style: TextStyle(color: AppColors.red, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: AppColors.red, fontWeight: FontWeight.bold),
                 ),
                 style: TextButton.styleFrom(
                   textStyle: Theme.of(context).textTheme.labelLarge,
@@ -421,7 +453,9 @@ class DialogUtils {
         if (status.isDenied) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Storage permission is required to save the image.')),
+              const SnackBar(
+                  content: Text(
+                      'Storage permission is required to save the image.')),
             );
           }
           return;
@@ -450,7 +484,8 @@ class DialogUtils {
       // get image
       final response = await http.get(Uri.parse(url));
       if (response.statusCode != 200) {
-        throw Exception('Failed to download the image. Status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to download the image. Status code: ${response.statusCode}');
       }
 
       if (kIsWeb) {
@@ -466,7 +501,8 @@ class DialogUtils {
         // return;
       } else {
         final tempDir = await getTemporaryDirectory();
-        final filePath = "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+        final filePath =
+            "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
 
         final file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
