@@ -43,7 +43,25 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                 surveyStatusFilter.contains(tower.surveyStatus)) &&
             (drawingStatusFilter.isEmpty ||
                 drawingStatusFilter.contains(tower.drawingStatus)) &&
-            (regionFilter.isEmpty || regionFilter.contains(tower.region)))
+            (regionFilter.isEmpty || regionFilter.contains(tower.region)) &&
+            (fromDateTime == null ||
+                (surveyStatusFilter.contains(SurveyStatus.surveyed) &&
+                    tower.signOut != null &&
+                    tower.signOut!.toDate().isAfter(fromDateTime!)) ||
+                (surveyStatusFilter.contains(SurveyStatus.inprogress) &&
+                    tower.signIn != null &&
+                    tower.signIn!.toDate().isAfter(fromDateTime!))) &&
+            (toDateTime == null ||
+                (surveyStatusFilter.contains(SurveyStatus.surveyed) &&
+                    tower.signOut != null &&
+                    tower.signOut!
+                        .toDate()
+                        .isBefore(toDateTime!.add(Duration(days: 1)))) ||
+                (surveyStatusFilter.contains(SurveyStatus.inprogress) &&
+                    tower.signIn != null &&
+                    tower.signIn!
+                        .toDate()
+                        .isBefore(toDateTime!.add(Duration(days: 1))))))
         .toList();
 
     return Padding(
@@ -115,8 +133,12 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         if (value != null) {
                           setState(() {
                             fromDateTime = value;
-                            if (fromDateTime!
-                                .isAfter(toDateTime ?? DateTime.now())) {
+                            if (toDateTime == null) {
+                              toDateTime = DateTime.now();
+                              toController.text =
+                                  toDateTime.toString().split(' ').first;
+                            }
+                            if (fromDateTime!.isAfter(toDateTime!)) {
                               toDateTime = null;
                               toController.clear();
                             }
@@ -145,6 +167,11 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         if (value != null) {
                           setState(() {
                             toDateTime = value;
+                            if (fromDateTime == null) {
+                              fromDateTime = value;
+                              fromController.text =
+                                  value.toString().split(' ').first;
+                            }
                             toController.text =
                                 value.toString().split(' ').first;
                           });
