@@ -18,26 +18,27 @@ class Tower {
   Timestamp? signOut;
   String? authorId;
   String? notes;
-  String? base;
-  String? equipmentShelter;
+  // String? base;
+  // String? equipmentShelter;
 
-  Tower(
-      {required this.id,
-      required this.name,
-      required this.region,
-      required this.type,
-      required this.owner,
-      required this.address,
-      required this.position,
-      required this.surveyStatus,
-      required this.drawingStatus,
-      required this.images,
-      this.signIn,
-      this.signOut,
-      this.authorId,
-      this.notes,
-      this.base,
-      this.equipmentShelter});
+  Tower({
+    required this.id,
+    required this.name,
+    required this.region,
+    required this.type,
+    required this.owner,
+    required this.address,
+    required this.position,
+    required this.surveyStatus,
+    required this.drawingStatus,
+    required this.images,
+    this.signIn,
+    this.signOut,
+    this.authorId,
+    this.notes,
+    // this.base,
+    // this.equipmentShelter
+  });
 
   /// Creates a [Tower] instance from a JSON object.
   factory Tower.fromJson(Map<String, dynamic> json) => Tower(
@@ -62,8 +63,8 @@ class Tower {
         signOut: json['signOut'] as Timestamp?,
         authorId: json['authorId'] as String?,
         notes: json['notes'] as String?,
-        base: json['base'] as String?,
-        equipmentShelter: json['equipmentShelter'] as String?,
+        // base: json['base'] as String?,
+        // equipmentShelter: json['equipmentShelter'] as String?,
       );
 
   /// Creates a [Tower] instance from a Firestore document.
