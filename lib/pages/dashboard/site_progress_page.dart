@@ -17,9 +17,13 @@ class SiteProgressPage extends StatefulWidget {
 class _SiteProgressPageState extends State<SiteProgressPage>
     with AutomaticKeepAliveClientMixin {
   final searchController = TextEditingController();
+  final fromController = TextEditingController();
+  final toController = TextEditingController();
   final surveyStatusFilter = <SurveyStatus>[SurveyStatus.surveyed];
   final drawingStatusFilter = <DrawingStatus>[];
   final regionFilter = <Region>[];
+  DateTime? fromDateTime;
+  DateTime? toDateTime;
 
   @override
   bool get wantKeepAlive => true;
@@ -91,7 +95,62 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         value: regionFilter.contains(region),
                         onChanged: (value) => setState(() => value!
                             ? regionFilter.add(region)
-                            : regionFilter.remove(region))))
+                            : regionFilter.remove(region)))),
+                    SizedBox(height: 15),
+                    TextField(
+                      controller: fromController,
+                      decoration: InputDecoration(
+                        labelText: 'From',
+                        prefixIcon: Icon(
+                          Icons.calendar_today,
+                          size: 15,
+                        ),
+                      ),
+                      readOnly: true,
+                      onTap: () => showDatePicker(
+                              context: context,
+                              firstDate: DateTime(2025),
+                              lastDate: DateTime.now())
+                          .then((value) {
+                        if (value != null) {
+                          setState(() {
+                            fromDateTime = value;
+                            if (fromDateTime!
+                                .isAfter(toDateTime ?? DateTime.now())) {
+                              toDateTime = null;
+                              toController.clear();
+                            }
+                            fromController.text =
+                                value.toString().split(' ').first;
+                          });
+                        }
+                      }),
+                    ),
+                    SizedBox(height: 15),
+                    TextField(
+                      controller: toController,
+                      decoration: InputDecoration(
+                        labelText: 'To',
+                        prefixIcon: Icon(
+                          Icons.calendar_today,
+                          size: 15,
+                        ),
+                      ),
+                      readOnly: true,
+                      onTap: () => showDatePicker(
+                              context: context,
+                              firstDate: fromDateTime ?? DateTime(2025),
+                              lastDate: DateTime.now())
+                          .then((value) {
+                        if (value != null) {
+                          setState(() {
+                            toDateTime = value;
+                            toController.text =
+                                value.toString().split(' ').first;
+                          });
+                        }
+                      }),
+                    ),
                   ],
                 ),
               ),
@@ -109,6 +168,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Expanded(
+                        flex: 4,
                         child: TextField(
                           controller: searchController,
                           onChanged: (_) => setState(() {}),
