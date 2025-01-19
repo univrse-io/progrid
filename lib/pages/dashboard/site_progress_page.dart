@@ -17,7 +17,7 @@ class SiteProgressPage extends StatefulWidget {
 class _SiteProgressPageState extends State<SiteProgressPage>
     with AutomaticKeepAliveClientMixin {
   final searchController = TextEditingController();
-  final surveyStatusFilter = <SurveyStatus>[];
+  final surveyStatusFilter = <SurveyStatus>[SurveyStatus.surveyed];
   final drawingStatusFilter = <DrawingStatus>[];
   final regionFilter = <Region>[];
 
@@ -49,18 +49,12 @@ class _SiteProgressPageState extends State<SiteProgressPage>
         children: [
           Expanded(
             child: Card(
+              shape: RoundedRectangleBorder(),
               child: Padding(
                 padding: const EdgeInsets.all(15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(
-                      controller: searchController,
-                      onChanged: (_) => setState(() {}),
-                      decoration:
-                          InputDecoration(prefixIcon: Icon(Icons.search)),
-                    ),
-                    SizedBox(height: 15),
                     Text(
                       'Filters',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -108,6 +102,31 @@ class _SiteProgressPageState extends State<SiteProgressPage>
             child: Column(
               children: [
                 Card(
+                  margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: searchController,
+                          onChanged: (_) => setState(() {}),
+                          decoration: InputDecoration(
+                              hintText: 'Search tower by name or id',
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent)),
+                              prefixIcon: Icon(Icons.search)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Card(
                     margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
                     shape: RoundedRectangleBorder(),
                     elevation: 0,
@@ -125,15 +144,18 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         ],
                       ),
                     )),
-                SizedBox(height: 5),
                 Expanded(
                   child: ListView.builder(
                       itemCount: towers.length,
                       itemBuilder: (context, index) {
                         final tower = towers[index];
 
-                        return Card(
-                          margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                        return Container(
+                          margin: EdgeInsets.only(left: 5),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border(
+                                  top: BorderSide(color: Colors.black12))),
                           child: ListTile(
                               onTap: () => DialogUtils.showTowerDialog(
                                   context, tower.id),
