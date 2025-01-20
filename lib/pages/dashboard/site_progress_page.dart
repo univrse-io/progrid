@@ -39,7 +39,9 @@ class _SiteProgressPageState extends State<SiteProgressPage>
 
   Future<void> downloadReport() async {
     final towers = Provider.of<List<Tower>>(context, listen: false);
-    final issues = Provider.of<List<Issue>>(context, listen: false);
+    final issues = Provider.of<List<Issue>>(context, listen: false)
+        .where((issue) => issue.status == 'unresolved')
+        .toList();
     final pdf1 = pw.Document();
     final pdf2 = pw.Document();
     final filteredTowers = Provider.of<List<Tower>>(context, listen: false)
@@ -92,322 +94,333 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     final recentTicketIssues = await screenshotController7.capture();
 
     pdf1.addPage(pw.Page(
-        build: (context) => pw.Column(children: [
-              pw.Row(
+        margin: pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+        build: (context) => pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                 children: [
-                  pw.Image(pw.MemoryImage(sapuraImg), height: 40),
-                  pw.SizedBox(width: 30),
-                  pw.Text('Daily Progress Report',
-                      style: pw.TextStyle(fontSize: 20)),
-                  pw.SizedBox(width: 30),
-                  pw.Image(pw.MemoryImage(binasatImg), height: 40),
-                  pw.SizedBox(width: 30),
-                  pw.Image(pw.MemoryImage(uosImg), height: 40),
-                  pw.SizedBox(width: 30),
-                ],
-              ),
-              pw.SizedBox(height: 20),
-              pw.Container(
-                  decoration: pw.BoxDecoration(
-                      borderRadius: pw.BorderRadius.circular(12),
-                      border:
-                          pw.Border.all(color: PdfColor.fromInt(0xFF9C27B0))),
-                  child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-                      children: [
-                        pw.SizedBox(height: 5),
-                        pw.Row(
-                          children: [
-                            pw.Padding(
-                                padding: pw.EdgeInsets.all(10),
-                                child: pw.Text('On-Site Audit',
-                                    style: pw.TextStyle(fontSize: 10))),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Total',
-                                      style: pw.TextStyle(fontSize: 10)),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text('${towers.length}',
-                                      style: pw.TextStyle(fontSize: 10))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('In Progress',
-                                      style: pw.TextStyle(fontSize: 10)),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length}',
-                                      style: pw.TextStyle(fontSize: 10))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Completed',
-                                      style: pw.TextStyle(fontSize: 10)),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length}',
-                                      style: pw.TextStyle(fontSize: 10))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Balance',
-                                      style: pw.TextStyle(fontSize: 10)),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress || tower.surveyStatus == SurveyStatus.unsurveyed).length}',
-                                      style: pw.TextStyle(fontSize: 10))
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        pw.SizedBox(height: 5),
-                        // pw.Row(
-                        //     mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-                        //     children: [
-                        //       pw.SizedBox.square(
-                        //           dimension: 200,
-                        //           child: pw.Image(
-                        //               pw.MemoryImage(onSiteAuditStatusChart!))),
-                        //       pw.SizedBox.square(
-                        //           dimension: 200,
-                        //           child: pw.Image(pw.MemoryImage(
-                        //               onSiteAuditRegionalChart!)))
-                        //     ])
-                      ])),
-              pw.SizedBox(height: 5),
-              pw.Container(
-                  decoration: pw.BoxDecoration(
-                      borderRadius: pw.BorderRadius.circular(12),
-                      border:
-                          pw.Border.all(color: PdfColor.fromInt(0xFF4CAF50))),
-                  child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-                      children: [
-                        pw.SizedBox(height: 5),
-                        pw.Row(
-                          children: [
-                            pw.Padding(
-                                padding: pw.EdgeInsets.all(10),
-                                child: pw.Text('As-Built Drawing',
-                                    style: pw.TextStyle(fontSize: 10))),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Total',
-                                      style: pw.TextStyle(fontSize: 10)),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text('${towers.length}',
-                                      style: pw.TextStyle(fontSize: 10))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('In Progress',
-                                      style: pw.TextStyle(fontSize: 10)),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress).length}',
-                                      style: pw.TextStyle(fontSize: 10))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Submitted',
-                                      style: pw.TextStyle(fontSize: 10)),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
-                                      style: pw.TextStyle(fontSize: 10))
-                                ],
-                              ),
-                            ),
-                            pw.SizedBox(width: 10),
-                            pw.Expanded(
-                              child: pw.Column(
-                                children: [
-                                  pw.Text('Balance',
-                                      style: pw.TextStyle(fontSize: 10)),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress || tower.drawingStatus == null).length}',
-                                      style: pw.TextStyle(fontSize: 10))
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        pw.SizedBox(height: 5),
-
-                        // pw.Row(
-                        //     mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-                        //     children: [
-                        //       pw.SizedBox.square(
-                        //           dimension: 200,
-                        //           child: pw.Image(pw.MemoryImage(
-                        //               asBuiltDrawingStatusChart!))),
-                        //       pw.SizedBox.square(
-                        //           dimension: 200,
-                        //           child: pw.Image(pw.MemoryImage(
-                        //               asBuiltDrawingRegionalChart!)))
-                        //     ])
-                      ])),
-              pw.SizedBox(height: 5),
-              pw.Container(
-                padding: pw.EdgeInsets.all(5),
-                decoration: pw.BoxDecoration(
-                    borderRadius: pw.BorderRadius.circular(12),
-                    border: pw.Border.all(color: PdfColor.fromInt(0xFF9E9E9E))),
-                child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                  pw.Row(
                     children: [
-                      pw.Text('Site Location',
-                          style: pw.TextStyle(fontSize: 10)),
-                      pw.SizedBox(height: 5),
-                      pw.Image(height: 200, pw.MemoryImage(mapDisplay!)),
-                    ]),
-              ),
-              pw.SizedBox(height: 5),
-              pw.Row(children: [
-                pw.Expanded(
-                    child: pw.Container(
-                  padding: pw.EdgeInsets.all(10),
-                  decoration: pw.BoxDecoration(
-                      borderRadius: pw.BorderRadius.circular(12),
-                      border:
-                          pw.Border.all(color: PdfColor.fromInt(0xFF9E9E9E))),
-                  child: pw.Column(children: [
-                    pw.Text('On-Site Audit', style: pw.TextStyle(fontSize: 10)),
-                    pw.SizedBox(height: 10),
-                    pw.SizedBox(
-                        height: 150,
-                        width: 150,
-                        child:
-                            pw.Image(pw.MemoryImage(onSiteAuditStatusChart!))),
+                      pw.Image(pw.MemoryImage(sapuraImg), height: 40),
+                      pw.SizedBox(width: 30),
+                      pw.Text('Daily Progress Report',
+                          style: pw.TextStyle(fontSize: 20)),
+                      pw.SizedBox(width: 30),
+                      pw.Image(pw.MemoryImage(binasatImg), height: 40),
+                      pw.SizedBox(width: 30),
+                      pw.Image(pw.MemoryImage(uosImg), height: 40),
+                      pw.SizedBox(width: 30),
+                    ],
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Row(children: [
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text('Total',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
+                    pw.SizedBox(width: 10),
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text('In Progress',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
+                    pw.SizedBox(width: 10),
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text('Completed',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
+                    pw.SizedBox(width: 10),
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text('Balance',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
                   ]),
-                )),
-                pw.SizedBox(width: 5),
-                pw.Expanded(
-                    child: pw.Container(
-                  padding: pw.EdgeInsets.all(10),
-                  decoration: pw.BoxDecoration(
-                      borderRadius: pw.BorderRadius.circular(12),
-                      border:
-                          pw.Border.all(color: PdfColor.fromInt(0xFF9E9E9E))),
-                  child: pw.Column(children: [
-                    pw.Text('As-Built Drawing',
-                        style: pw.TextStyle(fontSize: 10)),
-                    pw.SizedBox(height: 10),
-                    pw.SizedBox(
-                        height: 150,
-                        width: 150,
-                        child: pw.Image(
-                            pw.MemoryImage(asBuiltDrawingStatusChart!))),
+                  pw.Row(children: [
+                    pw.Expanded(
+                        child: pw.Text('On-Site Audit',
+                            style: pw.TextStyle(fontSize: 10),
+                            textAlign: pw.TextAlign.center)),
+                    pw.Expanded(flex: 3, child: pw.Divider())
                   ]),
-                ))
-              ]),
-              pw.SizedBox(height: 5),
-              pw.Row(children: [
-                pw.Expanded(
-                    child: pw.Container(
-                  padding: pw.EdgeInsets.all(10),
-                  decoration: pw.BoxDecoration(
-                      borderRadius: pw.BorderRadius.circular(12),
-                      border:
-                          pw.Border.all(color: PdfColor.fromInt(0xFF9E9E9E))),
-                  child: pw.Column(children: [
-                    pw.Text('Recent Ticket Issues',
-                        style: pw.TextStyle(fontSize: 10)),
-                    pw.SizedBox(height: 10),
-                    pw.SizedBox(
-                        height: 150,
-                        width: 150,
-                        child: pw.Image(pw.MemoryImage(recentTicketIssues!))),
+                  pw.Row(children: [
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text('${towers.length}',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
+                    pw.SizedBox(width: 10),
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text(
+                                '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length}',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
+                    pw.SizedBox(width: 10),
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text(
+                                '${towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length}',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
+                    pw.SizedBox(width: 10),
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text(
+                                '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress || tower.surveyStatus == SurveyStatus.unsurveyed).length}',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
                   ]),
-                )),
-                pw.SizedBox(width: 5),
-                pw.Expanded(
-                    child: pw.Container(
-                  padding: pw.EdgeInsets.all(10),
-                  decoration: pw.BoxDecoration(
-                      borderRadius: pw.BorderRadius.circular(12),
-                      border:
-                          pw.Border.all(color: PdfColor.fromInt(0xFF9E9E9E))),
-                  child: pw.Column(children: [
-                    pw.Text('On-Site Audit vs As-Built Drawing',
-                        style: pw.TextStyle(fontSize: 10)),
-                    pw.SizedBox(height: 10),
-                    pw.SizedBox(
-                        height: 150,
-                        width: 150,
-                        child: pw.Image(
-                            pw.MemoryImage(onSiteAuditVsAsBuiltDrawing!))),
+                  pw.Row(children: [
+                    pw.Expanded(
+                        child: pw.Text('As-Built Drawing',
+                            style: pw.TextStyle(fontSize: 10),
+                            textAlign: pw.TextAlign.center)),
+                    pw.Expanded(flex: 3, child: pw.Divider())
                   ]),
-                ))
-              ]),
-              pw.SizedBox(height: 10),
-              pw.Text(
-                  'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
-                  style: pw.TextStyle(fontSize: 10),
-                  textAlign: pw.TextAlign.right),
-            ])));
+                  pw.Row(children: [
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text('${towers.length}',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
+                    pw.SizedBox(width: 10),
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text(
+                                '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress).length}',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
+                    pw.SizedBox(width: 10),
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text(
+                                '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
+                    pw.SizedBox(width: 10),
+                    pw.Expanded(
+                        child: pw.Container(
+                            padding: pw.EdgeInsets.all(5),
+                            decoration: pw.BoxDecoration(
+                                borderRadius: pw.BorderRadius.circular(5),
+                                border: pw.Border.all(
+                                    color: PdfColor.fromInt(0xFF9E9E9E))),
+                            child: pw.Text(
+                                '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress || tower.drawingStatus == null).length}',
+                                style: pw.TextStyle(fontSize: 10),
+                                textAlign: pw.TextAlign.center))),
+                  ]),
+                  pw.SizedBox(height: 10),
+                  pw.Container(
+                    padding: pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                        borderRadius: pw.BorderRadius.circular(12),
+                        border:
+                            pw.Border.all(color: PdfColor.fromInt(0xFF9E9E9E))),
+                    child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                        children: [
+                          pw.Text('Site Location',
+                              style: pw.TextStyle(fontSize: 10)),
+                          pw.SizedBox(height: 5),
+                          pw.Image(
+                              fit: pw.BoxFit.fitWidth,
+                              height: 150,
+                              pw.MemoryImage(mapDisplay!)),
+                        ]),
+                  ),
+                  pw.SizedBox(height: 5),
+                  pw.Row(children: [
+                    pw.Expanded(
+                        child: pw.Container(
+                      padding: pw.EdgeInsets.all(10),
+                      decoration: pw.BoxDecoration(
+                          borderRadius: pw.BorderRadius.circular(12),
+                          border: pw.Border.all(
+                              color: PdfColor.fromInt(0xFF9E9E9E))),
+                      child: pw.Column(children: [
+                        pw.Text('On-Site Audit',
+                            style: pw.TextStyle(fontSize: 10)),
+                        pw.SizedBox(height: 10),
+                        pw.SizedBox(
+                            height: 150,
+                            width: 150,
+                            child: pw.Image(
+                                pw.MemoryImage(onSiteAuditRegionalChart!))),
+                      ]),
+                    )),
+                    pw.SizedBox(width: 5),
+                    pw.Expanded(
+                        child: pw.Container(
+                      padding: pw.EdgeInsets.all(10),
+                      decoration: pw.BoxDecoration(
+                          borderRadius: pw.BorderRadius.circular(12),
+                          border: pw.Border.all(
+                              color: PdfColor.fromInt(0xFF9E9E9E))),
+                      child: pw.Column(children: [
+                        pw.Text('As-Built Drawing',
+                            style: pw.TextStyle(fontSize: 10)),
+                        pw.SizedBox(height: 10),
+                        pw.SizedBox(
+                            height: 150,
+                            width: 150,
+                            child: pw.Image(
+                                pw.MemoryImage(asBuiltDrawingRegionalChart!))),
+                      ]),
+                    )),
+                    pw.SizedBox(width: 5),
+                    pw.Expanded(
+                        child: pw.Container(
+                      height: 150,
+                      padding: pw.EdgeInsets.all(10),
+                      decoration: pw.BoxDecoration(
+                          borderRadius: pw.BorderRadius.circular(12),
+                          border: pw.Border.all(
+                              color: PdfColor.fromInt(0xFF9E9E9E))),
+                      child: pw.Column(children: [
+                        pw.Text('On-Site Audit vs As-Built Drawing',
+                            style: pw.TextStyle(fontSize: 10)),
+                        pw.SizedBox(height: 10),
+                        pw.SizedBox(
+                            height: 150,
+                            width: 150,
+                            child: pw.Image(
+                                pw.MemoryImage(onSiteAuditVsAsBuiltDrawing!))),
+                      ]),
+                    ))
+                  ]),
+                  pw.SizedBox(height: 5),
+                  pw.Text('Ticket Issues', style: pw.TextStyle(fontSize: 10)),
+                  pw.SizedBox(height: 10),
+                  pw.TableHelper.fromTextArray(
+                      headers: [
+                        'Site ID',
+                        'Site Name',
+                        'Region',
+                        'Site Type',
+                        'Issues'
+                      ],
+                      data: issues.sublist(0, 7).map((issue) {
+                        final tower = towers.singleWhere(
+                            (tower) => tower.id == issue.id.split('-').first);
 
-    // pdf1.addPage(pw.Page(
-    //     build: (context) => pw.Column(
-    //             crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-    //             children: [
-    //               pw.Text('Ticket Issues'),
-    //               pw.SizedBox(height: 10),
-    //               pw.TableHelper.fromTextArray(
-    //                   headers: [
-    //                     'Site ID',
-    //                     'Site Name',
-    //                     'Region',
-    //                     'Site Type',
-    //                     'Issues'
-    //                   ],
-    //                   data: issues.map((issue) {
-    //                     final tower = towers.singleWhere(
-    //                         (tower) => tower.id == issue.id.split('-').first);
+                        return [
+                          tower.id,
+                          tower.name,
+                          tower.region,
+                          tower.type,
+                          issue.tags.join(', ')
+                        ];
+                      }).toList(),
+                      cellStyle: pw.TextStyle(fontSize: 10),
+                      headerDecoration:
+                          pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
+                      headerStyle: pw.TextStyle(
+                          fontSize: 10, color: PdfColor.fromInt(0xFFFFFFFF))),
+                  pw.SizedBox(height: 10),
+                  if (issues.length < 7)
+                    if (issues.length > 7)
+                      pw.Text(
+                          'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
+                          style: pw.TextStyle(fontSize: 10),
+                          textAlign: pw.TextAlign.right),
+                ])));
 
-    //                     return [
-    //                       tower.id,
-    //                       tower.name,
-    //                       tower.region,
-    //                       tower.type,
-    //                       issue.tags.join()
-    //                     ];
-    //                   }).toList(),
-    //                   headerDecoration:
-    //                       pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
-    //                   headerStyle:
-    //                       pw.TextStyle(color: PdfColor.fromInt(0xFFFFFFFF))),
-    //               pw.SizedBox(height: 20),
-    //               pw.Text(
-    //                   'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
-    //                   textAlign: pw.TextAlign.right),
-    //             ])));
+    if (issues.length > 7) {
+      pdf1.addPage(pw.Page(
+          margin: pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+          build: (context) => pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                  children: [
+                    pw.TableHelper.fromTextArray(
+                        headers: [
+                          'Site ID',
+                          'Site Name',
+                          'Region',
+                          'Site Type',
+                          'Issues'
+                        ],
+                        data: issues.sublist(7).map((issue) {
+                          final tower = towers.singleWhere(
+                              (tower) => tower.id == issue.id.split('-').first);
+
+                          return [
+                            tower.id,
+                            tower.name,
+                            tower.region,
+                            tower.type,
+                            issue.tags.join(', ')
+                          ];
+                        }).toList(),
+                        cellStyle: pw.TextStyle(fontSize: 10),
+                        headerDecoration: pw.BoxDecoration(
+                            color: PdfColor.fromInt(0xFF000000)),
+                        headerStyle: pw.TextStyle(
+                            fontSize: 10, color: PdfColor.fromInt(0xFFFFFFFF))),
+                    pw.SizedBox(height: 10),
+                    pw.Text(
+                        'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
+                        style: pw.TextStyle(fontSize: 10),
+                        textAlign: pw.TextAlign.right),
+                  ])));
+    }
 
     final pdf1Bytes = await pdf1.save();
     try {
@@ -420,8 +433,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     } catch (e) {
       print('Error saving PDF: $e');
     }
-
-    // filteredTowers.
 
     final chunks = <List<Tower>>[];
     final chunkSize = 35;
