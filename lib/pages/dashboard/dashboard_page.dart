@@ -1,5 +1,6 @@
 // import 'dart:html' as html;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:progrid/pages/dashboard/home_page.dart';
 import 'package:progrid/pages/dashboard/site_progress_page.dart';
 import 'package:progrid/pages/profile_page.dart';
@@ -14,6 +15,13 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   late final pageController = PageController()
     ..addListener(() => Navigator.pop(context));
+
+  Stream<DateTime> currentUpdatedTime() async* {
+    while (true) {
+      await Future.delayed(const Duration(seconds: 1));
+      yield DateTime.now();
+    }
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -32,11 +40,31 @@ class _DashboardPageState extends State<DashboardPage> {
           ],
         ),
         actions: [
+          Card.filled(
+            color: Colors.black12,
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.schedule),
+                  SizedBox(width: 5),
+                  StreamBuilder<DateTime>(
+                      stream: currentUpdatedTime(),
+                      builder: (context, snapshot) => Text(
+                          DateFormat('d/M/y h:m a')
+                              .format(snapshot.data ?? DateTime.now()))),
+                  SizedBox(width: 5),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(width: 5),
           IconButton(
               onPressed: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const ProfilePage())),
               icon: Icon(Icons.person)),
-          SizedBox(width: 10),
+          SizedBox(width: 5),
         ],
       ),
       drawer: Drawer(

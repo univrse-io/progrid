@@ -33,13 +33,6 @@ class _HomePageState extends State<HomePage>
   @override
   bool get wantKeepAlive => true;
 
-  Stream<DateTime> currentUpdatedTime() async* {
-    while (true) {
-      await Future.delayed(const Duration(seconds: 1));
-      yield DateTime.now();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -494,29 +487,6 @@ class _HomePageState extends State<HomePage>
                                     ),
                                   ))
                             ]),
-                            Container(
-                                alignment: Alignment.topRight,
-                                padding: EdgeInsets.all(10),
-                                child: Card.filled(
-                                  color: Colors.black12,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.schedule),
-                                        SizedBox(width: 5),
-                                        StreamBuilder<DateTime>(
-                                            stream: currentUpdatedTime(),
-                                            builder: (context, snapshot) =>
-                                                Text(DateFormat('d/M/y h:m a')
-                                                    .format(snapshot.data ??
-                                                        DateTime.now()))),
-                                        SizedBox(width: 5),
-                                      ],
-                                    ),
-                                  ),
-                                ))
                           ]),
                     ),
                   ),
