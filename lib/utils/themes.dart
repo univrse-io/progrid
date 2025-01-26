@@ -27,7 +27,10 @@ final lightTheme = ThemeData(
     actionIconTheme: ActionIconThemeData(
       backButtonIconBuilder: (context) => Icon(Icons.arrow_back, size: 34),
     ),
-    cardTheme: CardTheme(margin: EdgeInsets.zero),
+    cardTheme: CardTheme(
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(),
+    ),
     inputDecorationTheme: InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.black26),
@@ -44,53 +47,17 @@ final lightTheme = ThemeData(
           borderSide: BorderSide(color: Colors.red),
           borderRadius: BorderRadius.circular(10),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
     filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
             textStyle: TextStyle(fontWeight: FontWeight.w600),
             minimumSize: Size.fromHeight(45),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)))),
     textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
             textStyle: TextStyle(fontWeight: FontWeight.w600),
             minimumSize: Size.fromHeight(45),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))));
-
-final darkTheme = ThemeData(
-    brightness: Brightness.dark,
-    primaryColor: Colors.grey[300],
-    colorScheme: ColorScheme.dark(
-      primary: Colors.grey[300]!,
-      secondary: Colors.grey[500]!,
-      surface: Colors.grey[900]!,
-      error: Colors.red,
-    ),
-    fontFamily: GoogleFonts.roboto().fontFamily,
-    inputDecorationTheme: InputDecorationTheme(
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white24),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
-    filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-            textStyle: TextStyle(fontWeight: FontWeight.w600),
-            minimumSize: Size.fromHeight(45),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))),
-    textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-            textStyle: TextStyle(fontWeight: FontWeight.w600),
-            minimumSize: Size.fromHeight(45),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))));
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)))));

@@ -564,7 +564,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
         children: [
           Expanded(
             child: Card(
-              shape: RoundedRectangleBorder(),
               child: Padding(
                 padding: const EdgeInsets.all(15),
                 child: Column(
@@ -689,7 +688,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                 Card(
                   margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
                   elevation: 0,
-                  shape: RoundedRectangleBorder(),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -714,7 +712,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                 ),
                 Card(
                     margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                    shape: RoundedRectangleBorder(),
                     elevation: 0,
                     child: Padding(
                       padding: const EdgeInsets.all(5),

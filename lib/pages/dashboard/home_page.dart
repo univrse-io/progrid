@@ -53,7 +53,6 @@ class _HomePageState extends State<HomePage>
                   flex: 2,
                   child: Card(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.purple, width: 2)),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
@@ -184,14 +183,10 @@ class _HomePageState extends State<HomePage>
                                       visible:
                                           issues[index].status == 'unresolved',
                                       child: Card(
-                                        margin:
-                                            EdgeInsets.symmetric(vertical: 5),
+                                        margin: EdgeInsets.only(bottom: 5),
                                         shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
                                             side: BorderSide(
-                                                color: Colors.black12,
-                                                width: 2)),
+                                                color: Colors.black12)),
                                         child: ListTile(
                                           dense: true,
                                           trailing: Text(
@@ -232,7 +227,6 @@ class _HomePageState extends State<HomePage>
                 children: [
                   Card(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.purple, width: 2)),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
@@ -312,7 +306,6 @@ class _HomePageState extends State<HomePage>
                   SizedBox(height: 5),
                   Card(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.green, width: 2)),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
@@ -469,7 +462,6 @@ class _HomePageState extends State<HomePage>
                                                           .surveyStatus.color),
                                                 ),
                                                 const SizedBox(width: 4),
-
                                                 // tower id
                                                 Text(
                                                   tower.id,
@@ -502,7 +494,6 @@ class _HomePageState extends State<HomePage>
                   flex: 2,
                   child: Card(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.green, width: 2)),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
