@@ -112,7 +112,12 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                       pw.SizedBox(width: 30),
                     ],
                   ),
-                  pw.SizedBox(height: 10),
+                  pw.SizedBox(height: 8),
+                  pw.Text(
+                      'Last Update: ${DateFormat('dd MMMM yyyy HH:mm a').format(DateTime.now())}',
+                      style: pw.TextStyle(fontSize: 8),
+                      textAlign: pw.TextAlign.right),
+                  pw.SizedBox(height: 8),
                   pw.Row(children: [
                     pw.Expanded(
                         child: pw.Container(
@@ -375,13 +380,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                           pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
                       headerStyle: pw.TextStyle(
                           fontSize: 10, color: PdfColor.fromInt(0xFFFFFFFF))),
-                  pw.SizedBox(height: 10),
-                  if (issues.length < 7)
-                    if (issues.length > 7)
-                      pw.Text(
-                          'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
-                          style: pw.TextStyle(fontSize: 10),
-                          textAlign: pw.TextAlign.right),
                 ])));
 
     if (issues.length > 7) {
@@ -415,11 +413,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                             color: PdfColor.fromInt(0xFF000000)),
                         headerStyle: pw.TextStyle(
                             fontSize: 10, color: PdfColor.fromInt(0xFFFFFFFF))),
-                    pw.SizedBox(height: 10),
-                    pw.Text(
-                        'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
-                        style: pw.TextStyle(fontSize: 10),
-                        textAlign: pw.TextAlign.right),
                   ])));
     }
 
@@ -497,7 +490,8 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                             fontSize: 5, color: PdfColor.fromInt(0xFFFFFFFF))),
                     pw.SizedBox(height: 20),
                     pw.Text(
-                        'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
+                        'Last Update: ${DateFormat('dd MMMM yyyy HH:mm a').format(DateTime.now())}',
+                        style: pw.TextStyle(fontSize: 8),
                         textAlign: pw.TextAlign.right),
                   ])));
     }
