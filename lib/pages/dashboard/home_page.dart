@@ -195,6 +195,8 @@ class _HomePageState extends State<HomePage>
                                               context: context,
                                               builder: (context) =>
                                                   SimpleDialog(
+                                                    contentPadding:
+                                                        EdgeInsets.all(20),
                                                     title: Row(
                                                       children: [
                                                         Text(
@@ -205,16 +207,21 @@ class _HomePageState extends State<HomePage>
                                                                       .bold,
                                                               fontSize: 25),
                                                         ),
+                                                        SizedBox(width: 10),
                                                         Chip(
+                                                          padding:
+                                                              EdgeInsets.zero,
+                                                          shape:
+                                                              StadiumBorder(),
                                                           side: BorderSide.none,
                                                           label: Text(
                                                               issues[index]
                                                                   .status
                                                                   .toString(),
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold)),
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .primaryTextTheme
+                                                                  .bodyMedium),
                                                           backgroundColor:
                                                               issues[index]
                                                                   .status
@@ -223,17 +230,123 @@ class _HomePageState extends State<HomePage>
                                                       ],
                                                     ),
                                                     children: [
-                                                      Text(issues[index]
-                                                          .description),
-                                                      Text(issues[index]
-                                                          .tags
-                                                          .join(', '))
+                                                      Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          SizedBox(
+                                                            width: 90,
+                                                            child: Text(
+                                                              'Description:',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .right,
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 10),
+                                                          Text(
+                                                            issues[index]
+                                                                .description,
+                                                            style: TextStyle(
+                                                                fontSize: 16),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          SizedBox(
+                                                            width: 90,
+                                                            child: Text(
+                                                              'Issued At:',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .right,
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 10),
+                                                          Text(
+                                                            DateFormat(
+                                                                    'dd/MM/yy HH:mm a')
+                                                                .format(issues[
+                                                                        index]
+                                                                    .dateTime
+                                                                    .toDate()),
+                                                            style: TextStyle(
+                                                                fontSize: 16),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          SizedBox(
+                                                            width: 90,
+                                                            child: Text(
+                                                              'Tags:',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .right,
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 10),
+                                                          Text(
+                                                            issues[index]
+                                                                .tags
+                                                                .join(', '),
+                                                            style: TextStyle(
+                                                                fontSize: 16),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: 20),
+                                                      OutlinedButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                            DialogUtils
+                                                                .showTowerDialog(
+                                                                    context,
+                                                                    issues[index]
+                                                                        .id
+                                                                        .split(
+                                                                            '-')
+                                                                        .first);
+                                                          },
+                                                          child: Text(
+                                                              'View Tower'))
                                                     ],
                                                   ));
                                         },
                                         trailing: Text(
-                                            DateFormat('dd/MM/yy HH:mm').format(
-                                                issues[index]
+                                            DateFormat('dd/MM/yy HH:mm a')
+                                                .format(issues[index]
                                                     .dateTime
                                                     .toDate())),
                                         title: Row(
