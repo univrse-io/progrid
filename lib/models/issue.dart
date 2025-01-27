@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:progrid/models/issue_status.dart';
 
 class Issue {
   String id;
-  // TODO: Change the field type from String to [IssueStatus] enum.
-  String status;
+  IssueStatus status;
   Timestamp dateTime;
   String authorId;
   String description;
@@ -31,7 +31,8 @@ class Issue {
   /// Converts the [Issue] instance to a JSON object.
   factory Issue.fromJson(Map<String, dynamic> json) => Issue(
       id: json['id'] as String,
-      status: json['status'] as String,
+      status:
+          IssueStatus.values.byName((json['status'] as String).toLowerCase()),
       dateTime: json['dateTime'] as Timestamp,
       authorId: json['authorId'] as String,
       description: json['description'] as String,

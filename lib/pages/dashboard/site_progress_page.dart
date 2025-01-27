@@ -8,6 +8,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:progrid/models/drawing_status.dart';
 import 'package:progrid/models/issue.dart';
+import 'package:progrid/models/issue_status.dart';
 import 'package:progrid/models/region.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
@@ -40,7 +41,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
   Future<void> downloadReport() async {
     final towers = Provider.of<List<Tower>>(context, listen: false);
     final issues = Provider.of<List<Issue>>(context, listen: false)
-        .where((issue) => issue.status == 'unresolved')
+        .where((issue) => issue.status == IssueStatus.unresolved)
         .toList();
     final pdf1 = pw.Document();
     final pdf2 = pw.Document();

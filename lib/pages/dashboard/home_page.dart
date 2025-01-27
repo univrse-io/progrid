@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/drawing_status.dart';
 import 'package:progrid/models/issue.dart';
+import 'package:progrid/models/issue_status.dart';
 import 'package:progrid/models/region.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
@@ -177,38 +178,78 @@ class _HomePageState extends State<HomePage>
                         Expanded(
                           child: Screenshot(
                             controller: screenshotController7,
-                            child: ListView.builder(
+                            child: ListView.separated(
+                                separatorBuilder: (context, index) =>
+                                    SizedBox(height: 1),
                                 itemCount: issues.length,
                                 itemBuilder: (context, index) => Visibility(
-                                      visible:
-                                          issues[index].status == 'unresolved',
-                                      child: Card(
-                                        margin: EdgeInsets.only(bottom: 5),
+                                      visible: issues[index].status ==
+                                          IssueStatus.unresolved,
+                                      child: ListTile(
                                         shape: RoundedRectangleBorder(
                                             side: BorderSide(
                                                 color: Colors.black12)),
-                                        child: ListTile(
-                                          dense: true,
-                                          trailing: Text(
-                                              DateFormat('dd/MM/yy HH:mm')
-                                                  .format(issues[index]
-                                                      .dateTime
-                                                      .toDate())),
-                                          title: Row(
-                                            children: [
-                                              CircleAvatar(
-                                                  radius: 5,
-                                                  backgroundColor: Colors.red),
-                                              SizedBox(width: 5),
-                                              Text(issues[index].id,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleSmall),
-                                            ],
-                                          ),
-                                          subtitle: Text(
-                                              issues[index].tags.join(', ')),
+                                        dense: true,
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  SimpleDialog(
+                                                    title: Row(
+                                                      children: [
+                                                        Text(
+                                                          issues[index].id,
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 25),
+                                                        ),
+                                                        Chip(
+                                                          side: BorderSide.none,
+                                                          label: Text(
+                                                              issues[index]
+                                                                  .status
+                                                                  .toString(),
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold)),
+                                                          backgroundColor:
+                                                              issues[index]
+                                                                  .status
+                                                                  .color,
+                                                        )
+                                                      ],
+                                                    ),
+                                                    children: [
+                                                      Text(issues[index]
+                                                          .description),
+                                                      Text(issues[index]
+                                                          .tags
+                                                          .join(', '))
+                                                    ],
+                                                  ));
+                                        },
+                                        trailing: Text(
+                                            DateFormat('dd/MM/yy HH:mm').format(
+                                                issues[index]
+                                                    .dateTime
+                                                    .toDate())),
+                                        title: Row(
+                                          children: [
+                                            CircleAvatar(
+                                                radius: 5,
+                                                backgroundColor: Colors.red),
+                                            SizedBox(width: 5),
+                                            Text(issues[index].id,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall),
+                                          ],
                                         ),
+                                        subtitle:
+                                            Text(issues[index].tags.join(', ')),
                                       ),
                                     )),
                           ),
