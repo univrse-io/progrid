@@ -733,9 +733,24 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                             ? regionFilter.add(region)
                             : regionFilter.remove(region)))),
                     SizedBox(height: 20),
-                    OutlinedButton(
-                        onPressed: downloadReport,
-                        child: Text('Download Report'))
+                    MenuAnchor(
+                        builder: (context, controller, child) => OutlinedButton(
+                              onPressed: () => controller.isOpen
+                                  ? controller.close()
+                                  : controller.open(),
+                              child: const Text('Download Report'),
+                            ),
+                        menuChildren: [
+                          MenuItemButton(
+                              child: Text('Daily Progress Report.pdf'),
+                              onPressed: downloadReport),
+                          MenuItemButton(
+                              child: Text('Site Completed.pdf'),
+                              onPressed: downloadReport),
+                          MenuItemButton(
+                              child: Text('Site Completed.xls'),
+                              onPressed: downloadReport),
+                        ])
                   ],
                 ),
               ),
