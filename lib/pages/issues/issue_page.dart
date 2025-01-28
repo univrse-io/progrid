@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:progrid/models/issue_status.dart';
 import 'package:progrid/providers/issues_provider.dart';
 import 'package:progrid/providers/user_provider.dart';
 import 'package:progrid/services/firestore.dart';
-import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
 class IssuePage extends StatefulWidget {
@@ -104,11 +104,9 @@ class _IssuePageState extends State<IssuePage> {
                 padding: const EdgeInsets.only(left: 14, right: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
-                  color: issue.status == 'resolved'
-                      ? AppColors.green
-                      : AppColors.red,
+                  color: issue.status.color,
                 ),
-                child: DropdownButton(
+                child: DropdownButton<IssueStatus>(
                   isDense: true,
                   value: issue.status,
                   onChanged: (value) {
@@ -122,29 +120,17 @@ class _IssuePageState extends State<IssuePage> {
                   },
                   items: [
                     DropdownMenuItem(
-                      value: 'unresolved',
-                      child: Text(
-                        'Unresolved',
-                        // style: TextStyle(
-                        //   color: Theme.of(context).colorScheme.onSurface,
-                        // ),
-                      ),
+                      value: IssueStatus.unresolved,
+                      child: Text('Unresolved'),
                     ),
                     DropdownMenuItem(
-                      value: 'resolved',
-                      child: Text(
-                        'Resolved',
-                        // style: TextStyle(
-                        //   color: Theme.of(context).colorScheme.onSurface,
-                        // ),
-                      ),
+                      value: IssueStatus.resolved,
+                      child: Text('Resolved'),
                     ),
                   ],
                   iconEnabledColor: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
-                  dropdownColor: issue.status == 'resolved'
-                      ? AppColors.green
-                      : AppColors.red,
+                  dropdownColor: issue.status.color,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.surface,
                     fontWeight: FontWeight.bold,
@@ -156,13 +142,10 @@ class _IssuePageState extends State<IssuePage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  color: issue.status == 'resolved'
-                      ? AppColors.green
-                      : AppColors.red,
-                ),
+                    borderRadius: BorderRadius.circular(24),
+                    color: issue.status.color),
                 child: Text(
-                  '${issue.status[0].toUpperCase()}${issue.status.substring(1)}',
+                  issue.status.toString(),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.surface,
                     fontSize: 15,

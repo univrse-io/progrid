@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:progrid/models/issue.dart';
+import 'package:progrid/models/issue_status.dart';
 import 'package:progrid/providers/issues_provider.dart';
 import 'package:progrid/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +55,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
       authorId: userProvider.userId,
       tags: _selectedTags,
       description: _descriptionController.text,
-      status: 'unresolved',
+      status: IssueStatus.unresolved,
     );
 
     try {

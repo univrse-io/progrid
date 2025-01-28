@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:progrid/models/drawing_status.dart';
 import 'package:progrid/models/issue.dart';
+import 'package:progrid/models/issue_status.dart';
 import 'package:progrid/models/region.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
@@ -33,13 +34,6 @@ class _HomePageState extends State<HomePage>
   @override
   bool get wantKeepAlive => true;
 
-  Stream<DateTime> currentUpdatedTime() async* {
-    while (true) {
-      await Future.delayed(const Duration(seconds: 1));
-      yield DateTime.now();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -60,7 +54,6 @@ class _HomePageState extends State<HomePage>
                   flex: 2,
                   child: Card(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.purple, width: 2)),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
@@ -185,42 +178,191 @@ class _HomePageState extends State<HomePage>
                         Expanded(
                           child: Screenshot(
                             controller: screenshotController7,
-                            child: ListView.builder(
+                            child: ListView.separated(
+                                separatorBuilder: (context, index) =>
+                                    SizedBox(height: 1),
                                 itemCount: issues.length,
                                 itemBuilder: (context, index) => Visibility(
-                                      visible:
-                                          issues[index].status == 'unresolved',
-                                      child: Card(
-                                        margin:
-                                            EdgeInsets.symmetric(vertical: 5),
+                                      visible: issues[index].status ==
+                                          IssueStatus.unresolved,
+                                      child: ListTile(
                                         shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
                                             side: BorderSide(
-                                                color: Colors.black12,
-                                                width: 2)),
-                                        child: ListTile(
-                                          dense: true,
-                                          trailing: Text(
-                                              DateFormat('dd/MM/yy HH:mm')
-                                                  .format(issues[index]
-                                                      .dateTime
-                                                      .toDate())),
-                                          title: Row(
-                                            children: [
-                                              CircleAvatar(
-                                                  radius: 5,
-                                                  backgroundColor: Colors.red),
-                                              SizedBox(width: 5),
-                                              Text(issues[index].id,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleSmall),
-                                            ],
-                                          ),
-                                          subtitle: Text(
-                                              issues[index].tags.join(', ')),
+                                                color: Colors.black12)),
+                                        dense: true,
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  SimpleDialog(
+                                                    contentPadding:
+                                                        EdgeInsets.all(20),
+                                                    title: Row(
+                                                      children: [
+                                                        Text(
+                                                          issues[index].id,
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 25),
+                                                        ),
+                                                        SizedBox(width: 10),
+                                                        Chip(
+                                                          padding:
+                                                              EdgeInsets.zero,
+                                                          shape:
+                                                              StadiumBorder(),
+                                                          side: BorderSide.none,
+                                                          label: Text(
+                                                              issues[index]
+                                                                  .status
+                                                                  .toString(),
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .primaryTextTheme
+                                                                  .bodyMedium),
+                                                          backgroundColor:
+                                                              issues[index]
+                                                                  .status
+                                                                  .color,
+                                                        )
+                                                      ],
+                                                    ),
+                                                    children: [
+                                                      Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          SizedBox(
+                                                            width: 90,
+                                                            child: Text(
+                                                              'Description:',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .right,
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 10),
+                                                          Text(
+                                                            issues[index]
+                                                                .description,
+                                                            style: TextStyle(
+                                                                fontSize: 16),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          SizedBox(
+                                                            width: 90,
+                                                            child: Text(
+                                                              'Issued At:',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .right,
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 10),
+                                                          Text(
+                                                            DateFormat(
+                                                                    'dd/MM/yy HH:mm a')
+                                                                .format(issues[
+                                                                        index]
+                                                                    .dateTime
+                                                                    .toDate()),
+                                                            style: TextStyle(
+                                                                fontSize: 16),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          SizedBox(
+                                                            width: 90,
+                                                            child: Text(
+                                                              'Tags:',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .right,
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 16,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 10),
+                                                          Text(
+                                                            issues[index]
+                                                                .tags
+                                                                .join(', '),
+                                                            style: TextStyle(
+                                                                fontSize: 16),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(height: 20),
+                                                      OutlinedButton(
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                            DialogUtils
+                                                                .showTowerDialog(
+                                                                    context,
+                                                                    issues[index]
+                                                                        .id
+                                                                        .split(
+                                                                            '-')
+                                                                        .first);
+                                                          },
+                                                          child: Text(
+                                                              'View Tower'))
+                                                    ],
+                                                  ));
+                                        },
+                                        trailing: Text(
+                                            DateFormat('dd/MM/yy HH:mm a')
+                                                .format(issues[index]
+                                                    .dateTime
+                                                    .toDate())),
+                                        title: Row(
+                                          children: [
+                                            CircleAvatar(
+                                                radius: 5,
+                                                backgroundColor: Colors.red),
+                                            SizedBox(width: 5),
+                                            Text(issues[index].id,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall),
+                                          ],
                                         ),
+                                        subtitle:
+                                            Text(issues[index].tags.join(', ')),
                                       ),
                                     )),
                           ),
@@ -239,7 +381,6 @@ class _HomePageState extends State<HomePage>
                 children: [
                   Card(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.purple, width: 2)),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
@@ -319,7 +460,6 @@ class _HomePageState extends State<HomePage>
                   SizedBox(height: 5),
                   Card(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.green, width: 2)),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
@@ -476,7 +616,6 @@ class _HomePageState extends State<HomePage>
                                                           .surveyStatus.color),
                                                 ),
                                                 const SizedBox(width: 4),
-
                                                 // tower id
                                                 Text(
                                                   tower.id,
@@ -494,29 +633,6 @@ class _HomePageState extends State<HomePage>
                                     ),
                                   ))
                             ]),
-                            Container(
-                                alignment: Alignment.topRight,
-                                padding: EdgeInsets.all(10),
-                                child: Card.filled(
-                                  color: Colors.black12,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.schedule),
-                                        SizedBox(width: 5),
-                                        StreamBuilder<DateTime>(
-                                            stream: currentUpdatedTime(),
-                                            builder: (context, snapshot) =>
-                                                Text(DateFormat('d/M/y h:m a')
-                                                    .format(snapshot.data ??
-                                                        DateTime.now()))),
-                                        SizedBox(width: 5),
-                                      ],
-                                    ),
-                                  ),
-                                ))
                           ]),
                     ),
                   ),
@@ -532,7 +648,6 @@ class _HomePageState extends State<HomePage>
                   flex: 2,
                   child: Card(
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
                         side: BorderSide(color: Colors.green, width: 2)),
                     child: Padding(
                       padding: const EdgeInsets.all(15),

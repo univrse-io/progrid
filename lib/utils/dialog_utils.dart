@@ -92,23 +92,13 @@ class DialogUtils {
 
   // TODO: fix context inheritance issue
   // TODO: implement live provider here instead
-  static void showTowerDialog(
-    BuildContext context,
-    // List<Tower> towers,
-    String towerId,
-  ) {
+  static void showTowerDialog(BuildContext context, String towerId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         final towers = Provider.of<List<Tower>>(context);
         final selectedTower = towers.firstWhere((tower) => tower.id == towerId,
             orElse: () => throw Exception("Tower not found"));
-
-        // final selectedTower = towers.firstWhere(
-        //   (tower) => tower.id == towerId,
-        //   orElse: () => throw Exception("Tower not found"),
-        // );
-
         final notesController =
             TextEditingController(text: selectedTower.notes);
         Timer? _debounceTimer;

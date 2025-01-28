@@ -5,7 +5,6 @@ import 'package:progrid/pages/issues/issue_creation_page.dart';
 import 'package:progrid/pages/issues/issue_page.dart';
 import 'package:progrid/providers/issues_provider.dart';
 import 'package:progrid/services/firestore.dart';
-import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 
 class IssuesListPage extends StatelessWidget {
@@ -119,10 +118,7 @@ class IssuesListPage extends StatelessWidget {
                                                   height: 14,
                                                   decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
-                                                    color: issue.status ==
-                                                            'resolved'
-                                                        ? AppColors.green
-                                                        : AppColors.red,
+                                                    color: issue.status.color,
                                                   ),
                                                 ),
                                                 const SizedBox(width: 7),
@@ -155,7 +151,7 @@ class IssuesListPage extends StatelessWidget {
                                                 ),
                                                 const Text(", "),
                                                 Text(
-                                                  '${issue.status[0].toUpperCase()}${issue.status.substring(1)}',
+                                                  issue.status.toString(),
                                                   style: TextStyle(
                                                     color: Theme.of(context)
                                                         .colorScheme

@@ -8,6 +8,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:progrid/models/drawing_status.dart';
 import 'package:progrid/models/issue.dart';
+import 'package:progrid/models/issue_status.dart';
 import 'package:progrid/models/region.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
@@ -40,7 +41,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
   Future<void> downloadReport() async {
     final towers = Provider.of<List<Tower>>(context, listen: false);
     final issues = Provider.of<List<Issue>>(context, listen: false)
-        .where((issue) => issue.status == 'unresolved')
+        .where((issue) => issue.status == IssueStatus.unresolved)
         .toList();
     final pdf1 = pw.Document();
     final pdf2 = pw.Document();
@@ -111,7 +112,12 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                       pw.SizedBox(width: 30),
                     ],
                   ),
-                  pw.SizedBox(height: 10),
+                  pw.SizedBox(height: 8),
+                  pw.Text(
+                      'Last Update: ${DateFormat('dd MMMM yyyy HH:mm a').format(DateTime.now())}',
+                      style: pw.TextStyle(fontSize: 8),
+                      textAlign: pw.TextAlign.right),
+                  pw.SizedBox(height: 8),
                   pw.Row(children: [
                     pw.Expanded(
                         child: pw.Container(
@@ -374,13 +380,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                           pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
                       headerStyle: pw.TextStyle(
                           fontSize: 10, color: PdfColor.fromInt(0xFFFFFFFF))),
-                  pw.SizedBox(height: 10),
-                  if (issues.length < 7)
-                    if (issues.length > 7)
-                      pw.Text(
-                          'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
-                          style: pw.TextStyle(fontSize: 10),
-                          textAlign: pw.TextAlign.right),
                 ])));
 
     if (issues.length > 7) {
@@ -414,11 +413,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                             color: PdfColor.fromInt(0xFF000000)),
                         headerStyle: pw.TextStyle(
                             fontSize: 10, color: PdfColor.fromInt(0xFFFFFFFF))),
-                    pw.SizedBox(height: 10),
-                    pw.Text(
-                        'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
-                        style: pw.TextStyle(fontSize: 10),
-                        textAlign: pw.TextAlign.right),
                   ])));
     }
 
@@ -496,7 +490,8 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                             fontSize: 5, color: PdfColor.fromInt(0xFFFFFFFF))),
                     pw.SizedBox(height: 20),
                     pw.Text(
-                        'Last Update: ${DateFormat('dd MMMM yyyy HH:mm').format(DateTime.now())}',
+                        'Last Update: ${DateFormat('dd MMMM yyyy HH:mm a').format(DateTime.now())}',
+                        style: pw.TextStyle(fontSize: 8),
                         textAlign: pw.TextAlign.right),
                   ])));
     }
@@ -564,7 +559,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
         children: [
           Expanded(
             child: Card(
-              shape: RoundedRectangleBorder(),
               child: Padding(
                 padding: const EdgeInsets.all(15),
                 child: Column(
@@ -689,7 +683,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                 Card(
                   margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
                   elevation: 0,
-                  shape: RoundedRectangleBorder(),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -714,7 +707,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                 ),
                 Card(
                     margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                    shape: RoundedRectangleBorder(),
                     elevation: 0,
                     child: Padding(
                       padding: const EdgeInsets.all(5),

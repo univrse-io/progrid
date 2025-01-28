@@ -13,6 +13,4 @@ enum SurveyStatus {
 
   @override
   String toString() => _text;
-
-  // use '.name' when updating and reading from database
 }
