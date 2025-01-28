@@ -296,61 +296,125 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                   pw.SizedBox(height: 5),
                   pw.Row(children: [
                     pw.Expanded(
-                        child: pw.Container(
-                      padding: pw.EdgeInsets.all(10),
-                      decoration: pw.BoxDecoration(
-                          borderRadius: pw.BorderRadius.circular(12),
-                          border: pw.Border.all(
-                              color: PdfColor.fromInt(0xFF9E9E9E))),
                       child: pw.Column(children: [
-                        pw.Text('On-Site Audit',
-                            style: pw.TextStyle(fontSize: 10)),
-                        pw.SizedBox(height: 10),
-                        pw.SizedBox(
-                            height: 150,
-                            width: 150,
-                            child: pw.Image(
-                                pw.MemoryImage(onSiteAuditRegionalChart!))),
+                        pw.Container(
+                          padding: pw.EdgeInsets.all(10),
+                          decoration: pw.BoxDecoration(
+                              borderRadius: pw.BorderRadius.circular(12),
+                              border: pw.Border.all(
+                                  color: PdfColor.fromInt(0xFF9E9E9E))),
+                          child: pw.Row(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Column(
+                                    crossAxisAlignment:
+                                        pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.Text('On-Site Audit',
+                                          style: pw.TextStyle(fontSize: 10)),
+                                      pw.SizedBox(height: 10),
+                                      pw.SizedBox(
+                                          height: 100,
+                                          width: 100,
+                                          child: pw.Image(pw.MemoryImage(
+                                              onSiteAuditRegionalChart!))),
+                                    ]),
+                                pw.SizedBox(width: 10),
+                                pw.Column(
+                                    crossAxisAlignment:
+                                        pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.SizedBox(height: 20),
+                                      ...Region.values.map((region) => pw.Row(
+                                              mainAxisSize: pw.MainAxisSize.min,
+                                              children: [
+                                                pw.Container(
+                                                  height: 5,
+                                                  width: 5,
+                                                  decoration: pw.BoxDecoration(
+                                                      shape: pw.BoxShape.circle,
+                                                      color: PdfColor.fromInt(
+                                                          region.color.value)),
+                                                ),
+                                                pw.SizedBox(width: 10),
+                                                pw.Text(region.toString(),
+                                                    style: pw.TextStyle(
+                                                        fontSize: 8)),
+                                              ])),
+                                    ])
+                              ]),
+                        ),
+                        pw.SizedBox(height: 5),
+                        pw.Container(
+                          padding: pw.EdgeInsets.all(10),
+                          decoration: pw.BoxDecoration(
+                              borderRadius: pw.BorderRadius.circular(12),
+                              border: pw.Border.all(
+                                  color: PdfColor.fromInt(0xFF9E9E9E))),
+                          child: pw.Row(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Column(
+                                    crossAxisAlignment:
+                                        pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.Text('As-Built Drawing',
+                                          style: pw.TextStyle(fontSize: 10)),
+                                      pw.SizedBox(height: 10),
+                                      pw.SizedBox(
+                                          height: 100,
+                                          width: 100,
+                                          child: pw.Image(pw.MemoryImage(
+                                              asBuiltDrawingRegionalChart!))),
+                                    ]),
+                                pw.SizedBox(width: 10),
+                                pw.Column(
+                                    crossAxisAlignment:
+                                        pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.SizedBox(height: 20),
+                                      ...Region.values.map((region) => pw.Row(
+                                              mainAxisSize: pw.MainAxisSize.min,
+                                              children: [
+                                                pw.Container(
+                                                  height: 5,
+                                                  width: 5,
+                                                  decoration: pw.BoxDecoration(
+                                                      shape: pw.BoxShape.circle,
+                                                      color: PdfColor.fromInt(
+                                                          region.color.value)),
+                                                ),
+                                                pw.SizedBox(width: 10),
+                                                pw.Text(region.toString(),
+                                                    style: pw.TextStyle(
+                                                        fontSize: 8)),
+                                              ])),
+                                    ])
+                              ]),
+                        )
                       ]),
-                    )),
+                    ),
                     pw.SizedBox(width: 5),
                     pw.Expanded(
                         child: pw.Container(
+                      height: 235,
                       padding: pw.EdgeInsets.all(10),
                       decoration: pw.BoxDecoration(
                           borderRadius: pw.BorderRadius.circular(12),
                           border: pw.Border.all(
                               color: PdfColor.fromInt(0xFF9E9E9E))),
-                      child: pw.Column(children: [
-                        pw.Text('As-Built Drawing',
-                            style: pw.TextStyle(fontSize: 10)),
-                        pw.SizedBox(height: 10),
-                        pw.SizedBox(
-                            height: 150,
-                            width: 150,
-                            child: pw.Image(
-                                pw.MemoryImage(asBuiltDrawingRegionalChart!))),
-                      ]),
-                    )),
-                    pw.SizedBox(width: 5),
-                    pw.Expanded(
-                        child: pw.Container(
-                      height: 150,
-                      padding: pw.EdgeInsets.all(10),
-                      decoration: pw.BoxDecoration(
-                          borderRadius: pw.BorderRadius.circular(12),
-                          border: pw.Border.all(
-                              color: PdfColor.fromInt(0xFF9E9E9E))),
-                      child: pw.Column(children: [
-                        pw.Text('On-Site Audit vs As-Built Drawing',
-                            style: pw.TextStyle(fontSize: 10)),
-                        pw.SizedBox(height: 10),
-                        pw.SizedBox(
-                            height: 150,
-                            width: 150,
-                            child: pw.Image(
-                                pw.MemoryImage(onSiteAuditVsAsBuiltDrawing!))),
-                      ]),
+                      child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text('On-Site Audit vs As-Built Drawing',
+                                style: pw.TextStyle(fontSize: 10)),
+                            pw.SizedBox(height: 20),
+                            pw.SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: pw.Image(pw.MemoryImage(
+                                    onSiteAuditVsAsBuiltDrawing!))),
+                          ]),
                     ))
                   ]),
                   pw.SizedBox(height: 5),
