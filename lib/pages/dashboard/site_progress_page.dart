@@ -13,6 +13,7 @@ import 'package:progrid/models/region.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/dashboard/home_page.dart';
+import 'package:progrid/providers/user_provider.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/dialog_utils.dart';
 import 'package:provider/provider.dart';
@@ -755,21 +756,27 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                       requestFocusOnTap: false,
                                       textAlign: TextAlign.center,
                                       initialSelection: tower.surveyStatus,
-                                      inputDecorationTheme:
-                                          InputDecorationTheme(
-                                        filled: true,
-                                        fillColor: tower.surveyStatus.color
-                                            .withValues(alpha: 0.1),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: tower.surveyStatus.color
-                                                    .withValues(alpha: 0.5)),
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                      ),
+                                      inputDecorationTheme: InputDecorationTheme(
+                                          filled: true,
+                                          fillColor: tower.surveyStatus.color
+                                              .withValues(alpha: 0.1),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: tower.surveyStatus.color
+                                                      .withValues(alpha: 0.5)),
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          disabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: tower.surveyStatus.color
+                                                      .withValues(alpha: 0.5)),
+                                              borderRadius:
+                                                  BorderRadius.circular(25))),
                                       textStyle: Theme.of(context)
                                           .textTheme
                                           .bodyMedium,
+                                      enabled: context.read<UserProvider>().role ==
+                                          'admin',
                                       onSelected: (value) {
                                         if (value != null) {
                                           FirestoreService.updateTower(tower.id,
@@ -789,24 +796,27 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                       requestFocusOnTap: false,
                                       textAlign: TextAlign.center,
                                       initialSelection: tower.drawingStatus,
-                                      inputDecorationTheme:
-                                          InputDecorationTheme(
-                                        filled: true,
-                                        fillColor: tower.drawingStatus?.color
-                                            .withValues(alpha: 0.1),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: tower
-                                                        .drawingStatus?.color
-                                                        .withValues(
-                                                            alpha: 0.5) ??
-                                                    Colors.black12),
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                      ),
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
+                                      inputDecorationTheme: InputDecorationTheme(
+                                          filled: true,
+                                          fillColor: tower.drawingStatus?.color
+                                              .withValues(alpha: 0.1),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: tower
+                                                          .drawingStatus?.color
+                                                          .withValues(
+                                                              alpha: 0.5) ??
+                                                      Colors.black12),
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          disabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: tower.surveyStatus.color
+                                                      .withValues(alpha: 0.5)),
+                                              borderRadius:
+                                                  BorderRadius.circular(25))),
+                                      textStyle: Theme.of(context).textTheme.bodyMedium,
+                                      enabled: context.read<UserProvider>().role == 'admin',
                                       onSelected: (value) {
                                         if (value != null) {
                                           FirestoreService.updateTower(tower.id,

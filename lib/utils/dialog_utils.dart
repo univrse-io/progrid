@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
+import 'package:progrid/providers/user_provider.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
@@ -137,16 +138,19 @@ class DialogUtils {
                             // require type specifics
                             isDense: true,
                             value: selectedTower.surveyStatus,
-                            onChanged: (value) {
-                              if (value != null &&
-                                  value != selectedTower.surveyStatus) {
-                                FirestoreService.updateTower(selectedTower.id,
-                                    data: {'surveyStatus': value.name});
-                                setState(() {
-                                  selectedTower.surveyStatus = value;
-                                });
-                              }
-                            },
+                            onChanged: context.read<UserProvider>().role !=
+                                    'admin'
+                                ? null
+                                : (value) {
+                                    if (value != null &&
+                                        value != selectedTower.surveyStatus) {
+                                      FirestoreService.updateTower(
+                                          selectedTower.id,
+                                          data: {'surveyStatus': value.name});
+                                      setState(() =>
+                                          selectedTower.surveyStatus = value);
+                                    }
+                                  },
                             items: SurveyStatus.values.map((status) {
                               return DropdownMenuItem(
                                 value: status,
