@@ -87,13 +87,10 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     final uosImg = await rootBundle
         .load('assets/images/uos.png')
         .then((img) => img.buffer.asUint8List());
-    final onSiteAuditStatusChart = await screenshotController1.capture();
-    final onSiteAuditRegionalChart = await screenshotController2.capture();
-    final asBuiltDrawingStatusChart = await screenshotController3.capture();
-    final asBuiltDrawingRegionalChart = await screenshotController4.capture();
-    final mapDisplay = await screenshotController5.capture();
-    final onSiteAuditVsAsBuiltDrawing = await screenshotController6.capture();
-    final recentTicketIssues = await screenshotController7.capture();
+    final onSiteAuditRegionalChart = await screenshotController1.capture();
+    final asBuiltDrawingRegionalChart = await screenshotController2.capture();
+    final mapDisplay = await screenshotController3.capture();
+    final onSiteAuditVsAsBuiltDrawing = await screenshotController4.capture();
 
     pdf1.addPage(pw.Page(
         margin: pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
