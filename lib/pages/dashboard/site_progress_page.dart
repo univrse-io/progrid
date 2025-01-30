@@ -568,10 +568,10 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     for (final title in header) {
       sheet.cell(CellIndex.indexByColumnRow(
           columnIndex: header.indexOf(title), rowIndex: 0))
+        ..value = TextCellValue(title)
         ..cellStyle = CellStyle(
             fontColorHex: ExcelColor.white,
-            backgroundColorHex: ExcelColor.black)
-        ..value = TextCellValue(title);
+            backgroundColorHex: ExcelColor.black);
     }
 
     for (final tower in towers) {
