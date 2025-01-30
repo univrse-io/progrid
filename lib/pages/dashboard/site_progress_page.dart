@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,45 +37,12 @@ class _SiteProgressPageState extends State<SiteProgressPage>
   @override
   bool get wantKeepAlive => true;
 
-  Future<void> downloadReport() async {
+  Future<void> dailyProgressReportPdf() async {
     final towers = Provider.of<List<Tower>>(context, listen: false);
     final issues = Provider.of<List<Issue>>(context, listen: false)
         .where((issue) => issue.status == IssueStatus.unresolved)
         .toList();
-    final pdf1 = pw.Document();
-    final pdf2 = pw.Document();
-    final filteredTowers = Provider.of<List<Tower>>(context, listen: false)
-        .where((tower) =>
-            (tower.name
-                    .toLowerCase()
-                    .contains(searchController.text.toLowerCase()) ||
-                tower.id
-                    .toLowerCase()
-                    .contains(searchController.text.toLowerCase())) &&
-            (surveyStatusFilter.isEmpty ||
-                surveyStatusFilter.contains(tower.surveyStatus)) &&
-            (drawingStatusFilter.isEmpty ||
-                drawingStatusFilter.contains(tower.drawingStatus)) &&
-            (regionFilter.isEmpty || regionFilter.contains(tower.region)) &&
-            (fromDateTime == null ||
-                (surveyStatusFilter.contains(SurveyStatus.surveyed) &&
-                    tower.signOut != null &&
-                    tower.signOut!.toDate().isAfter(fromDateTime!)) ||
-                (surveyStatusFilter.contains(SurveyStatus.inprogress) &&
-                    tower.signIn != null &&
-                    tower.signIn!.toDate().isAfter(fromDateTime!))) &&
-            (toDateTime == null ||
-                (surveyStatusFilter.contains(SurveyStatus.surveyed) &&
-                    tower.signOut != null &&
-                    tower.signOut!
-                        .toDate()
-                        .isBefore(toDateTime!.add(Duration(days: 1)))) ||
-                (surveyStatusFilter.contains(SurveyStatus.inprogress) &&
-                    tower.signIn != null &&
-                    tower.signIn!
-                        .toDate()
-                        .isBefore(toDateTime!.add(Duration(days: 1))))))
-        .toList();
+    final pdf = pw.Document();
     final sapuraImg = await rootBundle
         .load('assets/images/sapura.png')
         .then((img) => img.buffer.asUint8List());
@@ -92,7 +57,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     final mapDisplay = await screenshotController3.capture();
     final onSiteAuditVsAsBuiltDrawing = await screenshotController4.capture();
 
-    pdf1.addPage(pw.Page(
+    pdf.addPage(pw.Page(
         margin: pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
         build: (context) => pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.stretch,
@@ -445,7 +410,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                 ])));
 
     if (issues.length > 7) {
-      pdf1.addPage(pw.Page(
+      pdf.addPage(pw.Page(
           margin: pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
           build: (context) => pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.stretch,
@@ -478,11 +443,11 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                   ])));
     }
 
-    final pdf1Bytes = await pdf1.save();
+    final pdfBytes = await pdf.save();
     try {
       await FileSaver.instance.saveFile(
           name: 'Daily Progress Report',
-          bytes: pdf1Bytes,
+          bytes: pdfBytes,
           mimeType: MimeType.pdf,
           ext: ".pdf");
       print('PDF saved successfully');
@@ -490,18 +455,34 @@ class _SiteProgressPageState extends State<SiteProgressPage>
       print('Error saving PDF: $e');
     }
 
+    // final blob = html.Blob([pdfBytes], 'application/pdf');
+    // final url = html.Url.createObjectUrlFromBlob(blob);
+    // html.AnchorElement(href: url)
+    //   ..setAttribute('download', 'Report.pdf')
+    //   ..click();
+    // html.Url.revokeObjectUrl(url);
+  }
+
+  Future<void> siteCompletedPdf(List<Tower> towers) async {
+    final pdf = pw.Document();
+    final sapuraImg = await rootBundle
+        .load('assets/images/sapura.png')
+        .then((img) => img.buffer.asUint8List());
+    final binasatImg = await rootBundle
+        .load('assets/images/binasat.png')
+        .then((img) => img.buffer.asUint8List());
+    final uosImg = await rootBundle
+        .load('assets/images/uos.png')
+        .then((img) => img.buffer.asUint8List());
     final chunks = <List<Tower>>[];
     final chunkSize = 35;
-    for (var i = 0; i < filteredTowers.length; i += chunkSize) {
-      chunks.add(filteredTowers.sublist(
-          i,
-          i + chunkSize > filteredTowers.length
-              ? filteredTowers.length
-              : i + chunkSize));
+    for (var i = 0; i < towers.length; i += chunkSize) {
+      chunks.add(towers.sublist(
+          i, i + chunkSize > towers.length ? towers.length : i + chunkSize));
     }
 
     for (final chunk in chunks) {
-      pdf2.addPage(pw.Page(
+      pdf.addPage(pw.Page(
           build: (context) => pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                   children: [
@@ -529,22 +510,21 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                           'Longitude',
                           'Date'
                         ],
-                        data: chunk.map((tower) {
-                          log(tower.id);
-                          return [
-                            tower.id,
-                            tower.name,
-                            tower.region,
-                            tower.type,
-                            tower.position.latitude.toString(),
-                            tower.position.longitude.toString(),
-                            if (tower.signOut == null)
-                              ''
-                            else
-                              DateFormat('dd.M.yyyy')
-                                  .format(tower.signOut!.toDate())
-                          ];
-                        }).toList(),
+                        data: chunk
+                            .map((tower) => [
+                                  tower.id,
+                                  tower.name,
+                                  tower.region,
+                                  tower.type,
+                                  tower.position.latitude.toString(),
+                                  tower.position.longitude.toString(),
+                                  if (tower.signOut == null)
+                                    ''
+                                  else
+                                    DateFormat('dd.M.yyyy')
+                                        .format(tower.signOut!.toDate())
+                                ])
+                            .toList(),
                         headerDecoration: pw.BoxDecoration(
                             color: PdfColor.fromInt(0xFF000000)),
                         cellStyle: pw.TextStyle(fontSize: 5),
@@ -558,7 +538,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                   ])));
     }
 
-    final pdf2Bytes = await pdf2.save();
+    final pdf2Bytes = await pdf.save();
     try {
       await FileSaver.instance.saveFile(
           name: 'Site Completed',
@@ -569,13 +549,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     } catch (e) {
       print('Error saving PDF: $e');
     }
-
-    // final blob = html.Blob([pdfBytes], 'application/pdf');
-    // final url = html.Url.createObjectUrlFromBlob(blob);
-    // html.AnchorElement(href: url)
-    //   ..setAttribute('download', 'Report.pdf')
-    //   ..click();
-    // html.Url.revokeObjectUrl(url);
   }
 
   @override
@@ -740,13 +713,13 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         menuChildren: [
                           MenuItemButton(
                               child: Text('Daily Progress Report.pdf'),
-                              onPressed: downloadReport),
+                              onPressed: dailyProgressReportPdf),
                           MenuItemButton(
                               child: Text('Site Completed.pdf'),
-                              onPressed: downloadReport),
+                              onPressed: () => siteCompletedPdf(towers)),
                           MenuItemButton(
                               child: Text('Site Completed.xls'),
-                              onPressed: downloadReport),
+                              onPressed: dailyProgressReportPdf),
                         ])
                   ],
                 ),
