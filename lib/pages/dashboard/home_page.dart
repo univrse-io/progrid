@@ -18,9 +18,6 @@ final screenshotController1 = ScreenshotController();
 final screenshotController2 = ScreenshotController();
 final screenshotController3 = ScreenshotController();
 final screenshotController4 = ScreenshotController();
-final screenshotController5 = ScreenshotController();
-final screenshotController6 = ScreenshotController();
-final screenshotController7 = ScreenshotController();
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -65,70 +62,64 @@ class _HomePageState extends State<HomePage>
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: Screenshot(
-                              controller: screenshotController1,
-                              child: PieChart(PieChartData(
-                                  sectionsSpace: 0,
-                                  startDegreeOffset: 45,
-                                  centerSpaceRadius: 40,
-                                  sections: [
-                                    PieChartSectionData(
-                                      title:
-                                          'Completed\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                      titleStyle: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall,
-                                      titlePositionPercentageOffset: 2,
-                                      value: towers
-                                          .where((tower) =>
-                                              tower.surveyStatus ==
-                                              SurveyStatus.surveyed)
-                                          .length
-                                          .toDouble(),
-                                      radius: 30,
-                                      color: Colors.green,
-                                    ),
-                                    PieChartSectionData(
-                                      title:
-                                          'In Progress\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                      titleStyle: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall,
-                                      titlePositionPercentageOffset: 2,
-                                      value: towers
-                                          .where((tower) =>
-                                              tower.surveyStatus ==
-                                              SurveyStatus.inprogress)
-                                          .length
-                                          .toDouble(),
-                                      radius: 30,
-                                      color: Colors.amber,
-                                    ),
-                                    PieChartSectionData(
-                                      title:
-                                          'Balance\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.unsurveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                      titleStyle: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall,
-                                      titlePositionPercentageOffset: 2,
-                                      value: towers
-                                          .where((tower) =>
-                                              tower.surveyStatus ==
-                                              SurveyStatus.unsurveyed)
-                                          .length
-                                          .toDouble(),
-                                      radius: 30,
-                                      color: Colors.red,
-                                    ),
-                                  ])),
-                            ),
+                            child: PieChart(PieChartData(
+                                sectionsSpace: 0,
+                                startDegreeOffset: 45,
+                                centerSpaceRadius: 40,
+                                sections: [
+                                  PieChartSectionData(
+                                    title:
+                                        'Completed\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                    titleStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    titlePositionPercentageOffset: 2,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.surveyStatus ==
+                                            SurveyStatus.surveyed)
+                                        .length
+                                        .toDouble(),
+                                    radius: 30,
+                                    color: Colors.green,
+                                  ),
+                                  PieChartSectionData(
+                                    title:
+                                        'In Progress\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                    titleStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    titlePositionPercentageOffset: 2,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.surveyStatus ==
+                                            SurveyStatus.inprogress)
+                                        .length
+                                        .toDouble(),
+                                    radius: 30,
+                                    color: Colors.amber,
+                                  ),
+                                  PieChartSectionData(
+                                    title:
+                                        'Balance\n${(towers.where((tower) => tower.surveyStatus == SurveyStatus.unsurveyed).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                    titleStyle:
+                                        Theme.of(context).textTheme.labelSmall,
+                                    titlePositionPercentageOffset: 2,
+                                    value: towers
+                                        .where((tower) =>
+                                            tower.surveyStatus ==
+                                            SurveyStatus.unsurveyed)
+                                        .length
+                                        .toDouble(),
+                                    radius: 30,
+                                    color: Colors.red,
+                                  ),
+                                ])),
                           ),
                           Text('Regional Breakdown',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
                             child: Screenshot(
-                              controller: screenshotController2,
+                              controller: screenshotController1,
                               child: PieChart(
                                 PieChartData(
                                     sectionsSpace: 0,
@@ -176,196 +167,185 @@ class _HomePageState extends State<HomePage>
                                 fontSize: 16, fontWeight: FontWeight.w600)),
                         SizedBox(height: 10),
                         Expanded(
-                          child: Screenshot(
-                            controller: screenshotController7,
-                            child: ListView.separated(
-                                separatorBuilder: (context, index) =>
-                                    SizedBox(height: 1),
-                                itemCount: issues.length,
-                                itemBuilder: (context, index) => Visibility(
-                                      visible: issues[index].status ==
-                                          IssueStatus.unresolved,
-                                      child: ListTile(
-                                        shape: RoundedRectangleBorder(
-                                            side: BorderSide(
-                                                color: Colors.black12)),
-                                        dense: true,
-                                        onTap: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) =>
-                                                  SimpleDialog(
-                                                    contentPadding:
-                                                        EdgeInsets.all(20),
-                                                    title: Row(
+                          child: ListView.separated(
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(height: 1),
+                              itemCount: issues.length,
+                              itemBuilder: (context, index) => Visibility(
+                                    visible: issues[index].status ==
+                                        IssueStatus.unresolved,
+                                    child: ListTile(
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(
+                                              color: Colors.black12)),
+                                      dense: true,
+                                      onTap: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => SimpleDialog(
+                                                  contentPadding:
+                                                      EdgeInsets.all(20),
+                                                  title: Row(
+                                                    children: [
+                                                      Text(
+                                                        issues[index].id,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 25),
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Chip(
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        shape: StadiumBorder(),
+                                                        side: BorderSide.none,
+                                                        label: Text(
+                                                            issues[index]
+                                                                .status
+                                                                .toString(),
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .primaryTextTheme
+                                                                .bodyMedium),
+                                                        backgroundColor:
+                                                            issues[index]
+                                                                .status
+                                                                .color,
+                                                      )
+                                                    ],
+                                                  ),
+                                                  children: [
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
-                                                        Text(
-                                                          issues[index].id,
-                                                          style: TextStyle(
+                                                        SizedBox(
+                                                          width: 90,
+                                                          child: Text(
+                                                            'Description:',
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                            style: TextStyle(
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
-                                                              fontSize: 25),
+                                                              fontSize: 16,
+                                                            ),
+                                                          ),
                                                         ),
-                                                        SizedBox(width: 10),
-                                                        Chip(
-                                                          padding:
-                                                              EdgeInsets.zero,
-                                                          shape:
-                                                              StadiumBorder(),
-                                                          side: BorderSide.none,
-                                                          label: Text(
-                                                              issues[index]
-                                                                  .status
-                                                                  .toString(),
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .primaryTextTheme
-                                                                  .bodyMedium),
-                                                          backgroundColor:
-                                                              issues[index]
-                                                                  .status
-                                                                  .color,
-                                                        )
+                                                        const SizedBox(
+                                                            width: 10),
+                                                        Text(
+                                                          issues[index]
+                                                              .description,
+                                                          style: TextStyle(
+                                                              fontSize: 16),
+                                                        ),
                                                       ],
                                                     ),
-                                                    children: [
-                                                      Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          SizedBox(
-                                                            width: 90,
-                                                            child: Text(
-                                                              'Description:',
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .right,
-                                                              style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                              width: 10),
-                                                          Text(
-                                                            issues[index]
-                                                                .description,
-                                                            style: TextStyle(
-                                                                fontSize: 16),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          SizedBox(
-                                                            width: 90,
-                                                            child: Text(
-                                                              'Issued At:',
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .right,
-                                                              style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                              width: 10),
-                                                          Text(
-                                                            DateFormat(
-                                                                    'dd/MM/yy HH:mm a')
-                                                                .format(issues[
-                                                                        index]
-                                                                    .dateTime
-                                                                    .toDate()),
-                                                            style: TextStyle(
-                                                                fontSize: 16),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          SizedBox(
-                                                            width: 90,
-                                                            child: Text(
-                                                              'Tags:',
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .right,
-                                                              style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                              width: 10),
-                                                          Text(
-                                                            issues[index]
-                                                                .tags
-                                                                .join(', '),
-                                                            style: TextStyle(
-                                                                fontSize: 16),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      SizedBox(height: 20),
-                                                      OutlinedButton(
-                                                          onPressed: () {
-                                                            Navigator.pop(
-                                                                context);
-                                                            DialogUtils
-                                                                .showTowerDialog(
-                                                                    context,
-                                                                    issues[index]
-                                                                        .id
-                                                                        .split(
-                                                                            '-')
-                                                                        .first);
-                                                          },
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        SizedBox(
+                                                          width: 90,
                                                           child: Text(
-                                                              'View Tower'))
-                                                    ],
-                                                  ));
-                                        },
-                                        trailing: Text(
-                                            DateFormat('dd/MM/yy HH:mm a')
-                                                .format(issues[index]
-                                                    .dateTime
-                                                    .toDate())),
-                                        title: Row(
-                                          children: [
-                                            CircleAvatar(
-                                                radius: 5,
-                                                backgroundColor: Colors.red),
-                                            SizedBox(width: 5),
-                                            Text(issues[index].id,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleSmall),
-                                          ],
-                                        ),
-                                        subtitle:
-                                            Text(issues[index].tags.join(', ')),
+                                                            'Issued At:',
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 10),
+                                                        Text(
+                                                          DateFormat(
+                                                                  'dd/MM/yy HH:mm a')
+                                                              .format(issues[
+                                                                      index]
+                                                                  .dateTime
+                                                                  .toDate()),
+                                                          style: TextStyle(
+                                                              fontSize: 16),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        SizedBox(
+                                                          width: 90,
+                                                          child: Text(
+                                                            'Tags:',
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 10),
+                                                        Text(
+                                                          issues[index]
+                                                              .tags
+                                                              .join(', '),
+                                                          style: TextStyle(
+                                                              fontSize: 16),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(height: 20),
+                                                    OutlinedButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                          DialogUtils
+                                                              .showTowerDialog(
+                                                                  context,
+                                                                  issues[index]
+                                                                      .id
+                                                                      .split(
+                                                                          '-')
+                                                                      .first);
+                                                        },
+                                                        child:
+                                                            Text('View Tower'))
+                                                  ],
+                                                ));
+                                      },
+                                      trailing: Text(
+                                          DateFormat('dd/MM/yy HH:mm a').format(
+                                              issues[index].dateTime.toDate())),
+                                      title: Row(
+                                        children: [
+                                          CircleAvatar(
+                                              radius: 5,
+                                              backgroundColor: Colors.red),
+                                          SizedBox(width: 5),
+                                          Text(issues[index].id,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleSmall),
+                                        ],
                                       ),
-                                    )),
-                          ),
+                                      subtitle:
+                                          Text(issues[index].tags.join(', ')),
+                                    ),
+                                  )),
                         ),
                       ],
                     ),
@@ -539,7 +519,7 @@ class _HomePageState extends State<HomePage>
                   SizedBox(height: 5),
                   Expanded(
                     child: Screenshot(
-                      controller: screenshotController5,
+                      controller: screenshotController3,
                       child: FlutterMap(
                           options: MapOptions(
                               initialCenter: LatLng(3.1408, 101.6932),
@@ -659,50 +639,45 @@ class _HomePageState extends State<HomePage>
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
-                            child: Screenshot(
-                              controller: screenshotController3,
-                              child: PieChart(
-                                PieChartData(
-                                    sectionsSpace: 0,
-                                    centerSpaceRadius: 40,
-                                    startDegreeOffset: 45,
-                                    sections: [
-                                      PieChartSectionData(
-                                        title:
-                                            'Balance\n${(towers.where((tower) => tower.drawingStatus == null).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                        titleStyle: Theme.of(context)
-                                            .textTheme
-                                            .labelSmall,
-                                        titlePositionPercentageOffset: 2,
-                                        value: towers
-                                            .where((tower) =>
-                                                tower.drawingStatus == null)
-                                            .length
-                                            .toDouble(),
-                                        radius: 30,
-                                        color: Colors.red,
-                                      ),
-                                      ...DrawingStatus.values.map(
-                                          (drawingStatus) =>
-                                              PieChartSectionData(
-                                                title:
-                                                    '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus == drawingStatus).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
-                                                titleStyle: Theme.of(context)
-                                                    .textTheme
-                                                    .labelSmall,
-                                                titlePositionPercentageOffset:
-                                                    2,
-                                                value: towers
-                                                    .where((tower) =>
-                                                        tower.drawingStatus ==
-                                                        drawingStatus)
-                                                    .length
-                                                    .toDouble(),
-                                                radius: 30,
-                                                color: drawingStatus.color,
-                                              )),
-                                    ]),
-                              ),
+                            child: PieChart(
+                              PieChartData(
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 40,
+                                  startDegreeOffset: 45,
+                                  sections: [
+                                    PieChartSectionData(
+                                      title:
+                                          'Balance\n${(towers.where((tower) => tower.drawingStatus == null).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                      titleStyle: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall,
+                                      titlePositionPercentageOffset: 2,
+                                      value: towers
+                                          .where((tower) =>
+                                              tower.drawingStatus == null)
+                                          .length
+                                          .toDouble(),
+                                      radius: 30,
+                                      color: Colors.red,
+                                    ),
+                                    ...DrawingStatus.values.map(
+                                        (drawingStatus) => PieChartSectionData(
+                                              title:
+                                                  '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus == drawingStatus).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                              titleStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall,
+                                              titlePositionPercentageOffset: 2,
+                                              value: towers
+                                                  .where((tower) =>
+                                                      tower.drawingStatus ==
+                                                      drawingStatus)
+                                                  .length
+                                                  .toDouble(),
+                                              radius: 30,
+                                              color: drawingStatus.color,
+                                            )),
+                                  ]),
                             ),
                           ),
                           Text('Regional Breakdown',
@@ -710,7 +685,7 @@ class _HomePageState extends State<HomePage>
                                   fontSize: 16, fontWeight: FontWeight.w600)),
                           Expanded(
                             child: Screenshot(
-                              controller: screenshotController4,
+                              controller: screenshotController2,
                               child: PieChart(
                                 PieChartData(
                                     sectionsSpace: 0,
@@ -759,7 +734,7 @@ class _HomePageState extends State<HomePage>
                         SizedBox(height: 10),
                         Expanded(
                           child: Screenshot(
-                            controller: screenshotController6,
+                            controller: screenshotController4,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [

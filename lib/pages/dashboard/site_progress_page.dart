@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:excel/excel.dart' hide Border;
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +12,7 @@ import 'package:progrid/models/region.dart';
 import 'package:progrid/models/survey_status.dart';
 import 'package:progrid/models/tower.dart';
 import 'package:progrid/pages/dashboard/home_page.dart';
+import 'package:progrid/providers/user_provider.dart';
 import 'package:progrid/services/firestore.dart';
 import 'package:progrid/utils/dialog_utils.dart';
 import 'package:provider/provider.dart';
@@ -38,45 +38,12 @@ class _SiteProgressPageState extends State<SiteProgressPage>
   @override
   bool get wantKeepAlive => true;
 
-  Future<void> downloadReport() async {
+  Future<void> dailyProgressReportPdf() async {
     final towers = Provider.of<List<Tower>>(context, listen: false);
     final issues = Provider.of<List<Issue>>(context, listen: false)
         .where((issue) => issue.status == IssueStatus.unresolved)
         .toList();
-    final pdf1 = pw.Document();
-    final pdf2 = pw.Document();
-    final filteredTowers = Provider.of<List<Tower>>(context, listen: false)
-        .where((tower) =>
-            (tower.name
-                    .toLowerCase()
-                    .contains(searchController.text.toLowerCase()) ||
-                tower.id
-                    .toLowerCase()
-                    .contains(searchController.text.toLowerCase())) &&
-            (surveyStatusFilter.isEmpty ||
-                surveyStatusFilter.contains(tower.surveyStatus)) &&
-            (drawingStatusFilter.isEmpty ||
-                drawingStatusFilter.contains(tower.drawingStatus)) &&
-            (regionFilter.isEmpty || regionFilter.contains(tower.region)) &&
-            (fromDateTime == null ||
-                (surveyStatusFilter.contains(SurveyStatus.surveyed) &&
-                    tower.signOut != null &&
-                    tower.signOut!.toDate().isAfter(fromDateTime!)) ||
-                (surveyStatusFilter.contains(SurveyStatus.inprogress) &&
-                    tower.signIn != null &&
-                    tower.signIn!.toDate().isAfter(fromDateTime!))) &&
-            (toDateTime == null ||
-                (surveyStatusFilter.contains(SurveyStatus.surveyed) &&
-                    tower.signOut != null &&
-                    tower.signOut!
-                        .toDate()
-                        .isBefore(toDateTime!.add(Duration(days: 1)))) ||
-                (surveyStatusFilter.contains(SurveyStatus.inprogress) &&
-                    tower.signIn != null &&
-                    tower.signIn!
-                        .toDate()
-                        .isBefore(toDateTime!.add(Duration(days: 1))))))
-        .toList();
+    final pdf = pw.Document();
     final sapuraImg = await rootBundle
         .load('assets/images/sapura.png')
         .then((img) => img.buffer.asUint8List());
@@ -86,15 +53,12 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     final uosImg = await rootBundle
         .load('assets/images/uos.png')
         .then((img) => img.buffer.asUint8List());
-    final onSiteAuditStatusChart = await screenshotController1.capture();
-    final onSiteAuditRegionalChart = await screenshotController2.capture();
-    final asBuiltDrawingStatusChart = await screenshotController3.capture();
-    final asBuiltDrawingRegionalChart = await screenshotController4.capture();
-    final mapDisplay = await screenshotController5.capture();
-    final onSiteAuditVsAsBuiltDrawing = await screenshotController6.capture();
-    final recentTicketIssues = await screenshotController7.capture();
+    final onSiteAuditRegionalChart = await screenshotController1.capture();
+    final asBuiltDrawingRegionalChart = await screenshotController2.capture();
+    final mapDisplay = await screenshotController3.capture();
+    final onSiteAuditVsAsBuiltDrawing = await screenshotController4.capture();
 
-    pdf1.addPage(pw.Page(
+    pdf.addPage(pw.Page(
         margin: pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
         build: (context) => pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.stretch,
@@ -295,61 +259,125 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                   pw.SizedBox(height: 5),
                   pw.Row(children: [
                     pw.Expanded(
-                        child: pw.Container(
-                      padding: pw.EdgeInsets.all(10),
-                      decoration: pw.BoxDecoration(
-                          borderRadius: pw.BorderRadius.circular(12),
-                          border: pw.Border.all(
-                              color: PdfColor.fromInt(0xFF9E9E9E))),
                       child: pw.Column(children: [
-                        pw.Text('On-Site Audit',
-                            style: pw.TextStyle(fontSize: 10)),
-                        pw.SizedBox(height: 10),
-                        pw.SizedBox(
-                            height: 150,
-                            width: 150,
-                            child: pw.Image(
-                                pw.MemoryImage(onSiteAuditRegionalChart!))),
+                        pw.Container(
+                          padding: pw.EdgeInsets.all(10),
+                          decoration: pw.BoxDecoration(
+                              borderRadius: pw.BorderRadius.circular(12),
+                              border: pw.Border.all(
+                                  color: PdfColor.fromInt(0xFF9E9E9E))),
+                          child: pw.Row(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Column(
+                                    crossAxisAlignment:
+                                        pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.Text('On-Site Audit',
+                                          style: pw.TextStyle(fontSize: 10)),
+                                      pw.SizedBox(height: 10),
+                                      pw.SizedBox(
+                                          height: 100,
+                                          width: 100,
+                                          child: pw.Image(pw.MemoryImage(
+                                              onSiteAuditRegionalChart!))),
+                                    ]),
+                                pw.SizedBox(width: 10),
+                                pw.Column(
+                                    crossAxisAlignment:
+                                        pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.SizedBox(height: 20),
+                                      ...Region.values.map((region) => pw.Row(
+                                              mainAxisSize: pw.MainAxisSize.min,
+                                              children: [
+                                                pw.Container(
+                                                  height: 5,
+                                                  width: 5,
+                                                  decoration: pw.BoxDecoration(
+                                                      shape: pw.BoxShape.circle,
+                                                      color: PdfColor.fromInt(
+                                                          region.color.value)),
+                                                ),
+                                                pw.SizedBox(width: 10),
+                                                pw.Text(region.toString(),
+                                                    style: pw.TextStyle(
+                                                        fontSize: 8)),
+                                              ])),
+                                    ])
+                              ]),
+                        ),
+                        pw.SizedBox(height: 5),
+                        pw.Container(
+                          padding: pw.EdgeInsets.all(10),
+                          decoration: pw.BoxDecoration(
+                              borderRadius: pw.BorderRadius.circular(12),
+                              border: pw.Border.all(
+                                  color: PdfColor.fromInt(0xFF9E9E9E))),
+                          child: pw.Row(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Column(
+                                    crossAxisAlignment:
+                                        pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.Text('As-Built Drawing',
+                                          style: pw.TextStyle(fontSize: 10)),
+                                      pw.SizedBox(height: 10),
+                                      pw.SizedBox(
+                                          height: 100,
+                                          width: 100,
+                                          child: pw.Image(pw.MemoryImage(
+                                              asBuiltDrawingRegionalChart!))),
+                                    ]),
+                                pw.SizedBox(width: 10),
+                                pw.Column(
+                                    crossAxisAlignment:
+                                        pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.SizedBox(height: 20),
+                                      ...Region.values.map((region) => pw.Row(
+                                              mainAxisSize: pw.MainAxisSize.min,
+                                              children: [
+                                                pw.Container(
+                                                  height: 5,
+                                                  width: 5,
+                                                  decoration: pw.BoxDecoration(
+                                                      shape: pw.BoxShape.circle,
+                                                      color: PdfColor.fromInt(
+                                                          region.color.value)),
+                                                ),
+                                                pw.SizedBox(width: 10),
+                                                pw.Text(region.toString(),
+                                                    style: pw.TextStyle(
+                                                        fontSize: 8)),
+                                              ])),
+                                    ])
+                              ]),
+                        )
                       ]),
-                    )),
+                    ),
                     pw.SizedBox(width: 5),
                     pw.Expanded(
                         child: pw.Container(
+                      height: 235,
                       padding: pw.EdgeInsets.all(10),
                       decoration: pw.BoxDecoration(
                           borderRadius: pw.BorderRadius.circular(12),
                           border: pw.Border.all(
                               color: PdfColor.fromInt(0xFF9E9E9E))),
-                      child: pw.Column(children: [
-                        pw.Text('As-Built Drawing',
-                            style: pw.TextStyle(fontSize: 10)),
-                        pw.SizedBox(height: 10),
-                        pw.SizedBox(
-                            height: 150,
-                            width: 150,
-                            child: pw.Image(
-                                pw.MemoryImage(asBuiltDrawingRegionalChart!))),
-                      ]),
-                    )),
-                    pw.SizedBox(width: 5),
-                    pw.Expanded(
-                        child: pw.Container(
-                      height: 150,
-                      padding: pw.EdgeInsets.all(10),
-                      decoration: pw.BoxDecoration(
-                          borderRadius: pw.BorderRadius.circular(12),
-                          border: pw.Border.all(
-                              color: PdfColor.fromInt(0xFF9E9E9E))),
-                      child: pw.Column(children: [
-                        pw.Text('On-Site Audit vs As-Built Drawing',
-                            style: pw.TextStyle(fontSize: 10)),
-                        pw.SizedBox(height: 10),
-                        pw.SizedBox(
-                            height: 150,
-                            width: 150,
-                            child: pw.Image(
-                                pw.MemoryImage(onSiteAuditVsAsBuiltDrawing!))),
-                      ]),
+                      child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text('On-Site Audit vs As-Built Drawing',
+                                style: pw.TextStyle(fontSize: 10)),
+                            pw.SizedBox(height: 20),
+                            pw.SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: pw.Image(pw.MemoryImage(
+                                    onSiteAuditVsAsBuiltDrawing!))),
+                          ]),
                     ))
                   ]),
                   pw.SizedBox(height: 5),
@@ -383,7 +411,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                 ])));
 
     if (issues.length > 7) {
-      pdf1.addPage(pw.Page(
+      pdf.addPage(pw.Page(
           margin: pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
           build: (context) => pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.stretch,
@@ -416,11 +444,11 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                   ])));
     }
 
-    final pdf1Bytes = await pdf1.save();
+    final pdfBytes = await pdf.save();
     try {
       await FileSaver.instance.saveFile(
           name: 'Daily Progress Report',
-          bytes: pdf1Bytes,
+          bytes: pdfBytes,
           mimeType: MimeType.pdf,
           ext: ".pdf");
       print('PDF saved successfully');
@@ -428,18 +456,34 @@ class _SiteProgressPageState extends State<SiteProgressPage>
       print('Error saving PDF: $e');
     }
 
+    // final blob = html.Blob([pdfBytes], 'application/pdf');
+    // final url = html.Url.createObjectUrlFromBlob(blob);
+    // html.AnchorElement(href: url)
+    //   ..setAttribute('download', 'Report.pdf')
+    //   ..click();
+    // html.Url.revokeObjectUrl(url);
+  }
+
+  Future<void> siteCompletedPdf(List<Tower> towers) async {
+    final pdf = pw.Document();
+    final sapuraImg = await rootBundle
+        .load('assets/images/sapura.png')
+        .then((img) => img.buffer.asUint8List());
+    final binasatImg = await rootBundle
+        .load('assets/images/binasat.png')
+        .then((img) => img.buffer.asUint8List());
+    final uosImg = await rootBundle
+        .load('assets/images/uos.png')
+        .then((img) => img.buffer.asUint8List());
     final chunks = <List<Tower>>[];
     final chunkSize = 35;
-    for (var i = 0; i < filteredTowers.length; i += chunkSize) {
-      chunks.add(filteredTowers.sublist(
-          i,
-          i + chunkSize > filteredTowers.length
-              ? filteredTowers.length
-              : i + chunkSize));
+    for (var i = 0; i < towers.length; i += chunkSize) {
+      chunks.add(towers.sublist(
+          i, i + chunkSize > towers.length ? towers.length : i + chunkSize));
     }
 
     for (final chunk in chunks) {
-      pdf2.addPage(pw.Page(
+      pdf.addPage(pw.Page(
           build: (context) => pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                   children: [
@@ -467,22 +511,21 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                           'Longitude',
                           'Date'
                         ],
-                        data: chunk.map((tower) {
-                          log(tower.id);
-                          return [
-                            tower.id,
-                            tower.name,
-                            tower.region,
-                            tower.type,
-                            tower.position.latitude.toString(),
-                            tower.position.longitude.toString(),
-                            if (tower.signOut == null)
-                              ''
-                            else
-                              DateFormat('dd.M.yyyy')
-                                  .format(tower.signOut!.toDate())
-                          ];
-                        }).toList(),
+                        data: chunk
+                            .map((tower) => [
+                                  tower.id,
+                                  tower.name,
+                                  tower.region,
+                                  tower.type,
+                                  tower.position.latitude.toString(),
+                                  tower.position.longitude.toString(),
+                                  if (tower.signOut == null)
+                                    ''
+                                  else
+                                    DateFormat('dd.M.yyyy')
+                                        .format(tower.signOut!.toDate())
+                                ])
+                            .toList(),
                         headerDecoration: pw.BoxDecoration(
                             color: PdfColor.fromInt(0xFF000000)),
                         cellStyle: pw.TextStyle(fontSize: 5),
@@ -496,7 +539,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                   ])));
     }
 
-    final pdf2Bytes = await pdf2.save();
+    final pdf2Bytes = await pdf.save();
     try {
       await FileSaver.instance.saveFile(
           name: 'Site Completed',
@@ -507,13 +550,54 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     } catch (e) {
       print('Error saving PDF: $e');
     }
+  }
 
-    // final blob = html.Blob([pdfBytes], 'application/pdf');
-    // final url = html.Url.createObjectUrlFromBlob(blob);
-    // html.AnchorElement(href: url)
-    //   ..setAttribute('download', 'Report.pdf')
-    //   ..click();
-    // html.Url.revokeObjectUrl(url);
+  Future<void> siteCompletedXlsx(List<Tower> towers) async {
+    final excel = Excel.createExcel();
+    final sheet = excel[excel.getDefaultSheet()!];
+    final header = [
+      'Site ID',
+      'Site Name',
+      'Region',
+      'Site Type',
+      'Latitude',
+      'Longitude',
+      'Date'
+    ];
+
+    for (final title in header) {
+      sheet.cell(CellIndex.indexByColumnRow(
+          columnIndex: header.indexOf(title), rowIndex: 0))
+        ..value = TextCellValue(title)
+        ..cellStyle = CellStyle(
+            fontColorHex: ExcelColor.white,
+            backgroundColorHex: ExcelColor.black);
+    }
+
+    for (final tower in towers) {
+      final rowIndex = towers.indexOf(tower) + 1;
+
+      sheet
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowIndex))
+            .value = TextCellValue(tower.id)
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: rowIndex))
+            .value = TextCellValue(tower.name)
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: rowIndex))
+            .value = TextCellValue(tower.region.toString())
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: rowIndex))
+            .value = TextCellValue(tower.type)
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: rowIndex))
+            .value = TextCellValue(tower.position.latitude.toString())
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: rowIndex))
+            .value = TextCellValue(tower.position.longitude.toString())
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: rowIndex))
+                .value =
+            TextCellValue(tower.signOut != null
+                ? DateFormat('dd.M.yyyy').format(tower.signOut!.toDate())
+                : '');
+    }
+
+    excel.save(fileName: 'Site Completed.xlsx');
   }
 
   @override
@@ -668,9 +752,24 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                             ? regionFilter.add(region)
                             : regionFilter.remove(region)))),
                     SizedBox(height: 20),
-                    OutlinedButton(
-                        onPressed: downloadReport,
-                        child: Text('Download Report'))
+                    MenuAnchor(
+                        builder: (context, controller, child) => OutlinedButton(
+                              onPressed: () => controller.isOpen
+                                  ? controller.close()
+                                  : controller.open(),
+                              child: const Text('Download Report'),
+                            ),
+                        menuChildren: [
+                          MenuItemButton(
+                              child: Text('Daily Progress Report.pdf'),
+                              onPressed: dailyProgressReportPdf),
+                          MenuItemButton(
+                              child: Text('Site Completed.pdf'),
+                              onPressed: () => siteCompletedPdf(towers)),
+                          MenuItemButton(
+                              child: Text('Site Completed.xlsx'),
+                              onPressed: () => siteCompletedXlsx(towers)),
+                        ])
                   ],
                 ),
               ),
@@ -755,21 +854,27 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                       requestFocusOnTap: false,
                                       textAlign: TextAlign.center,
                                       initialSelection: tower.surveyStatus,
-                                      inputDecorationTheme:
-                                          InputDecorationTheme(
-                                        filled: true,
-                                        fillColor: tower.surveyStatus.color
-                                            .withValues(alpha: 0.1),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: tower.surveyStatus.color
-                                                    .withValues(alpha: 0.5)),
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                      ),
+                                      inputDecorationTheme: InputDecorationTheme(
+                                          filled: true,
+                                          fillColor: tower.surveyStatus.color
+                                              .withValues(alpha: 0.1),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: tower.surveyStatus.color
+                                                      .withValues(alpha: 0.5)),
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          disabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: tower.surveyStatus.color
+                                                      .withValues(alpha: 0.5)),
+                                              borderRadius:
+                                                  BorderRadius.circular(25))),
                                       textStyle: Theme.of(context)
                                           .textTheme
                                           .bodyMedium,
+                                      enabled: context.read<UserProvider>().role ==
+                                          'admin',
                                       onSelected: (value) {
                                         if (value != null) {
                                           FirestoreService.updateTower(tower.id,
@@ -789,24 +894,27 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                       requestFocusOnTap: false,
                                       textAlign: TextAlign.center,
                                       initialSelection: tower.drawingStatus,
-                                      inputDecorationTheme:
-                                          InputDecorationTheme(
-                                        filled: true,
-                                        fillColor: tower.drawingStatus?.color
-                                            .withValues(alpha: 0.1),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: tower
-                                                        .drawingStatus?.color
-                                                        .withValues(
-                                                            alpha: 0.5) ??
-                                                    Colors.black12),
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                      ),
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
+                                      inputDecorationTheme: InputDecorationTheme(
+                                          filled: true,
+                                          fillColor: tower.drawingStatus?.color
+                                              .withValues(alpha: 0.1),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: tower
+                                                          .drawingStatus?.color
+                                                          .withValues(
+                                                              alpha: 0.5) ??
+                                                      Colors.black12),
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          disabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: tower.surveyStatus.color
+                                                      .withValues(alpha: 0.5)),
+                                              borderRadius:
+                                                  BorderRadius.circular(25))),
+                                      textStyle: Theme.of(context).textTheme.bodyMedium,
+                                      enabled: context.read<UserProvider>().role == 'admin',
                                       onSelected: (value) {
                                         if (value != null) {
                                           FirestoreService.updateTower(tower.id,
