@@ -1,3 +1,4 @@
+import 'package:excel/excel.dart' hide Border;
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -551,6 +552,54 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     }
   }
 
+  Future<void> siteCompletedXlsx(List<Tower> towers) async {
+    final excel = Excel.createExcel();
+    final sheet = excel[excel.getDefaultSheet()!];
+    final header = [
+      'Site ID',
+      'Site Name',
+      'Region',
+      'Site Type',
+      'Latitude',
+      'Longitude',
+      'Date'
+    ];
+
+    for (final title in header) {
+      sheet.cell(CellIndex.indexByColumnRow(
+          columnIndex: header.indexOf(title), rowIndex: 0))
+        ..cellStyle = CellStyle(
+            fontColorHex: ExcelColor.white,
+            backgroundColorHex: ExcelColor.black)
+        ..value = TextCellValue(title);
+    }
+
+    for (final tower in towers) {
+      final rowIndex = towers.indexOf(tower) + 1;
+
+      sheet
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: rowIndex))
+            .value = TextCellValue(tower.id)
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: rowIndex))
+            .value = TextCellValue(tower.name)
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: rowIndex))
+            .value = TextCellValue(tower.region.toString())
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: rowIndex))
+            .value = TextCellValue(tower.type)
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: rowIndex))
+            .value = TextCellValue(tower.position.latitude.toString())
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: rowIndex))
+            .value = TextCellValue(tower.position.longitude.toString())
+        ..cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: rowIndex))
+                .value =
+            TextCellValue(tower.signOut != null
+                ? DateFormat('dd.M.yyyy').format(tower.signOut!.toDate())
+                : '');
+    }
+
+    excel.save(fileName: 'Site Completed.xlsx');
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -718,8 +767,8 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                               child: Text('Site Completed.pdf'),
                               onPressed: () => siteCompletedPdf(towers)),
                           MenuItemButton(
-                              child: Text('Site Completed.xls'),
-                              onPressed: dailyProgressReportPdf),
+                              child: Text('Site Completed.xlsx'),
+                              onPressed: () => siteCompletedXlsx(towers)),
                         ])
                   ],
                 ),
