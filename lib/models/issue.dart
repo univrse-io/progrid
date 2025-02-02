@@ -21,7 +21,7 @@ class Issue {
   /// Converts an [Issue] instance to a JSON object.
   Map<String, dynamic> toJson() => {
         'id': id,
-        'status': status,
+        'status': status.name,
         'dateTime': dateTime,
         'authorId': authorId,
         'description': description,
