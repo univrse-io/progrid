@@ -645,132 +645,135 @@ class _SiteProgressPageState extends State<SiteProgressPage>
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Date',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: fromController,
-                            decoration: InputDecoration(labelText: 'From'),
-                            readOnly: true,
-                            onTap: () => showDatePicker(
-                                    context: context,
-                                    firstDate: DateTime(2025),
-                                    lastDate: DateTime.now())
-                                .then((value) {
-                              if (value != null) {
-                                setState(() {
-                                  fromDateTime = value;
-                                  if (toDateTime == null) {
-                                    toDateTime = DateTime.now();
-                                    toController.text =
-                                        DateFormat('d/M/y').format(toDateTime!);
-                                  }
-                                  if (fromDateTime!.isAfter(toDateTime!)) {
-                                    toDateTime = null;
-                                    toController.clear();
-                                  }
-                                  fromController.text =
-                                      DateFormat('d/M/y').format(value);
-                                });
-                              }
-                            }),
-                          ),
-                        ),
-                        SizedBox(width: 5),
-                        Expanded(
-                          child: TextField(
-                            controller: toController,
-                            decoration: InputDecoration(labelText: 'To'),
-                            readOnly: true,
-                            onTap: () => showDatePicker(
-                                    context: context,
-                                    firstDate: fromDateTime ?? DateTime(2025),
-                                    lastDate: DateTime.now())
-                                .then((value) {
-                              if (value != null) {
-                                setState(() {
-                                  toDateTime = value;
-                                  if (fromDateTime == null) {
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Date',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: fromController,
+                              decoration: InputDecoration(labelText: 'From'),
+                              readOnly: true,
+                              onTap: () => showDatePicker(
+                                      context: context,
+                                      firstDate: DateTime(2025),
+                                      lastDate: DateTime.now())
+                                  .then((value) {
+                                if (value != null) {
+                                  setState(() {
                                     fromDateTime = value;
+                                    if (toDateTime == null) {
+                                      toDateTime = DateTime.now();
+                                      toController.text = DateFormat('d/M/y')
+                                          .format(toDateTime!);
+                                    }
+                                    if (fromDateTime!.isAfter(toDateTime!)) {
+                                      toDateTime = null;
+                                      toController.clear();
+                                    }
                                     fromController.text =
                                         DateFormat('d/M/y').format(value);
-                                  }
-                                  toController.text =
-                                      DateFormat('d/M/y').format(value);
-                                });
-                              }
-                            }),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 15),
-                    Text(
-                      'Filters',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10),
-                    Text('On-Site Audit'),
-                    ...SurveyStatus.values.map((status) => CheckboxListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: Text(status.toString()),
-                        value: surveyStatusFilter.contains(status),
-                        onChanged: (value) => setState(() => value!
-                            ? surveyStatusFilter.add(status)
-                            : surveyStatusFilter.remove(status)))),
-                    SizedBox(height: 10),
-                    Text('As-Built Drawing'),
-                    ...DrawingStatus.values.map((status) => CheckboxListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: Text(status.toString()),
-                        value: drawingStatusFilter.contains(status),
-                        onChanged: (value) => setState(() => value!
-                            ? drawingStatusFilter.add(status)
-                            : drawingStatusFilter.remove(status)))),
-                    SizedBox(height: 10),
-                    Text('Region'),
-                    ...Region.values.map((region) => CheckboxListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: Text(region.toString()),
-                        value: regionFilter.contains(region),
-                        onChanged: (value) => setState(() => value!
-                            ? regionFilter.add(region)
-                            : regionFilter.remove(region)))),
-                    SizedBox(height: 20),
-                    MenuAnchor(
-                        builder: (context, controller, child) => OutlinedButton(
-                              onPressed: () => controller.isOpen
-                                  ? controller.close()
-                                  : controller.open(),
-                              child: const Text('Download Report'),
+                                  });
+                                }
+                              }),
                             ),
-                        menuChildren: [
-                          MenuItemButton(
-                              child: Text('Daily Progress Report.pdf'),
-                              onPressed: dailyProgressReportPdf),
-                          MenuItemButton(
-                              child: Text('Site Completed.pdf'),
-                              onPressed: () => siteCompletedPdf(towers)),
-                          MenuItemButton(
-                              child: Text('Site Completed.xlsx'),
-                              onPressed: () => siteCompletedXlsx(towers)),
-                        ])
-                  ],
+                          ),
+                          SizedBox(width: 5),
+                          Expanded(
+                            child: TextField(
+                              controller: toController,
+                              decoration: InputDecoration(labelText: 'To'),
+                              readOnly: true,
+                              onTap: () => showDatePicker(
+                                      context: context,
+                                      firstDate: fromDateTime ?? DateTime(2025),
+                                      lastDate: DateTime.now())
+                                  .then((value) {
+                                if (value != null) {
+                                  setState(() {
+                                    toDateTime = value;
+                                    if (fromDateTime == null) {
+                                      fromDateTime = value;
+                                      fromController.text =
+                                          DateFormat('d/M/y').format(value);
+                                    }
+                                    toController.text =
+                                        DateFormat('d/M/y').format(value);
+                                  });
+                                }
+                              }),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        'Filters',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10),
+                      Text('On-Site Audit'),
+                      ...SurveyStatus.values.map((status) => CheckboxListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          title: Text(status.toString()),
+                          value: surveyStatusFilter.contains(status),
+                          onChanged: (value) => setState(() => value!
+                              ? surveyStatusFilter.add(status)
+                              : surveyStatusFilter.remove(status)))),
+                      SizedBox(height: 10),
+                      Text('As-Built Drawing'),
+                      ...DrawingStatus.values.map((status) => CheckboxListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          title: Text(status.toString()),
+                          value: drawingStatusFilter.contains(status),
+                          onChanged: (value) => setState(() => value!
+                              ? drawingStatusFilter.add(status)
+                              : drawingStatusFilter.remove(status)))),
+                      SizedBox(height: 10),
+                      Text('Region'),
+                      ...Region.values.map((region) => CheckboxListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          title: Text(region.toString()),
+                          value: regionFilter.contains(region),
+                          onChanged: (value) => setState(() => value!
+                              ? regionFilter.add(region)
+                              : regionFilter.remove(region)))),
+                      SizedBox(height: 20),
+                      MenuAnchor(
+                          builder: (context, controller, child) =>
+                              OutlinedButton(
+                                onPressed: () => controller.isOpen
+                                    ? controller.close()
+                                    : controller.open(),
+                                child: const Text('Download Report'),
+                              ),
+                          menuChildren: [
+                            MenuItemButton(
+                                child: Text('Daily Progress Report.pdf'),
+                                onPressed: dailyProgressReportPdf),
+                            MenuItemButton(
+                                child: Text('Site Completed.pdf'),
+                                onPressed: () => siteCompletedPdf(towers)),
+                            MenuItemButton(
+                                child: Text('Site Completed.xlsx'),
+                                onPressed: () => siteCompletedXlsx(towers)),
+                          ])
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -883,6 +886,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                               });
                                         }
                                       },
+                                      trailingIcon: context.read<UserProvider>().role == 'admin' ? null : SizedBox(),
                                       dropdownMenuEntries: [
                                         ...SurveyStatus.values.map((status) =>
                                             DropdownMenuEntry(
@@ -923,6 +927,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                               });
                                         }
                                       },
+                                      trailingIcon: context.read<UserProvider>().role == 'admin' ? null : SizedBox(),
                                       dropdownMenuEntries: [
                                         ...DrawingStatus.values.map((status) =>
                                             DropdownMenuEntry(
