@@ -886,6 +886,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                               });
                                         }
                                       },
+                                      trailingIcon: context.read<UserProvider>().role == 'admin' ? null : SizedBox(),
                                       dropdownMenuEntries: [
                                         ...SurveyStatus.values.map((status) =>
                                             DropdownMenuEntry(
@@ -926,6 +927,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                               });
                                         }
                                       },
+                                      trailingIcon: context.read<UserProvider>().role == 'admin' ? null : SizedBox(),
                                       dropdownMenuEntries: [
                                         ...DrawingStatus.values.map((status) =>
                                             DropdownMenuEntry(

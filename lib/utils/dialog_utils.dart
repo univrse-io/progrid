@@ -160,6 +160,9 @@ class DialogUtils {
                             iconEnabledColor:
                                 Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(24),
+                            icon: context.read<UserProvider>().role == 'admin'
+                                ? null
+                                : SizedBox(),
                             dropdownColor: selectedTower.surveyStatus.color,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.surface,
