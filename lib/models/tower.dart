@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:progrid/models/drawing_status.dart';
-import 'package:progrid/models/region.dart';
-import 'package:progrid/models/survey_status.dart';
+
+import 'drawing_status.dart';
+import 'region.dart';
+import 'survey_status.dart';
 
 class Tower {
   String id;
@@ -49,14 +50,17 @@ class Tower {
         owner: (json['owner'] as String?) ?? 'no owner',
         address: json['address'] as String,
         position: json['position'] as GeoPoint,
-        surveyStatus: SurveyStatus.values.byName((json['surveyStatus']
-                as String)
-            .replaceAll(RegExp(r'[\s-]'), '')
-            .toLowerCase()), // removes all whitespaces and hyphens, for backwards compatibility
+        surveyStatus: SurveyStatus.values.byName(
+          (json['surveyStatus'] as String)
+              .replaceAll(RegExp(r'[\s-]'), '')
+              .toLowerCase(),
+        ), // removes all whitespaces and hyphens, for backwards compatibility
         drawingStatus: json['drawingStatus'] != null
-            ? DrawingStatus.values.byName((json['drawingStatus'] as String)
-                .replaceAll(RegExp(r'[\s-]'), '')
-                .toLowerCase())
+            ? DrawingStatus.values.byName(
+                (json['drawingStatus'] as String)
+                    .replaceAll(RegExp(r'[\s-]'), '')
+                    .toLowerCase(),
+              )
             : null,
         images: (json['images'] as List?)?.cast<String>() ?? [],
         signIn: json['signIn'] as Timestamp?,

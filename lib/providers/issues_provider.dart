@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:progrid/models/issue.dart';
-import 'package:progrid/services/firestore.dart';
+
+import '../models/issue.dart';
+import '../services/firestore.dart';
 
 class IssuesProvider extends ChangeNotifier {
   List<Issue> issues = [];
@@ -17,11 +18,12 @@ class IssuesProvider extends ChangeNotifier {
           .snapshots()
           .listen((snapshot) async {
         issues = await Future.wait(
-            snapshot.docs.map((doc) async => Issue.fromFirestore(doc)));
+          snapshot.docs.map((doc) async => Issue.fromFirestore(doc)),
+        );
         notifyListeners();
       });
     } catch (e) {
-      throw 'Error loading Issues: $e';
+      throw Exception('Error loading Issues: $e');
     }
   }
 
@@ -33,7 +35,7 @@ class IssuesProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      throw Exception("Failed to add issue: $e");
+      throw Exception('Failed to add issue: $e');
     }
   }
 
@@ -45,16 +47,16 @@ class IssuesProvider extends ChangeNotifier {
 
   // to be replaced / centralized
   Future<String> _generateUniqueId(String towerId, String type) async {
-    String id = 'null';
-    bool isUnique = false;
+    var id = 'null';
+    var isUnique = false;
 
     // on the off-chance of 1/onetrillion that same ids are generated
     while (!isUnique) {
-      String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      var timestamp = DateTime.now().millisecondsSinceEpoch.toString();
       timestamp = timestamp.substring(timestamp.length - 3); // last 3 digits
 
       // combine
-      id = "$towerId-$type$timestamp";
+      id = '$towerId-$type$timestamp';
 
       // collision check
       final collectionRef =

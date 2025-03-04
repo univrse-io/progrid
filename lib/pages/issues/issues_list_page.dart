@@ -1,16 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:progrid/pages/issues/issue_creation_page.dart';
-import 'package:progrid/pages/issues/issue_page.dart';
-import 'package:progrid/providers/issues_provider.dart';
-import 'package:progrid/services/firestore.dart';
 import 'package:provider/provider.dart';
+
+import '../../providers/issues_provider.dart';
+import '../../services/firestore.dart';
+import 'issue_creation_page.dart';
+import 'issue_page.dart';
 
 class IssuesListPage extends StatelessWidget {
   final String towerId; // id of selected tower
 
-  const IssuesListPage({super.key, required this.towerId});
+  const IssuesListPage({required this.towerId, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class IssuesListPage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
           towerId,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
         ),
       ),
       body: SafeArea(
@@ -34,7 +35,7 @@ class IssuesListPage extends StatelessWidget {
             const SizedBox(height: 12),
 
             const Text(
-              "Site Issues",
+              'Site Issues',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 25,
@@ -49,10 +50,10 @@ class IssuesListPage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => IssueCreationPage(towerId: towerId),
-                    ));
+                    ),);
               },
               child: Text(
-                "Create New Ticket",
+                'Create New Ticket',
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
                   decoration: TextDecoration.underline,
@@ -66,7 +67,7 @@ class IssuesListPage extends StatelessWidget {
             // issues list
             Expanded(
               child: issues.isEmpty
-                  ? Center(child: Text("No Issues Found"))
+                  ? const Center(child: Text('No Issues Found'))
                   : ListView.builder(
                       itemCount: issues.length,
                       itemBuilder: (context, index) {
@@ -81,7 +82,7 @@ class IssuesListPage extends StatelessWidget {
                             final authorName = authorSnapshot.hasData &&
                                     authorSnapshot.data!.exists
                                 ? authorSnapshot.data!['name'] as String
-                                : "Unknown Author";
+                                : 'Unknown Author';
 
                             return GestureDetector(
                               onTap: () {
@@ -149,7 +150,7 @@ class IssuesListPage extends StatelessWidget {
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                const Text(", "),
+                                                const Text(', '),
                                                 Text(
                                                   issue.status.toString(),
                                                   style: TextStyle(
@@ -159,7 +160,7 @@ class IssuesListPage extends StatelessWidget {
                                                   ),
                                                 ),
                                               ],
-                                            )
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -171,7 +172,7 @@ class IssuesListPage extends StatelessWidget {
                                           children: [
                                             Text(
                                               DateFormat('dd/MM/yy').format(
-                                                  issue.dateTime.toDate()),
+                                                  issue.dateTime.toDate(),),
                                               style: const TextStyle(
                                                 fontSize: 15,
                                               ),
@@ -193,7 +194,7 @@ class IssuesListPage extends StatelessWidget {
                         );
                       },
                     ),
-            )
+            ),
           ],
         ),
       ),

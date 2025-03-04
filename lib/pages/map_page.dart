@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:progrid/models/survey_status.dart';
-import 'package:progrid/pages/profile_page.dart';
-import 'package:progrid/pages/tower_page.dart';
-import 'package:progrid/pages/towers_list_page.dart';
-import 'package:progrid/providers/towers_provider.dart';
-import 'package:progrid/utils/pie_chart_painter.dart';
-import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
+
+import '../models/survey_status.dart';
+import '../providers/towers_provider.dart';
+import '../utils/pie_chart_painter.dart';
+import '../utils/themes.dart';
+import 'profile_page.dart';
+import 'tower_page.dart';
+import 'towers_list_page.dart';
 
 // uses openstreetmap
 // TODO: implement map marker filter
@@ -30,12 +31,12 @@ class _MapPageState extends State<MapPage> {
 
   // determine region average positions here
   final Map<String, LatLng> _regionPositions = {
-    'southern': LatLng(2.0953, 103.0404),
-    'northern': LatLng(5.1152, 100.4532),
-    'eastern': LatLng(4.3120, 102.4632),
-    'central': LatLng(3.0147, 101.3747),
-    'sabah': LatLng(5.9804, 116.0735),
-    'sarawak': LatLng(1.5548, 110.3592),
+    'southern': const LatLng(2.0953, 103.0404),
+    'northern': const LatLng(5.1152, 100.4532),
+    'eastern': const LatLng(4.3120, 102.4632),
+    'central': const LatLng(3.0147, 101.3747),
+    'sabah': const LatLng(5.9804, 116.0735),
+    'sarawak': const LatLng(1.5548, 110.3592),
   };
 
   // configure map tile builder here
@@ -44,9 +45,9 @@ class _MapPageState extends State<MapPage> {
     Widget tileWidget,
     TileImage image,
   ) {
-    final saturation = .8;
+    const saturation = .8;
     return ColorFiltered(
-      colorFilter: ColorFilter.matrix([
+      colorFilter: const ColorFilter.matrix([
         0.213 + 0.787 * saturation,
         0.715 * (1 - saturation),
         0.072 * (1 - saturation),
@@ -66,7 +67,7 @@ class _MapPageState extends State<MapPage> {
         0.0,
         0.0,
         1.0,
-        0.0
+        0.0,
       ]),
       child: tileWidget,
     );
@@ -80,8 +81,8 @@ class _MapPageState extends State<MapPage> {
     // final int towerCount = towersProvider.towers.length;
 
     // function to go to a specific region
-    void _zoomToRegion(String region) {
-      final LatLng? position = _regionPositions[region];
+    void zoomToRegion(String region) {
+      final position = _regionPositions[region];
       if (position != null) {
         _mapController.move(position, 8);
       }
@@ -113,17 +114,16 @@ class _MapPageState extends State<MapPage> {
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
                   polygonOptions: PolygonOptions(
-                      color: Colors.black.withValues(alpha: 0.1)),
+                      color: Colors.black.withValues(alpha: 0.1),),
                   maxClusterRadius: 50,
                   alignment: Alignment.center,
                   centerMarkerOnClick: false,
                   padding: const EdgeInsets.all(10),
                   maxZoom: 13,
                   // spiderfyCluster: false,
-                  markers: towersProvider.towers.map((tower) {
-                    return Marker(
+                  markers: towersProvider.towers.map((tower) => Marker(
                       point: LatLng(
-                          tower.position.latitude, tower.position.longitude),
+                          tower.position.latitude, tower.position.longitude,),
                       width: 80,
                       key:
                           ValueKey(tower.id), // assign tower id to marker's key
@@ -148,7 +148,7 @@ class _MapPageState extends State<MapPage> {
                             ),
                             // information box
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              padding: const EdgeInsets.symmetric(horizontal: 5),
                               decoration: BoxDecoration(
                                 color: Colors.black.withValues(alpha: 0.6),
                                 borderRadius: BorderRadius.circular(4),
@@ -163,7 +163,7 @@ class _MapPageState extends State<MapPage> {
                                     height: 8,
                                     decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: tower.surveyStatus.color),
+                                        color: tower.surveyStatus.color,),
                                   ),
                                   const SizedBox(width: 4),
                                   // tower id
@@ -181,8 +181,7 @@ class _MapPageState extends State<MapPage> {
                           ],
                         ),
                       ),
-                    );
-                  }).toList(),
+                    ),).toList(),
                   builder: (context, markers) {
                     // Calculate proportions
                     final statusCounts = <String, int>{
@@ -218,7 +217,7 @@ class _MapPageState extends State<MapPage> {
                       } catch (e) {
                         // handle case where no tower matches the marker (should not happen)
                         debugPrint(
-                            'No matching tower found for marker with key ${marker.key}');
+                            'No matching tower found for marker with key ${marker.key}',);
                       }
                     }
 
@@ -243,7 +242,7 @@ class _MapPageState extends State<MapPage> {
 
               // add attributions here
               SimpleAttributionWidget(
-                source: Text('OpenStreetMap'),
+                source: const Text('OpenStreetMap'),
                 backgroundColor: Colors.black.withValues(alpha: 0.1),
               ),
             ],
@@ -256,18 +255,17 @@ class _MapPageState extends State<MapPage> {
             child: FloatingActionButton(
               heroTag: 'regions',
               onPressed: () async {
-                final String? selectedRegion = await showMenu(
+                final selectedRegion = await showMenu(
                   elevation: 0,
                   color: Colors.black.withValues(alpha: 0),
                   context: context,
-                  position: RelativeRect.fromLTRB(0, 70, 0, 0),
-                  items: _regionPositions.keys.map((region) {
-                    return PopupMenuItem(
+                  position: const RelativeRect.fromLTRB(0, 70, 0, 0),
+                  items: _regionPositions.keys.map((region) => PopupMenuItem(
                       height: 35,
                       value: region,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
+                            horizontal: 10, vertical: 5,),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.7),
                           borderRadius: BorderRadius.circular(10),
@@ -280,20 +278,19 @@ class _MapPageState extends State<MapPage> {
                           ),
                         ),
                       ),
-                    );
-                  }).toList(),
+                    ),).toList(),
                 );
 
                 if (selectedRegion != null) {
-                  _zoomToRegion(selectedRegion);
+                  zoomToRegion(selectedRegion);
                 }
               },
               backgroundColor: Colors.black.withValues(alpha: 0.6),
+              mini: true,
               child: const Icon(
                 Icons.map,
                 size: 32,
               ),
-              mini: true,
             ),
           ),
 
@@ -313,21 +310,19 @@ class _MapPageState extends State<MapPage> {
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             const TowersListPage(),
                         transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          return FadeTransition(
+                            (context, animation, secondaryAnimation, child) => FadeTransition(
                             opacity: animation,
                             child: child,
-                          );
-                        },
+                          ),
                       ),
                     );
                   },
                   backgroundColor: Colors.black.withValues(alpha: 0.6),
+                  mini: true,
                   child: const Icon(
                     Icons.search,
                     size: 32,
                   ),
-                  mini: true,
                 ),
 
                 // profile button
@@ -341,13 +336,13 @@ class _MapPageState extends State<MapPage> {
                             const ProfilePage(),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(0.0, 1.0); // bottom
+                          const begin = Offset(0, 1); // bottom
                           const end = Offset.zero;
                           const curve = Curves.easeInOut;
 
                           final offsetAnimation = animation.drive(
                               Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: curve)));
+                                  .chain(CurveTween(curve: curve)),);
                           return SlideTransition(
                             position: offsetAnimation,
                             child: child,
@@ -361,11 +356,11 @@ class _MapPageState extends State<MapPage> {
                     );
                   },
                   backgroundColor: Colors.black.withValues(alpha: 0.6),
+                  mini: true,
                   child: const Icon(
                     Icons.person,
                     size: 32,
                   ),
-                  mini: true,
                 ),
               ],
             ),

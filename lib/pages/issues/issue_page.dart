@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/models/issue_status.dart';
-import 'package:progrid/providers/issues_provider.dart';
-import 'package:progrid/providers/user_provider.dart';
-import 'package:progrid/services/firestore.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/issue_status.dart';
+import '../../providers/issues_provider.dart';
+import '../../providers/user_provider.dart';
+import '../../services/firestore.dart';
 
 class IssuePage extends StatefulWidget {
   final String towerId;
   final String issueId;
 
-  const IssuePage({super.key, required this.issueId, required this.towerId});
+  const IssuePage({required this.issueId, required this.towerId, super.key});
 
   @override
   State<IssuePage> createState() => _IssuePageState();
@@ -50,8 +51,7 @@ class _IssuePageState extends State<IssuePage> {
               Wrap(
                 spacing: 5,
                 runSpacing: 5,
-                children: issue.tags.map((tag) {
-                  return Container(
+                children: issue.tags.map((tag) => Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
@@ -66,8 +66,7 @@ class _IssuePageState extends State<IssuePage> {
                         fontSize: 15,
                       ),
                     ),
-                  );
-                }).toList(),
+                  ),).toList(),
               ),
             const SizedBox(height: 10),
 
@@ -112,13 +111,13 @@ class _IssuePageState extends State<IssuePage> {
                   onChanged: (value) {
                     if (value != null && value != issue.status) {
                       FirestoreService.updateIssue(issue.id,
-                          data: {'status': value});
+                          data: {'status': value},);
 
                       // update local as well
                       issue.status = value;
                     }
                   },
-                  items: [
+                  items: const [
                     DropdownMenuItem(
                       value: IssueStatus.unresolved,
                       child: Text('Unresolved'),
@@ -143,7 +142,7 @@ class _IssuePageState extends State<IssuePage> {
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    color: issue.status.color),
+                    color: issue.status.color,),
                 child: Text(
                   issue.status.toString(),
                   style: TextStyle(

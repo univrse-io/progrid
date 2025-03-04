@@ -53,10 +53,9 @@ class _UserVerificationPageState extends State<UserVerificationPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
         body: SafeArea(
-      minimum: EdgeInsets.symmetric(horizontal: 25),
+      minimum: const EdgeInsets.symmetric(horizontal: 25),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -85,6 +84,5 @@ class _UserVerificationPageState extends State<UserVerificationPage> {
           ),
         ],
       ),
-    ));
-  }
+    ),);
 }

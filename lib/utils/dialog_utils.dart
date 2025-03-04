@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -9,22 +10,21 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:progrid/models/survey_status.dart';
-import 'package:progrid/models/tower.dart';
-import 'package:progrid/providers/user_provider.dart';
-import 'package:progrid/services/firestore.dart';
-import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class DialogUtils {
+import '../models/survey_status.dart';
+import '../models/tower.dart';
+import '../providers/user_provider.dart';
+import '../services/firestore.dart';
+import 'themes.dart';
+
+sealed class DialogUtils {
   static void showLoadingDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false, // cannot be dismissed on tap
-      builder: (BuildContext context) {
-        return Center(child: CircularProgressIndicator());
-      },
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
   }
 
@@ -35,59 +35,55 @@ class DialogUtils {
     // Future<void> Function(BuildContext, String) onDownload,
     // Future<void> Function(BuildContext, String) onDelete,
   ) {
-    print(imageUrl);
+    log(imageUrl);
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: Center(
-              child: Stack(
-                children: [
-                  // image object
-                  Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Center(
-                        child: Icon(Icons.error, color: AppColors.red),
-                      );
-                    },
+      builder: (context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Center(
+            child: Stack(
+              children: [
+                // image object
+                Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Icon(Icons.error, color: AppColors.red),
                   ),
+                ),
 
-                  Positioned(
-                    bottom: 5,
-                    left: 5,
-                    child: Row(
-                      children: [
-                        // download button
-                        FloatingActionButton(
-                          // onPressed: () => onDownload(context, imageUrl),
-                          onPressed: () => _downloadImage(context, imageUrl),
-                          child: Icon(Icons.download),
-                          mini: true,
-                        ),
-                        SizedBox(width: 2),
+                Positioned(
+                  bottom: 5,
+                  left: 5,
+                  child: Row(
+                    children: [
+                      // download button
+                      FloatingActionButton(
+                        // onPressed: () => onDownload(context, imageUrl),
+                        onPressed: () => _downloadImage(context, imageUrl),
+                        mini: true,
+                        child: const Icon(Icons.download),
+                      ),
+                      const SizedBox(width: 2),
 
-                        // delete button
-                        FloatingActionButton(
-                          // onPressed: () => onDelete(context, imageUrl),
-                          onPressed: () => _deleteImage(context, imageUrl),
-                          child: Icon(Icons.delete, color: AppColors.red),
-                          mini: true,
-                        ),
-                      ],
-                    ),
+                      // delete button
+                      FloatingActionButton(
+                        // onPressed: () => onDelete(context, imageUrl),
+                        onPressed: () => _deleteImage(context, imageUrl),
+                        mini: true,
+                        child: const Icon(Icons.delete, color: AppColors.red),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -96,24 +92,25 @@ class DialogUtils {
   static void showTowerDialog(BuildContext context, String towerId) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         final towers = Provider.of<List<Tower>>(context);
-        final selectedTower = towers.firstWhere((tower) => tower.id == towerId,
-            orElse: () => throw Exception("Tower not found"));
+        final selectedTower = towers.firstWhere(
+          (tower) => tower.id == towerId,
+          orElse: () => throw Exception('Tower not found'),
+        );
         final notesController =
             TextEditingController(text: selectedTower.notes);
-        Timer? _debounceTimer;
+        Timer? debounceTimer;
 
         return Dialog(
           elevation: 10,
           child: StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            return ConstrainedBox(
-              constraints: BoxConstraints(
+            builder: (context, setState) => ConstrainedBox(
+              constraints: const BoxConstraints(
                 maxWidth: 500, // set a max width
               ),
               child: Padding(
-                padding: EdgeInsets.all(15),
+                padding: const EdgeInsets.all(15),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,8 +120,10 @@ class DialogUtils {
                         // tower id
                         Text(
                           selectedTower.id,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 25),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                          ),
                         ),
                         const SizedBox(width: 10),
 
@@ -132,8 +131,9 @@ class DialogUtils {
                         Container(
                           padding: const EdgeInsets.only(left: 14, right: 10),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              color: selectedTower.surveyStatus.color),
+                            borderRadius: BorderRadius.circular(24),
+                            color: selectedTower.surveyStatus.color,
+                          ),
                           child: DropdownButton<SurveyStatus>(
                             // require type specifics
                             isDense: true,
@@ -145,31 +145,36 @@ class DialogUtils {
                                     if (value != null &&
                                         value != selectedTower.surveyStatus) {
                                       FirestoreService.updateTower(
-                                          selectedTower.id,
-                                          data: {'surveyStatus': value.name});
-                                      setState(() =>
-                                          selectedTower.surveyStatus = value);
+                                        selectedTower.id,
+                                        data: {'surveyStatus': value.name},
+                                      );
+                                      setState(
+                                        () =>
+                                            selectedTower.surveyStatus = value,
+                                      );
                                     }
                                   },
-                            items: SurveyStatus.values.map((status) {
-                              return DropdownMenuItem(
-                                value: status,
-                                child: Text(status.toString()),
-                              );
-                            }).toList(),
+                            items: SurveyStatus.values
+                                .map(
+                                  (status) => DropdownMenuItem(
+                                    value: status,
+                                    child: Text(status.toString()),
+                                  ),
+                                )
+                                .toList(),
                             iconEnabledColor:
                                 Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(24),
                             icon: context.read<UserProvider>().role == 'admin'
                                 ? null
-                                : SizedBox(),
+                                : const SizedBox(),
                             dropdownColor: selectedTower.surveyStatus.color,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.surface,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
 
@@ -177,7 +182,7 @@ class DialogUtils {
                     Text(
                       selectedTower.name,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                       ),
@@ -187,7 +192,7 @@ class DialogUtils {
                     // tower geolocation
                     Text(
                       '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -206,7 +211,9 @@ class DialogUtils {
                     Container(
                       height: 130,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 2),
+                        horizontal: 14,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: Theme.of(context).colorScheme.tertiary,
@@ -214,45 +221,50 @@ class DialogUtils {
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: selectedTower.images.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 5),
-                              child: Stack(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      showImageDialog(context,
-                                          selectedTower.images[index], towerId);
-                                    },
-                                    // TODO: implement image onTap
-                                    // onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], onDownload, onDelete),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: ConstrainedBox(
-                                        constraints:
-                                            BoxConstraints(maxHeight: 400),
-                                        child: Image.network(
-                                          // UNDONE: not sure why image won't show, though the url works
-                                          selectedTower.images[index],
-                                          fit: BoxFit.cover,
-                                          height: 120,
-                                          width: 120,
-                                          errorBuilder:
-                                              (context, error, stackTrace) {
-                                            return Container(
-                                              color: Colors.grey,
-                                              child: Icon(Icons.error,
-                                                  color: AppColors.red),
-                                            ); // if image fails to load
-                                          },
+                        itemBuilder: (context, index) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 5,
+                            horizontal: 5,
+                          ),
+                          child: Stack(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  showImageDialog(
+                                    context,
+                                    selectedTower.images[index],
+                                    towerId,
+                                  );
+                                },
+                                // TODO: implement image onTap
+                                // onTap: () => DialogUtils.showImageDialog(context, selectedTower.images[index], onDownload, onDelete),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: ConstrainedBox(
+                                    constraints:
+                                        const BoxConstraints(maxHeight: 400),
+                                    child: Image.network(
+                                      // UNDONE: not sure why image won't show, though the url works
+                                      selectedTower.images[index],
+                                      fit: BoxFit.cover,
+                                      height: 120,
+                                      width: 120,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const ColoredBox(
+                                        color: Colors.grey,
+                                        child: Icon(
+                                          Icons.error,
+                                          color: AppColors.red,
                                         ),
                                       ),
                                     ),
-                                  )
-                                ],
-                              ));
-                        },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -263,9 +275,10 @@ class DialogUtils {
                         Text(
                           ' Status:',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontStyle: FontStyle.italic),
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
                         const SizedBox(width: 5),
                         Text(
@@ -278,7 +291,7 @@ class DialogUtils {
                             color: Theme.of(context).colorScheme.secondary,
                             fontStyle: FontStyle.italic,
                           ),
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -293,38 +306,44 @@ class DialogUtils {
                         textAlignVertical: TextAlignVertical.top,
                         maxLength: 500,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontSize: 14),
-                        buildCounter: (context,
-                            {required currentLength,
-                            maxLength,
-                            required isFocused}) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              '$currentLength/$maxLength',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.secondary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 14,
+                        ),
+                        buildCounter: (
+                          context, {
+                          required currentLength,
+                          required isFocused,
+                          maxLength,
+                        }) =>
+                            Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            '$currentLength/$maxLength',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontWeight: FontWeight.bold,
                             ),
-                          );
-                        },
+                          ),
+                        ),
                         decoration: InputDecoration(
                           hintText: 'Enter notes here...',
                           alignLabelWithHint: true,
                           hintStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontSize: 14),
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontSize: 14,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 7,
+                          ),
                         ),
                         onChanged: (text) async {
                           // cancel any previous debounce timer
-                          if (_debounceTimer?.isActive ?? false)
-                            _debounceTimer?.cancel();
+                          if (debounceTimer?.isActive ?? false) {
+                            debounceTimer?.cancel();
+                          }
 
-                          _debounceTimer =
+                          debounceTimer =
                               Timer(const Duration(milliseconds: 2000), () {
                             // update notes every one second of changes
                             FirestoreService.towersCollection
@@ -338,84 +357,83 @@ class DialogUtils {
                           });
                         },
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-            );
-          }),
+            ),
+          ),
         );
       },
     );
   }
 
-  static Widget _buildDetailRow(String label, String content) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // label
-          SizedBox(
-            width: 90,
-            child: Text(
-              label,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                // decoration: TextDecoration.underline,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+  static Widget _buildDetailRow(String label, String content) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // label
+            SizedBox(
+              width: 90,
+              child: Text(
+                label,
+                textAlign: TextAlign.right,
+                style: const TextStyle(
+                  // decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 10),
-          // content
-          Expanded(
-            child: Text(
-              content,
-              style: TextStyle(fontSize: 16),
+            const SizedBox(width: 10),
+            // content
+            Expanded(
+              child: Text(
+                content,
+                style: const TextStyle(fontSize: 16),
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 
   static Future<void> _deleteImage(BuildContext context, String url) async {
     try {
       // confirmation dialog
       final confirm = await showDialog<bool>(
         context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Confirm Deletion"),
-            content: Text(
-                "Are you sure you want to delete this image? This action cannot be undone."),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, false), // cancel
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
+        builder: (context) => AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: const Text(
+            'Are you sure you want to delete this image? This action cannot be undone.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ), // cancel
+              child: const Text(
+                'Cancel',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ), // confirm
+              child: const Text(
+                'Delete',
+                style: TextStyle(
+                  color: AppColors.red,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true), // confirm
-                child: Text(
-                  'Delete',
-                  style: TextStyle(
-                      color: AppColors.red, fontWeight: FontWeight.bold),
-                ),
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-            ],
-          );
-        },
+            ),
+          ],
+        ),
       );
 
       if (confirm != true) return;
@@ -430,7 +448,6 @@ class DialogUtils {
       // );
 
       // check if tower has 1 image
-    } catch (e) {
     } finally {}
   }
 
@@ -451,8 +468,10 @@ class DialogUtils {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                  content: Text(
-                      'Storage permission is required to save the image.')),
+                content: Text(
+                  'Storage permission is required to save the image.',
+                ),
+              ),
             );
           }
           return;
@@ -461,15 +480,13 @@ class DialogUtils {
         if (status.isPermanentlyDenied) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text(
+              const SnackBar(
+                content: Text(
                   'Permission permanently denied. Please allow it from settings.',
                 ),
                 action: SnackBarAction(
                   label: 'Settings',
-                  onPressed: () {
-                    openAppSettings();
-                  },
+                  onPressed: openAppSettings,
                 ),
               ),
             );
@@ -482,7 +499,8 @@ class DialogUtils {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode != 200) {
         throw Exception(
-            'Failed to download the image. Status code: ${response.statusCode}');
+          'Failed to download the image. Status code: ${response.statusCode}',
+        );
       }
 
       if (kIsWeb) {
@@ -493,13 +511,13 @@ class DialogUtils {
           );
         }
 
-        final Uri uri = Uri.parse(url);
+        final uri = Uri.parse(url);
         await launchUrl(uri);
         // return;
       } else {
         final tempDir = await getTemporaryDirectory();
         final filePath =
-            "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+            '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
 
         final file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
@@ -509,7 +527,7 @@ class DialogUtils {
 
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Image saved to Gallery')),
+            const SnackBar(content: Text('Image saved to Gallery')),
           );
         }
       }

@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/models/issue.dart';
-import 'package:progrid/models/issue_status.dart';
-import 'package:progrid/providers/issues_provider.dart';
-import 'package:progrid/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/issue.dart';
+import '../../models/issue_status.dart';
+import '../../providers/issues_provider.dart';
+import '../../providers/user_provider.dart';
 
 class IssueCreationPage extends StatefulWidget {
   final String towerId;
 
-  const IssueCreationPage({super.key, required this.towerId});
+  const IssueCreationPage({required this.towerId, super.key});
 
   @override
   State<IssueCreationPage> createState() => _IssueCreationPageState();
@@ -17,13 +18,13 @@ class IssueCreationPage extends StatefulWidget {
 
 class _IssueCreationPageState extends State<IssueCreationPage> {
   final List<String> _availableTags = [
-    "Permit",
-    "Logistics",
-    "Key",
-    "Access",
-    "Hazard",
-    "FSC",
-    "Other(s)"
+    'Permit',
+    'Logistics',
+    'Key',
+    'Access',
+    'Hazard',
+    'FSC',
+    'Other(s)',
   ];
   final List<String> _selectedTags = [];
   String? _selectedTag;
@@ -33,14 +34,14 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
   Future<void> _createIssue() async {
     if (_selectedTags.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select at least one tag")),
+        const SnackBar(content: Text('Please select at least one tag')),
       );
       return;
     }
 
     if (_descriptionController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please add a description")),
+        const SnackBar(content: Text('Please add a description')),
       );
       return;
     }
@@ -63,43 +64,40 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Issue Created Successfully!"),
-        ));
+          content: Text('Issue Created Successfully!'),
+        ),);
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error creating Issue: $e")),
+          SnackBar(content: Text('Error creating Issue: $e')),
         );
       }
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
         title: Text(
           widget.towerId,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
         ),
       ),
       body: SafeArea(
-        minimum: EdgeInsets.symmetric(horizontal: 25),
+        minimum: const EdgeInsets.symmetric(horizontal: 25),
         child: Column(
           children: [
             // Tags section (Dropdown)
             DropdownButton<String>(
               isExpanded: true,
               value: _selectedTag,
-              hint: Text("Tags*"),
-              items: _availableTags.map((tag) {
-                return DropdownMenuItem(
+              hint: const Text('Tags*'),
+              items: _availableTags.map((tag) => DropdownMenuItem(
                   value: tag,
                   child: Text(tag),
-                );
-              }).toList(),
+                ),).toList(),
               onChanged: (newTag) {
                 if (newTag != null && !_selectedTags.contains(newTag)) {
                   setState(() {
@@ -114,13 +112,12 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
 
             // Display selected tags
             if (_selectedTags.isNotEmpty)
-              Container(
+              SizedBox(
                 width: double.infinity,
                 child: Wrap(
                   spacing: 5,
                   runSpacing: 5,
-                  children: _selectedTags.map((tag) {
-                    return GestureDetector(
+                  children: _selectedTags.map((tag) => GestureDetector(
                       onTap: () {
                         setState(() {
                           _selectedTags.remove(tag); // Remove tag on click
@@ -128,7 +125,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                       },
                       child: Container(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.secondary,
                           borderRadius: BorderRadius.circular(20),
@@ -142,8 +139,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                           ),
                         ),
                       ),
-                    );
-                  }).toList(),
+                    ),).toList(),
                 ),
               ),
             const SizedBox(height: 17),
@@ -158,9 +154,8 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                 textAlignVertical: TextAlignVertical.top,
                 maxLength: _maxDescriptionLength,
                 buildCounter: (context,
-                    {required currentLength, maxLength, required isFocused}) {
-                  return Padding(
-                    padding: EdgeInsets.only(top: 4),
+                    {required currentLength, required isFocused, maxLength,}) => Padding(
+                    padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       '$currentLength/$maxLength',
                       style: TextStyle(
@@ -168,14 +163,13 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  );
-                },
+                  ),
                 decoration: InputDecoration(
-                  hintText: "Description*",
+                  hintText: 'Description*',
                   alignLabelWithHint: true,
                   hintStyle:
                       TextStyle(color: Theme.of(context).colorScheme.secondary),
-                  contentPadding: EdgeInsets.all(12),
+                  contentPadding: const EdgeInsets.all(12),
                 ),
               ),
             ),
@@ -183,13 +177,12 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
 
             // Create issue button
             FilledButton(
-              onPressed: () => _createIssue(),
-              child: Text("Create Issue"),
+              onPressed: _createIssue,
+              child: const Text('Create Issue'),
             ),
             const SizedBox(height: 20),
           ],
         ),
       ),
     );
-  }
 }

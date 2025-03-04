@@ -1,15 +1,18 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:progrid/pages/authentication/login_page.dart';
-import 'package:progrid/pages/authentication/register_page.dart';
-import 'package:progrid/pages/dashboard/dashboard_page.dart';
-import 'package:progrid/pages/map_page.dart';
-import 'package:progrid/pages/user_verification_page.dart';
-import 'package:progrid/providers/issues_provider.dart';
-import 'package:progrid/providers/towers_provider.dart';
-import 'package:progrid/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../pages/authentication/login_page.dart';
+import '../pages/authentication/register_page.dart';
+import '../pages/dashboard/dashboard_page.dart';
+import '../pages/map_page.dart';
+import '../pages/user_verification_page.dart';
+import '../providers/issues_provider.dart';
+import '../providers/towers_provider.dart';
+import '../providers/user_provider.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -29,7 +32,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   // autologin
   Future<void> _autoLogin() async {
-    final User? user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) return;
 
@@ -37,7 +40,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       // reload user cache
       await user.reload();
     } catch (e) {
-      print("Error during AutoLogin: $e");
+      log('Error during AutoLogin: $e');
     }
   }
 
@@ -49,47 +52,47 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        final user = snapshot.data;
+  Widget build(BuildContext context) => StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          final user = snapshot.data;
 
-        if (user != null) {
-          // check email user verification status
-          if (!user.emailVerified) {
-            // !!do not implement any sort of push navigation in this class!!
-            // go to email verification page
-            _onLoginPage = true;
-            return UserVerificationPage();
+          if (user != null) {
+            // check email user verification status
+            if (!user.emailVerified) {
+              // !!do not implement any sort of push navigation in this class!!
+              // go to email verification page
+              _onLoginPage = true;
+              return const UserVerificationPage();
+            }
+
+            // fetch user info and set user provider
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+                // load user information
+                final userProvider =
+                    Provider.of<UserProvider>(context, listen: false);
+                userProvider.setUser(user);
+                userProvider.fetchUserInfoFromDatabase(user);
+
+                // connect to database
+                Provider.of<TowersProvider>(context, listen: false)
+                    .loadTowers();
+                Provider.of<IssuesProvider>(context, listen: false)
+                    .loadIssues();
+
+                // reset to login page in background
+                _onLoginPage = true;
+              },
+            );
+
+            return kIsWeb ? const DashboardPage() : const MapPage();
           }
 
-          // fetch user info and set user provider
-          WidgetsBinding.instance.addPostFrameCallback(
-            (_) {
-              // load user information
-              final userProvider =
-                  Provider.of<UserProvider>(context, listen: false);
-              userProvider.setUser(user);
-              userProvider.fetchUserInfoFromDatabase(user);
-
-              // connect to database
-              Provider.of<TowersProvider>(context, listen: false).loadTowers();
-              Provider.of<IssuesProvider>(context, listen: false).loadIssues();
-
-              // reset to login page in background
-              _onLoginPage = true;
-            },
-          );
-
-          return kIsWeb ? DashboardPage() : MapPage();
-        }
-
-        // if no user authenticated
-        return _onLoginPage
-            ? LoginPage(onTapSwitchPage: _toggleLoginPage)
-            : RegisterPage(onTapSwitchPage: _toggleLoginPage);
-      },
-    );
-  }
+          // if no user authenticated
+          return _onLoginPage
+              ? LoginPage(onTapSwitchPage: _toggleLoginPage)
+              : RegisterPage(onTapSwitchPage: _toggleLoginPage);
+        },
+      );
 }
