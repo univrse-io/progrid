@@ -11,7 +11,6 @@ import '../pages/dashboard/dashboard_page.dart';
 import '../pages/map_page.dart';
 import '../pages/user_verification_page.dart';
 import '../providers/issues_provider.dart';
-import '../providers/towers_provider.dart';
 import '../providers/user_provider.dart';
 
 class AuthWrapper extends StatefulWidget {
@@ -76,8 +75,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 userProvider.fetchUserInfoFromDatabase(user);
 
                 // connect to database
-                Provider.of<TowersProvider>(context, listen: false)
-                    .loadTowers();
                 Provider.of<IssuesProvider>(context, listen: false)
                     .loadIssues();
 

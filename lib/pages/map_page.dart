@@ -5,7 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 import '../models/survey_status.dart';
-import '../providers/towers_provider.dart';
+import '../models/tower.dart';
 import '../utils/pie_chart_painter.dart';
 import '../utils/themes.dart';
 import 'profile_page.dart';
@@ -14,7 +14,6 @@ import 'towers_list_page.dart';
 
 // uses openstreetmap
 // TODO: implement map marker filter
-
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
 
@@ -75,10 +74,10 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    final towersProvider = Provider.of<TowersProvider>(context);
+    final towers = Provider.of<List<Tower>>(context);
 
-    // final int surveyedCount = towersProvider.towers.where((tower) => tower.status == 'surveyed').length;
-    // final int towerCount = towersProvider.towers.length;
+    // final int surveyedCount = towers.towers.where((tower) => tower.status == 'surveyed').length;
+    // final int towerCount = towers.towers.length;
 
     // function to go to a specific region
     void zoomToRegion(String region) {
@@ -114,74 +113,80 @@ class _MapPageState extends State<MapPage> {
               MarkerClusterLayerWidget(
                 options: MarkerClusterLayerOptions(
                   polygonOptions: PolygonOptions(
-                      color: Colors.black.withValues(alpha: 0.1),),
+                    color: Colors.black.withValues(alpha: 0.1),
+                  ),
                   maxClusterRadius: 50,
                   alignment: Alignment.center,
                   centerMarkerOnClick: false,
                   padding: const EdgeInsets.all(10),
                   maxZoom: 13,
                   // spiderfyCluster: false,
-                  markers: towersProvider.towers.map((tower) => Marker(
-                      point: LatLng(
-                          tower.position.latitude, tower.position.longitude,),
-                      width: 80,
-                      key:
-                          ValueKey(tower.id), // assign tower id to marker's key
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  TowerPage(towerId: tower.id),
-                            ),
-                          );
-                        },
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // marker icon
-                            Icon(
-                              Icons.cell_tower,
-                              color: tower.region.color,
-                              size: 36,
-                            ),
-                            // information box
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 5),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.6),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // status indicator
-                                  Container(
-                                    width: 8,
-                                    height: 8,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: tower.surveyStatus.color,),
+                  markers: towers
+                      .map(
+                        (tower) => Marker(
+                          point: LatLng(
+                            tower.position.latitude,
+                            tower.position.longitude,
+                          ),
+                          width: 80,
+                          key: ValueKey(tower.id),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      TowerPage(towerId: tower.id),
+                                ),
+                              );
+                            },
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Icon(
+                                  Icons.cell_tower,
+                                  color: tower.region.color,
+                                  size: 36,
+                                ),
+                                Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.6),
+                                    borderRadius: BorderRadius.circular(4),
                                   ),
-                                  const SizedBox(width: 4),
-                                  // tower id
-                                  Text(
-                                    tower.id,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                    ),
-                                    maxLines: 1,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      // status indicator
+                                      Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: tower.surveyStatus.color,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      // tower id
+                                      Text(
+                                        tower.id,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                        ),
+                                        maxLines: 1,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),).toList(),
+                      )
+                      .toList(),
                   builder: (context, markers) {
                     // Calculate proportions
                     final statusCounts = <String, int>{
@@ -192,7 +197,7 @@ class _MapPageState extends State<MapPage> {
 
                     for (final marker in markers) {
                       try {
-                        final tower = towersProvider.towers.firstWhere(
+                        final tower = towers.firstWhere(
                           (tower) {
                             // grab the tower id from marker's key
                             // ensure type safety
@@ -217,7 +222,8 @@ class _MapPageState extends State<MapPage> {
                       } catch (e) {
                         // handle case where no tower matches the marker (should not happen)
                         debugPrint(
-                            'No matching tower found for marker with key ${marker.key}',);
+                          'No matching tower found for marker with key ${marker.key}',
+                        );
                       }
                     }
 
@@ -260,25 +266,31 @@ class _MapPageState extends State<MapPage> {
                   color: Colors.black.withValues(alpha: 0),
                   context: context,
                   position: const RelativeRect.fromLTRB(0, 70, 0, 0),
-                  items: _regionPositions.keys.map((region) => PopupMenuItem(
-                      height: 35,
-                      value: region,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5,),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          '${region[0].toUpperCase()}${region.substring(1)}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
+                  items: _regionPositions.keys
+                      .map(
+                        (region) => PopupMenuItem(
+                          height: 35,
+                          value: region,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.7),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '${region[0].toUpperCase()}${region.substring(1)}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),).toList(),
+                      )
+                      .toList(),
                 );
 
                 if (selectedRegion != null) {
@@ -310,10 +322,11 @@ class _MapPageState extends State<MapPage> {
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             const TowersListPage(),
                         transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) => FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          ),
+                            (context, animation, secondaryAnimation, child) =>
+                                FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        ),
                       ),
                     );
                   },
@@ -341,18 +354,15 @@ class _MapPageState extends State<MapPage> {
                           const curve = Curves.easeInOut;
 
                           final offsetAnimation = animation.drive(
-                              Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: curve)),);
+                            Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve)),
+                          );
                           return SlideTransition(
                             position: offsetAnimation,
                             child: child,
                           );
                         },
                       ),
-
-                      // MaterialPageRoute(
-                      //   builder: (context) => const ProfilePage(),
-                      // ),
                     );
                   },
                   backgroundColor: Colors.black.withValues(alpha: 0.6),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/towers_provider.dart';
+import '../models/tower.dart';
 import 'tower_page.dart';
 
 class TowersListPage extends StatefulWidget {
@@ -24,7 +24,7 @@ class _TowersListPageState extends State<TowersListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final towersProvider = Provider.of<TowersProvider>(context);
+    final towers = Provider.of<List<Tower>>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,8 +40,6 @@ class _TowersListPageState extends State<TowersListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-
-            // search bar
             Hero(
               tag: 'searchbar',
               child: Material(
@@ -59,15 +57,13 @@ class _TowersListPageState extends State<TowersListPage> {
               ),
             ),
             const SizedBox(height: 10),
-
-            // towers list
             Expanded(
-              child: towersProvider.towers.isEmpty
+              child: towers.isEmpty
                   ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(
-                      itemCount: towersProvider.towers.length,
+                      itemCount: towers.length,
                       itemBuilder: (context, index) {
-                        final tower = towersProvider.towers[index];
+                        final tower = towers[index];
 
                         // filter towers based on search query
                         if (_searchQuery.isNotEmpty &&
