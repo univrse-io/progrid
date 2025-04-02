@@ -15,10 +15,10 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/drawing_status.dart';
+import '../models/issue.dart';
 import '../models/issue_status.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
-import '../providers/issues_provider.dart';
 import '../providers/user_provider.dart';
 import '../services/firestore.dart';
 import '../utils/dialog_utils.dart';
@@ -44,17 +44,10 @@ class _TowerPageState extends State<TowerPage> {
   @override
   Widget build(BuildContext context) {
     final towers = Provider.of<List<Tower>>(context);
-    final selectedTower = towers.firstWhere(
-      (tower) => tower.id == widget.towerId,
-      orElse: () => throw Exception('Tower not found'),
-    );
+    final selectedTower =
+        towers.firstWhere((tower) => tower.id == widget.towerId);
 
-    final issuesProvider = Provider.of<IssuesProvider>(context);
-    final issues = issuesProvider.issues.where(
-      (issue) => issue.id.startsWith(
-        '${widget.towerId}-I',
-      ),
-    ); // query all elements in this list, check if any are unresolved
+    final issues = Provider.of<List<Issue>>(context);
 
     _notesController.text = selectedTower.notes ?? ''; // get tower notes
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/issue.dart';
 import '../../models/issue_status.dart';
-import '../../providers/issues_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../services/firestore.dart';
 
@@ -19,8 +19,7 @@ class IssuePage extends StatefulWidget {
 class _IssuePageState extends State<IssuePage> {
   @override
   Widget build(BuildContext context) {
-    final issue = Provider.of<IssuesProvider>(context)
-        .issues
+    final issue = Provider.of<List<Issue>>(context)
         .firstWhere((issue) => issue.id == widget.issueId);
 
     return Scaffold(
@@ -36,8 +35,6 @@ class _IssuePageState extends State<IssuePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 5),
-
-            // tags
             const Text(
               'Tags',
               style: TextStyle(
@@ -46,31 +43,34 @@ class _IssuePageState extends State<IssuePage> {
               ),
             ),
             const SizedBox(height: 7),
-
             if (issue.tags.isNotEmpty)
               Wrap(
                 spacing: 5,
                 runSpacing: 5,
-                children: issue.tags.map((tag) => Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      tag,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.surface,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                children: issue.tags
+                    .map(
+                      (tag) => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          tag,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.surface,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),).toList(),
+                    )
+                    .toList(),
               ),
             const SizedBox(height: 10),
-
-            // description
             const Text(
               'Description',
               style: TextStyle(
@@ -88,8 +88,6 @@ class _IssuePageState extends State<IssuePage> {
               textAlign: TextAlign.justify,
             ),
             const SizedBox(height: 10),
-
-            // status
             const Text(
               'Status',
               style: TextStyle(
@@ -110,8 +108,10 @@ class _IssuePageState extends State<IssuePage> {
                   value: issue.status,
                   onChanged: (value) {
                     if (value != null && value != issue.status) {
-                      FirestoreService.updateIssue(issue.id,
-                          data: {'status': value},);
+                      FirestoreService.updateIssue(
+                        issue.id,
+                        data: {'status': value.name},
+                      );
 
                       // update local as well
                       issue.status = value;
@@ -141,8 +141,9 @@ class _IssuePageState extends State<IssuePage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    color: issue.status.color,),
+                  borderRadius: BorderRadius.circular(24),
+                  color: issue.status.color,
+                ),
                 child: Text(
                   issue.status.toString(),
                   style: TextStyle(

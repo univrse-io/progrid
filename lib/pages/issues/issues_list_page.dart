@@ -3,21 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/issues_provider.dart';
+import '../../models/issue.dart';
 import '../../services/firestore.dart';
 import 'issue_creation_page.dart';
 import 'issue_page.dart';
 
 class IssuesListPage extends StatelessWidget {
-  final String towerId; // id of selected tower
+  final String towerId;
 
   const IssuesListPage({required this.towerId, super.key});
 
   @override
   Widget build(BuildContext context) {
-    final issuesProvider = Provider.of<IssuesProvider>(context);
-    final issues = issuesProvider.issues
-        .where((issue) => issue.id.startsWith('$towerId-I'));
+    final issues = Provider.of<List<Issue>>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +31,6 @@ class IssuesListPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 12),
-
             const Text(
               'Site Issues',
               style: TextStyle(
@@ -41,17 +38,13 @@ class IssuesListPage extends StatelessWidget {
                 fontSize: 25,
               ),
             ),
-            const SizedBox(height: 0),
 
-            // new issue ticket link
             GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => IssueCreationPage(towerId: towerId),
-                    ),);
-              },
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => IssueCreationPage(towerId: towerId),
+                ),
+              ),
               child: Text(
                 'Create New Ticket',
                 style: TextStyle(
@@ -172,7 +165,8 @@ class IssuesListPage extends StatelessWidget {
                                           children: [
                                             Text(
                                               DateFormat('dd/MM/yy').format(
-                                                  issue.dateTime.toDate(),),
+                                                issue.dateTime.toDate(),
+                                              ),
                                               style: const TextStyle(
                                                 fontSize: 15,
                                               ),

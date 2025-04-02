@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'models/issue.dart';
 import 'models/tower.dart';
-import 'providers/issues_provider.dart';
 import 'providers/user_provider.dart';
 import 'services/auth_wrapper.dart';
 import 'services/firestore.dart';
@@ -36,7 +34,6 @@ class Progrid extends StatelessWidget {
             create: (_) => FirestoreService.towersStream,
           ),
           ChangeNotifierProvider(create: (_) => UserProvider()),
-          if (!kIsWeb) ChangeNotifierProvider(create: (_) => IssuesProvider()),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

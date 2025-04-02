@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../models/issue.dart';
 import '../../models/issue_status.dart';
-import '../../providers/issues_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../services/firestore.dart';
 
 class IssueCreationPage extends StatefulWidget {
   final String towerId;
@@ -47,11 +47,21 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     }
 
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final issuesProvider = Provider.of<IssuesProvider>(context, listen: false);
 
-    // create new issue instance
+    final issues = await FirestoreService.issuesCollection.get();
+    var i = 1;
+
+    String uniqueId() => '${widget.towerId}-I${i.toString().padLeft(3, '0')}';
+
+    while (true) {
+      if (issues.docs.where((snapshot) => snapshot.id == uniqueId()).isEmpty) {
+        break;
+      }
+      i++;
+    }
+
     final issue = Issue(
-      id: '',
+      id: uniqueId(),
       dateTime: Timestamp.now(),
       authorId: userProvider.userId,
       tags: _selectedTags,
@@ -60,12 +70,12 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     );
 
     try {
-      await issuesProvider.addIssue(widget.towerId, issue);
+      await FirestoreService.createIssue(issue.id, data: issue.toJson());
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Issue Created Successfully!'),
-        ),);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Issue Created Successfully!')),
+        );
         Navigator.pop(context);
       }
     } catch (e) {
@@ -79,82 +89,98 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.towerId,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+        appBar: AppBar(
+          title: Text(
+            widget.towerId,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+          ),
         ),
-      ),
-      body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(
-          children: [
-            // Tags section (Dropdown)
-            DropdownButton<String>(
-              isExpanded: true,
-              value: _selectedTag,
-              hint: const Text('Tags*'),
-              items: _availableTags.map((tag) => DropdownMenuItem(
-                  value: tag,
-                  child: Text(tag),
-                ),).toList(),
-              onChanged: (newTag) {
-                if (newTag != null && !_selectedTags.contains(newTag)) {
-                  setState(() {
-                    _selectedTags.add(newTag);
-                    _selectedTag = null; // Reset selection
-                  });
-                }
-              },
-              dropdownColor: Theme.of(context).colorScheme.surface,
-            ),
-            const SizedBox(height: 3),
-
-            // Display selected tags
-            if (_selectedTags.isNotEmpty)
-              SizedBox(
-                width: double.infinity,
-                child: Wrap(
-                  spacing: 5,
-                  runSpacing: 5,
-                  children: _selectedTags.map((tag) => GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedTags.remove(tag); // Remove tag on click
-                        });
-                      },
-                      child: Container(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          tag,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
+        body: SafeArea(
+          minimum: const EdgeInsets.symmetric(horizontal: 25),
+          child: Column(
+            children: [
+              // Tags section (Dropdown)
+              DropdownButton<String>(
+                isExpanded: true,
+                value: _selectedTag,
+                hint: const Text('Tags*'),
+                items: _availableTags
+                    .map(
+                      (tag) => DropdownMenuItem(
+                        value: tag,
+                        child: Text(tag),
                       ),
-                    ),).toList(),
-                ),
+                    )
+                    .toList(),
+                onChanged: (newTag) {
+                  if (newTag != null && !_selectedTags.contains(newTag)) {
+                    setState(() {
+                      _selectedTags.add(newTag);
+                      _selectedTag = null; // Reset selection
+                    });
+                  }
+                },
+                dropdownColor: Theme.of(context).colorScheme.surface,
               ),
-            const SizedBox(height: 17),
+              const SizedBox(height: 3),
 
-            // Description box
-            Expanded(
-              child: TextField(
-                controller: _descriptionController,
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                expands: true,
-                textAlignVertical: TextAlignVertical.top,
-                maxLength: _maxDescriptionLength,
-                buildCounter: (context,
-                    {required currentLength, required isFocused, maxLength,}) => Padding(
+              // Display selected tags
+              if (_selectedTags.isNotEmpty)
+                SizedBox(
+                  width: double.infinity,
+                  child: Wrap(
+                    spacing: 5,
+                    runSpacing: 5,
+                    children: _selectedTags
+                        .map(
+                          (tag) => GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedTags
+                                    .remove(tag); // Remove tag on click
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.secondary,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                tag,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.surface,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+              const SizedBox(height: 17),
+
+              // Description box
+              Expanded(
+                child: TextField(
+                  controller: _descriptionController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  expands: true,
+                  textAlignVertical: TextAlignVertical.top,
+                  maxLength: _maxDescriptionLength,
+                  buildCounter: (
+                    context, {
+                    required currentLength,
+                    required isFocused,
+                    maxLength,
+                  }) =>
+                      Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       '$currentLength/$maxLength',
@@ -164,25 +190,24 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                       ),
                     ),
                   ),
-                decoration: InputDecoration(
-                  hintText: 'Description*',
-                  alignLabelWithHint: true,
-                  hintStyle:
-                      TextStyle(color: Theme.of(context).colorScheme.secondary),
-                  contentPadding: const EdgeInsets.all(12),
+                  decoration: InputDecoration(
+                    hintText: 'Description*',
+                    alignLabelWithHint: true,
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    contentPadding: const EdgeInsets.all(12),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-
-            // Create issue button
-            FilledButton(
-              onPressed: _createIssue,
-              child: const Text('Create Issue'),
-            ),
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 20),
+              FilledButton(
+                onPressed: _createIssue,
+                child: const Text('Create Issue'),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
-      ),
-    );
+      );
 }

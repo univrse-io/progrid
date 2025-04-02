@@ -11,7 +11,8 @@ sealed class FirestoreService {
       .collection(kDebugMode ? 'issues_dev' : 'issues');
   static final towersCollection = FirebaseFirestore.instance
       .collection(kDebugMode ? 'towers_dev' : 'towers');
-  // NOTE: Users collection is shared across all environments.
+
+  /// NOTE: Users collection is shared across all environments.
   static final usersCollection = FirebaseFirestore.instance.collection('users');
   static final issuesStream = issuesCollection
       .snapshots()
@@ -19,6 +20,16 @@ sealed class FirestoreService {
   static final towersStream = towersCollection
       .snapshots()
       .map((snapshot) => snapshot.docs.map(Tower.fromFirestore).toList());
+
+  static Future<void> createIssue(
+    String id, {
+    required Map<String, dynamic> data,
+  }) async =>
+      issuesCollection
+          .doc(id)
+          .set(data)
+          .then((_) => log('Successfully created issue.'))
+          .catchError((e) => log('Failed creating issue.', error: e));
 
   static Future<void> createUser(
     String id, {
