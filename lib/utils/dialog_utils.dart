@@ -88,7 +88,6 @@ sealed class DialogUtils {
   }
 
   // TODO: fix context inheritance issue
-  // TODO: implement live provider here instead
   static void showTowerDialog(BuildContext context, String towerId) {
     showDialog(
       context: context,
@@ -126,7 +125,6 @@ sealed class DialogUtils {
                           ),
                         ),
                         const SizedBox(width: 10),
-
                         // survey status dropdown
                         Container(
                           padding: const EdgeInsets.only(left: 14, right: 10),
@@ -177,8 +175,6 @@ sealed class DialogUtils {
                         ),
                       ],
                     ),
-
-                    // tower name
                     Text(
                       selectedTower.name,
                       textAlign: TextAlign.center,
@@ -188,8 +184,6 @@ sealed class DialogUtils {
                       ),
                     ),
                     const SizedBox(height: 3),
-
-                    // tower geolocation
                     Text(
                       '${selectedTower.position.latitude.toStringAsFixed(6)}, ${selectedTower.position.longitude.toStringAsFixed(6)}',
                       style: const TextStyle(
@@ -198,16 +192,10 @@ sealed class DialogUtils {
                       ),
                     ),
                     const SizedBox(height: 3),
-
-                    // site address
                     _buildDetailRow('Address:', selectedTower.address),
-                    // site region
                     _buildDetailRow('Region:', selectedTower.region.toString()),
-                    // site type
                     _buildDetailRow('Type:', selectedTower.type),
                     const SizedBox(height: 10),
-
-                    // gallery
                     Container(
                       height: 130,
                       padding: const EdgeInsets.symmetric(
@@ -268,8 +256,6 @@ sealed class DialogUtils {
                       ),
                     ),
                     const SizedBox(height: 2),
-
-                    // sign-in status indicator
                     Row(
                       children: [
                         Text(
@@ -413,7 +399,7 @@ sealed class DialogUtils {
               onPressed: () => Navigator.pop(context, false),
               style: TextButton.styleFrom(
                 textStyle: Theme.of(context).textTheme.labelLarge,
-              ), // cancel
+              ),
               child: const Text(
                 'Cancel',
                 style: TextStyle(fontWeight: FontWeight.bold),

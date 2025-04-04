@@ -15,10 +15,10 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/drawing_status.dart';
+import '../models/issue.dart';
 import '../models/issue_status.dart';
 import '../models/survey_status.dart';
-import '../providers/issues_provider.dart';
-import '../providers/towers_provider.dart';
+import '../models/tower.dart';
 import '../providers/user_provider.dart';
 import '../services/firestore.dart';
 import '../utils/dialog_utils.dart';
@@ -43,18 +43,11 @@ class _TowerPageState extends State<TowerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final towersProvider = Provider.of<TowersProvider>(context);
-    final selectedTower = towersProvider.towers.firstWhere(
-      (tower) => tower.id == widget.towerId,
-      orElse: () => throw Exception('Tower not found'),
-    );
+    final towers = Provider.of<List<Tower>>(context);
+    final selectedTower =
+        towers.firstWhere((tower) => tower.id == widget.towerId);
 
-    final issuesProvider = Provider.of<IssuesProvider>(context);
-    final issues = issuesProvider.issues.where(
-      (issue) => issue.id.startsWith(
-        '${widget.towerId}-I',
-      ),
-    ); // query all elements in this list, check if any are unresolved
+    final issues = Provider.of<List<Issue>>(context);
 
     _notesController.text = selectedTower.notes ?? ''; // get tower notes
 
@@ -71,7 +64,6 @@ class _TowerPageState extends State<TowerPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // tower name
               Text(
                 selectedTower.name,
                 textAlign: TextAlign.center,
@@ -81,8 +73,6 @@ class _TowerPageState extends State<TowerPage> {
                 ),
               ),
               const SizedBox(height: 5),
-
-              // tower geopoint
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -97,12 +87,10 @@ class _TowerPageState extends State<TowerPage> {
                   GestureDetector(
                     onTap: () async {
                       // TODO: implement apple maps
-                      final towersProvider =
-                          Provider.of<TowersProvider>(context, listen: false);
-                      final selectedTower = towersProvider.towers.firstWhere(
-                        (tower) => tower.id == widget.towerId,
-                        orElse: () => throw Exception('Tower not found'),
-                      );
+                      final towers =
+                          Provider.of<List<Tower>>(context, listen: false);
+                      final selectedTower = towers
+                          .firstWhere((tower) => tower.id == widget.towerId);
 
                       final uri = Uri(
                         scheme: 'google.navigation',
@@ -163,8 +151,7 @@ class _TowerPageState extends State<TowerPage> {
                             selectedTower.id,
                             data: {'surveyStatus': value.name},
                           );
-                          selectedTower.surveyStatus =
-                              value; // update local as well
+                          selectedTower.surveyStatus = value;
                         }
                       },
                       items: SurveyStatus.values
@@ -187,7 +174,6 @@ class _TowerPageState extends State<TowerPage> {
                 ],
               ),
               const SizedBox(height: 14),
-
               const Divider(),
               const SizedBox(height: 14),
               const Row(
@@ -207,17 +193,10 @@ class _TowerPageState extends State<TowerPage> {
                 ],
               ),
               const SizedBox(height: 4),
-
-              // site address
               _buildDetailRow('Address:', selectedTower.address),
-              // site region
               _buildDetailRow('Region:', selectedTower.region.toString()),
-              // site type
               _buildDetailRow('Type:', selectedTower.type),
-
               const SizedBox(height: 10),
-
-              // pictures section title
               const Text(
                 'Pictures',
                 style: TextStyle(
@@ -225,8 +204,6 @@ class _TowerPageState extends State<TowerPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
-              // gallery
               Container(
                 height: 130,
                 padding:
@@ -274,8 +251,6 @@ class _TowerPageState extends State<TowerPage> {
                 ),
               ),
               const SizedBox(height: 2),
-
-              // sign-in status indicator
               Row(
                 children: [
                   Text(
@@ -301,8 +276,6 @@ class _TowerPageState extends State<TowerPage> {
                 ],
               ),
               const SizedBox(height: 10),
-
-              // notes section title
               const Text(
                 'Additional Notes',
                 style: TextStyle(
@@ -310,8 +283,6 @@ class _TowerPageState extends State<TowerPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
-              // notes text field
               SizedBox(
                 height: 120, // control text box height here
                 child: TextField(
@@ -360,15 +331,15 @@ class _TowerPageState extends State<TowerPage> {
                     _debounceTimer =
                         Timer(const Duration(milliseconds: 2000), () {
                       // update notes every one second of changes
-                      towersProvider.updateNotes(widget.towerId, text);
+                      FirestoreService.updateTower(
+                        widget.towerId,
+                        data: {'notes': text},
+                      );
                     });
                   },
                 ),
               ),
-
-              // Expanded(child: const SizedBox()),
               const SizedBox(height: 15),
-
               Row(
                 children: [
                   Expanded(
@@ -420,7 +391,6 @@ class _TowerPageState extends State<TowerPage> {
                 ],
               ),
               const SizedBox(height: 1),
-
               FilledButton(
                 onPressed: () {
                   Navigator.push(
@@ -443,9 +413,8 @@ class _TowerPageState extends State<TowerPage> {
 
   Future<void> _signIn() async {
     try {
-      final towersProvider =
-          Provider.of<TowersProvider>(context, listen: false);
-      final selectedTower = towersProvider.towers.firstWhere(
+      final towers = Provider.of<List<Tower>>(context, listen: false);
+      final selectedTower = towers.firstWhere(
         (tower) => tower.id == widget.towerId,
         orElse: () => throw Exception('Tower not found'),
       );
@@ -527,12 +496,9 @@ class _TowerPageState extends State<TowerPage> {
 
   Future<void> _signOut() async {
     try {
-      final towersProvider =
-          Provider.of<TowersProvider>(context, listen: false);
-      final selectedTower = towersProvider.towers.firstWhere(
-        (tower) => tower.id == widget.towerId,
-        orElse: () => throw Exception('Tower not found'),
-      );
+      final towers = Provider.of<List<Tower>>(context, listen: false);
+      final selectedTower =
+          towers.firstWhere((tower) => tower.id == widget.towerId);
 
       // check if there is already one image
       if (selectedTower.images.length != 1) {
@@ -753,37 +719,35 @@ class _TowerPageState extends State<TowerPage> {
 
       // update Firebase database and local
       if (mounted) {
-        final towersProvider =
-            Provider.of<TowersProvider>(context, listen: false);
         final userProvider = Provider.of<UserProvider>(context, listen: false);
-        await towersProvider.updateAuthorId(
+        await FirestoreService.updateTower(
           widget.towerId,
-          userProvider.userId,
+          data: {'authorId': userProvider.userId},
         );
-        await towersProvider.addImage(widget.towerId, downloadUrl);
+        await FirestoreService.updateTower(
+          widget.towerId,
+          data: {
+            'images': FieldValue.arrayUnion([downloadUrl]),
+          },
+        );
 
         // update tower status
         if (isSignOut) {
-          await towersProvider.updateSurveyStatus(
+          await FirestoreService.updateTower(
             widget.towerId,
-            SurveyStatus.surveyed,
-          );
-          await towersProvider.updateSignOut(
-            widget.towerId,
-            Timestamp.fromDate(DateTime.now()),
+            data: {
+              'signOut': Timestamp.fromDate(DateTime.now()),
+              'surveyStatus': SurveyStatus.surveyed.name,
+            },
           );
         } else {
-          await towersProvider.updateSurveyStatus(
+          await FirestoreService.updateTower(
             widget.towerId,
-            SurveyStatus.inprogress,
-          );
-          await towersProvider.updateDrawingStatus(
-            widget.towerId,
-            DrawingStatus.inprogress,
-          );
-          await towersProvider.updateSignIn(
-            widget.towerId,
-            Timestamp.fromDate(DateTime.now()),
+            data: {
+              'drawingStatus': DrawingStatus.inprogress.name,
+              'signIn': Timestamp.fromDate(DateTime.now()),
+              'surveyStatus': SurveyStatus.inprogress.name,
+            },
           );
         }
       } else {
@@ -841,8 +805,8 @@ class _TowerPageState extends State<TowerPage> {
   //     if (mounted) {
   //       DialogUtils.showLoadingDialog(context);
 
-  //       final towersProvider = Provider.of<TowersProvider>(context, listen: false);
-  //       final selectedTower = towersProvider.towers.firstWhere(
+  //       final towers = Provider.of<List<Tower>>(context, listen: false);
+  //       final selectedTower = towers.firstWhere(
   //         (tower) => tower.id == widget.towerId,
   //         orElse: () => throw Exception("Tower not found"),
   //       );
@@ -858,7 +822,7 @@ class _TowerPageState extends State<TowerPage> {
   //         });
 
   //         // reset tower status to unsurveyed
-  //         towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.unsurveyed);
+  //         towers.updateSurveyStatus(widget.towerId, SurveyStatus.unsurveyed);
   //       } else {
   //         if (url == selectedTower.images.first) {
   //           Navigator.pop(context);
@@ -874,7 +838,7 @@ class _TowerPageState extends State<TowerPage> {
   //         });
 
   //         // set tower status to inprogress
-  //         towersProvider.updateSurveyStatus(widget.towerId, SurveyStatus.inprogress);
+  //         towers.updateSurveyStatus(widget.towerId, SurveyStatus.inprogress);
   //       }
 
   //       if (mounted) {
@@ -972,27 +936,23 @@ class _TowerPageState extends State<TowerPage> {
   //   }
   // }
 
-  // UI function to build a detail row format
   Widget _buildDetailRow(String label, String content) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 2),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // label
             SizedBox(
               width: 90,
               child: Text(
                 label,
                 textAlign: TextAlign.right,
                 style: const TextStyle(
-                  // decoration: TextDecoration.underline,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
               ),
             ),
             const SizedBox(width: 10),
-            // content
             Expanded(
               child: Text(
                 content,
