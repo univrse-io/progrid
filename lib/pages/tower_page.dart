@@ -806,7 +806,7 @@ class _TowerPageState extends State<TowerPage> {
   //       DialogUtils.showLoadingDialog(context);
 
   //       final towers = Provider.of<List<Tower>>(context, listen: false);
-  //       final selectedTower = towers.towers.firstWhere(
+  //       final selectedTower = towers.firstWhere(
   //         (tower) => tower.id == widget.towerId,
   //         orElse: () => throw Exception("Tower not found"),
   //       );
