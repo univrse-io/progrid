@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -19,7 +20,6 @@ import '../models/issue.dart';
 import '../models/issue_status.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
-import '../providers/user_provider.dart';
 import '../services/firestore.dart';
 import '../utils/dialog_utils.dart';
 import '../utils/themes.dart';
@@ -717,12 +717,11 @@ class _TowerPageState extends State<TowerPage> {
       final snapshot = await uploadTask.whenComplete(() {});
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-      // update Firebase database and local
       if (mounted) {
-        final userProvider = Provider.of<UserProvider>(context, listen: false);
+        final user = Provider.of<User?>(context, listen: false);
         await FirestoreService.updateTower(
           widget.towerId,
-          data: {'authorId': userProvider.userId},
+          data: {'authorId': user?.uid ?? ''},
         );
         await FirestoreService.updateTower(
           widget.towerId,
@@ -730,8 +729,6 @@ class _TowerPageState extends State<TowerPage> {
             'images': FieldValue.arrayUnion([downloadUrl]),
           },
         );
-
-        // update tower status
         if (isSignOut) {
           await FirestoreService.updateTower(
             widget.towerId,
@@ -760,7 +757,7 @@ class _TowerPageState extends State<TowerPage> {
         );
       }
     } finally {
-      if (mounted) Navigator.pop(context); // close loading dialog
+      if (mounted) Navigator.pop(context);
     }
   }
 
