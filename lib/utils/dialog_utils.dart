@@ -15,7 +15,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/survey_status.dart';
 import '../models/tower.dart';
-import '../providers/user_provider.dart';
 import '../services/firestore.dart';
 import 'themes.dart';
 
@@ -32,8 +31,6 @@ sealed class DialogUtils {
     BuildContext context,
     String imageUrl,
     String towerId,
-    // Future<void> Function(BuildContext, String) onDownload,
-    // Future<void> Function(BuildContext, String) onDelete,
   ) {
     log(imageUrl);
     showDialog(
@@ -136,22 +133,23 @@ sealed class DialogUtils {
                             // require type specifics
                             isDense: true,
                             value: selectedTower.surveyStatus,
-                            onChanged: context.read<UserProvider>().role !=
-                                    'admin'
-                                ? null
-                                : (value) {
-                                    if (value != null &&
-                                        value != selectedTower.surveyStatus) {
-                                      FirestoreService.updateTower(
-                                        selectedTower.id,
-                                        data: {'surveyStatus': value.name},
-                                      );
-                                      setState(
-                                        () =>
-                                            selectedTower.surveyStatus = value,
-                                      );
-                                    }
-                                  },
+                            onChanged:
+                                // TODO: Admin checker
+                                // context.read<User?>().role !=
+                                //         'admin'
+                                //     ? null :
+                                (value) {
+                              if (value != null &&
+                                  value != selectedTower.surveyStatus) {
+                                FirestoreService.updateTower(
+                                  selectedTower.id,
+                                  data: {'surveyStatus': value.name},
+                                );
+                                setState(
+                                  () => selectedTower.surveyStatus = value,
+                                );
+                              }
+                            },
                             items: SurveyStatus.values
                                 .map(
                                   (status) => DropdownMenuItem(
@@ -163,9 +161,11 @@ sealed class DialogUtils {
                             iconEnabledColor:
                                 Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(24),
-                            icon: context.read<UserProvider>().role == 'admin'
-                                ? null
-                                : const SizedBox(),
+                            icon:
+                                // TODO: Admin checker
+                                // context.read<User?>().role == 'admin'
+                                // ? null :
+                                const SizedBox(),
                             dropdownColor: selectedTower.surveyStatus.color,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.surface,

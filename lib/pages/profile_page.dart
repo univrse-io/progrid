@@ -1,14 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../providers/user_provider.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
+    final user = Provider.of<User?>(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('User Profile')),
@@ -24,16 +23,21 @@ class ProfilePage extends StatelessWidget {
                       CircleAvatar(
                         radius: 40,
                         foregroundImage: NetworkImage(
-                            'https://api.dicebear.com/9.x/dylan/png?seed=${userProvider.name}&scale=80',),
+                          'https://api.dicebear.com/9.x/dylan/png?seed=${user?.displayName}&scale=80',
+                        ),
                       ),
                       const SizedBox(width: 20),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(userProvider.name,
-                              style: Theme.of(context).textTheme.headlineSmall,),
                           Text(
-                              '${userProvider.role[0].toUpperCase()}${userProvider.role.substring(1)}',), // capitalize
+                            '${user?.displayName}',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          // TODO: Admin checker
+                          // Text(
+                          //   '${user.role[0].toUpperCase()}${user.role.substring(1)}',
+                          // ),
                         ],
                       ),
                     ],
@@ -41,16 +45,17 @@ class ProfilePage extends StatelessWidget {
                   const SizedBox(height: 20),
                   ListTile(
                     leading: const Icon(Icons.email_outlined),
-                    title: Text(userProvider.email),
+                    title: Text('${user?.email}'),
                   ),
                   ListTile(
                     leading: const Icon(Icons.phone_outlined),
-                    title: Text(userProvider.phone),
+                    title: Text('${user?.phoneNumber}'),
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.group),
-                    title: Text(userProvider.team),
-                  ),
+                  // TODO: Team checker
+                  // ListTile(
+                  //   leading: const Icon(Icons.group),
+                  //   title: Text(user.team),
+                  // ),
                 ],
               ),
             ),
@@ -58,11 +63,12 @@ class ProfilePage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(20),
             child: FilledButton(
-                onPressed: () async {
-                  await userProvider.logout();
-                  if (context.mounted) Navigator.pop(context);
-                },
-                child: const Text('Logout'),),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) Navigator.pop(context);
+              },
+              child: const Text('Logout'),
+            ),
           ),
         ],
       ),

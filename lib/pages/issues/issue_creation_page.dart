@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/issue.dart';
 import '../../models/issue_status.dart';
-import '../../providers/user_provider.dart';
 import '../../services/firestore.dart';
 
 class IssueCreationPage extends StatefulWidget {
@@ -46,7 +46,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
       return;
     }
 
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = Provider.of<User?>(context, listen: false);
 
     final issues = await FirestoreService.issuesCollection.get();
     var i = 1;
@@ -63,7 +63,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     final issue = Issue(
       id: uniqueId(),
       dateTime: Timestamp.now(),
-      authorId: userProvider.userId,
+      authorId: user!.uid,
       tags: _selectedTags,
       description: _descriptionController.text,
       status: IssueStatus.unresolved,

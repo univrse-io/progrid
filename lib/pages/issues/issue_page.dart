@@ -1,9 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/issue.dart';
 import '../../models/issue_status.dart';
-import '../../providers/user_provider.dart';
 import '../../services/firestore.dart';
 
 class IssuePage extends StatefulWidget {
@@ -96,7 +96,7 @@ class _IssuePageState extends State<IssuePage> {
               ),
             ),
             const SizedBox(height: 7),
-            if (issue.authorId == Provider.of<UserProvider>(context).userId)
+            if (issue.authorId == Provider.of<User?>(context)!.uid)
               Container(
                 padding: const EdgeInsets.only(left: 14, right: 10),
                 decoration: BoxDecoration(
@@ -112,8 +112,6 @@ class _IssuePageState extends State<IssuePage> {
                         issue.id,
                         data: {'status': value.name},
                       );
-
-                      // update local as well
                       issue.status = value;
                     }
                   },

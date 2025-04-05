@@ -15,7 +15,6 @@ import '../../models/issue_status.dart';
 import '../../models/region.dart';
 import '../../models/survey_status.dart';
 import '../../models/tower.dart';
-import '../../providers/user_provider.dart';
 import '../../services/firestore.dart';
 import '../../utils/dialog_utils.dart';
 import 'home_page.dart';
@@ -1089,8 +1088,9 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                 ),
                                 textStyle:
                                     Theme.of(context).textTheme.bodyMedium,
-                                enabled: context.read<UserProvider>().role ==
-                                    'admin',
+                                // TODO: Admin checker
+                                // enabled: context.read<UserProvider>().role ==
+                                //     'admin',
                                 onSelected: (value) {
                                   if (value != null) {
                                     FirestoreService.updateTower(
@@ -1102,9 +1102,10 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                   }
                                 },
                                 trailingIcon:
-                                    context.read<UserProvider>().role == 'admin'
-                                        ? null
-                                        : const SizedBox(),
+                                    // TODO: Admin checker
+                                    // context.read<UserProvider>().role == 'admin'
+                                    //     ? null :
+                                    const SizedBox(),
                                 dropdownMenuEntries: [
                                   ...SurveyStatus.values.map(
                                     (status) => DropdownMenuEntry(
@@ -1143,8 +1144,9 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                 ),
                                 textStyle:
                                     Theme.of(context).textTheme.bodyMedium,
-                                enabled: context.read<UserProvider>().role ==
-                                    'admin',
+                                // TODO: Admin checker
+                                // enabled: context.read<UserProvider>().role ==
+                                //     'admin',
                                 onSelected: (value) {
                                   if (value != null) {
                                     FirestoreService.updateTower(
@@ -1156,9 +1158,10 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                   }
                                 },
                                 trailingIcon:
-                                    context.read<UserProvider>().role == 'admin'
-                                        ? null
-                                        : const SizedBox(),
+                                    // TODO: Admin checker
+                                    // context.read<UserProvider>().role == 'admin'
+                                    //     ? null :
+                                    const SizedBox(),
                                 dropdownMenuEntries: [
                                   ...DrawingStatus.values.map(
                                     (status) => DropdownMenuEntry(
