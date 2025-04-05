@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../services/firestore.dart';
 import '../../utils/themes.dart';
 import 'forgot_password_page.dart';
 
@@ -23,20 +21,11 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // login user
   Future<void> _login() async {
-    // try to sign in
     try {
-      // firebase auth
-      final credentials =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
-      );
-
-      await FirestoreService.updateUser(
-        credentials.user!.uid,
-        data: {'lastLogin': Timestamp.now()},
       );
     } on FirebaseAuthException catch (e) {
       log('Error: ${e.message}');
