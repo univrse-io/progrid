@@ -108,7 +108,7 @@ class _IssuePageState extends State<IssuePage> {
                   value: issue.status,
                   onChanged: (value) {
                     if (value != null && value != issue.status) {
-                      FirestoreService.updateIssue(
+                      FirestoreService().updateIssue(
                         issue.id,
                         data: {'status': value.name},
                       );

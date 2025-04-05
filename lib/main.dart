@@ -32,11 +32,11 @@ class Progrid extends StatelessWidget {
         providers: [
           StreamProvider<List<Issue>>(
             initialData: const [],
-            create: (_) => FirestoreService.issuesStream,
+            create: (_) => FirestoreService().issuesStream,
           ),
           StreamProvider<List<Tower>>(
             initialData: const [],
-            create: (_) => FirestoreService.towersStream,
+            create: (_) => FirestoreService().towersStream,
           ),
           StreamProvider<User?>(
             initialData: null,
