@@ -1,14 +1,11 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../services/firestore.dart';
 import '../../utils/themes.dart';
 
 class RegisterPage extends StatefulWidget {
-  // toggle to login page
   final void Function()? onTapSwitchPage;
 
   const RegisterPage({required this.onTapSwitchPage, super.key});
@@ -38,20 +35,6 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       // send verification email
       unawaited(credentials.user!.sendEmailVerification());
-
-      await FirestoreService.createUser(
-        credentials.user!.uid,
-        data: {
-          'email': _emailController.text.trim(),
-          'name': _nameController.text,
-          'phone': 'not set',
-          'team': 'not set',
-          'role': 'engineer',
-          'lastLogin': Timestamp.now(),
-        },
-      );
-
-      // add to firebase
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         unawaited(

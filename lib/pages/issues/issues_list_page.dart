@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/issue.dart';
-import '../../services/firestore.dart';
 import 'issue_creation_page.dart';
 import 'issue_page.dart';
 
@@ -38,7 +36,6 @@ class IssuesListPage extends StatelessWidget {
                 fontSize: 25,
               ),
             ),
-
             GestureDetector(
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -56,8 +53,6 @@ class IssuesListPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-
-            // issues list
             Expanded(
               child: issues.isEmpty
                   ? const Center(child: Text('No Issues Found'))
@@ -66,125 +61,115 @@ class IssuesListPage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final issue = issues.toList()[index];
                         final tagsDisplay = issue.tags.join(', ');
+                        // FIXME: Save author name inside database.
+                        const authorName = 'Unknown Author';
 
-                        return FutureBuilder<DocumentSnapshot>(
-                          future: FirestoreService.usersCollection
-                              .doc(issue.authorId)
-                              .get(),
-                          builder: (context, authorSnapshot) {
-                            final authorName = authorSnapshot.hasData &&
-                                    authorSnapshot.data!.exists
-                                ? authorSnapshot.data!['name'] as String
-                                : 'Unknown Author';
-
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => IssuePage(
-                                      issueId: issue.id,
-                                      towerId: towerId,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Card(
-                                margin: const EdgeInsets.symmetric(vertical: 4),
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 70,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Container(
-                                                  width: 14,
-                                                  height: 14,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: issue.status.color,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 7),
-                                                Text(
-                                                  issue.id,
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Text(
-                                              tagsDisplay,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  authorName,
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                const Text(', '),
-                                                Text(
-                                                  issue.status.toString(),
-                                                  style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 30,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              DateFormat('dd/MM/yy').format(
-                                                issue.dateTime.toDate(),
-                                              ),
-                                              style: const TextStyle(
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 10),
-                                            const Icon(
-                                              Icons.arrow_right,
-                                              size: 36,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => IssuePage(
+                                  issueId: issue.id,
+                                  towerId: towerId,
                                 ),
                               ),
                             );
                           },
+                          child: Card(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 70,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: 14,
+                                              height: 14,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: issue.status.color,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 7),
+                                            Text(
+                                              issue.id,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          tagsDisplay,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              authorName,
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const Text(', '),
+                                            Text(
+                                              issue.status.toString(),
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 30,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          DateFormat('dd/MM/yy').format(
+                                            issue.dateTime.toDate(),
+                                          ),
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Icon(
+                                          Icons.arrow_right,
+                                          size: 36,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         );
                       },
                     ),
