@@ -141,7 +141,7 @@ sealed class DialogUtils {
                                 (value) {
                               if (value != null &&
                                   value != selectedTower.surveyStatus) {
-                                FirestoreService.updateTower(
+                                FirestoreService().updateTower(
                                   selectedTower.id,
                                   data: {'surveyStatus': value.name},
                                 );
@@ -335,7 +335,6 @@ sealed class DialogUtils {
                             FirestoreService.towersCollection
                                 .doc(towerId)
                                 .update({'notes': text});
-
                             // update local
                             setState(() {
                               selectedTower.notes = text;

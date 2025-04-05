@@ -1093,11 +1093,9 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                 //     'admin',
                                 onSelected: (value) {
                                   if (value != null) {
-                                    FirestoreService.updateTower(
+                                    FirestoreService().updateTower(
                                       tower.id,
-                                      data: {
-                                        'surveyStatus': value.name,
-                                      },
+                                      data: {'surveyStatus': value.name},
                                     );
                                   }
                                 },
@@ -1149,11 +1147,9 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                 //     'admin',
                                 onSelected: (value) {
                                   if (value != null) {
-                                    FirestoreService.updateTower(
+                                    FirestoreService().updateTower(
                                       tower.id,
-                                      data: {
-                                        'drawingStatus': value.name,
-                                      },
+                                      data: {'drawingStatus': value.name},
                                     );
                                   }
                                 },

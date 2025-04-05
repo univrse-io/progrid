@@ -6,19 +6,20 @@ import 'package:flutter/foundation.dart';
 import '../models/issue.dart';
 import '../models/tower.dart';
 
-sealed class FirestoreService {
+class FirestoreService {
   static final issuesCollection = FirebaseFirestore.instance
       .collection(kDebugMode ? 'issues_dev' : 'issues');
   static final towersCollection = FirebaseFirestore.instance
       .collection(kDebugMode ? 'towers_dev' : 'towers');
-  static final issuesStream = issuesCollection
+
+  Stream<List<Issue>> get issuesStream => issuesCollection
       .snapshots()
       .map((snapshot) => snapshot.docs.map(Issue.fromFirestore).toList());
-  static final towersStream = towersCollection
+  Stream<List<Tower>> get towersStream => towersCollection
       .snapshots()
       .map((snapshot) => snapshot.docs.map(Tower.fromFirestore).toList());
 
-  static Future<void> createIssue(
+  Future<void> createIssue(
     String id, {
     required Map<String, dynamic> data,
   }) async =>
@@ -28,7 +29,7 @@ sealed class FirestoreService {
           .then((_) => log('Successfully created issue.'))
           .catchError((e) => log('Failed creating issue.', error: e));
 
-  static Future<void> updateIssue(
+  Future<void> updateIssue(
     String id, {
     required Map<String, dynamic> data,
   }) async =>
@@ -38,7 +39,7 @@ sealed class FirestoreService {
           .then((_) => log('Successfully updated issue.'))
           .catchError((e) => log('Failed updating issue.', error: e));
 
-  static Future<void> updateTower(
+  Future<void> updateTower(
     String id, {
     required Map<String, dynamic> data,
   }) async =>

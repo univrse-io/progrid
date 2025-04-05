@@ -70,7 +70,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     );
 
     try {
-      await FirestoreService.createIssue(issue.id, data: issue.toJson());
+      await FirestoreService().createIssue(issue.id, data: issue.toJson());
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
