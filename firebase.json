@@ -1,1 +1,40 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"progrid-3a41b","appId":"1:678276190882:android:88cbd603453477b3debdfb","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"progrid-3a41b","configurations":{"android":"1:678276190882:android:88cbd603453477b3debdfb","ios":"1:678276190882:ios:8e56ec152d7297afdebdfb","web":"1:678276190882:web:32ed345fbe02137edebdfb"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "progrid-3a41b",
+          "appId": "1:678276190882:android:88cbd603453477b3debdfb",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "progrid-3a41b",
+          "configurations": {
+            "android": "1:678276190882:android:88cbd603453477b3debdfb",
+            "ios": "1:678276190882:ios:8e56ec152d7297afdebdfb",
+            "web": "1:678276190882:web:32ed345fbe02137edebdfb"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ]
+}
