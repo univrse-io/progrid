@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// TODO: Implement edit profile functionality.
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 

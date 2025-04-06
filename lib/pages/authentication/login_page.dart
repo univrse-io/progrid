@@ -4,14 +4,11 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../utils/themes.dart';
 import 'forgot_password_page.dart';
+import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
-  // toggle to register page
-  final void Function()? onTapSwitchPage;
-
-  const LoginPage({required this.onTapSwitchPage, super.key});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -52,17 +49,11 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // app logo
-                  Image.asset(
-                    'assets/images/progrid_black.png',
-                    width: 300,
-                    // fit: BoxFit.cover,
-                  ),
+                  Image.asset('assets/images/progrid_black.png', width: 300),
                   const SizedBox(height: 15),
-
                   Container(
                     width: 350,
-                    padding: const EdgeInsets.all(20), // padding inside the box
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(10),
@@ -79,13 +70,11 @@ class _LoginPageState extends State<LoginPage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // welcome text
-                          Text(
+                          const Text(
                             'Welcome Back!\nGlad to see you again.',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
-                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -110,22 +99,17 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _passwordController,
                           ),
                           const SizedBox(height: 7),
-
-                          // forgot password?
                           Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: Align(
                               alignment: Alignment.centerRight,
                               child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ForgotPasswordPage(),
-                                    ),
-                                  );
-                                },
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ForgotPasswordPage(),
+                                  ),
+                                ),
                                 child: Text(
                                   'Forgot Password?',
                                   style: TextStyle(
@@ -146,8 +130,6 @@ class _LoginPageState extends State<LoginPage> {
                             child: const Text('Login'),
                           ),
                           const SizedBox(height: 14),
-
-                          // link to register page
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -159,7 +141,12 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: widget.onTapSwitchPage,
+                                onTap: () =>
+                                    Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => const RegisterPage(),
+                                  ),
+                                ),
                                 child: Text(
                                   'Register Now',
                                   style: TextStyle(
@@ -178,28 +165,21 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 15),
-
-                  // logos bottom set
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // sapura logo
                       Image.asset(
                         'assets/images/sapura.png',
                         width: 100,
                         fit: BoxFit.cover,
                       ),
                       const SizedBox(width: 10),
-
-                      // binasat logo
                       Image.asset(
                         'assets/images/binasat.png',
                         width: 55,
                         fit: BoxFit.cover,
                       ),
                       const SizedBox(width: 10),
-
-                      // uos logo
                       Image.asset(
                         'assets/images/uos.png',
                         width: 55,
@@ -209,20 +189,13 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                   const SizedBox(height: 12),
-
                   const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        'Powered by ',
-                        style: TextStyle(color: AppColors.onSurface),
-                      ),
+                      Text('Powered by '),
                       Text(
                         'UniVRse',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.onSurface,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
