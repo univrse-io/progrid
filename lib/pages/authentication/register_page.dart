@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class RegisterPage extends StatefulWidget {
-  final void Function()? onTapSwitchPage;
+import 'login_page.dart';
 
-  const RegisterPage({required this.onTapSwitchPage, super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -154,7 +154,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: widget.onTapSwitchPage,
+                                  onTap: () =>
+                                      Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => const LoginPage(),
+                                    ),
+                                  ),
                                   child: Text(
                                     'Login Now',
                                     style: TextStyle(
