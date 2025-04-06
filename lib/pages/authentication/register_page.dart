@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../utils/themes.dart';
-
 class RegisterPage extends StatefulWidget {
   final void Function()? onTapSwitchPage;
 
@@ -22,18 +20,18 @@ class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> _register() async {
-    // validate forms
     final isValid = _formKey.currentState!.validate();
+
     if (!isValid) return;
 
-    // create the user
     try {
       final credentials =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      // send verification email
+
+      await credentials.user!.updateDisplayName(_nameController.text);
       unawaited(credentials.user!.sendEmailVerification());
     } on FirebaseAuthException catch (e) {
       if (mounted) {
@@ -81,12 +79,11 @@ class _RegisterPageState extends State<RegisterPage> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
+                            const Text(
                               'Welcome!\nCreate an Account.',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 24,
-                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -175,28 +172,21 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   const SizedBox(height: 15),
-
-                  // logos bottom set
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // sapura logo
                       Image.asset(
                         'assets/images/sapura.png',
                         width: 100,
                         fit: BoxFit.cover,
                       ),
                       const SizedBox(width: 10),
-
-                      // binasat logo
                       Image.asset(
                         'assets/images/binasat.png',
                         width: 55,
                         fit: BoxFit.cover,
                       ),
                       const SizedBox(width: 10),
-
-                      // uos logo
                       Image.asset(
                         'assets/images/uos.png',
                         width: 55,
@@ -206,20 +196,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     ],
                   ),
                   const SizedBox(height: 12),
-
                   const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        'Powered by ',
-                        style: TextStyle(color: AppColors.onSurface),
-                      ),
+                      Text('Powered by '),
                       Text(
                         'UniVRse',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.onSurface,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
