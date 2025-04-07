@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/auth.dart';
-import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -134,6 +133,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                       ),
                                     );
                                   }
+                                }).then((_) {
+                                  if (context.mounted) Navigator.pop(context);
                                 });
                               },
                               child: const Text('Register'),
@@ -150,12 +151,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () =>
-                                      Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginPage(),
-                                    ),
-                                  ),
+                                  onTap: Navigator.of(context).pop,
                                   child: Text(
                                     'Login Now',
                                     style: TextStyle(
