@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/auth.dart';
 import 'forgot_password_page.dart';
 import 'register_page.dart';
 
@@ -15,29 +15,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  Future<void> _login() async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-    } on FirebaseAuthException catch (e) {
-      log('Error: ${e.message}');
-
-      if (mounted) {
-        unawaited(
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(title: Text(e.code)),
-          ),
-        );
-      }
-      _passwordController.clear();
-    }
-  }
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -79,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 12),
                           TextField(
-                            controller: _emailController,
+                            controller: emailController,
                             decoration: InputDecoration(
                               hintText: 'Email',
                               hintStyle: TextStyle(
@@ -96,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),
-                            controller: _passwordController,
+                            controller: passwordController,
                           ),
                           const SizedBox(height: 7),
                           Padding(
@@ -126,7 +105,22 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 14),
                           FilledButton(
-                            onPressed: _login,
+                            onPressed: () => AuthService()
+                                .login(
+                              emailController.text.trim(),
+                              passwordController.text.trim(),
+                            )
+                                .onError<FirebaseAuthException>((e, _) {
+                              if (context.mounted) {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    title: Text(e.message ?? e.code),
+                                  ),
+                                );
+                              }
+                              passwordController.clear();
+                            }),
                             child: const Text('Login'),
                           ),
                           const SizedBox(height: 14),
