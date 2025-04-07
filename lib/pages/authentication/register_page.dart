@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/auth.dart';
 import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -13,37 +14,11 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _emailController = TextEditingController();
-  final _nameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-
-  Future<void> _register() async {
-    final isValid = _formKey.currentState!.validate();
-
-    if (!isValid) return;
-
-    try {
-      final credentials =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      await credentials.user!.updateDisplayName(_nameController.text);
-      unawaited(credentials.user!.sendEmailVerification());
-    } on FirebaseAuthException catch (e) {
-      if (mounted) {
-        unawaited(
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(title: Text(e.code)),
-          ),
-        );
-      }
-    }
-  }
+  final emailController = TextEditingController();
+  final nameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -73,7 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ],
                     ),
                     child: Form(
-                      key: _formKey,
+                      key: formKey,
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -88,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                             const SizedBox(height: 10),
                             TextFormField(
-                              controller: _emailController,
+                              controller: emailController,
                               decoration: InputDecoration(
                                 hintText: 'Email',
                                 hintStyle: TextStyle(
@@ -99,7 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                             const SizedBox(height: 10),
                             TextFormField(
-                              controller: _nameController,
+                              controller: nameController,
                               decoration: InputDecoration(
                                 hintText: 'Full Name',
                                 hintStyle: TextStyle(
@@ -111,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                             const SizedBox(height: 10),
                             TextFormField(
-                              controller: _passwordController,
+                              controller: passwordController,
                               obscureText: true,
                               decoration: InputDecoration(
                                 hintText: 'Password',
@@ -131,15 +106,36 @@ class _RegisterPageState extends State<RegisterPage> {
                                       Theme.of(context).colorScheme.secondary,
                                 ),
                               ),
-                              controller: _confirmPasswordController,
+                              controller: confirmPasswordController,
                               validator: (value) =>
-                                  _passwordController.text != value
+                                  passwordController.text != value
                                       ? "Passwords don't match"
                                       : null,
                             ),
                             const SizedBox(height: 24),
                             FilledButton(
-                              onPressed: _register,
+                              onPressed: () {
+                                if (!formKey.currentState!.validate()) return;
+
+                                AuthService()
+                                    .register(
+                                  nameController.text.trim(),
+                                  emailController.text.trim(),
+                                  passwordController.text.trim(),
+                                )
+                                    .onError<FirebaseAuthException>((e, _) {
+                                  if (context.mounted) {
+                                    unawaited(
+                                      showDialog(
+                                        context: context,
+                                        builder: (_) => AlertDialog(
+                                          title: Text(e.message ?? e.code),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                });
+                              },
                               child: const Text('Register'),
                             ),
                             const SizedBox(height: 14),

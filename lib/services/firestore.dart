@@ -11,6 +11,7 @@ class FirestoreService {
       .collection(kDebugMode ? 'issues_dev' : 'issues');
   static final towersCollection = FirebaseFirestore.instance
       .collection(kDebugMode ? 'towers_dev' : 'towers');
+  static final usersCollection = FirebaseFirestore.instance.collection('users');
 
   Stream<List<Issue>> get issuesStream => issuesCollection
       .snapshots()
@@ -28,6 +29,16 @@ class FirestoreService {
           .set(data)
           .then((_) => log('Successfully created issue.'))
           .catchError((e) => log('Failed creating issue.', error: e));
+
+  Future<void> createUser(
+    String id, {
+    required Map<String, dynamic> data,
+  }) async =>
+      usersCollection
+          .doc(id)
+          .set(data)
+          .then((_) => log('Successfully created user.'))
+          .catchError((e) => log('Failed creating user.', error: e));
 
   Future<void> updateIssue(
     String id, {
@@ -48,4 +59,14 @@ class FirestoreService {
           .update(data)
           .then((_) => log('Successfully updated tower.'))
           .catchError((e) => log('Failed updating tower.', error: e));
+
+  Future<void> updateUser(
+    String id, {
+    required Map<String, dynamic> data,
+  }) async =>
+      usersCollection
+          .doc(id)
+          .update(data)
+          .then((_) => log('Successfully updated user.'))
+          .catchError((e) => log('Failed updating user.', error: e));
 }
