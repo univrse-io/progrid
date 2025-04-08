@@ -15,7 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/survey_status.dart';
 import '../models/tower.dart';
-import '../services/firestore.dart';
+import '../services/firebase_firestore.dart';
 import 'themes.dart';
 
 sealed class DialogUtils {
@@ -141,7 +141,7 @@ sealed class DialogUtils {
                                 (value) {
                               if (value != null &&
                                   value != selectedTower.surveyStatus) {
-                                FirestoreService().updateTower(
+                                FirebaseFirestoreService().updateTower(
                                   selectedTower.id,
                                   data: {'surveyStatus': value.name},
                                 );
@@ -332,13 +332,10 @@ sealed class DialogUtils {
                           debounceTimer =
                               Timer(const Duration(milliseconds: 2000), () {
                             // update notes every one second of changes
-                            FirestoreService.towersCollection
+                            FirebaseFirestoreService.towersCollection
                                 .doc(towerId)
                                 .update({'notes': text});
-                            // update local
-                            setState(() {
-                              selectedTower.notes = text;
-                            });
+                            setState(() => selectedTower.notes = text);
                           });
                         },
                       ),

@@ -12,7 +12,7 @@ import 'pages/authentication/login_page.dart';
 import 'pages/dashboard/dashboard_page.dart';
 import 'pages/map_page.dart';
 import 'pages/user_verification_page.dart';
-import 'services/firestore.dart';
+import 'services/firebase_firestore.dart';
 import 'utils/themes.dart';
 
 void main() async {
@@ -25,11 +25,11 @@ void main() async {
       providers: [
         StreamProvider<List<Issue>>(
           initialData: const [],
-          create: (_) => FirestoreService().issuesStream,
+          create: (_) => FirebaseFirestoreService().issuesStream,
         ),
         StreamProvider<List<Tower>>(
           initialData: const [],
-          create: (_) => FirestoreService().towersStream,
+          create: (_) => FirebaseFirestoreService().towersStream,
         ),
         StreamProvider<User?>(
           initialData: null,

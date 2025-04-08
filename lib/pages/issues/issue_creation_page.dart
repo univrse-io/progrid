@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/issue.dart';
 import '../../models/issue_status.dart';
-import '../../services/firestore.dart';
+import '../../services/firebase_firestore.dart';
 
 class IssueCreationPage extends StatefulWidget {
   final String towerId;
@@ -48,7 +48,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
 
     final user = Provider.of<User?>(context, listen: false);
 
-    final issues = await FirestoreService.issuesCollection.get();
+    final issues = await FirebaseFirestoreService.issuesCollection.get();
     var i = 1;
 
     String uniqueId() => '${widget.towerId}-I${i.toString().padLeft(3, '0')}';
@@ -70,7 +70,8 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     );
 
     try {
-      await FirestoreService().createIssue(issue.id, data: issue.toJson());
+      await FirebaseFirestoreService()
+          .createIssue(issue.id, data: issue.toJson());
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

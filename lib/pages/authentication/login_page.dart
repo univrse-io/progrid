@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../services/auth.dart';
+import '../../services/firebase_auth.dart';
 import 'forgot_password_page.dart';
 import 'register_page.dart';
 
@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 14),
                           FilledButton(
-                            onPressed: () => AuthService()
+                            onPressed: () => FirebaseAuthService()
                                 .login(
                               emailController.text.trim(),
                               passwordController.text.trim(),

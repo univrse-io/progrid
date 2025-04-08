@@ -20,7 +20,7 @@ import '../models/issue.dart';
 import '../models/issue_status.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
-import '../services/firestore.dart';
+import '../services/firebase_firestore.dart';
 import '../utils/dialog_utils.dart';
 import '../utils/themes.dart';
 import 'issues/issues_list_page.dart';
@@ -147,7 +147,7 @@ class _TowerPageState extends State<TowerPage> {
                       onChanged: (value) {
                         if (value != null &&
                             value != selectedTower.surveyStatus) {
-                          FirestoreService().updateTower(
+                          FirebaseFirestoreService().updateTower(
                             selectedTower.id,
                             data: {'surveyStatus': value.name},
                           );
@@ -331,7 +331,7 @@ class _TowerPageState extends State<TowerPage> {
                     _debounceTimer =
                         Timer(const Duration(milliseconds: 2000), () {
                       // update notes every one second of changes
-                      FirestoreService().updateTower(
+                      FirebaseFirestoreService().updateTower(
                         widget.towerId,
                         data: {'notes': text},
                       );
@@ -719,18 +719,18 @@ class _TowerPageState extends State<TowerPage> {
 
       if (mounted) {
         final user = Provider.of<User?>(context, listen: false);
-        await FirestoreService().updateTower(
+        await FirebaseFirestoreService().updateTower(
           widget.towerId,
           data: {'authorId': user?.uid ?? ''},
         );
-        await FirestoreService().updateTower(
+        await FirebaseFirestoreService().updateTower(
           widget.towerId,
           data: {
             'images': FieldValue.arrayUnion([downloadUrl]),
           },
         );
         if (isSignOut) {
-          await FirestoreService().updateTower(
+          await FirebaseFirestoreService().updateTower(
             widget.towerId,
             data: {
               'signOut': Timestamp.fromDate(DateTime.now()),
@@ -738,7 +738,7 @@ class _TowerPageState extends State<TowerPage> {
             },
           );
         } else {
-          await FirestoreService().updateTower(
+          await FirebaseFirestoreService().updateTower(
             widget.towerId,
             data: {
               'drawingStatus': DrawingStatus.inprogress.name,

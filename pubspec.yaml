@@ -1,5 +1,5 @@
 name: progrid
-description: A new Flutter project.
+description: Project Monitoring Report System
 publish_to: none
 version: 1.0.7+2
 
@@ -10,6 +10,7 @@ dependencies:
   carbon_design_system:
     path: packages/carbon_design_system
   cloud_firestore: ^5.5.0
+  cloud_functions: ^5.4.0
   device_info_plus: ^11.1.1
   excel: ^4.0.6
   file_saver: ^0.2.14

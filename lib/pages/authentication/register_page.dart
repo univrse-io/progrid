@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../services/auth.dart';
+import '../../services/firebase_auth.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -116,7 +116,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               onPressed: () {
                                 if (!formKey.currentState!.validate()) return;
 
-                                AuthService()
+                                FirebaseAuthService()
                                     .register(
                                   nameController.text.trim(),
                                   emailController.text.trim(),
