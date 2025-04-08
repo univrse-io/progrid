@@ -15,7 +15,7 @@ import '../../models/issue_status.dart';
 import '../../models/region.dart';
 import '../../models/survey_status.dart';
 import '../../models/tower.dart';
-import '../../services/firestore.dart';
+import '../../services/firebase_firestore.dart';
 import '../../utils/dialog_utils.dart';
 import 'home_page.dart';
 
@@ -1093,7 +1093,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                 //     'admin',
                                 onSelected: (value) {
                                   if (value != null) {
-                                    FirestoreService().updateTower(
+                                    FirebaseFirestoreService().updateTower(
                                       tower.id,
                                       data: {'surveyStatus': value.name},
                                     );
@@ -1147,7 +1147,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                 //     'admin',
                                 onSelected: (value) {
                                   if (value != null) {
-                                    FirestoreService().updateTower(
+                                    FirebaseFirestoreService().updateTower(
                                       tower.id,
                                       data: {'drawingStatus': value.name},
                                     );

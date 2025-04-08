@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/issue.dart';
 import '../../models/issue_status.dart';
-import '../../services/firestore.dart';
+import '../../services/firebase_firestore.dart';
 
 class IssuePage extends StatefulWidget {
   final String towerId;
@@ -108,7 +108,7 @@ class _IssuePageState extends State<IssuePage> {
                   value: issue.status,
                   onChanged: (value) {
                     if (value != null && value != issue.status) {
-                      FirestoreService().updateIssue(
+                      FirebaseFirestoreService().updateIssue(
                         issue.id,
                         data: {'status': value.name},
                       );

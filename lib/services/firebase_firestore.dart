@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../models/issue.dart';
 import '../models/tower.dart';
 
-class FirestoreService {
+class FirebaseFirestoreService {
   static final issuesCollection = FirebaseFirestore.instance
       .collection(kDebugMode ? 'issues_dev' : 'issues');
   static final towersCollection = FirebaseFirestore.instance
