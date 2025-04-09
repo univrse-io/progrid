@@ -15,4 +15,17 @@ class FirebaseFunctionsService {
       rethrow;
     }
   }
+
+  Future<void> revokeAdminRole({required String email}) async {
+    try {
+      final result = await FirebaseFunctions.instanceFor(
+        region: 'asia-southeast1',
+      ).httpsCallable('revokeAdminRole').call({'email': email});
+
+      log(result.data.toString());
+    } on FirebaseFunctionsException catch (e) {
+      log('Failed to revoke admin role.', error: e);
+      rethrow;
+    }
+  }
 }
