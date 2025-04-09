@@ -30,10 +30,6 @@ class _DashboardPageState extends State<DashboardPage> {
             backgroundColor: Colors.grey.shade200,
             appBar: AppBar(
               title: Row(mainAxisSize: MainAxisSize.min, children: [
-                Image.asset('assets/images/sapura.png', height: 35),
-                SizedBox(width: 20),
-                Image.asset('assets/images/binasat.png', height: 35),
-                SizedBox(width: 20),
                 Image.asset('assets/images/uos.png', height: 45),
                 SizedBox(width: 20),
                 Text('PROJECT MONITORING REPORT SYSTEM',

@@ -170,38 +170,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 const SizedBox(height: 15),
-            
-                // logos bottom set
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // sapura logo
-                    Image.asset(
-                      'assets/images/sapura.png',
-                      width: 100,
-                      fit: BoxFit.cover,
-                    ),
-                    const SizedBox(width: 10),
-            
-                    // binasat logo
-                    Image.asset(
-                      'assets/images/binasat.png',
-                      width: 55,
-                      fit: BoxFit.cover,
-                    ),
-                    const SizedBox(width: 10),
-            
-                    // uos logo
-                    Image.asset(
-                      'assets/images/uos.png',
-                      width: 55,
-                      fit: BoxFit.cover,
-                    ),
-                    const SizedBox(width: 10),
-                  ],
-                ),
-                const SizedBox(height: 12),
-            
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [
