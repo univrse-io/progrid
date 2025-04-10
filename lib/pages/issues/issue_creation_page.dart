@@ -47,16 +47,13 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     }
 
     final user = Provider.of<User?>(context, listen: false);
-
-    final issues = await FirebaseFirestoreService.issuesCollection.get();
+    final issues = Provider.of<List<Issue>>(context, listen: false);
     var i = 1;
 
     String uniqueId() => '${widget.towerId}-I${i.toString().padLeft(3, '0')}';
 
     while (true) {
-      if (issues.docs.where((snapshot) => snapshot.id == uniqueId()).isEmpty) {
-        break;
-      }
+      if (issues.where((issue) => issue.id == uniqueId()).isEmpty) break;
       i++;
     }
 

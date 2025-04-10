@@ -7,16 +7,16 @@ import '../models/issue.dart';
 import '../models/tower.dart';
 
 class FirebaseFirestoreService {
-  static final issuesCollection = FirebaseFirestore.instance
+  final _issuesCollection = FirebaseFirestore.instance
       .collection(kDebugMode ? 'issues_dev' : 'issues');
-  static final towersCollection = FirebaseFirestore.instance
+  final _towersCollection = FirebaseFirestore.instance
       .collection(kDebugMode ? 'towers_dev' : 'towers');
-  static final usersCollection = FirebaseFirestore.instance.collection('users');
+  final _usersCollection = FirebaseFirestore.instance.collection('users');
 
-  Stream<List<Issue>> get issuesStream => issuesCollection
+  Stream<List<Issue>> get issuesStream => _issuesCollection
       .snapshots()
       .map((snapshot) => snapshot.docs.map(Issue.fromFirestore).toList());
-  Stream<List<Tower>> get towersStream => towersCollection
+  Stream<List<Tower>> get towersStream => _towersCollection
       .snapshots()
       .map((snapshot) => snapshot.docs.map(Tower.fromFirestore).toList());
 
@@ -24,49 +24,49 @@ class FirebaseFirestoreService {
     String id, {
     required Map<String, dynamic> data,
   }) async =>
-      issuesCollection
+      _issuesCollection
           .doc(id)
           .set(data)
           .then((_) => log('Successfully created issue.'))
-          .catchError((e) => log('Failed creating issue.', error: e));
+          .catchError((e) => log('Failed to create issue.', error: e));
 
   Future<void> createUser(
     String id, {
     required Map<String, dynamic> data,
   }) async =>
-      usersCollection
+      _usersCollection
           .doc(id)
           .set(data)
           .then((_) => log('Successfully created user.'))
-          .catchError((e) => log('Failed creating user.', error: e));
+          .catchError((e) => log('Failed to create user.', error: e));
 
   Future<void> updateIssue(
     String id, {
     required Map<String, dynamic> data,
   }) async =>
-      issuesCollection
+      _issuesCollection
           .doc(id)
           .update(data)
           .then((_) => log('Successfully updated issue.'))
-          .catchError((e) => log('Failed updating issue.', error: e));
+          .catchError((e) => log('Failed to update issue.', error: e));
 
   Future<void> updateTower(
     String id, {
     required Map<String, dynamic> data,
   }) async =>
-      towersCollection
+      _towersCollection
           .doc(id)
           .update(data)
           .then((_) => log('Successfully updated tower.'))
-          .catchError((e) => log('Failed updating tower.', error: e));
+          .catchError((e) => log('Failed to update tower.', error: e));
 
   Future<void> updateUser(
     String id, {
     required Map<String, dynamic> data,
   }) async =>
-      usersCollection
+      _usersCollection
           .doc(id)
           .update(data)
           .then((_) => log('Successfully updated user.'))
-          .catchError((e) => log('Failed updating user.', error: e));
+          .catchError((e) => log('Failed to update user.', error: e));
 }

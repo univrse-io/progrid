@@ -326,9 +326,8 @@ sealed class DialogUtils {
                           debounceTimer =
                               Timer(const Duration(milliseconds: 2000), () {
                             // update notes every one second of changes
-                            FirebaseFirestoreService.towersCollection
-                                .doc(towerId)
-                                .update({'notes': text});
+                            FirebaseFirestoreService()
+                                .updateTower(towerId, data: {'notes': text});
                             setState(() => selectedTower.notes = text);
                           });
                         },

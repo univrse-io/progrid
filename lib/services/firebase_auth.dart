@@ -1,8 +1,8 @@
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../models/user.dart';
 import 'firebase_firestore.dart';
 
 class FirebaseAuthService {
@@ -14,8 +14,10 @@ class FirebaseAuthService {
 
       await FirebaseFirestoreService()
           .updateUser(user.uid, data: user.toJson());
+
+      log('Successfully logged in.');
     } on FirebaseAuthException catch (e) {
-      log('Failed to log the user in.', error: e);
+      log('Failed to login.', error: e);
       rethrow;
     }
   }
@@ -30,27 +32,11 @@ class FirebaseAuthService {
       await user.updateDisplayName(name);
       await user.sendEmailVerification();
       await FirebaseFirestoreService().createUser(user.uid, data: json);
+
+      log('Successfully registered.');
     } on FirebaseAuthException catch (e) {
-      log('Failed to register the user.', error: e);
+      log('Failed to register.', error: e);
       rethrow;
     }
   }
-}
-
-extension UserExtension on User {
-  Map<String, dynamic> toJson() => {
-        'displayName': displayName,
-        'email': email,
-        'isEmailVerified': emailVerified,
-        'isAnonymous': isAnonymous,
-        'creationTime': metadata.creationTime != null
-            ? Timestamp.fromDate(metadata.creationTime!)
-            : null,
-        'lastSignInTime': metadata.lastSignInTime != null
-            ? Timestamp.fromDate(metadata.lastSignInTime!)
-            : null,
-        'phoneNumber': phoneNumber,
-        'photoURL': tenantId,
-        'uid': uid,
-      };
 }
