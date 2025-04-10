@@ -46,13 +46,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
         .where((issue) => issue.status == IssueStatus.unresolved)
         .toList();
     final pdf = pw.Document();
-    final sapuraImg = await rootBundle
-        .load('assets/images/sapura.png')
-        .then((img) => img.buffer.asUint8List());
-    final binasatImg = await rootBundle
-        .load('assets/images/binasat.png')
-        .then((img) => img.buffer.asUint8List());
-    final uosImg = await rootBundle
+    final uosLogo = await rootBundle
         .load('assets/images/uos.png')
         .then((img) => img.buffer.asUint8List());
     final onSiteAuditRegionalChart = await screenshotController1.capture();
@@ -68,16 +62,13 @@ class _SiteProgressPageState extends State<SiteProgressPage>
           children: [
             pw.Row(
               children: [
-                pw.Image(pw.MemoryImage(sapuraImg), height: 40),
-                pw.SizedBox(width: 30),
+                pw.Spacer(),
                 pw.Text(
                   'Daily Progress Report',
                   style: const pw.TextStyle(fontSize: 20),
                 ),
-                pw.SizedBox(width: 30),
-                pw.Image(pw.MemoryImage(binasatImg), height: 40),
-                pw.SizedBox(width: 30),
-                pw.Image(pw.MemoryImage(uosImg), height: 40),
+                pw.Spacer(),
+                pw.Image(pw.MemoryImage(uosLogo), height: 40),
                 pw.SizedBox(width: 30),
               ],
             ),
@@ -624,13 +615,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
 
   Future<void> siteCompletedPdf(List<Tower> towers) async {
     final pdf = pw.Document();
-    final sapuraImg = await rootBundle
-        .load('assets/images/sapura.png')
-        .then((img) => img.buffer.asUint8List());
-    final binasatImg = await rootBundle
-        .load('assets/images/binasat.png')
-        .then((img) => img.buffer.asUint8List());
-    final uosImg = await rootBundle
+    final uosLogo = await rootBundle
         .load('assets/images/uos.png')
         .then((img) => img.buffer.asUint8List());
     final chunks = <List<Tower>>[];
@@ -652,16 +637,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
             children: [
               pw.Row(
                 children: [
-                  pw.Image(pw.MemoryImage(sapuraImg), height: 40),
-                  pw.SizedBox(width: 30),
-                  pw.Text(
-                    'Site Completed',
-                    style: const pw.TextStyle(fontSize: 20),
-                  ),
-                  pw.SizedBox(width: 30),
-                  pw.Image(pw.MemoryImage(binasatImg), height: 40),
-                  pw.SizedBox(width: 30),
-                  pw.Image(pw.MemoryImage(uosImg), height: 40),
+                  pw.Image(pw.MemoryImage(uosLogo), height: 40),
                   pw.SizedBox(width: 30),
                 ],
               ),

@@ -33,10 +33,6 @@ class _DashboardPageState extends State<DashboardPage> {
             title: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.asset('assets/images/sapura.png', height: 35),
-                const SizedBox(width: 20),
-                Image.asset('assets/images/binasat.png', height: 35),
-                const SizedBox(width: 20),
                 Image.asset('assets/images/uos.png', height: 45),
                 const SizedBox(width: 20),
                 const Text(

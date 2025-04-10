@@ -158,30 +158,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/sapura.png',
-                        width: 100,
-                        fit: BoxFit.cover,
-                      ),
-                      const SizedBox(width: 10),
-                      Image.asset(
-                        'assets/images/binasat.png',
-                        width: 55,
-                        fit: BoxFit.cover,
-                      ),
-                      const SizedBox(width: 10),
-                      Image.asset(
-                        'assets/images/uos.png',
-                        width: 55,
-                        fit: BoxFit.cover,
-                      ),
-                      const SizedBox(width: 10),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
                   const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
