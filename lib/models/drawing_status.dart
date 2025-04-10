@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/utils/themes.dart';
+
+import '../utils/themes.dart';
 
 enum DrawingStatus {
   inprogress(AppColors.yellow, 'In Progress'),

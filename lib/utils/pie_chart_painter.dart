@@ -19,8 +19,8 @@ class PieChartPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2); // get center
     final radius = min(size.width / 2, size.height / 2); // get radius
 
-    double startAngle = -pi / 2; // start at the top of the circle, -π/2 radians
-    
+    var startAngle = -pi / 2; // start at the top of the circle, -π/2 radians
+
     // center (circle)
     final centerPaint = Paint()..color = Colors.black.withValues(alpha: 0.7);
     canvas.drawCircle(center, radius, centerPaint); // Fill center with grey
@@ -66,7 +66,6 @@ class PieChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false; // set to true if data changes dynamically
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) =>
+      false; // set to true if data changes dynamically
 }

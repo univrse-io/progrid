@@ -15,7 +15,7 @@ class AppColors {
 final lightTheme = ThemeData(
     brightness: Brightness.light,
     primaryColor: Colors.grey[800],
-    colorScheme: ColorScheme.light(
+    colorScheme: const ColorScheme.light(
       primary: AppColors.onSurface,
       onSecondaryContainer: Colors.white,
       secondary: AppColors.secondary,
@@ -25,39 +25,39 @@ final lightTheme = ThemeData(
     ),
     fontFamily: GoogleFonts.roboto().fontFamily,
     actionIconTheme: ActionIconThemeData(
-      backButtonIconBuilder: (context) => Icon(Icons.arrow_back, size: 34),
+      backButtonIconBuilder: (context) => const Icon(Icons.arrow_back, size: 34),
     ),
-    cardTheme: CardTheme(
+    cardTheme: const CardTheme(
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(),
     ),
     inputDecorationTheme: InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.black26),
+          borderSide: const BorderSide(color: Colors.black26),
           borderRadius: BorderRadius.circular(10),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
         errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red),
+          borderSide: const BorderSide(color: Colors.red),
           borderRadius: BorderRadius.circular(10),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red),
+          borderSide: const BorderSide(color: Colors.red),
           borderRadius: BorderRadius.circular(10),
         ),
         contentPadding:
-            const EdgeInsets.symmetric(vertical: 2, horizontal: 14)),
+            const EdgeInsets.symmetric(vertical: 2, horizontal: 14),),
     filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-            textStyle: TextStyle(fontWeight: FontWeight.w600),
-            minimumSize: Size.fromHeight(45),
+            textStyle: const TextStyle(fontWeight: FontWeight.w600),
+            minimumSize: const Size.fromHeight(45),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)))),
+                borderRadius: BorderRadius.circular(10),),),),
     textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-            textStyle: TextStyle(fontWeight: FontWeight.w600),
-            minimumSize: Size.fromHeight(45),
+            textStyle: const TextStyle(fontWeight: FontWeight.w600),
+            minimumSize: const Size.fromHeight(45),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)))));
+                borderRadius: BorderRadius.circular(10),),),),);

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:excel/excel.dart' hide Border;
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
@@ -5,17 +7,17 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:progrid/models/drawing_status.dart';
-import 'package:progrid/models/issue.dart';
-import 'package:progrid/models/issue_status.dart';
-import 'package:progrid/models/region.dart';
-import 'package:progrid/models/survey_status.dart';
-import 'package:progrid/models/tower.dart';
-import 'package:progrid/pages/dashboard/home_page.dart';
-import 'package:progrid/providers/user_provider.dart';
-import 'package:progrid/services/firestore.dart';
-import 'package:progrid/utils/dialog_utils.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/drawing_status.dart';
+import '../../models/issue.dart';
+import '../../models/issue_status.dart';
+import '../../models/region.dart';
+import '../../models/survey_status.dart';
+import '../../models/tower.dart';
+import '../../services/firebase_firestore.dart';
+import '../../utils/dialog_utils.dart';
+import 'home_page.dart';
 
 class SiteProgressPage extends StatefulWidget {
   const SiteProgressPage({super.key});
@@ -52,399 +54,555 @@ class _SiteProgressPageState extends State<SiteProgressPage>
     final mapDisplay = await screenshotController3.capture();
     final onSiteAuditVsAsBuiltDrawing = await screenshotController4.capture();
 
-    pdf.addPage(pw.Page(
-        margin: pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+    pdf.addPage(
+      pw.Page(
+        margin: const pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
         build: (context) => pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+          children: [
+            pw.Row(
+              children: [
+                pw.Spacer(),
+                pw.Text(
+                  'Daily Progress Report',
+                  style: const pw.TextStyle(fontSize: 20),
+                ),
+                pw.Spacer(),
+                pw.Image(pw.MemoryImage(uosLogo), height: 40),
+                pw.SizedBox(width: 30),
+              ],
+            ),
+            pw.SizedBox(height: 8),
+            pw.Text(
+              'Last Update: ${DateFormat('dd MMMM yyyy HH:mm a').format(DateTime.now())}',
+              style: const pw.TextStyle(fontSize: 8),
+              textAlign: pw.TextAlign.right,
+            ),
+            pw.SizedBox(height: 8),
+            pw.Row(
+              children: [
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      'Total',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+                pw.SizedBox(width: 10),
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      'In Progress',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+                pw.SizedBox(width: 10),
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      'Completed',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+                pw.SizedBox(width: 10),
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      'Balance',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            pw.Row(
+              children: [
+                pw.Expanded(
+                  child: pw.Text(
+                    'On-Site Audit',
+                    style: const pw.TextStyle(fontSize: 10),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+                pw.Expanded(flex: 3, child: pw.Divider()),
+              ],
+            ),
+            pw.Row(
+              children: [
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      '${towers.length}',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+                pw.SizedBox(width: 10),
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length}',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+                pw.SizedBox(width: 10),
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length}',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+                pw.SizedBox(width: 10),
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress || tower.surveyStatus == SurveyStatus.unsurveyed).length}',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            pw.Row(
+              children: [
+                pw.Expanded(
+                  child: pw.Text(
+                    'As-Built Drawing',
+                    style: const pw.TextStyle(fontSize: 10),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ),
+                pw.Expanded(flex: 3, child: pw.Divider()),
+              ],
+            ),
+            pw.Row(
+              children: [
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      '${towers.length}',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+                pw.SizedBox(width: 10),
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress).length}',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+                pw.SizedBox(width: 10),
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+                pw.SizedBox(width: 10),
+                pw.Expanded(
+                  child: pw.Container(
+                    padding: const pw.EdgeInsets.all(5),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(5),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Text(
+                      '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress || tower.drawingStatus == null).length}',
+                      style: const pw.TextStyle(fontSize: 10),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            pw.SizedBox(height: 10),
+            pw.Container(
+              padding: const pw.EdgeInsets.all(5),
+              decoration: pw.BoxDecoration(
+                borderRadius: pw.BorderRadius.circular(12),
+                border:
+                    pw.Border.all(color: const PdfColor.fromInt(0xFF9E9E9E)),
+              ),
+              child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                 children: [
-                  pw.Row(
-                    children: [
-                      pw.Spacer(),
-                      pw.Text('Daily Progress Report',
-                          style: pw.TextStyle(fontSize: 20)),
-                      pw.Spacer(),
-                      pw.Image(pw.MemoryImage(uosLogo), height: 40),
-                      pw.SizedBox(width: 30),
-                    ],
-                  ),
-                  pw.SizedBox(height: 8),
                   pw.Text(
-                      'Last Update: ${DateFormat('dd MMMM yyyy HH:mm a').format(DateTime.now())}',
-                      style: pw.TextStyle(fontSize: 8),
-                      textAlign: pw.TextAlign.right),
-                  pw.SizedBox(height: 8),
-                  pw.Row(children: [
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text('Total',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                    pw.SizedBox(width: 10),
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text('In Progress',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                    pw.SizedBox(width: 10),
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text('Completed',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                    pw.SizedBox(width: 10),
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text('Balance',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                  ]),
-                  pw.Row(children: [
-                    pw.Expanded(
-                        child: pw.Text('On-Site Audit',
-                            style: pw.TextStyle(fontSize: 10),
-                            textAlign: pw.TextAlign.center)),
-                    pw.Expanded(flex: 3, child: pw.Divider())
-                  ]),
-                  pw.Row(children: [
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text('${towers.length}',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                    pw.SizedBox(width: 10),
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text(
-                                '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length}',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                    pw.SizedBox(width: 10),
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text(
-                                '${towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length}',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                    pw.SizedBox(width: 10),
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text(
-                                '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress || tower.surveyStatus == SurveyStatus.unsurveyed).length}',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                  ]),
-                  pw.Row(children: [
-                    pw.Expanded(
-                        child: pw.Text('As-Built Drawing',
-                            style: pw.TextStyle(fontSize: 10),
-                            textAlign: pw.TextAlign.center)),
-                    pw.Expanded(flex: 3, child: pw.Divider())
-                  ]),
-                  pw.Row(children: [
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text('${towers.length}',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                    pw.SizedBox(width: 10),
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text(
-                                '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress).length}',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                    pw.SizedBox(width: 10),
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text(
-                                '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                    pw.SizedBox(width: 10),
-                    pw.Expanded(
-                        child: pw.Container(
-                            padding: pw.EdgeInsets.all(5),
-                            decoration: pw.BoxDecoration(
-                                borderRadius: pw.BorderRadius.circular(5),
-                                border: pw.Border.all(
-                                    color: PdfColor.fromInt(0xFF9E9E9E))),
-                            child: pw.Text(
-                                '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress || tower.drawingStatus == null).length}',
-                                style: pw.TextStyle(fontSize: 10),
-                                textAlign: pw.TextAlign.center))),
-                  ]),
-                  pw.SizedBox(height: 10),
-                  pw.Container(
-                    padding: pw.EdgeInsets.all(5),
-                    decoration: pw.BoxDecoration(
-                        borderRadius: pw.BorderRadius.circular(12),
-                        border:
-                            pw.Border.all(color: PdfColor.fromInt(0xFF9E9E9E))),
-                    child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-                        children: [
-                          pw.Text('Site Location',
-                              style: pw.TextStyle(fontSize: 10)),
-                          pw.SizedBox(height: 5),
-                          pw.Image(
-                              fit: pw.BoxFit.fitWidth,
-                              height: 150,
-                              pw.MemoryImage(mapDisplay!)),
-                        ]),
+                    'Site Location',
+                    style: const pw.TextStyle(fontSize: 10),
                   ),
                   pw.SizedBox(height: 5),
-                  pw.Row(children: [
-                    pw.Expanded(
-                      child: pw.Column(children: [
-                        pw.Container(
-                          padding: pw.EdgeInsets.all(10),
-                          decoration: pw.BoxDecoration(
-                              borderRadius: pw.BorderRadius.circular(12),
-                              border: pw.Border.all(
-                                  color: PdfColor.fromInt(0xFF9E9E9E))),
-                          child: pw.Row(
-                              crossAxisAlignment: pw.CrossAxisAlignment.start,
-                              children: [
-                                pw.Column(
-                                    crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
-                                    children: [
-                                      pw.Text('On-Site Audit',
-                                          style: pw.TextStyle(fontSize: 10)),
-                                      pw.SizedBox(height: 10),
-                                      pw.SizedBox(
-                                          height: 100,
-                                          width: 100,
-                                          child: pw.Image(pw.MemoryImage(
-                                              onSiteAuditRegionalChart!))),
-                                    ]),
-                                pw.SizedBox(width: 10),
-                                pw.Column(
-                                    crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
-                                    children: [
-                                      pw.SizedBox(height: 20),
-                                      ...Region.values.map((region) => pw.Row(
-                                              mainAxisSize: pw.MainAxisSize.min,
-                                              children: [
-                                                pw.Container(
-                                                  height: 5,
-                                                  width: 5,
-                                                  decoration: pw.BoxDecoration(
-                                                      shape: pw.BoxShape.circle,
-                                                      color: PdfColor.fromInt(
-                                                          region.color.value)),
-                                                ),
-                                                pw.SizedBox(width: 10),
-                                                pw.Text(region.toString(),
-                                                    style: pw.TextStyle(
-                                                        fontSize: 8)),
-                                              ])),
-                                    ])
-                              ]),
-                        ),
-                        pw.SizedBox(height: 5),
-                        pw.Container(
-                          padding: pw.EdgeInsets.all(10),
-                          decoration: pw.BoxDecoration(
-                              borderRadius: pw.BorderRadius.circular(12),
-                              border: pw.Border.all(
-                                  color: PdfColor.fromInt(0xFF9E9E9E))),
-                          child: pw.Row(
-                              crossAxisAlignment: pw.CrossAxisAlignment.start,
-                              children: [
-                                pw.Column(
-                                    crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
-                                    children: [
-                                      pw.Text('As-Built Drawing',
-                                          style: pw.TextStyle(fontSize: 10)),
-                                      pw.SizedBox(height: 10),
-                                      pw.SizedBox(
-                                          height: 100,
-                                          width: 100,
-                                          child: pw.Image(pw.MemoryImage(
-                                              asBuiltDrawingRegionalChart!))),
-                                    ]),
-                                pw.SizedBox(width: 10),
-                                pw.Column(
-                                    crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
-                                    children: [
-                                      pw.SizedBox(height: 20),
-                                      ...Region.values.map((region) => pw.Row(
-                                              mainAxisSize: pw.MainAxisSize.min,
-                                              children: [
-                                                pw.Container(
-                                                  height: 5,
-                                                  width: 5,
-                                                  decoration: pw.BoxDecoration(
-                                                      shape: pw.BoxShape.circle,
-                                                      color: PdfColor.fromInt(
-                                                          region.color.value)),
-                                                ),
-                                                pw.SizedBox(width: 10),
-                                                pw.Text(region.toString(),
-                                                    style: pw.TextStyle(
-                                                        fontSize: 8)),
-                                              ])),
-                                    ])
-                              ]),
-                        )
-                      ]),
-                    ),
-                    pw.SizedBox(width: 5),
-                    pw.Expanded(
-                        child: pw.Container(
-                      height: 235,
-                      padding: pw.EdgeInsets.all(10),
-                      decoration: pw.BoxDecoration(
+                  pw.Image(
+                    fit: pw.BoxFit.fitWidth,
+                    height: 150,
+                    pw.MemoryImage(mapDisplay!),
+                  ),
+                ],
+              ),
+            ),
+            pw.SizedBox(height: 5),
+            pw.Row(
+              children: [
+                pw.Expanded(
+                  child: pw.Column(
+                    children: [
+                      pw.Container(
+                        padding: const pw.EdgeInsets.all(10),
+                        decoration: pw.BoxDecoration(
                           borderRadius: pw.BorderRadius.circular(12),
                           border: pw.Border.all(
-                              color: PdfColor.fromInt(0xFF9E9E9E))),
-                      child: pw.Column(
+                            color: const PdfColor.fromInt(0xFF9E9E9E),
+                          ),
+                        ),
+                        child: pw.Row(
                           crossAxisAlignment: pw.CrossAxisAlignment.start,
                           children: [
-                            pw.Text('On-Site Audit vs As-Built Drawing',
-                                style: pw.TextStyle(fontSize: 10)),
-                            pw.SizedBox(height: 20),
-                            pw.SizedBox(
-                                height: 200,
-                                width: 200,
-                                child: pw.Image(pw.MemoryImage(
-                                    onSiteAuditVsAsBuiltDrawing!))),
-                          ]),
-                    ))
-                  ]),
-                  pw.SizedBox(height: 5),
-                  pw.Text('Ticket Issues', style: pw.TextStyle(fontSize: 10)),
-                  pw.SizedBox(height: 10),
-                  pw.TableHelper.fromTextArray(
-                      headers: [
-                        'Site ID',
-                        'Site Name',
-                        'Region',
-                        'Site Type',
-                        'Issues'
+                            pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Text(
+                                  'On-Site Audit',
+                                  style: const pw.TextStyle(fontSize: 10),
+                                ),
+                                pw.SizedBox(height: 10),
+                                pw.SizedBox(
+                                  height: 100,
+                                  width: 100,
+                                  child: pw.Image(
+                                    pw.MemoryImage(
+                                      onSiteAuditRegionalChart!,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            pw.SizedBox(width: 10),
+                            pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.SizedBox(height: 20),
+                                ...Region.values.map(
+                                  (region) => pw.Row(
+                                    mainAxisSize: pw.MainAxisSize.min,
+                                    children: [
+                                      pw.Container(
+                                        height: 5,
+                                        width: 5,
+                                        decoration: pw.BoxDecoration(
+                                          shape: pw.BoxShape.circle,
+                                          color: PdfColor.fromInt(
+                                            region.color.value,
+                                          ),
+                                        ),
+                                      ),
+                                      pw.SizedBox(width: 10),
+                                      pw.Text(
+                                        region.toString(),
+                                        style: const pw.TextStyle(
+                                          fontSize: 8,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      pw.SizedBox(height: 5),
+                      pw.Container(
+                        padding: const pw.EdgeInsets.all(10),
+                        decoration: pw.BoxDecoration(
+                          borderRadius: pw.BorderRadius.circular(12),
+                          border: pw.Border.all(
+                            color: const PdfColor.fromInt(0xFF9E9E9E),
+                          ),
+                        ),
+                        child: pw.Row(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Text(
+                                  'As-Built Drawing',
+                                  style: const pw.TextStyle(fontSize: 10),
+                                ),
+                                pw.SizedBox(height: 10),
+                                pw.SizedBox(
+                                  height: 100,
+                                  width: 100,
+                                  child: pw.Image(
+                                    pw.MemoryImage(
+                                      asBuiltDrawingRegionalChart!,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            pw.SizedBox(width: 10),
+                            pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.SizedBox(height: 20),
+                                ...Region.values.map(
+                                  (region) => pw.Row(
+                                    mainAxisSize: pw.MainAxisSize.min,
+                                    children: [
+                                      pw.Container(
+                                        height: 5,
+                                        width: 5,
+                                        decoration: pw.BoxDecoration(
+                                          shape: pw.BoxShape.circle,
+                                          color: PdfColor.fromInt(
+                                            region.color.value,
+                                          ),
+                                        ),
+                                      ),
+                                      pw.SizedBox(width: 10),
+                                      pw.Text(
+                                        region.toString(),
+                                        style: const pw.TextStyle(
+                                          fontSize: 8,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                pw.SizedBox(width: 5),
+                pw.Expanded(
+                  child: pw.Container(
+                    height: 235,
+                    padding: const pw.EdgeInsets.all(10),
+                    decoration: pw.BoxDecoration(
+                      borderRadius: pw.BorderRadius.circular(12),
+                      border: pw.Border.all(
+                        color: const PdfColor.fromInt(0xFF9E9E9E),
+                      ),
+                    ),
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text(
+                          'On-Site Audit vs As-Built Drawing',
+                          style: const pw.TextStyle(fontSize: 10),
+                        ),
+                        pw.SizedBox(height: 20),
+                        pw.SizedBox(
+                          height: 200,
+                          width: 200,
+                          child: pw.Image(
+                            pw.MemoryImage(
+                              onSiteAuditVsAsBuiltDrawing!,
+                            ),
+                          ),
+                        ),
                       ],
-                      data: issues.sublist(0, 7).map((issue) {
-                        final tower = towers.singleWhere(
-                            (tower) => tower.id == issue.id.split('-').first);
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            pw.SizedBox(height: 5),
+            pw.Text('Ticket Issues', style: const pw.TextStyle(fontSize: 10)),
+            pw.SizedBox(height: 10),
+            pw.TableHelper.fromTextArray(
+              headers: [
+                'Site ID',
+                'Site Name',
+                'Region',
+                'Site Type',
+                'Issues',
+              ],
+              data: issues.sublist(0, 7).map((issue) {
+                final tower = towers.singleWhere(
+                  (tower) => tower.id == issue.id.split('-').first,
+                );
 
-                        return [
-                          tower.id,
-                          tower.name,
-                          tower.region,
-                          tower.type,
-                          issue.tags.join(', ')
-                        ];
-                      }).toList(),
-                      cellStyle: pw.TextStyle(fontSize: 10),
-                      headerDecoration:
-                          pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
-                      headerStyle: pw.TextStyle(
-                          fontSize: 10, color: PdfColor.fromInt(0xFFFFFFFF))),
-                ])));
+                return [
+                  tower.id,
+                  tower.name,
+                  tower.region,
+                  tower.type,
+                  issue.tags.join(', '),
+                ];
+              }).toList(),
+              cellStyle: const pw.TextStyle(fontSize: 10),
+              headerDecoration:
+                  const pw.BoxDecoration(color: PdfColor.fromInt(0xFF000000)),
+              headerStyle: const pw.TextStyle(
+                fontSize: 10,
+                color: PdfColor.fromInt(0xFFFFFFFF),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
 
     if (issues.length > 7) {
-      pdf.addPage(pw.Page(
-          margin: pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      pdf.addPage(
+        pw.Page(
+          margin: const pw.EdgeInsets.symmetric(vertical: 20, horizontal: 40),
           build: (context) => pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-                  children: [
-                    pw.TableHelper.fromTextArray(
-                        headers: [
-                          'Site ID',
-                          'Site Name',
-                          'Region',
-                          'Site Type',
-                          'Issues'
-                        ],
-                        data: issues.sublist(7).map((issue) {
-                          final tower = towers.singleWhere(
-                              (tower) => tower.id == issue.id.split('-').first);
+            crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+            children: [
+              pw.TableHelper.fromTextArray(
+                headers: [
+                  'Site ID',
+                  'Site Name',
+                  'Region',
+                  'Site Type',
+                  'Issues',
+                ],
+                data: issues.sublist(7).map((issue) {
+                  final tower = towers.singleWhere(
+                    (tower) => tower.id == issue.id.split('-').first,
+                  );
 
-                          return [
-                            tower.id,
-                            tower.name,
-                            tower.region,
-                            tower.type,
-                            issue.tags.join(', ')
-                          ];
-                        }).toList(),
-                        cellStyle: pw.TextStyle(fontSize: 10),
-                        headerDecoration: pw.BoxDecoration(
-                            color: PdfColor.fromInt(0xFF000000)),
-                        headerStyle: pw.TextStyle(
-                            fontSize: 10, color: PdfColor.fromInt(0xFFFFFFFF))),
-                  ])));
+                  return [
+                    tower.id,
+                    tower.name,
+                    tower.region,
+                    tower.type,
+                    issue.tags.join(', '),
+                  ];
+                }).toList(),
+                cellStyle: const pw.TextStyle(fontSize: 10),
+                headerDecoration: const pw.BoxDecoration(
+                  color: PdfColor.fromInt(0xFF000000),
+                ),
+                headerStyle: const pw.TextStyle(
+                  fontSize: 10,
+                  color: PdfColor.fromInt(0xFFFFFFFF),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     final pdfBytes = await pdf.save();
     try {
       await FileSaver.instance.saveFile(
-          name: 'Daily Progress Report',
-          bytes: pdfBytes,
-          mimeType: MimeType.pdf,
-          ext: ".pdf");
-      print('PDF saved successfully');
+        name: 'Daily Progress Report',
+        bytes: pdfBytes,
+        mimeType: MimeType.pdf,
+        ext: '.pdf',
+      );
+      log('PDF saved successfully');
     } catch (e) {
-      print('Error saving PDF: $e');
+      log('Error saving PDF: $e');
     }
 
     // final blob = html.Blob([pdfBytes], 'application/pdf');
@@ -461,76 +619,88 @@ class _SiteProgressPageState extends State<SiteProgressPage>
         .load('assets/images/uos.png')
         .then((img) => img.buffer.asUint8List());
     final chunks = <List<Tower>>[];
-    final chunkSize = 35;
+    const chunkSize = 35;
     for (var i = 0; i < towers.length; i += chunkSize) {
-      chunks.add(towers.sublist(
-          i, i + chunkSize > towers.length ? towers.length : i + chunkSize));
+      chunks.add(
+        towers.sublist(
+          i,
+          i + chunkSize > towers.length ? towers.length : i + chunkSize,
+        ),
+      );
     }
 
     for (final chunk in chunks) {
-      pdf.addPage(pw.Page(
+      pdf.addPage(
+        pw.Page(
           build: (context) => pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-                  children: [
-                    pw.Row(
-                      children: [
-                        pw.Spacer(),
-                        pw.Text('Site Completed',
-                            style: pw.TextStyle(fontSize: 20)),
-                        pw.Spacer(),
-                        pw.Image(pw.MemoryImage(uosLogo), height: 40),
-                        pw.SizedBox(width: 30),
+            crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+            children: [
+              pw.Row(
+                children: [
+                  pw.Image(pw.MemoryImage(uosLogo), height: 40),
+                  pw.SizedBox(width: 30),
+                ],
+              ),
+              pw.SizedBox(height: 20),
+              pw.TableHelper.fromTextArray(
+                headers: [
+                  'Site ID',
+                  'Site Name',
+                  'Region',
+                  'Site Type',
+                  'Latitude',
+                  'Longitude',
+                  'Date',
+                ],
+                data: chunk
+                    .map(
+                      (tower) => [
+                        tower.id,
+                        tower.name,
+                        tower.region,
+                        tower.type,
+                        tower.position.latitude.toString(),
+                        tower.position.longitude.toString(),
+                        if (tower.signOut == null)
+                          ''
+                        else
+                          DateFormat('dd.M.yyyy')
+                              .format(tower.signOut!.toDate()),
                       ],
-                    ),
-                    pw.SizedBox(height: 20),
-                    pw.TableHelper.fromTextArray(
-                        headers: [
-                          'Site ID',
-                          'Site Name',
-                          'Region',
-                          'Site Type',
-                          'Latitude',
-                          'Longitude',
-                          'Date'
-                        ],
-                        data: chunk
-                            .map((tower) => [
-                                  tower.id,
-                                  tower.name,
-                                  tower.region,
-                                  tower.type,
-                                  tower.position.latitude.toString(),
-                                  tower.position.longitude.toString(),
-                                  if (tower.signOut == null)
-                                    ''
-                                  else
-                                    DateFormat('dd.M.yyyy')
-                                        .format(tower.signOut!.toDate())
-                                ])
-                            .toList(),
-                        headerDecoration: pw.BoxDecoration(
-                            color: PdfColor.fromInt(0xFF000000)),
-                        cellStyle: pw.TextStyle(fontSize: 5),
-                        headerStyle: pw.TextStyle(
-                            fontSize: 5, color: PdfColor.fromInt(0xFFFFFFFF))),
-                    pw.SizedBox(height: 20),
-                    pw.Text(
-                        'Last Update: ${DateFormat('dd MMMM yyyy HH:mm a').format(DateTime.now())}',
-                        style: pw.TextStyle(fontSize: 8),
-                        textAlign: pw.TextAlign.right),
-                  ])));
+                    )
+                    .toList(),
+                headerDecoration: const pw.BoxDecoration(
+                  color: PdfColor.fromInt(0xFF000000),
+                ),
+                cellStyle: const pw.TextStyle(fontSize: 5),
+                headerStyle: const pw.TextStyle(
+                  fontSize: 5,
+                  color: PdfColor.fromInt(0xFFFFFFFF),
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'Last Update: ${DateFormat('dd MMMM yyyy HH:mm a').format(DateTime.now())}',
+                style: const pw.TextStyle(fontSize: 8),
+                textAlign: pw.TextAlign.right,
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     final pdf2Bytes = await pdf.save();
     try {
       await FileSaver.instance.saveFile(
-          name: 'Site Completed',
-          bytes: pdf2Bytes,
-          mimeType: MimeType.pdf,
-          ext: ".pdf");
-      print('PDF saved successfully');
+        name: 'Site Completed',
+        bytes: pdf2Bytes,
+        mimeType: MimeType.pdf,
+        ext: '.pdf',
+      );
+      log('PDF saved successfully');
     } catch (e) {
-      print('Error saving PDF: $e');
+      log('Error saving PDF: $e');
     }
   }
 
@@ -544,16 +714,21 @@ class _SiteProgressPageState extends State<SiteProgressPage>
       'Site Type',
       'Latitude',
       'Longitude',
-      'Date'
+      'Date',
     ];
 
     for (final title in header) {
-      sheet.cell(CellIndex.indexByColumnRow(
-          columnIndex: header.indexOf(title), rowIndex: 0))
+      sheet.cell(
+        CellIndex.indexByColumnRow(
+          columnIndex: header.indexOf(title),
+          rowIndex: 0,
+        ),
+      )
         ..value = TextCellValue(title)
         ..cellStyle = CellStyle(
-            fontColorHex: ExcelColor.white,
-            backgroundColorHex: ExcelColor.black);
+          fontColorHex: ExcelColor.white,
+          backgroundColorHex: ExcelColor.black,
+        );
     }
 
     for (final tower in towers) {
@@ -573,10 +748,11 @@ class _SiteProgressPageState extends State<SiteProgressPage>
         ..cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: rowIndex))
             .value = TextCellValue(tower.position.longitude.toString())
         ..cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: rowIndex))
-                .value =
-            TextCellValue(tower.signOut != null
-                ? DateFormat('dd.M.yyyy').format(tower.signOut!.toDate())
-                : '');
+            .value = TextCellValue(
+          tower.signOut != null
+              ? DateFormat('dd.M.yyyy').format(tower.signOut!.toDate())
+              : '',
+        );
     }
 
     excel.save(fileName: 'Site Completed.xlsx');
@@ -586,36 +762,38 @@ class _SiteProgressPageState extends State<SiteProgressPage>
   Widget build(BuildContext context) {
     super.build(context);
     final towers = Provider.of<List<Tower>>(context)
-        .where((tower) =>
-            (tower.name
-                    .toLowerCase()
-                    .contains(searchController.text.toLowerCase()) ||
-                tower.id
-                    .toLowerCase()
-                    .contains(searchController.text.toLowerCase())) &&
-            (surveyStatusFilter.isEmpty ||
-                surveyStatusFilter.contains(tower.surveyStatus)) &&
-            (drawingStatusFilter.isEmpty ||
-                drawingStatusFilter.contains(tower.drawingStatus)) &&
-            (regionFilter.isEmpty || regionFilter.contains(tower.region)) &&
-            (fromDateTime == null ||
-                (surveyStatusFilter.contains(SurveyStatus.surveyed) &&
-                    tower.signOut != null &&
-                    tower.signOut!.toDate().isAfter(fromDateTime!)) ||
-                (surveyStatusFilter.contains(SurveyStatus.inprogress) &&
-                    tower.signIn != null &&
-                    tower.signIn!.toDate().isAfter(fromDateTime!))) &&
-            (toDateTime == null ||
-                (surveyStatusFilter.contains(SurveyStatus.surveyed) &&
-                    tower.signOut != null &&
-                    tower.signOut!
-                        .toDate()
-                        .isBefore(toDateTime!.add(Duration(days: 1)))) ||
-                (surveyStatusFilter.contains(SurveyStatus.inprogress) &&
-                    tower.signIn != null &&
-                    tower.signIn!
-                        .toDate()
-                        .isBefore(toDateTime!.add(Duration(days: 1))))))
+        .where(
+          (tower) =>
+              (tower.name
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase()) ||
+                  tower.id
+                      .toLowerCase()
+                      .contains(searchController.text.toLowerCase())) &&
+              (surveyStatusFilter.isEmpty ||
+                  surveyStatusFilter.contains(tower.surveyStatus)) &&
+              (drawingStatusFilter.isEmpty ||
+                  drawingStatusFilter.contains(tower.drawingStatus)) &&
+              (regionFilter.isEmpty || regionFilter.contains(tower.region)) &&
+              (fromDateTime == null ||
+                  (surveyStatusFilter.contains(SurveyStatus.surveyed) &&
+                      tower.signOut != null &&
+                      tower.signOut!.toDate().isAfter(fromDateTime!)) ||
+                  (surveyStatusFilter.contains(SurveyStatus.inprogress) &&
+                      tower.signIn != null &&
+                      tower.signIn!.toDate().isAfter(fromDateTime!))) &&
+              (toDateTime == null ||
+                  (surveyStatusFilter.contains(SurveyStatus.surveyed) &&
+                      tower.signOut != null &&
+                      tower.signOut!.toDate().isBefore(
+                            toDateTime!.add(const Duration(days: 1)),
+                          )) ||
+                  (surveyStatusFilter.contains(SurveyStatus.inprogress) &&
+                      tower.signIn != null &&
+                      tower.signIn!
+                          .toDate()
+                          .isBefore(toDateTime!.add(const Duration(days: 1))))),
+        )
         .toList();
 
     return Padding(
@@ -631,24 +809,25 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
+                      const Text(
                         'Date',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Expanded(
                             child: TextField(
                               controller: fromController,
-                              decoration: InputDecoration(labelText: 'From'),
+                              decoration:
+                                  const InputDecoration(labelText: 'From'),
                               readOnly: true,
                               onTap: () => showDatePicker(
-                                      context: context,
-                                      firstDate: DateTime(2025),
-                                      lastDate: DateTime.now())
-                                  .then((value) {
+                                context: context,
+                                firstDate: DateTime(2025),
+                                lastDate: DateTime.now(),
+                              ).then((value) {
                                 if (value != null) {
                                   setState(() {
                                     fromDateTime = value;
@@ -668,17 +847,18 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                               }),
                             ),
                           ),
-                          SizedBox(width: 5),
+                          const SizedBox(width: 5),
                           Expanded(
                             child: TextField(
                               controller: toController,
-                              decoration: InputDecoration(labelText: 'To'),
+                              decoration:
+                                  const InputDecoration(labelText: 'To'),
                               readOnly: true,
                               onTap: () => showDatePicker(
-                                      context: context,
-                                      firstDate: fromDateTime ?? DateTime(2025),
-                                      lastDate: DateTime.now())
-                                  .then((value) {
+                                context: context,
+                                firstDate: fromDateTime ?? DateTime(2025),
+                                lastDate: DateTime.now(),
+                              ).then((value) {
                                 if (value != null) {
                                   setState(() {
                                     toDateTime = value;
@@ -696,64 +876,82 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                           ),
                         ],
                       ),
-                      SizedBox(height: 15),
-                      Text(
+                      const SizedBox(height: 15),
+                      const Text(
                         'Filters',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 10),
-                      Text('On-Site Audit'),
-                      ...SurveyStatus.values.map((status) => CheckboxListTile(
+                      const SizedBox(height: 10),
+                      const Text('On-Site Audit'),
+                      ...SurveyStatus.values.map(
+                        (status) => CheckboxListTile(
                           dense: true,
                           contentPadding: EdgeInsets.zero,
                           controlAffinity: ListTileControlAffinity.leading,
                           title: Text(status.toString()),
                           value: surveyStatusFilter.contains(status),
-                          onChanged: (value) => setState(() => value!
-                              ? surveyStatusFilter.add(status)
-                              : surveyStatusFilter.remove(status)))),
-                      SizedBox(height: 10),
-                      Text('As-Built Drawing'),
-                      ...DrawingStatus.values.map((status) => CheckboxListTile(
+                          onChanged: (value) => setState(
+                            () => value!
+                                ? surveyStatusFilter.add(status)
+                                : surveyStatusFilter.remove(status),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text('As-Built Drawing'),
+                      ...DrawingStatus.values.map(
+                        (status) => CheckboxListTile(
                           dense: true,
                           contentPadding: EdgeInsets.zero,
                           controlAffinity: ListTileControlAffinity.leading,
                           title: Text(status.toString()),
                           value: drawingStatusFilter.contains(status),
-                          onChanged: (value) => setState(() => value!
-                              ? drawingStatusFilter.add(status)
-                              : drawingStatusFilter.remove(status)))),
-                      SizedBox(height: 10),
-                      Text('Region'),
-                      ...Region.values.map((region) => CheckboxListTile(
+                          onChanged: (value) => setState(
+                            () => value!
+                                ? drawingStatusFilter.add(status)
+                                : drawingStatusFilter.remove(status),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text('Region'),
+                      ...Region.values.map(
+                        (region) => CheckboxListTile(
                           dense: true,
                           contentPadding: EdgeInsets.zero,
                           controlAffinity: ListTileControlAffinity.leading,
                           title: Text(region.toString()),
                           value: regionFilter.contains(region),
-                          onChanged: (value) => setState(() => value!
-                              ? regionFilter.add(region)
-                              : regionFilter.remove(region)))),
-                      SizedBox(height: 20),
+                          onChanged: (value) => setState(
+                            () => value!
+                                ? regionFilter.add(region)
+                                : regionFilter.remove(region),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                       MenuAnchor(
-                          builder: (context, controller, child) =>
-                              OutlinedButton(
-                                onPressed: () => controller.isOpen
-                                    ? controller.close()
-                                    : controller.open(),
-                                child: const Text('Download Report'),
-                              ),
-                          menuChildren: [
-                            MenuItemButton(
-                                child: Text('Daily Progress Report.pdf'),
-                                onPressed: dailyProgressReportPdf),
-                            MenuItemButton(
-                                child: Text('Site Completed.pdf'),
-                                onPressed: () => siteCompletedPdf(towers)),
-                            MenuItemButton(
-                                child: Text('Site Completed.xlsx'),
-                                onPressed: () => siteCompletedXlsx(towers)),
-                          ])
+                        builder: (context, controller, child) => OutlinedButton(
+                          onPressed: () => controller.isOpen
+                              ? controller.close()
+                              : controller.open(),
+                          child: const Text('Download Report'),
+                        ),
+                        menuChildren: [
+                          MenuItemButton(
+                            onPressed: dailyProgressReportPdf,
+                            child: const Text('Daily Progress Report.pdf'),
+                          ),
+                          MenuItemButton(
+                            child: const Text('Site Completed.pdf'),
+                            onPressed: () => siteCompletedPdf(towers),
+                          ),
+                          MenuItemButton(
+                            child: const Text('Site Completed.xlsx'),
+                            onPressed: () => siteCompletedXlsx(towers),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -765,7 +963,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
             child: Column(
               children: [
                 Card(
-                  margin: EdgeInsets.fromLTRB(5, 0, 0, 5),
+                  margin: const EdgeInsets.fromLTRB(5, 0, 0, 5),
                   elevation: 0,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -775,151 +973,174 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         child: TextField(
                           controller: searchController,
                           onChanged: (_) => setState(() {}),
-                          decoration: InputDecoration(
-                              hintText: 'Search tower by name or id',
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.transparent)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.transparent)),
-                              prefixIcon: Icon(Icons.search)),
+                          decoration: const InputDecoration(
+                            hintText: 'Search tower by name or id',
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.transparent),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.transparent),
+                            ),
+                            prefixIcon: Icon(Icons.search),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                Card(
-                    margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
-                    elevation: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: Row(
-                        children: [
-                          SizedBox(width: 10),
-                          Text('Tower'),
-                          Spacer(),
-                          Text('On-Site Audit'),
-                          SizedBox(width: 100),
-                          Text('As-Built Drawing'),
-                          SizedBox(width: 50),
-                        ],
-                      ),
-                    )),
+                const Card(
+                  margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                  elevation: 0,
+                  child: Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 10),
+                        Text('Tower'),
+                        Spacer(),
+                        Text('On-Site Audit'),
+                        SizedBox(width: 100),
+                        Text('As-Built Drawing'),
+                        SizedBox(width: 50),
+                      ],
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: ListView.builder(
-                      itemCount: towers.length,
-                      itemBuilder: (context, index) {
-                        final tower = towers[index];
+                    itemCount: towers.length,
+                    itemBuilder: (context, index) {
+                      final tower = towers[index];
 
-                        return Container(
-                          margin: EdgeInsets.only(left: 5),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border(
-                                  top: BorderSide(color: Colors.black12))),
-                          child: ListTile(
-                              onTap: () => DialogUtils.showTowerDialog(
-                                  context, tower.id),
-                              title: Row(
-                                children: [
-                                  CircleAvatar(
-                                      radius: 5,
-                                      backgroundColor:
-                                          tower.surveyStatus.color),
-                                  SizedBox(width: 10),
-                                  Text(tower.name),
+                      return Container(
+                        margin: const EdgeInsets.only(left: 5),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          border: Border(
+                            top: BorderSide(color: Colors.black12),
+                          ),
+                        ),
+                        child: ListTile(
+                          onTap: () => DialogUtils.showTowerDialog(
+                            context,
+                            tower.id,
+                          ),
+                          title: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 5,
+                                backgroundColor: tower.surveyStatus.color,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(tower.name),
+                            ],
+                          ),
+                          subtitle: Text(tower.id),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              DropdownMenu<SurveyStatus>(
+                                requestFocusOnTap: false,
+                                textAlign: TextAlign.center,
+                                initialSelection: tower.surveyStatus,
+                                inputDecorationTheme: InputDecorationTheme(
+                                  filled: true,
+                                  fillColor: tower.surveyStatus.color
+                                      .withValues(alpha: 0.1),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: tower.surveyStatus.color
+                                          .withValues(alpha: 0.5),
+                                    ),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  disabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: tower.surveyStatus.color
+                                          .withValues(alpha: 0.5),
+                                    ),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                ),
+                                textStyle:
+                                    Theme.of(context).textTheme.bodyMedium,
+                                enabled: context.watch<bool>(),
+                                onSelected: (value) {
+                                  if (value != null) {
+                                    FirebaseFirestoreService().updateTower(
+                                      tower.id,
+                                      data: {'surveyStatus': value.name},
+                                    );
+                                  }
+                                },
+                                trailingIcon: context.watch<bool>()
+                                    ? null
+                                    : const SizedBox(),
+                                dropdownMenuEntries: [
+                                  ...SurveyStatus.values.map(
+                                    (status) => DropdownMenuEntry(
+                                      value: status,
+                                      label: status.toString(),
+                                    ),
+                                  ),
                                 ],
                               ),
-                              subtitle: Text(tower.id),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  DropdownMenu<SurveyStatus>(
-                                      requestFocusOnTap: false,
-                                      textAlign: TextAlign.center,
-                                      initialSelection: tower.surveyStatus,
-                                      inputDecorationTheme: InputDecorationTheme(
-                                          filled: true,
-                                          fillColor: tower.surveyStatus.color
-                                              .withValues(alpha: 0.1),
-                                          enabledBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: tower.surveyStatus.color
-                                                      .withValues(alpha: 0.5)),
-                                              borderRadius:
-                                                  BorderRadius.circular(25)),
-                                          disabledBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: tower.surveyStatus.color
-                                                      .withValues(alpha: 0.5)),
-                                              borderRadius:
-                                                  BorderRadius.circular(25))),
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                      enabled: context.read<UserProvider>().role ==
-                                          'admin',
-                                      onSelected: (value) {
-                                        if (value != null) {
-                                          FirestoreService.updateTower(tower.id,
-                                              data: {
-                                                'surveyStatus': value.name
-                                              });
-                                        }
-                                      },
-                                      trailingIcon: context.read<UserProvider>().role == 'admin' ? null : SizedBox(),
-                                      dropdownMenuEntries: [
-                                        ...SurveyStatus.values.map((status) =>
-                                            DropdownMenuEntry(
-                                                value: status,
-                                                label: status.toString()))
-                                      ]),
-                                  SizedBox(width: 20),
-                                  DropdownMenu<DrawingStatus>(
-                                      requestFocusOnTap: false,
-                                      textAlign: TextAlign.center,
-                                      initialSelection: tower.drawingStatus,
-                                      inputDecorationTheme: InputDecorationTheme(
-                                          filled: true,
-                                          fillColor: tower.drawingStatus?.color
-                                              .withValues(alpha: 0.1),
-                                          enabledBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: tower
-                                                          .drawingStatus?.color
-                                                          .withValues(
-                                                              alpha: 0.5) ??
-                                                      Colors.black12),
-                                              borderRadius:
-                                                  BorderRadius.circular(25)),
-                                          disabledBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: tower.surveyStatus.color
-                                                      .withValues(alpha: 0.5)),
-                                              borderRadius:
-                                                  BorderRadius.circular(25))),
-                                      textStyle: Theme.of(context).textTheme.bodyMedium,
-                                      enabled: context.read<UserProvider>().role == 'admin',
-                                      onSelected: (value) {
-                                        if (value != null) {
-                                          FirestoreService.updateTower(tower.id,
-                                              data: {
-                                                'drawingStatus': value.name
-                                              });
-                                        }
-                                      },
-                                      trailingIcon: context.read<UserProvider>().role == 'admin' ? null : SizedBox(),
-                                      dropdownMenuEntries: [
-                                        ...DrawingStatus.values.map((status) =>
-                                            DropdownMenuEntry(
-                                                value: status,
-                                                label: status.toString()))
-                                      ]),
+                              const SizedBox(width: 20),
+                              DropdownMenu<DrawingStatus>(
+                                requestFocusOnTap: false,
+                                textAlign: TextAlign.center,
+                                initialSelection: tower.drawingStatus,
+                                inputDecorationTheme: InputDecorationTheme(
+                                  filled: true,
+                                  fillColor: tower.drawingStatus?.color
+                                      .withValues(alpha: 0.1),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color:
+                                          tower.drawingStatus?.color.withValues(
+                                                alpha: 0.5,
+                                              ) ??
+                                              Colors.black12,
+                                    ),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  disabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: tower.surveyStatus.color
+                                          .withValues(alpha: 0.5),
+                                    ),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                ),
+                                textStyle:
+                                    Theme.of(context).textTheme.bodyMedium,
+                                enabled: context.watch<bool>(),
+                                onSelected: (value) {
+                                  if (value != null) {
+                                    FirebaseFirestoreService().updateTower(
+                                      tower.id,
+                                      data: {'drawingStatus': value.name},
+                                    );
+                                  }
+                                },
+                                trailingIcon: context.watch<bool>()
+                                    ? null
+                                    : const SizedBox(),
+                                dropdownMenuEntries: [
+                                  ...DrawingStatus.values.map(
+                                    (status) => DropdownMenuEntry(
+                                      value: status,
+                                      label: status.toString(),
+                                    ),
+                                  ),
                                 ],
-                              )),
-                        );
-                      }),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:progrid/pages/tower_page.dart';
-import 'package:progrid/providers/towers_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../models/tower.dart';
+import 'tower_page.dart';
 
 class TowersListPage extends StatefulWidget {
   const TowersListPage({super.key});
@@ -12,7 +13,7 @@ class TowersListPage extends StatefulWidget {
 
 class _TowersListPageState extends State<TowersListPage> {
   final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = "";
+  String _searchQuery = '';
 
   // on call search query
   void _onSearchChanged(String query) {
@@ -23,7 +24,7 @@ class _TowersListPageState extends State<TowersListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final towersProvider = Provider.of<TowersProvider>(context);
+    final towers = Provider.of<List<Tower>>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -39,8 +40,6 @@ class _TowersListPageState extends State<TowersListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-
-            // search bar
             Hero(
               tag: 'searchbar',
               child: Material(
@@ -58,15 +57,13 @@ class _TowersListPageState extends State<TowersListPage> {
               ),
             ),
             const SizedBox(height: 10),
-
-            // towers list
             Expanded(
-              child: towersProvider.towers.isEmpty
+              child: towers.isEmpty
                   ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(
-                      itemCount: towersProvider.towers.length,
+                      itemCount: towers.length,
                       itemBuilder: (context, index) {
-                        final tower = towersProvider.towers[index];
+                        final tower = towers[index];
 
                         // filter towers based on search query
                         if (_searchQuery.isNotEmpty &&
@@ -85,22 +82,18 @@ class _TowersListPageState extends State<TowersListPage> {
                         }
 
                         return GestureDetector(
-                          onTap: () {
-                            print("Tapped on tower: ${tower.id}");
-                            Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                pageBuilder: (_, __, ___) =>
-                                    TowerPage(towerId: tower.id),
-                                transitionsBuilder: (_, animation, __, child) {
-                                  return FadeTransition(
-                                    opacity: animation,
-                                    child: child,
-                                  );
-                                },
+                          onTap: () => Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (_, __, ___) =>
+                                  TowerPage(towerId: tower.id),
+                              transitionsBuilder: (_, animation, __, child) =>
+                                  FadeTransition(
+                                opacity: animation,
+                                child: child,
                               ),
-                            );
-                          },
+                            ),
+                          ),
                           child: Card(
                             margin: const EdgeInsets.symmetric(vertical: 3),
                             elevation: 3,
@@ -109,7 +102,9 @@ class _TowersListPageState extends State<TowersListPage> {
                             ),
                             child: SafeArea(
                               minimum: const EdgeInsets.symmetric(
-                                  vertical: 6, horizontal: 9),
+                                vertical: 6,
+                                horizontal: 9,
+                              ),
                               child: Row(
                                 children: [
                                   Expanded(
@@ -164,23 +159,26 @@ class _TowersListPageState extends State<TowersListPage> {
                                             Text(
                                               tower.type,
                                               style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
 
-                                            Text(
-                                              ",",
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold),
+                                            const Text(
+                                              ',',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                             const SizedBox(width: 4),
                                             // region
                                             Text(
                                               tower.region.toString(),
                                               style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontStyle: FontStyle.italic),
+                                                fontSize: 14,
+                                                fontStyle: FontStyle.italic,
+                                              ),
                                             ),
                                           ],
                                         ),

@@ -1,8 +1,7 @@
-import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 
-class DefaultFirebaseOptions {
+sealed class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) return web;
     switch (defaultTargetPlatform) {
@@ -14,9 +13,8 @@ class DefaultFirebaseOptions {
             TargetPlatform.windows ||
             TargetPlatform.linux:
         throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ${defaultTargetPlatform.name} - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+            'DefaultFirebaseOptions have not been configured for ${defaultTargetPlatform.name} - '
+            'you can reconfigure this by running the FlutterFire CLI again.');
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -49,5 +47,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'progrid-3a41b.firebasestorage.app',
     iosBundleId: 'com.univrse.progrid',
   );
-
 }

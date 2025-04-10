@@ -8,7 +8,6 @@ plugins {
 android {
     namespace = "com.univrse.progrid"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion "27.2.12479018"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

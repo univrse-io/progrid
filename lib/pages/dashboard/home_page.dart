@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:progrid/models/drawing_status.dart';
-import 'package:progrid/models/issue.dart';
-import 'package:progrid/models/issue_status.dart';
-import 'package:progrid/models/region.dart';
-import 'package:progrid/models/survey_status.dart';
-import 'package:progrid/models/tower.dart';
-import 'package:progrid/utils/dialog_utils.dart';
-import 'package:progrid/utils/themes.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
+
+import '../../models/drawing_status.dart';
+import '../../models/issue.dart';
+import '../../models/issue_status.dart';
+import '../../models/region.dart';
+import '../../models/survey_status.dart';
+import '../../models/tower.dart';
+import '../../utils/dialog_utils.dart';
+import '../../utils/themes.dart';
 
 final screenshotController1 = ScreenshotController();
 final screenshotController2 = ScreenshotController();
@@ -50,17 +51,17 @@ class _HomePageState extends State<HomePage>
                 Expanded(
                   flex: 2,
                   child: Card(
-                    shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.purple, width: 2)),
+                    shape: const RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.purple, width: 2),),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('On-Site Audit',
+                          const Text('On-Site Audit',
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                                  fontSize: 16, fontWeight: FontWeight.w600,),),
                           Expanded(
                             child: PieChart(PieChartData(
                                 sectionsSpace: 0,
@@ -76,7 +77,7 @@ class _HomePageState extends State<HomePage>
                                     value: towers
                                         .where((tower) =>
                                             tower.surveyStatus ==
-                                            SurveyStatus.surveyed)
+                                            SurveyStatus.surveyed,)
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -91,7 +92,7 @@ class _HomePageState extends State<HomePage>
                                     value: towers
                                         .where((tower) =>
                                             tower.surveyStatus ==
-                                            SurveyStatus.inprogress)
+                                            SurveyStatus.inprogress,)
                                         .length
                                         .toDouble(),
                                     radius: 30,
@@ -106,17 +107,17 @@ class _HomePageState extends State<HomePage>
                                     value: towers
                                         .where((tower) =>
                                             tower.surveyStatus ==
-                                            SurveyStatus.unsurveyed)
+                                            SurveyStatus.unsurveyed,)
                                         .length
                                         .toDouble(),
                                     radius: 30,
                                     color: Colors.red,
                                   ),
-                                ])),
+                                ],),),
                           ),
-                          Text('Regional Breakdown',
+                          const Text('Regional Breakdown',
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                                  fontSize: 16, fontWeight: FontWeight.w600,),),
                           Expanded(
                             child: Screenshot(
                               controller: screenshotController1,
@@ -139,22 +140,22 @@ class _HomePageState extends State<HomePage>
                                                     tower.region.name ==
                                                         region.name &&
                                                     tower.surveyStatus ==
-                                                        SurveyStatus.surveyed)
+                                                        SurveyStatus.surveyed,)
                                                 .length
                                                 .toDouble(),
                                             radius: 30,
                                             color: region.color,
-                                          )),
-                                    ]),
+                                          ),),
+                                    ],),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Expanded(
                     child: Card(
                   child: Padding(
@@ -162,57 +163,57 @@ class _HomePageState extends State<HomePage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('Recent Issues Tickets',
+                        const Text('Recent Issues Tickets',
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600)),
-                        SizedBox(height: 10),
+                                fontSize: 16, fontWeight: FontWeight.w600,),),
+                        const SizedBox(height: 10),
                         Expanded(
                           child: ListView.separated(
                               separatorBuilder: (context, index) =>
-                                  SizedBox(height: 1),
+                                  const SizedBox(height: 1),
                               itemCount: issues.length,
                               itemBuilder: (context, index) => Visibility(
                                     visible: issues[index].status ==
                                         IssueStatus.unresolved,
                                     child: ListTile(
-                                      shape: RoundedRectangleBorder(
+                                      shape: const RoundedRectangleBorder(
                                           side: BorderSide(
-                                              color: Colors.black12)),
+                                              color: Colors.black12,),),
                                       dense: true,
                                       onTap: () {
                                         showDialog(
                                             context: context,
                                             builder: (context) => SimpleDialog(
                                                   contentPadding:
-                                                      EdgeInsets.all(20),
+                                                      const EdgeInsets.all(20),
                                                   title: Row(
                                                     children: [
                                                       Text(
                                                         issues[index].id,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,
-                                                            fontSize: 25),
+                                                            fontSize: 25,),
                                                       ),
-                                                      SizedBox(width: 10),
+                                                      const SizedBox(width: 10),
                                                       Chip(
                                                         padding:
                                                             EdgeInsets.zero,
-                                                        shape: StadiumBorder(),
+                                                        shape: const StadiumBorder(),
                                                         side: BorderSide.none,
                                                         label: Text(
                                                             issues[index]
                                                                 .status
                                                                 .toString(),
                                                             style: Theme.of(
-                                                                    context)
+                                                                    context,)
                                                                 .primaryTextTheme
-                                                                .bodyMedium),
+                                                                .bodyMedium,),
                                                         backgroundColor:
                                                             issues[index]
                                                                 .status
                                                                 .color,
-                                                      )
+                                                      ),
                                                     ],
                                                   ),
                                                   children: [
@@ -221,7 +222,7 @@ class _HomePageState extends State<HomePage>
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: [
-                                                        SizedBox(
+                                                        const SizedBox(
                                                           width: 90,
                                                           child: Text(
                                                             'Description:',
@@ -236,12 +237,12 @@ class _HomePageState extends State<HomePage>
                                                           ),
                                                         ),
                                                         const SizedBox(
-                                                            width: 10),
+                                                            width: 10,),
                                                         Text(
                                                           issues[index]
                                                               .description,
-                                                          style: TextStyle(
-                                                              fontSize: 16),
+                                                          style: const TextStyle(
+                                                              fontSize: 16,),
                                                         ),
                                                       ],
                                                     ),
@@ -250,7 +251,7 @@ class _HomePageState extends State<HomePage>
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: [
-                                                        SizedBox(
+                                                        const SizedBox(
                                                           width: 90,
                                                           child: Text(
                                                             'Issued At:',
@@ -265,16 +266,16 @@ class _HomePageState extends State<HomePage>
                                                           ),
                                                         ),
                                                         const SizedBox(
-                                                            width: 10),
+                                                            width: 10,),
                                                         Text(
                                                           DateFormat(
-                                                                  'dd/MM/yy HH:mm a')
+                                                                  'dd/MM/yy HH:mm a',)
                                                               .format(issues[
                                                                       index]
                                                                   .dateTime
-                                                                  .toDate()),
-                                                          style: TextStyle(
-                                                              fontSize: 16),
+                                                                  .toDate(),),
+                                                          style: const TextStyle(
+                                                              fontSize: 16,),
                                                         ),
                                                       ],
                                                     ),
@@ -283,7 +284,7 @@ class _HomePageState extends State<HomePage>
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: [
-                                                        SizedBox(
+                                                        const SizedBox(
                                                           width: 90,
                                                           child: Text(
                                                             'Tags:',
@@ -298,136 +299,136 @@ class _HomePageState extends State<HomePage>
                                                           ),
                                                         ),
                                                         const SizedBox(
-                                                            width: 10),
+                                                            width: 10,),
                                                         Text(
                                                           issues[index]
                                                               .tags
                                                               .join(', '),
-                                                          style: TextStyle(
-                                                              fontSize: 16),
+                                                          style: const TextStyle(
+                                                              fontSize: 16,),
                                                         ),
                                                       ],
                                                     ),
-                                                    SizedBox(height: 20),
+                                                    const SizedBox(height: 20),
                                                     OutlinedButton(
                                                         onPressed: () {
                                                           Navigator.pop(
-                                                              context);
+                                                              context,);
                                                           DialogUtils
                                                               .showTowerDialog(
                                                                   context,
                                                                   issues[index]
                                                                       .id
                                                                       .split(
-                                                                          '-')
-                                                                      .first);
+                                                                          '-',)
+                                                                      .first,);
                                                         },
                                                         child:
-                                                            Text('View Tower'))
+                                                            const Text('View Tower'),),
                                                   ],
-                                                ));
+                                                ),);
                                       },
                                       trailing: Text(
                                           DateFormat('dd/MM/yy HH:mm a').format(
-                                              issues[index].dateTime.toDate())),
+                                              issues[index].dateTime.toDate(),),),
                                       title: Row(
                                         children: [
-                                          CircleAvatar(
+                                          const CircleAvatar(
                                               radius: 5,
-                                              backgroundColor: Colors.red),
-                                          SizedBox(width: 5),
+                                              backgroundColor: Colors.red,),
+                                          const SizedBox(width: 5),
                                           Text(issues[index].id,
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .titleSmall),
+                                                  .titleSmall,),
                                         ],
                                       ),
                                       subtitle:
                                           Text(issues[index].tags.join(', ')),
                                     ),
-                                  )),
+                                  ),),
                         ),
                       ],
                     ),
                   ),
-                ))
+                ),),
               ],
             ),
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Expanded(
               flex: 5,
               child: Column(
                 children: [
                   Card(
-                    shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.purple, width: 2)),
+                    shape: const RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.purple, width: 2),),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('On-Site Audit',
+                          const Text('On-Site Audit',
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                          SizedBox(height: 10),
+                                  fontSize: 16, fontWeight: FontWeight.bold,),),
+                          const SizedBox(height: 10),
                           Row(
                             children: [
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('Total',
+                                    const Text('Total',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
+                                            fontWeight: FontWeight.w600,),),
                                     Text('${towers.length}',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .displaySmall)
+                                            .displaySmall,),
                                   ],
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('In Progress',
+                                    const Text('In Progress',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
+                                            fontWeight: FontWeight.w600,),),
                                     Text(
                                         '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress).length}',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .displaySmall)
+                                            .displaySmall,),
                                   ],
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('Completed',
+                                    const Text('Completed',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
+                                            fontWeight: FontWeight.w600,),),
                                     Text(
                                         '${towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length}',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .displaySmall)
+                                            .displaySmall,),
                                   ],
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('Balance',
+                                    const Text('Balance',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
+                                            fontWeight: FontWeight.w600,),),
                                     Text(
                                         '${towers.where((tower) => tower.surveyStatus == SurveyStatus.inprogress || tower.surveyStatus == SurveyStatus.unsurveyed).length}',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .displaySmall)
+                                            .displaySmall,),
                                   ],
                                 ),
                               ),
@@ -437,76 +438,76 @@ class _HomePageState extends State<HomePage>
                       ),
                     ),
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Card(
-                    shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.green, width: 2)),
+                    shape: const RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.green, width: 2),),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('As-Built Drawing',
+                          const Text('As-Built Drawing',
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                          SizedBox(height: 10),
+                                  fontSize: 16, fontWeight: FontWeight.bold,),),
+                          const SizedBox(height: 10),
                           Row(
                             children: [
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('Total',
+                                    const Text('Total',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
+                                            fontWeight: FontWeight.w600,),),
                                     Text('${towers.length}',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .displaySmall)
+                                            .displaySmall,),
                                   ],
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('In Progress',
+                                    const Text('In Progress',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
+                                            fontWeight: FontWeight.w600,),),
                                     Text(
                                         '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress).length}',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .displaySmall)
+                                            .displaySmall,),
                                   ],
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('Submitted',
+                                    const Text('Submitted',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
+                                            fontWeight: FontWeight.w600,),),
                                     Text(
                                         '${towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length}',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .displaySmall)
+                                            .displaySmall,),
                                   ],
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   children: [
-                                    Text('Balance',
+                                    const Text('Balance',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
+                                            fontWeight: FontWeight.w600,),),
                                     Text(
                                         '${towers.where((tower) => tower.drawingStatus == DrawingStatus.inprogress || tower.drawingStatus == null).length}',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .displaySmall)
+                                            .displaySmall,),
                                   ],
                                 ),
                               ),
@@ -516,16 +517,16 @@ class _HomePageState extends State<HomePage>
                       ),
                     ),
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Expanded(
                     child: Screenshot(
                       controller: screenshotController3,
                       child: FlutterMap(
-                          options: MapOptions(
+                          options: const MapOptions(
                               initialCenter: LatLng(3.1408, 101.6932),
                               initialZoom: 11,
                               interactionOptions: InteractionOptions(
-                                  flags: ~InteractiveFlag.doubleTapZoom)),
+                                  flags: ~InteractiveFlag.doubleTapZoom,),),
                           children: [
                             TileLayer(
                               urlTemplate:
@@ -536,14 +537,14 @@ class _HomePageState extends State<HomePage>
                             MarkerLayer(markers: [
                               ...towers.map((tower) => Marker(
                                     point: LatLng(tower.position.latitude,
-                                        tower.position.longitude),
+                                        tower.position.longitude,),
                                     width: 80,
                                     // key: ValueKey(tower.id),
                                     child: GestureDetector(
                                       onTap: () {
                                         // TODO: implement map dialog here
                                         DialogUtils.showTowerDialog(
-                                            context, tower.id);
+                                            context, tower.id,);
                                       },
                                       child: Stack(
                                         alignment: Alignment.center,
@@ -552,20 +553,20 @@ class _HomePageState extends State<HomePage>
                                           Icon(
                                             Icons.cell_tower,
                                             color: switch (tower.region.name) {
-                                              'southern' => Color.fromARGB(
-                                                  255, 82, 114, 76),
-                                              'northern' => Color.fromARGB(
-                                                  255, 100, 68, 68),
-                                              'eastern' => Color.fromARGB(
-                                                  255, 134, 124, 79),
-                                              'central' => Color.fromARGB(
-                                                  255, 63, 81, 100),
-                                              'western' => Color.fromARGB(
-                                                  255, 104, 71, 104),
+                                              'southern' => const Color.fromARGB(
+                                                  255, 82, 114, 76,),
+                                              'northern' => const Color.fromARGB(
+                                                  255, 100, 68, 68,),
+                                              'eastern' => const Color.fromARGB(
+                                                  255, 134, 124, 79,),
+                                              'central' => const Color.fromARGB(
+                                                  255, 63, 81, 100,),
+                                              'western' => const Color.fromARGB(
+                                                  255, 104, 71, 104,),
                                               'sabah' =>
-                                                Color.fromARGB(255, 62, 88, 88),
-                                              'sarawak' => Color.fromARGB(
-                                                  255, 163, 110, 90),
+                                                const Color.fromARGB(255, 62, 88, 88),
+                                              'sarawak' => const Color.fromARGB(
+                                                  255, 163, 110, 90,),
                                               _ => Colors.grey
                                             },
                                             size: 36,
@@ -573,8 +574,8 @@ class _HomePageState extends State<HomePage>
 
                                           // information box
                                           Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 5),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 5,),
                                             decoration: BoxDecoration(
                                               color: AppColors.onSurface
                                                   .withValues(alpha: 0.7),
@@ -593,7 +594,7 @@ class _HomePageState extends State<HomePage>
                                                   decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
                                                       color: tower
-                                                          .surveyStatus.color),
+                                                          .surveyStatus.color,),
                                                 ),
                                                 const SizedBox(width: 4),
                                                 // tower id
@@ -611,14 +612,14 @@ class _HomePageState extends State<HomePage>
                                         ],
                                       ),
                                     ),
-                                  ))
-                            ]),
-                          ]),
+                                  ),),
+                            ],),
+                          ],),
                     ),
                   ),
                 ],
-              )),
-          SizedBox(width: 5),
+              ),),
+          const SizedBox(width: 5),
           Expanded(
             flex: 2,
             child: Column(
@@ -627,17 +628,17 @@ class _HomePageState extends State<HomePage>
                 Expanded(
                   flex: 2,
                   child: Card(
-                    shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.green, width: 2)),
+                    shape: const RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.green, width: 2),),
                     child: Padding(
                       padding: const EdgeInsets.all(15),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text('As-Built Drawing',
+                          const Text('As-Built Drawing',
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                                  fontSize: 16, fontWeight: FontWeight.w600,),),
                           Expanded(
                             child: PieChart(
                               PieChartData(
@@ -654,7 +655,7 @@ class _HomePageState extends State<HomePage>
                                       titlePositionPercentageOffset: 2,
                                       value: towers
                                           .where((tower) =>
-                                              tower.drawingStatus == null)
+                                              tower.drawingStatus == null,)
                                           .length
                                           .toDouble(),
                                       radius: 30,
@@ -671,18 +672,18 @@ class _HomePageState extends State<HomePage>
                                               value: towers
                                                   .where((tower) =>
                                                       tower.drawingStatus ==
-                                                      drawingStatus)
+                                                      drawingStatus,)
                                                   .length
                                                   .toDouble(),
                                               radius: 30,
                                               color: drawingStatus.color,
-                                            )),
-                                  ]),
+                                            ),),
+                                  ],),
                             ),
                           ),
-                          Text('Regional Breakdown',
+                          const Text('Regional Breakdown',
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                                  fontSize: 16, fontWeight: FontWeight.w600,),),
                           Expanded(
                             child: Screenshot(
                               controller: screenshotController2,
@@ -705,22 +706,22 @@ class _HomePageState extends State<HomePage>
                                                     tower.region.name ==
                                                         region.name &&
                                                     tower.drawingStatus ==
-                                                        DrawingStatus.submitted)
+                                                        DrawingStatus.submitted,)
                                                 .length
                                                 .toDouble(),
                                             radius: 30,
                                             color: region.color,
-                                          )),
-                                    ]),
+                                          ),),
+                                    ],),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Expanded(
                     child: Card(
                   child: Padding(
@@ -728,34 +729,34 @@ class _HomePageState extends State<HomePage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('On-Site Audit vs As-Built Drawing',
+                        const Text('On-Site Audit vs As-Built Drawing',
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600)),
-                        SizedBox(height: 10),
+                                fontSize: 16, fontWeight: FontWeight.w600,),),
+                        const SizedBox(height: 10),
                         Expanded(
                           child: Screenshot(
                             controller: screenshotController4,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Row(
+                                const Row(
                                   children: [
                                     Spacer(),
                                     CircleAvatar(
                                         backgroundColor: Colors.purple,
-                                        radius: 5),
+                                        radius: 5,),
                                     SizedBox(width: 5),
                                     Text('On-Site Audit'),
                                     Spacer(),
                                     CircleAvatar(
                                         backgroundColor: Colors.green,
-                                        radius: 5),
+                                        radius: 5,),
                                     SizedBox(width: 5),
                                     Text('As-Built Drawing'),
                                     Spacer(),
                                   ],
                                 ),
-                                SizedBox(height: 20),
+                                const SizedBox(height: 20),
                                 Expanded(
                                     child: BarChart(BarChartData(
                                   barGroups: [
@@ -767,11 +768,11 @@ class _HomePageState extends State<HomePage>
                                                   tower.surveyStatus ==
                                                       SurveyStatus.surveyed &&
                                                   tower.type ==
-                                                      'Sharing/Co-locate')
+                                                      'Sharing/Co-locate',)
                                               .length
                                               .toDouble(),
                                           width: 20,
-                                          color: Colors.purple),
+                                          color: Colors.purple,),
                                       BarChartRodData(
                                           borderRadius: BorderRadius.zero,
                                           toY: towers
@@ -779,12 +780,12 @@ class _HomePageState extends State<HomePage>
                                                   tower.drawingStatus ==
                                                       DrawingStatus.submitted &&
                                                   tower.type ==
-                                                      'Sharing/Co-locate')
+                                                      'Sharing/Co-locate',)
                                               .length
                                               .toDouble(),
                                           width: 20,
-                                          color: Colors.green)
-                                    ]),
+                                          color: Colors.green,),
+                                    ],),
                                     BarChartGroupData(x: 1, barRods: [
                                       BarChartRodData(
                                           borderRadius: BorderRadius.zero,
@@ -792,23 +793,23 @@ class _HomePageState extends State<HomePage>
                                               .where((tower) =>
                                                   tower.surveyStatus ==
                                                       SurveyStatus.surveyed &&
-                                                  tower.type == 'Greenfield')
+                                                  tower.type == 'Greenfield',)
                                               .length
                                               .toDouble(),
                                           width: 20,
-                                          color: Colors.purple),
+                                          color: Colors.purple,),
                                       BarChartRodData(
                                           borderRadius: BorderRadius.zero,
                                           toY: towers
                                               .where((tower) =>
                                                   tower.drawingStatus ==
                                                       DrawingStatus.submitted &&
-                                                  tower.type == 'Greenfield')
+                                                  tower.type == 'Greenfield',)
                                               .length
                                               .toDouble(),
                                           width: 20,
-                                          color: Colors.green)
-                                    ]),
+                                          color: Colors.green,),
+                                    ],),
                                     BarChartGroupData(x: 2, barRods: [
                                       BarChartRodData(
                                           borderRadius: BorderRadius.zero,
@@ -816,23 +817,23 @@ class _HomePageState extends State<HomePage>
                                               .where((tower) =>
                                                   tower.surveyStatus ==
                                                       SurveyStatus.surveyed &&
-                                                  tower.type == 'Roof top')
+                                                  tower.type == 'Roof top',)
                                               .length
                                               .toDouble(),
                                           width: 20,
-                                          color: Colors.purple),
+                                          color: Colors.purple,),
                                       BarChartRodData(
                                           borderRadius: BorderRadius.zero,
                                           toY: towers
                                               .where((tower) =>
                                                   tower.drawingStatus ==
                                                       DrawingStatus.submitted &&
-                                                  tower.type == 'Roof top')
+                                                  tower.type == 'Roof top',)
                                               .length
                                               .toDouble(),
                                           width: 20,
-                                          color: Colors.green)
-                                    ]),
+                                          color: Colors.green,),
+                                    ],),
                                   ],
                                   titlesData: FlTitlesData(
                                     rightTitles: const AxisTitles(),
@@ -848,8 +849,8 @@ class _HomePageState extends State<HomePage>
                                           child: Text([
                                             'Sharing/Co-locate',
                                             'Greenfield',
-                                            'Rooftop'
-                                          ][value.toInt()]),
+                                            'Rooftop',
+                                          ][value.toInt()],),
                                         ),
                                         reservedSize: 42,
                                       ),
@@ -869,18 +870,18 @@ class _HomePageState extends State<HomePage>
                                   ),
                                   borderData: FlBorderData(show: false),
                                   gridData: const FlGridData(show: false),
-                                ))),
+                                ),),),
                               ],
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
-                ))
+                ),),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
