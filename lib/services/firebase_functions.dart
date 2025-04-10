@@ -13,7 +13,7 @@ class FirebaseFunctionsService {
       final data = result.data as Map<String, dynamic>;
       final message = data['message'] as String;
 
-      log(message);
+      log('Success! $message');
     } on FirebaseFunctionsException catch (e) {
       log('Failed to grant admin role.', error: e);
       rethrow;
@@ -28,7 +28,7 @@ class FirebaseFunctionsService {
       final data = result.data as Map<String, dynamic>;
       final message = data['message'] as String;
 
-      log(message);
+      log('Success! $message');
     } on FirebaseFunctionsException catch (e) {
       log('Failed to revoke admin role.', error: e);
       rethrow;
