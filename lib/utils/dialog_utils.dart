@@ -130,26 +130,23 @@ sealed class DialogUtils {
                             color: selectedTower.surveyStatus.color,
                           ),
                           child: DropdownButton<SurveyStatus>(
-                            // require type specifics
                             isDense: true,
                             value: selectedTower.surveyStatus,
-                            onChanged:
-                                // TODO: Admin checker
-                                // context.read<User?>().role !=
-                                //         'admin'
-                                //     ? null :
-                                (value) {
-                              if (value != null &&
-                                  value != selectedTower.surveyStatus) {
-                                FirebaseFirestoreService().updateTower(
-                                  selectedTower.id,
-                                  data: {'surveyStatus': value.name},
-                                );
-                                setState(
-                                  () => selectedTower.surveyStatus = value,
-                                );
-                              }
-                            },
+                            onChanged: context.watch<bool>()
+                                ? null
+                                : (value) {
+                                    if (value != null &&
+                                        value != selectedTower.surveyStatus) {
+                                      FirebaseFirestoreService().updateTower(
+                                        selectedTower.id,
+                                        data: {'surveyStatus': value.name},
+                                      );
+                                      setState(
+                                        () =>
+                                            selectedTower.surveyStatus = value,
+                                      );
+                                    }
+                                  },
                             items: SurveyStatus.values
                                 .map(
                                   (status) => DropdownMenuItem(
@@ -162,10 +159,7 @@ sealed class DialogUtils {
                                 Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(24),
                             icon:
-                                // TODO: Admin checker
-                                // context.read<User?>().role == 'admin'
-                                // ? null :
-                                const SizedBox(),
+                                context.watch<bool>() ? null : const SizedBox(),
                             dropdownColor: selectedTower.surveyStatus.color,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.surface,

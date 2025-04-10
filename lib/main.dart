@@ -35,6 +35,16 @@ void main() async {
           initialData: null,
           create: (_) => FirebaseAuth.instance.userChanges(),
         ),
+        FutureProvider<bool>(
+          initialData: false,
+          create: (context) async {
+            final user = context.read<User?>();
+            final token = await user?.getIdTokenResult();
+            final isAdmin = token?.claims?['admin'] as bool?;
+
+            return isAdmin ?? false;
+          },
+        ),
       ],
       child: const Progrid(),
     ),
@@ -49,7 +59,7 @@ class Progrid extends StatelessWidget {
         title: 'Progrid',
         theme: lightTheme,
         home: Consumer<User?>(
-          builder: (context, user, _) => user == null
+          builder: (_, user, __) => user == null
               ? const LoginPage()
               : !user.emailVerified
                   ? const UserVerificationPage()

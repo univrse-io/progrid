@@ -1088,9 +1088,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                 ),
                                 textStyle:
                                     Theme.of(context).textTheme.bodyMedium,
-                                // TODO: Admin checker
-                                // enabled: context.read<UserProvider>().role ==
-                                //     'admin',
+                                enabled: context.watch<bool>(),
                                 onSelected: (value) {
                                   if (value != null) {
                                     FirebaseFirestoreService().updateTower(
@@ -1099,11 +1097,9 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                     );
                                   }
                                 },
-                                trailingIcon:
-                                    // TODO: Admin checker
-                                    // context.read<UserProvider>().role == 'admin'
-                                    //     ? null :
-                                    const SizedBox(),
+                                trailingIcon: context.watch<bool>()
+                                    ? null
+                                    : const SizedBox(),
                                 dropdownMenuEntries: [
                                   ...SurveyStatus.values.map(
                                     (status) => DropdownMenuEntry(
@@ -1142,9 +1138,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                 ),
                                 textStyle:
                                     Theme.of(context).textTheme.bodyMedium,
-                                // TODO: Admin checker
-                                // enabled: context.read<UserProvider>().role ==
-                                //     'admin',
+                                enabled: context.watch<bool>(),
                                 onSelected: (value) {
                                   if (value != null) {
                                     FirebaseFirestoreService().updateTower(
@@ -1153,11 +1147,9 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                     );
                                   }
                                 },
-                                trailingIcon:
-                                    // TODO: Admin checker
-                                    // context.read<UserProvider>().role == 'admin'
-                                    //     ? null :
-                                    const SizedBox(),
+                                trailingIcon: context.watch<bool>()
+                                    ? null
+                                    : const SizedBox(),
                                 dropdownMenuEntries: [
                                   ...DrawingStatus.values.map(
                                     (status) => DropdownMenuEntry(

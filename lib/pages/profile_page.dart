@@ -35,10 +35,7 @@ class ProfilePage extends StatelessWidget {
                             '${user?.displayName}',
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
-                          // TODO: Admin checker
-                          // Text(
-                          //   '${user.role[0].toUpperCase()}${user.role.substring(1)}',
-                          // ),
+                          if (context.watch<bool>()) const Text('Admin'),
                         ],
                       ),
                     ],
@@ -52,11 +49,6 @@ class ProfilePage extends StatelessWidget {
                     leading: const Icon(Icons.phone_outlined),
                     title: Text('${user?.phoneNumber}'),
                   ),
-                  // TODO: Team checker
-                  // ListTile(
-                  //   leading: const Icon(Icons.group),
-                  //   title: Text(user.team),
-                  // ),
                 ],
               ),
             ),
