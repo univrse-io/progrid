@@ -8,12 +8,16 @@ import 'firebase_firestore.dart';
 class FirebaseAuthService {
   Future<void> login(String email, String password) async {
     try {
-      final credential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       final user = credential.user!;
 
-      await FirebaseFirestoreService()
-          .updateUser(user.uid, data: user.toJson());
+      await FirebaseFirestoreService().updateUser(
+        user.uid,
+        data: user.toJson(),
+      );
 
       log('Successfully logged in.');
     } on FirebaseAuthException catch (e) {

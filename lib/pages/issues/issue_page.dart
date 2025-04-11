@@ -19,8 +19,9 @@ class IssuePage extends StatefulWidget {
 class _IssuePageState extends State<IssuePage> {
   @override
   Widget build(BuildContext context) {
-    final issue = Provider.of<List<Issue>>(context)
-        .firstWhere((issue) => issue.id == widget.issueId);
+    final issue = Provider.of<List<Issue>>(
+      context,
+    ).firstWhere((issue) => issue.id == widget.issueId);
 
     return Scaffold(
       appBar: AppBar(
@@ -37,46 +38,41 @@ class _IssuePageState extends State<IssuePage> {
             const SizedBox(height: 5),
             const Text(
               'Tags',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 7),
             if (issue.tags.isNotEmpty)
               Wrap(
                 spacing: 5,
                 runSpacing: 5,
-                children: issue.tags
-                    .map(
-                      (tag) => Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          tag,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                children:
+                    issue.tags
+                        .map(
+                          (tag) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.secondary,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              tag,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.surface,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    )
-                    .toList(),
+                        )
+                        .toList(),
               ),
             const SizedBox(height: 10),
             const Text(
               'Description',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 7),
             Text(
@@ -90,10 +86,7 @@ class _IssuePageState extends State<IssuePage> {
             const SizedBox(height: 10),
             const Text(
               'Status',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 7),
             if (issue.authorId == Provider.of<User?>(context)!.uid)
@@ -136,8 +129,10 @@ class _IssuePageState extends State<IssuePage> {
               )
             else
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 2,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
                   color: issue.status.color,

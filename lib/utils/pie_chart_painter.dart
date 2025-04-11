@@ -12,9 +12,10 @@ class PieChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4; // pie chart edge size
+    final paint =
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 4; // pie chart edge size
 
     final center = Offset(size.width / 2, size.height / 2); // get center
     final radius = min(size.width / 2, size.height / 2); // get radius
@@ -66,6 +67,5 @@ class PieChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) =>
-      false; // set to true if data changes dynamically
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false; // set to true if data changes dynamically
 }

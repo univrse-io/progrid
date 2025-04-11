@@ -43,33 +43,34 @@ class Tower {
 
   /// Creates a [Tower] instance from a JSON object.
   factory Tower.fromJson(Map<String, dynamic> json) => Tower(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        region: Region.values.byName((json['region'] as String).toLowerCase()),
-        type: json['type'] as String,
-        owner: (json['owner'] as String?) ?? 'no owner',
-        address: json['address'] as String,
-        position: json['position'] as GeoPoint,
-        surveyStatus: SurveyStatus.values.byName(
-          (json['surveyStatus'] as String)
-              .replaceAll(RegExp(r'[\s-]'), '')
-              .toLowerCase(),
-        ), // removes all whitespaces and hyphens, for backwards compatibility
-        drawingStatus: json['drawingStatus'] != null
+    id: json['id'] as String,
+    name: json['name'] as String,
+    region: Region.values.byName((json['region'] as String).toLowerCase()),
+    type: json['type'] as String,
+    owner: (json['owner'] as String?) ?? 'no owner',
+    address: json['address'] as String,
+    position: json['position'] as GeoPoint,
+    surveyStatus: SurveyStatus.values.byName(
+      (json['surveyStatus'] as String)
+          .replaceAll(RegExp(r'[\s-]'), '')
+          .toLowerCase(),
+    ), // removes all whitespaces and hyphens, for backwards compatibility
+    drawingStatus:
+        json['drawingStatus'] != null
             ? DrawingStatus.values.byName(
-                (json['drawingStatus'] as String)
-                    .replaceAll(RegExp(r'[\s-]'), '')
-                    .toLowerCase(),
-              )
+              (json['drawingStatus'] as String)
+                  .replaceAll(RegExp(r'[\s-]'), '')
+                  .toLowerCase(),
+            )
             : null,
-        images: (json['images'] as List?)?.cast<String>() ?? [],
-        signIn: json['signIn'] as Timestamp?,
-        signOut: json['signOut'] as Timestamp?,
-        authorId: json['authorId'] as String?,
-        notes: json['notes'] as String?,
-        // base: json['base'] as String?,
-        // equipmentShelter: json['equipmentShelter'] as String?,
-      );
+    images: (json['images'] as List?)?.cast<String>() ?? [],
+    signIn: json['signIn'] as Timestamp?,
+    signOut: json['signOut'] as Timestamp?,
+    authorId: json['authorId'] as String?,
+    notes: json['notes'] as String?,
+    // base: json['base'] as String?,
+    // equipmentShelter: json['equipmentShelter'] as String?,
+  );
 
   /// Creates a [Tower] instance from a Firestore document.
   factory Tower.fromFirestore(DocumentSnapshot doc) {

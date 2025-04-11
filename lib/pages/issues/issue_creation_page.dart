@@ -40,9 +40,9 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     }
 
     if (_descriptionController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please add a description')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please add a description')));
       return;
     }
 
@@ -67,8 +67,10 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     );
 
     try {
-      await FirebaseFirestoreService()
-          .createIssue(issue.id, data: issue.toJson());
+      await FirebaseFirestoreService().createIssue(
+        issue.id,
+        data: issue.toJson(),
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -78,64 +80,64 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating Issue: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error creating Issue: $e')));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(
-            widget.towerId,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-          ),
-        ),
-        body: SafeArea(
-          minimum: const EdgeInsets.symmetric(horizontal: 25),
-          child: Column(
-            children: [
-              // Tags section (Dropdown)
-              DropdownButton<String>(
-                isExpanded: true,
-                value: _selectedTag,
-                hint: const Text('Tags*'),
-                items: _availableTags
+    appBar: AppBar(
+      title: Text(
+        widget.towerId,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+      ),
+    ),
+    body: SafeArea(
+      minimum: const EdgeInsets.symmetric(horizontal: 25),
+      child: Column(
+        children: [
+          // Tags section (Dropdown)
+          DropdownButton<String>(
+            isExpanded: true,
+            value: _selectedTag,
+            hint: const Text('Tags*'),
+            items:
+                _availableTags
                     .map(
-                      (tag) => DropdownMenuItem(
-                        value: tag,
-                        child: Text(tag),
-                      ),
+                      (tag) => DropdownMenuItem(value: tag, child: Text(tag)),
                     )
                     .toList(),
-                onChanged: (newTag) {
-                  if (newTag != null && !_selectedTags.contains(newTag)) {
-                    setState(() {
-                      _selectedTags.add(newTag);
-                      _selectedTag = null; // Reset selection
-                    });
-                  }
-                },
-                dropdownColor: Theme.of(context).colorScheme.surface,
-              ),
-              const SizedBox(height: 3),
+            onChanged: (newTag) {
+              if (newTag != null && !_selectedTags.contains(newTag)) {
+                setState(() {
+                  _selectedTags.add(newTag);
+                  _selectedTag = null; // Reset selection
+                });
+              }
+            },
+            dropdownColor: Theme.of(context).colorScheme.surface,
+          ),
+          const SizedBox(height: 3),
 
-              // Display selected tags
-              if (_selectedTags.isNotEmpty)
-                SizedBox(
-                  width: double.infinity,
-                  child: Wrap(
-                    spacing: 5,
-                    runSpacing: 5,
-                    children: _selectedTags
+          // Display selected tags
+          if (_selectedTags.isNotEmpty)
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                spacing: 5,
+                runSpacing: 5,
+                children:
+                    _selectedTags
                         .map(
                           (tag) => GestureDetector(
                             onTap: () {
                               setState(() {
-                                _selectedTags
-                                    .remove(tag); // Remove tag on click
+                                _selectedTags.remove(
+                                  tag,
+                                ); // Remove tag on click
                               });
                             },
                             child: Container(
@@ -159,26 +161,26 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                           ),
                         )
                         .toList(),
-                  ),
-                ),
-              const SizedBox(height: 17),
+              ),
+            ),
+          const SizedBox(height: 17),
 
-              // Description box
-              Expanded(
-                child: TextField(
-                  controller: _descriptionController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  expands: true,
-                  textAlignVertical: TextAlignVertical.top,
-                  maxLength: _maxDescriptionLength,
-                  buildCounter: (
+          // Description box
+          Expanded(
+            child: TextField(
+              controller: _descriptionController,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              expands: true,
+              textAlignVertical: TextAlignVertical.top,
+              maxLength: _maxDescriptionLength,
+              buildCounter:
+                  (
                     context, {
                     required currentLength,
                     required isFocused,
                     maxLength,
-                  }) =>
-                      Padding(
+                  }) => Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       '$currentLength/$maxLength',
@@ -188,24 +190,24 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
                       ),
                     ),
                   ),
-                  decoration: InputDecoration(
-                    hintText: 'Description*',
-                    alignLabelWithHint: true,
-                    hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    contentPadding: const EdgeInsets.all(12),
-                  ),
+              decoration: InputDecoration(
+                hintText: 'Description*',
+                alignLabelWithHint: true,
+                hintStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
+                contentPadding: const EdgeInsets.all(12),
               ),
-              const SizedBox(height: 20),
-              FilledButton(
-                onPressed: _createIssue,
-                child: const Text('Create Issue'),
-              ),
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
-        ),
-      );
+          const SizedBox(height: 20),
+          FilledButton(
+            onPressed: _createIssue,
+            child: const Text('Create Issue'),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    ),
+  );
 }

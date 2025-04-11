@@ -10,11 +10,12 @@ sealed class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS ||
-            TargetPlatform.windows ||
-            TargetPlatform.linux:
+          TargetPlatform.windows ||
+          TargetPlatform.linux:
         throw UnsupportedError(
-            'DefaultFirebaseOptions have not been configured for ${defaultTargetPlatform.name} - '
-            'you can reconfigure this by running the FlutterFire CLI again.');
+          'DefaultFirebaseOptions have not been configured for ${defaultTargetPlatform.name} - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',

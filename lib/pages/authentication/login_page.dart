@@ -20,158 +20,160 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        body: SafeArea(
-          minimum: const EdgeInsets.all(20),
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset('assets/images/progrid_black.png', width: 300),
-                  const SizedBox(height: 15),
-                  Container(
-                    width: 350,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 4),
-                          blurRadius: 10,
-                        ),
-                      ],
+    backgroundColor: Theme.of(context).colorScheme.surface,
+    body: SafeArea(
+      minimum: const EdgeInsets.all(20),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset('assets/images/progrid_black.png', width: 300),
+              const SizedBox(height: 15),
+              Container(
+                width: 350,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      offset: Offset(0, 4),
+                      blurRadius: 10,
                     ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text(
-                            'Welcome Back!\nGlad to see you again.',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                            ),
+                  ],
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Welcome Back!\nGlad to see you again.',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          hintText: 'Email',
+                          hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
-                          const SizedBox(height: 12),
-                          TextField(
-                            controller: emailController,
-                            decoration: InputDecoration(
-                              hintText: 'Email',
-                              hintStyle: TextStyle(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                            ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: 'Password',
+                          hintStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
-                          const SizedBox(height: 10),
-                          TextField(
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              hintStyle: TextStyle(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                            ),
-                            controller: passwordController,
-                          ),
-                          const SizedBox(height: 7),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: GestureDetector(
-                                onTap: () => Navigator.of(context).push(
+                        ),
+                        controller: passwordController,
+                      ),
+                      const SizedBox(height: 7),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap:
+                                () => Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ForgotPasswordPage(),
+                                    builder:
+                                        (context) => const ForgotPasswordPage(),
                                   ),
                                 ),
-                                child: Text(
-                                  'Forgot Password?',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    fontStyle: FontStyle.italic,
-                                    decoration: TextDecoration.underline,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                  ),
-                                ),
+                            child: Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic,
+                                decoration: TextDecoration.underline,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 14),
-                          FilledButton(
-                            onPressed: () => FirebaseAuthService()
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      FilledButton(
+                        onPressed:
+                            () => FirebaseAuthService()
                                 .login(
-                              emailController.text.trim(),
-                              passwordController.text.trim(),
-                            )
+                                  emailController.text.trim(),
+                                  passwordController.text.trim(),
+                                )
                                 .onError<FirebaseAuthException>((e, _) {
-                              if (context.mounted) {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => AlertDialog(
-                                    title: Text(e.message ?? e.code),
-                                  ),
-                                );
-                              }
-                              passwordController.clear();
-                            }),
-                            child: const Text('Login'),
+                                  if (context.mounted) {
+                                    showDialog(
+                                      context: context,
+                                      builder:
+                                          (_) => AlertDialog(
+                                            title: Text(e.message ?? e.code),
+                                          ),
+                                    );
+                                  }
+                                  passwordController.clear();
+                                }),
+                        child: const Text('Login'),
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Not a member? ',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           ),
-                          const SizedBox(height: 14),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Not a member? ',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => Navigator.of(context).push(
+                          GestureDetector(
+                            onTap:
+                                () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => const RegisterPage(),
                                   ),
                                 ),
-                                child: Text(
-                                  'Register Now',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
+                            child: Text(
+                              'Register Now',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
-                            ],
+                            ),
                           ),
-                          const SizedBox(height: 2),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('Powered by '),
-                      Text(
-                        'UniVRse',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      const SizedBox(height: 2),
                     ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Powered by '),
+                  Text(
+                    'UniVRse',
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
         ),
-      );
+      ),
+    ),
+  );
 }

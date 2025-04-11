@@ -41,9 +41,9 @@ class _UserVerificationPageState extends State<UserVerificationPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sending email: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error sending email: $e')));
       }
     } finally {
       setState(() {
@@ -54,7 +54,7 @@ class _UserVerificationPageState extends State<UserVerificationPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: SafeArea(
+    body: SafeArea(
       minimum: const EdgeInsets.symmetric(horizontal: 25),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -84,5 +84,6 @@ class _UserVerificationPageState extends State<UserVerificationPage> {
           ),
         ],
       ),
-    ),);
+    ),
+  );
 }

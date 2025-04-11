@@ -4,6 +4,9 @@ analyzer:
   language:
     strict-casts: true
 
+formatter:
+  page_width: 80
+
 linter:
   rules:
     - always_declare_return_types

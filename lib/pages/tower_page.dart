@@ -44,8 +44,9 @@ class _TowerPageState extends State<TowerPage> {
   @override
   Widget build(BuildContext context) {
     final towers = Provider.of<List<Tower>>(context);
-    final selectedTower =
-        towers.firstWhere((tower) => tower.id == widget.towerId);
+    final selectedTower = towers.firstWhere(
+      (tower) => tower.id == widget.towerId,
+    );
 
     final issues = Provider.of<List<Issue>>(context);
 
@@ -78,19 +79,19 @@ class _TowerPageState extends State<TowerPage> {
                 children: [
                   const Text(
                     'LatLong:',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(width: 5),
                   GestureDetector(
                     onTap: () async {
                       // TODO: implement apple maps
-                      final towers =
-                          Provider.of<List<Tower>>(context, listen: false);
-                      final selectedTower = towers
-                          .firstWhere((tower) => tower.id == widget.towerId);
+                      final towers = Provider.of<List<Tower>>(
+                        context,
+                        listen: false,
+                      );
+                      final selectedTower = towers.firstWhere(
+                        (tower) => tower.id == widget.towerId,
+                      );
 
                       final uri = Uri(
                         scheme: 'google.navigation',
@@ -126,10 +127,7 @@ class _TowerPageState extends State<TowerPage> {
                 children: [
                   const Text(
                     'Survey:',
-                    style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      fontSize: 17,
-                    ),
+                    style: TextStyle(fontStyle: FontStyle.italic, fontSize: 17),
                   ),
                   const SizedBox(width: 5),
 
@@ -154,14 +152,15 @@ class _TowerPageState extends State<TowerPage> {
                           selectedTower.surveyStatus = value;
                         }
                       },
-                      items: SurveyStatus.values
-                          .map(
-                            (status) => DropdownMenuItem(
-                              value: status,
-                              child: Text(status.toString()),
-                            ),
-                          )
-                          .toList(),
+                      items:
+                          SurveyStatus.values
+                              .map(
+                                (status) => DropdownMenuItem(
+                                  value: status,
+                                  child: Text(status.toString()),
+                                ),
+                              )
+                              .toList(),
                       iconEnabledColor: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(24),
                       dropdownColor: selectedTower.surveyStatus.color,
@@ -180,16 +179,10 @@ class _TowerPageState extends State<TowerPage> {
                 children: [
                   Text(
                     'Site Details',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(width: 5),
-                  Icon(
-                    Icons.list,
-                    size: 27,
-                  ),
+                  Icon(Icons.list, size: 27),
                 ],
               ),
               const SizedBox(height: 4),
@@ -199,15 +192,14 @@ class _TowerPageState extends State<TowerPage> {
               const SizedBox(height: 10),
               const Text(
                 'Pictures',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Container(
                 height: 130,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 2,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Theme.of(context).colorScheme.tertiary,
@@ -215,39 +207,48 @@ class _TowerPageState extends State<TowerPage> {
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedTower.images.length,
-                  itemBuilder: (context, index) => Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    child: Stack(
-                      children: [
-                        GestureDetector(
-                          onTap: () => DialogUtils.showImageDialog(
-                            context,
-                            selectedTower.images[index],
-                            widget.towerId,
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxHeight: 400),
-                              child: Image.network(
-                                selectedTower.images[index],
-                                fit: BoxFit.cover,
-                                height: 120,
-                                width: 120,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const ColoredBox(
-                                  color: Colors.grey,
-                                  child:
-                                      Icon(Icons.error, color: AppColors.red),
+                  itemBuilder:
+                      (context, index) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 5,
+                          horizontal: 5,
+                        ),
+                        child: Stack(
+                          children: [
+                            GestureDetector(
+                              onTap:
+                                  () => DialogUtils.showImageDialog(
+                                    context,
+                                    selectedTower.images[index],
+                                    widget.towerId,
+                                  ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxHeight: 400,
+                                  ),
+                                  child: Image.network(
+                                    selectedTower.images[index],
+                                    fit: BoxFit.cover,
+                                    height: 120,
+                                    width: 120,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const ColoredBox(
+                                              color: Colors.grey,
+                                              child: Icon(
+                                                Icons.error,
+                                                color: AppColors.red,
+                                              ),
+                                            ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
                 ),
               ),
               const SizedBox(height: 2),
@@ -266,8 +267,8 @@ class _TowerPageState extends State<TowerPage> {
                     selectedTower.images.isEmpty
                         ? 'Unsurveyed' // No images
                         : selectedTower.images.length == 1
-                            ? 'Signed-in' // Exactly 1 image
-                            : 'Signed-out', // More than 1 image
+                        ? 'Signed-in' // Exactly 1 image
+                        : 'Signed-out', // More than 1 image
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.secondary,
                       fontStyle: FontStyle.italic,
@@ -278,10 +279,7 @@ class _TowerPageState extends State<TowerPage> {
               const SizedBox(height: 10),
               const Text(
                 'Additional Notes',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(
                 height: 120, // control text box height here
@@ -296,22 +294,22 @@ class _TowerPageState extends State<TowerPage> {
                     color: Theme.of(context).colorScheme.primary,
                     fontSize: 14,
                   ),
-                  buildCounter: (
-                    context, {
-                    required currentLength,
-                    required isFocused,
-                    maxLength,
-                  }) =>
-                      Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      '$currentLength/$maxLength',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontWeight: FontWeight.bold,
+                  buildCounter:
+                      (
+                        context, {
+                        required currentLength,
+                        required isFocused,
+                        maxLength,
+                      }) => Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          '$currentLength/$maxLength',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
                   decoration: InputDecoration(
                     hintText: 'Enter notes here...',
                     alignLabelWithHint: true,
@@ -319,8 +317,10 @@ class _TowerPageState extends State<TowerPage> {
                       color: Theme.of(context).colorScheme.secondary,
                       fontSize: 14,
                     ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 7,
+                    ),
                   ),
                   onChanged: (text) async {
                     // cancel any previous debounce timer
@@ -328,14 +328,16 @@ class _TowerPageState extends State<TowerPage> {
                       _debounceTimer?.cancel();
                     }
 
-                    _debounceTimer =
-                        Timer(const Duration(milliseconds: 2000), () {
-                      // update notes every one second of changes
-                      FirebaseFirestoreService().updateTower(
-                        widget.towerId,
-                        data: {'notes': text},
-                      );
-                    });
+                    _debounceTimer = Timer(
+                      const Duration(milliseconds: 2000),
+                      () {
+                        // update notes every one second of changes
+                        FirebaseFirestoreService().updateTower(
+                          widget.towerId,
+                          data: {'notes': text},
+                        );
+                      },
+                    );
                   },
                 ),
               ),
@@ -344,11 +346,12 @@ class _TowerPageState extends State<TowerPage> {
                 children: [
                   Expanded(
                     child: FilledButton(
-                      onPressed: selectedTower.images.isNotEmpty
-                          ? null
-                          : () async {
-                              await _signIn();
-                            },
+                      onPressed:
+                          selectedTower.images.isNotEmpty
+                              ? null
+                              : () async {
+                                await _signIn();
+                              },
                       style: FilledButton.styleFrom(
                         textStyle: const TextStyle(fontWeight: FontWeight.w600),
                         minimumSize: const Size.fromHeight(45),
@@ -366,15 +369,16 @@ class _TowerPageState extends State<TowerPage> {
                   Expanded(
                     child: FilledButton(
                       // added condition to check if there are any unresolved issues
-                      onPressed: selectedTower.images.length != 1 ||
-                              issues.any(
-                                (issue) =>
-                                    issue.status == IssueStatus.unresolved,
-                              )
-                          ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
-                          : () async {
-                              await _signOut();
-                            },
+                      onPressed:
+                          selectedTower.images.length != 1 ||
+                                  issues.any(
+                                    (issue) =>
+                                        issue.status == IssueStatus.unresolved,
+                                  )
+                              ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
+                              : () async {
+                                await _signOut();
+                              },
                       style: FilledButton.styleFrom(
                         textStyle: const TextStyle(fontWeight: FontWeight.w600),
                         minimumSize: const Size.fromHeight(45),
@@ -396,8 +400,9 @@ class _TowerPageState extends State<TowerPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          IssuesListPage(towerId: selectedTower.id),
+                      builder:
+                          (context) =>
+                              IssuesListPage(towerId: selectedTower.id),
                     ),
                   );
                 },
@@ -423,9 +428,7 @@ class _TowerPageState extends State<TowerPage> {
       if (selectedTower.images.length == 1) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Tower has already been signed-in'),
-            ),
+            const SnackBar(content: Text('Tower has already been signed-in')),
           );
         }
         return;
@@ -435,58 +438,65 @@ class _TowerPageState extends State<TowerPage> {
       unawaited(
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text(
-              'Select Image Source',
-              textAlign: TextAlign.center,
-            ),
-            titleTextStyle: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-            titlePadding: const EdgeInsets.only(top: 20, right: 20, left: 20),
-            contentPadding:
-                const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      // Navigator.pop(context);
-                      _pickImage(ImageSource.camera, false);
-                    },
-                    style: FilledButton.styleFrom(
-                      textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                      minimumSize: const Size.fromHeight(120),
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 30,
-                    ),
-                  ),
+          builder:
+              (context) => AlertDialog(
+                title: const Text(
+                  'Select Image Source',
+                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(width: 5),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      // Navigator.pop(context);
-                      _pickImage(ImageSource.gallery, false);
-                    },
-                    style: FilledButton.styleFrom(
-                      textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                      minimumSize: const Size.fromHeight(120),
-                    ),
-                    child: const Icon(
-                      Icons.file_upload_outlined,
-                      size: 30,
-                    ),
-                  ),
+                titleTextStyle: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
-              ],
-            ),
-          ),
+                titlePadding: const EdgeInsets.only(
+                  top: 20,
+                  right: 20,
+                  left: 20,
+                ),
+                contentPadding: const EdgeInsets.only(
+                  top: 10,
+                  left: 20,
+                  right: 20,
+                  bottom: 20,
+                ),
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: () {
+                          // Navigator.pop(context);
+                          _pickImage(ImageSource.camera, false);
+                        },
+                        style: FilledButton.styleFrom(
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          minimumSize: const Size.fromHeight(120),
+                        ),
+                        child: const Icon(Icons.camera_alt_outlined, size: 30),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: () {
+                          // Navigator.pop(context);
+                          _pickImage(ImageSource.gallery, false);
+                        },
+                        style: FilledButton.styleFrom(
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          minimumSize: const Size.fromHeight(120),
+                        ),
+                        child: const Icon(Icons.file_upload_outlined, size: 30),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
         ),
       );
     } catch (e) {
@@ -497,17 +507,16 @@ class _TowerPageState extends State<TowerPage> {
   Future<void> _signOut() async {
     try {
       final towers = Provider.of<List<Tower>>(context, listen: false);
-      final selectedTower =
-          towers.firstWhere((tower) => tower.id == widget.towerId);
+      final selectedTower = towers.firstWhere(
+        (tower) => tower.id == widget.towerId,
+      );
 
       // check if there is already one image
       if (selectedTower.images.length != 1) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please sign-in first'),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Please sign-in first')));
         }
         return;
       }
@@ -516,58 +525,65 @@ class _TowerPageState extends State<TowerPage> {
       unawaited(
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text(
-              'Select Image Source',
-              textAlign: TextAlign.center,
-            ),
-            titleTextStyle: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-            titlePadding: const EdgeInsets.only(top: 20, right: 20, left: 20),
-            contentPadding:
-                const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      // Navigator.pop(context);
-                      _pickImage(ImageSource.camera, true);
-                    },
-                    style: FilledButton.styleFrom(
-                      textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                      minimumSize: const Size.fromHeight(120),
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 30,
-                    ),
-                  ),
+          builder:
+              (context) => AlertDialog(
+                title: const Text(
+                  'Select Image Source',
+                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(width: 5),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      // Navigator.pop(context);
-                      _pickImage(ImageSource.gallery, true);
-                    },
-                    style: FilledButton.styleFrom(
-                      textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                      minimumSize: const Size.fromHeight(120),
-                    ),
-                    child: const Icon(
-                      Icons.file_upload_outlined,
-                      size: 30,
-                    ),
-                  ),
+                titleTextStyle: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
-              ],
-            ),
-          ),
+                titlePadding: const EdgeInsets.only(
+                  top: 20,
+                  right: 20,
+                  left: 20,
+                ),
+                contentPadding: const EdgeInsets.only(
+                  top: 10,
+                  left: 20,
+                  right: 20,
+                  bottom: 20,
+                ),
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: () {
+                          // Navigator.pop(context);
+                          _pickImage(ImageSource.camera, true);
+                        },
+                        style: FilledButton.styleFrom(
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          minimumSize: const Size.fromHeight(120),
+                        ),
+                        child: const Icon(Icons.camera_alt_outlined, size: 30),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: () {
+                          // Navigator.pop(context);
+                          _pickImage(ImageSource.gallery, true);
+                        },
+                        style: FilledButton.styleFrom(
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          minimumSize: const Size.fromHeight(120),
+                        ),
+                        child: const Icon(Icons.file_upload_outlined, size: 30),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
         ),
       );
     } catch (e) {
@@ -594,12 +610,13 @@ class _TowerPageState extends State<TowerPage> {
                     ? 'Location permission is permanently denied. Please enable it in settings.'
                     : 'Location permission is required to add location data.',
               ),
-              action: status.isPermanentlyDenied
-                  ? const SnackBarAction(
-                      label: 'Settings',
-                      onPressed: openAppSettings,
-                    )
-                  : null,
+              action:
+                  status.isPermanentlyDenied
+                      ? const SnackBarAction(
+                        label: 'Settings',
+                        onPressed: openAppSettings,
+                      )
+                      : null,
             ),
           );
         }
@@ -659,8 +676,9 @@ class _TowerPageState extends State<TowerPage> {
       }
 
       // reload image
-      final compressedImage =
-          img.decodeImage(await tempImageFile.readAsBytes());
+      final compressedImage = img.decodeImage(
+        await tempImageFile.readAsBytes(),
+      );
       if (compressedImage == null) {
         log('Failed to decode compressed image');
         return;
@@ -704,13 +722,15 @@ class _TowerPageState extends State<TowerPage> {
       // save image locally
       final watermarkedImagePath =
           '${(await getTemporaryDirectory()).path}/watermarked_${pickedFile.name}';
-      await File(watermarkedImagePath)
-          .writeAsBytes(img.encodeJpg(compressedImage));
+      await File(
+        watermarkedImagePath,
+      ).writeAsBytes(img.encodeJpg(compressedImage));
 
       // upload image to firebase storage
       final fileName = '${DateTime.now().microsecondsSinceEpoch}'; // unique
-      final storageRef =
-          FirebaseStorage.instance.ref('towers/${widget.towerId}/$fileName');
+      final storageRef = FirebaseStorage.instance.ref(
+        'towers/${widget.towerId}/$fileName',
+      );
 
       final uploadTask = storageRef.putFile(File(watermarkedImagePath));
 
@@ -752,9 +772,9 @@ class _TowerPageState extends State<TowerPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error Adding Image: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error Adding Image: $e')));
       }
     } finally {
       if (mounted) Navigator.pop(context);
@@ -934,29 +954,21 @@ class _TowerPageState extends State<TowerPage> {
   // }
 
   Widget _buildDetailRow(String label, String content) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 90,
-              child: Text(
-                label,
-                textAlign: TextAlign.right,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                content,
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
+    padding: const EdgeInsets.symmetric(vertical: 2),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 90,
+          child: Text(
+            label,
+            textAlign: TextAlign.right,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
         ),
-      );
+        const SizedBox(width: 10),
+        Expanded(child: Text(content, style: const TextStyle(fontSize: 16))),
+      ],
+    ),
+  );
 }

@@ -58,147 +58,151 @@ class _TowersListPageState extends State<TowersListPage> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: towers.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: towers.length,
-                      itemBuilder: (context, index) {
-                        final tower = towers[index];
+              child:
+                  towers.isEmpty
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                        itemCount: towers.length,
+                        itemBuilder: (context, index) {
+                          final tower = towers[index];
 
-                        // filter towers based on search query
-                        if (_searchQuery.isNotEmpty &&
-                            !(tower.name.toLowerCase().contains(_searchQuery) ||
-                                tower.address
-                                    .toLowerCase()
-                                    .contains(_searchQuery) ||
-                                tower.region.name.contains(_searchQuery) ||
-                                tower.owner
-                                    .toLowerCase()
-                                    .contains(_searchQuery) ||
-                                tower.id
-                                    .toLowerCase()
-                                    .contains(_searchQuery))) {
-                          return const SizedBox.shrink();
-                        }
+                          // filter towers based on search query
+                          if (_searchQuery.isNotEmpty &&
+                              !(tower.name.toLowerCase().contains(
+                                    _searchQuery,
+                                  ) ||
+                                  tower.address.toLowerCase().contains(
+                                    _searchQuery,
+                                  ) ||
+                                  tower.region.name.contains(_searchQuery) ||
+                                  tower.owner.toLowerCase().contains(
+                                    _searchQuery,
+                                  ) ||
+                                  tower.id.toLowerCase().contains(
+                                    _searchQuery,
+                                  ))) {
+                            return const SizedBox.shrink();
+                          }
 
-                        return GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder: (_, __, ___) =>
-                                  TowerPage(towerId: tower.id),
-                              transitionsBuilder: (_, animation, __, child) =>
-                                  FadeTransition(
-                                opacity: animation,
-                                child: child,
-                              ),
-                            ),
-                          ),
-                          child: Card(
-                            margin: const EdgeInsets.symmetric(vertical: 3),
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: SafeArea(
-                              minimum: const EdgeInsets.symmetric(
-                                vertical: 6,
-                                horizontal: 9,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 70,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            // completion status
-                                            Container(
-                                              width: 12,
-                                              height: 12,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: tower.surveyStatus.color,
-                                              ),
+                          return GestureDetector(
+                            onTap:
+                                () => Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder:
+                                        (_, __, ___) =>
+                                            TowerPage(towerId: tower.id),
+                                    transitionsBuilder:
+                                        (_, animation, __, child) =>
+                                            FadeTransition(
+                                              opacity: animation,
+                                              child: child,
                                             ),
-                                            const SizedBox(width: 4),
-                                            // tower id
-                                            Text(
-                                              tower.id,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
+                                  ),
+                                ),
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(vertical: 3),
+                              elevation: 3,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: SafeArea(
+                                minimum: const EdgeInsets.symmetric(
+                                  vertical: 6,
+                                  horizontal: 9,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 70,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              // completion status
+                                              Container(
+                                                width: 12,
+                                                height: 12,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color:
+                                                      tower.surveyStatus.color,
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        // tower name
-                                        Text(
-                                          tower.name,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
+                                              const SizedBox(width: 4),
+                                              // tower id
+                                              Text(
+                                                tower.id,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            // // owner
-                                            // Text(
-                                            //   tower.owner,
-                                            //   style: const TextStyle(
-                                            //       fontSize: 14,
-                                            //       fontWeight: FontWeight.bold),
-                                            // ),
+                                          // tower name
+                                          Text(
+                                            tower.name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              // // owner
+                                              // Text(
+                                              //   tower.owner,
+                                              //   style: const TextStyle(
+                                              //       fontSize: 14,
+                                              //       fontWeight: FontWeight.bold),
+                                              // ),
 
-                                            // type
-                                            Text(
-                                              tower.type,
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
+                                              // type
+                                              Text(
+                                                tower.type,
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
 
-                                            const Text(
-                                              ',',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
+                                              const Text(
+                                                ',',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            // region
-                                            Text(
-                                              tower.region.toString(),
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontStyle: FontStyle.italic,
+                                              const SizedBox(width: 4),
+                                              // region
+                                              Text(
+                                                tower.region.toString(),
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontStyle: FontStyle.italic,
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  const Expanded(
-                                    flex: 10,
-                                    child: Icon(
-                                      Icons.arrow_right,
-                                      size: 30,
+                                    const Expanded(
+                                      flex: 10,
+                                      child: Icon(Icons.arrow_right, size: 30),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      ),
             ),
             const SizedBox(height: 25),
           ],

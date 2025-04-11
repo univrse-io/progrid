@@ -18,8 +18,9 @@ import 'utils/themes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseFirestore.instance.settings =
-      const Settings(persistenceEnabled: true);
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+  );
   runApp(
     MultiProvider(
       providers: [
@@ -56,16 +57,18 @@ class Progrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'Progrid',
-        theme: lightTheme,
-        home: Consumer<User?>(
-          builder: (_, user, __) => user == null
-              ? const LoginPage()
-              : !user.emailVerified
+    title: 'Progrid',
+    theme: lightTheme,
+    home: Consumer<User?>(
+      builder:
+          (_, user, __) =>
+              user == null
+                  ? const LoginPage()
+                  : !user.emailVerified
                   ? const UserVerificationPage()
                   : kIsWeb
-                      ? const DashboardPage()
-                      : const MapPage(),
-        ),
-      );
+                  ? const DashboardPage()
+                  : const MapPage(),
+    ),
+  );
 }
