@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -11,11 +12,12 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final _emailController = TextEditingController();
+  late final carbonToken = Theme.of(context).extension<CarbonToken>();
+  final emailController = TextEditingController();
 
-  // forgot password
+  // TODO: Restructure forgot password function.
   Future<void> forgotPassword() async {
-    final email = _emailController.text.trim();
+    final email = emailController.text.trim();
 
     if (email.isEmpty) {
       unawaited(
@@ -59,71 +61,51 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    body: SafeArea(
-      child: Center(
-        child: Container(
-          width: 350,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black26,
-                offset: Offset(0, 4),
-                blurRadius: 10,
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
+    appBar: AppBar(
+      automaticallyImplyLeading: false,
+      title: Image.asset('assets/images/progrid_black.png', height: 35),
+    ),
+    body: SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Spacing.$7(),
+          Text('Reset password', style: CarbonTextStyle.heading05),
+          const Spacing.$2(),
+          Row(
             children: [
-              // forgot password text
-              Text(
-                'Forgot Password?',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  hintText: 'Email',
-                  hintStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              FilledButton(
-                onPressed: forgotPassword,
-                child: const Text('Confirm'),
-              ),
-              const SizedBox(height: 14),
-
-              // back link
-              Center(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  }, // go back to login
-                  child: Text(
-                    'Go Back',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ),
+              const Text('Now you remember? '),
+              CarbonLink(
+                onPressed: Navigator.of(context).pop,
+                label: 'Return',
+                isInline: true,
               ),
             ],
           ),
+          const Spacing.$7(),
+          const Divider(),
+          const Spacing.$5(),
+          // TODO: Validate email input.
+          CarbonTextInput(controller: emailController, labelText: 'Email'),
+          const Spacing.$5(),
+          FilledButton(onPressed: forgotPassword, child: const Text('Confirm')),
+        ],
+      ),
+    ),
+    bottomNavigationBar: ListTile(
+      tileColor: carbonToken?.backgroundInverse,
+      textColor: carbonToken?.textInverse,
+      title: const Text.rich(
+        TextSpan(
+          text: 'Powered by ',
+          children: [
+            TextSpan(
+              text: 'UniVRse',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
     ),

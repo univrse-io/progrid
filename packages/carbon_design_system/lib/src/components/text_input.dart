@@ -132,7 +132,8 @@ class _CarbonTextInputState extends State<CarbonTextInput> {
               LengthLimitingTextInputFormatter(widget.maxCharacters),
               WordLimitingTextInputFormatter(widget.maxWords),
             ],
-            textAlignVertical: TextAlignVertical.center,
+            textAlignVertical:
+                widget.obscureText ? TextAlignVertical.center : null,
             decoration: InputDecoration(
                 fillColor:
                     widget.readOnly ? Colors.transparent : widget.fillColor,
