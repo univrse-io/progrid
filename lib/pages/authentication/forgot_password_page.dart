@@ -4,90 +4,102 @@ import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ForgotPasswordPage extends StatelessWidget {
-  final TextEditingController emailController;
+class ForgotPasswordPage extends StatefulWidget {
   final PageController pageController;
 
-  const ForgotPasswordPage({
-    required this.emailController,
-    required this.pageController,
-    super.key,
-  });
+  const ForgotPasswordPage(this.pageController, {super.key});
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Spacing.$7(),
-        Text('Reset password', style: CarbonTextStyle.heading05),
-        const Spacing.$2(),
-        Row(
-          children: [
-            const Text('Now you remember? '),
-            CarbonLink(
-              onPressed: () => pageController.jumpToPage(0),
-              label: 'Return',
-              isInline: true,
-            ),
-          ],
-        ),
-        const Spacing.$7(),
-        const Divider(),
-        const Spacing.$5(),
-        // TODO: Validate email input.
-        CarbonTextInput(controller: emailController, labelText: 'Email'),
-        const Spacing.$5(),
-        FilledButton(
-          // TODO: Restructure forgot password function.
-          onPressed: () async {
-            final email = emailController.text.trim();
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+}
 
-            if (email.isEmpty) {
-              unawaited(
-                showDialog(
-                  context: context,
-                  builder:
-                      (_) => const AlertDialog(
-                        title: Text('Please Enter an Email Address'),
-                      ),
-                ),
-              );
-              return;
-            }
+class _ForgotPasswordPageState extends State<ForgotPasswordPage>
+    with AutomaticKeepAliveClientMixin {
+  final emailController = TextEditingController();
 
-            try {
-              await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  @override
+  bool get wantKeepAlive => true;
 
-              if (context.mounted) {
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Spacing.$7(),
+          Text('Reset password', style: CarbonTextStyle.heading05),
+          const Spacing.$2(),
+          Row(
+            children: [
+              const Text('Now you remember? '),
+              CarbonLink(
+                onPressed: () => widget.pageController.jumpToPage(0),
+                label: 'Return',
+                isInline: true,
+              ),
+            ],
+          ),
+          const Spacing.$7(),
+          const Divider(),
+          const Spacing.$5(),
+          // TODO: Validate email input.
+          CarbonTextInput(controller: emailController, labelText: 'Email'),
+          const Spacing.$5(),
+          FilledButton(
+            // TODO: Restructure forgot password function.
+            onPressed: () async {
+              final email = emailController.text.trim();
+
+              if (email.isEmpty) {
                 unawaited(
                   showDialog(
                     context: context,
                     builder:
                         (_) => const AlertDialog(
-                          title: Text(
-                            'Password reset email sent. Check your inbox',
-                          ),
+                          title: Text('Please Enter an Email Address'),
                         ),
                   ),
                 );
+                return;
               }
-            } on FirebaseAuthException catch (e) {
-              if (context.mounted) {
-                unawaited(
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(title: Text(e.message!)),
-                  ),
+
+              try {
+                await FirebaseAuth.instance.sendPasswordResetEmail(
+                  email: email,
                 );
+
+                if (context.mounted) {
+                  unawaited(
+                    showDialog(
+                      context: context,
+                      builder:
+                          (_) => const AlertDialog(
+                            title: Text(
+                              'Password reset email sent. Check your inbox',
+                            ),
+                          ),
+                    ),
+                  );
+                }
+              } on FirebaseAuthException catch (e) {
+                if (context.mounted) {
+                  unawaited(
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(title: Text(e.message!)),
+                    ),
+                  );
+                }
               }
-            }
-          },
-          child: const Text('Confirm'),
-        ),
-      ],
-    ),
-  );
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+  }
 }
