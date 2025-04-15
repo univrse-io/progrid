@@ -2,12 +2,18 @@
 
 part of '../index.dart';
 
-enum CarbonTypeface {
-  IBMPlexMono('IBM Plex Mono'),
-  IBMPlexSans('IBM Plex Sans'),
-  IBMPlexSerif('IBM Plex Serif');
+/// ### Typeface: IBM Plex
+/// Carbon uses the open-source typeface **IBM Plex**. It has been carefully
+/// designed to meet IBM’s needs as a global technology company and reflect
+/// IBM’s spirit, beliefs, and design principles. IBM Plex can be accessed and
+/// downloaded from the <a href="https://github.com/ibm/plex" target="_blank">
+/// Plex Github Repo</a>.
+enum IBMPlex {
+  mono('IBM Plex Mono'),
+  sans('IBM Plex Sans'),
+  serif('IBM Plex Serif');
 
   final String fontFamily;
 
-  const CarbonTypeface(this.fontFamily);
+  const IBMPlex(this.fontFamily);
 }
