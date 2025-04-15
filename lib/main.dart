@@ -1,3 +1,4 @@
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,7 +14,6 @@ import 'pages/dashboard/dashboard_page.dart';
 import 'pages/map_page.dart';
 import 'pages/user_verification_page.dart';
 import 'services/firebase_firestore.dart';
-import 'utils/themes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +58,7 @@ class Progrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'Progrid',
-    theme: lightTheme,
+    theme: CarbonTheme.white,
     home: Consumer<User?>(
       builder:
           (_, user, __) =>

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 part 'button.dart';
 part 'checkbox.dart';
+part 'link.dart';
 part 'loading.dart';
 part 'modal.dart';
 part 'switcher.dart';

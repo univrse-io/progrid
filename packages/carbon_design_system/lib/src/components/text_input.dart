@@ -70,8 +70,6 @@ class CarbonTextInput extends StatefulWidget {
             ? _searchButton()
             : _clearButton(controller!);
 
-  static Widget _searchButton() => const Icon(CarbonIcon.search, size: 20);
-
   static Widget _clearButton(TextEditingController controller) =>
       ValueListenableBuilder<TextEditingValue>(
         valueListenable: controller,
@@ -81,6 +79,8 @@ class CarbonTextInput extends StatefulWidget {
             onTap: controller.clear,
             child: const Icon(CarbonIcon.close, size: 20)),
       );
+
+  static Widget _searchButton() => const Icon(CarbonIcon.search, size: 20);
 
   @override
   State<CarbonTextInput> createState() => _CarbonTextInputState();
@@ -115,24 +115,25 @@ class _CarbonTextInputState extends State<CarbonTextInput> {
             textDirection: widget.textDirection,
             maxLines: widget.obscureText ? 1 : widget.maxLines,
             inputFormatters: widget.textInputFormatters,
+            textAlignVertical: TextAlignVertical.center,
             decoration: InputDecoration(
                 fillColor:
                     widget.readOnly ? Colors.transparent : widget.fillColor,
                 prefixIcon: widget.prefixIcon,
                 suffixIcon: widget.suffixIcon ??
                     (widget.obscureText
-                        ? GestureDetector(
-                            onTap: () => setState(() => isVisible = !isVisible),
-                            child: Icon(isVisible
+                        ? IconButton(
+                            tooltip:
+                                isVisible ? 'Hide Password' : 'Show Password',
+                            onPressed: () =>
+                                setState(() => isVisible = !isVisible),
+                            icon: Icon(isVisible
                                 ? CarbonIcon.view_off
                                 : CarbonIcon.view))
                         : errorText != null
                             ? Icon(CarbonIcon.warning_filled,
                                 color: carbonToken?.supportError)
                             : null),
-                suffixIconConstraints: const BoxConstraints(
-                    maxHeight: kToolbarHeight,
-                    minWidth: kMinInteractiveDimension),
                 hintText: widget.placeholderText,
                 enabledBorder: errorText != null
                     ? Theme.of(context).inputDecorationTheme.errorBorder

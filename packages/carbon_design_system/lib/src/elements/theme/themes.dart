@@ -18,12 +18,12 @@ sealed class CarbonTheme {
       ThemeData(
         useMaterial3: true,
         extensions: [token],
-        fontFamily: CarbonTypeface.IBMPlexSans.fontFamily,
+        fontFamily: IBMPlex.sans.fontFamily,
         package: 'carbon_design_system',
         colorScheme: ColorScheme.fromSeed(
             brightness: brightness,
             seedColor: CarbonColor.blue60,
-            onSurface: token.textOnColor,
+            onSurface: token.textPrimary,
             onPrimaryContainer: token.iconOnColor,
             primaryContainer: token.backgroundHover,
             error: token.textError),
@@ -32,6 +32,7 @@ sealed class CarbonTheme {
             backButtonIconBuilder: (context) =>
                 const Icon(CarbonIcon.arrow_left)),
         appBarTheme: AppBarTheme(
+            centerTitle: false,
             backgroundColor: token.background,
             shape: Border(bottom: BorderSide(color: token.borderSubtle00)),
             iconTheme: const IconThemeData(size: kIconSize),
@@ -87,6 +88,11 @@ sealed class CarbonTheme {
               borderRadius: BorderRadius.zero,
               borderSide: BorderSide(color: token.supportError, width: 2)),
         ),
+        filledButtonTheme: FilledButtonThemeData(
+            style: FilledButton.styleFrom(
+                shape: const RoundedRectangleBorder(),
+                backgroundColor: token.buttonPrimary,
+                disabledForegroundColor: token.buttonDisabled)),
         listTileTheme: ListTileThemeData(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             tileColor: token.layer01,
