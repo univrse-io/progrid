@@ -69,6 +69,19 @@ sealed class CarbonTheme {
             surfaceTintColor: Colors.transparent,
             shape: const RoundedRectangleBorder(),
             endShape: const RoundedRectangleBorder()),
+        expansionTileTheme: ExpansionTileThemeData(
+            iconColor: token.iconPrimary,
+            collapsedIconColor: token.iconSecondary),
+        filledButtonTheme: FilledButtonThemeData(
+            style: FilledButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                minimumSize: const Size.fromHeight(32),
+                fixedSize: const Size.fromHeight(48),
+                maximumSize: const Size.fromHeight(80),
+                shape: const RoundedRectangleBorder(),
+                backgroundColor: token.buttonPrimary,
+                disabledForegroundColor: token.buttonDisabled)),
         iconTheme: IconThemeData(size: kIconSize, color: token.iconOnColor),
         iconButtonTheme: IconButtonThemeData(
             style: IconButton.styleFrom(
@@ -88,18 +101,10 @@ sealed class CarbonTheme {
               borderRadius: BorderRadius.zero,
               borderSide: BorderSide(color: token.supportError, width: 2)),
         ),
-        filledButtonTheme: FilledButtonThemeData(
-            style: FilledButton.styleFrom(
-                shape: const RoundedRectangleBorder(),
-                backgroundColor: token.buttonPrimary,
-                disabledForegroundColor: token.buttonDisabled)),
         listTileTheme: ListTileThemeData(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             tileColor: token.layer01,
             titleTextStyle: CarbonTextStyle.body01),
-        expansionTileTheme: ExpansionTileThemeData(
-            iconColor: token.iconPrimary,
-            collapsedIconColor: token.iconSecondary),
         popupMenuTheme: PopupMenuThemeData(
             color: token.layer01,
             shape: const RoundedRectangleBorder(),
