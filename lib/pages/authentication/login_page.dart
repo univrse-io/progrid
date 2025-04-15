@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Spacing.$7(),
-          Text('Welcome Back!', style: CarbonTextStyle.heading05),
+          Text('Welcome back!', style: CarbonTextStyle.heading05),
           const Spacing.$2(),
           Row(
             children: [
@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
 
-                label: 'Register Now',
+                label: 'Register',
                 isInline: true,
               ),
             ],
@@ -53,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
           const Spacing.$7(),
           const Divider(),
           const Spacing.$5(),
+          // TODO: Validate email input.
           CarbonTextInput(controller: emailController, labelText: 'Email'),
           const Spacing.$3(),
           CarbonTextInput(

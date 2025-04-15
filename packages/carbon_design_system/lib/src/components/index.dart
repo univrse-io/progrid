@@ -9,5 +9,4 @@ part 'loading.dart';
 part 'modal.dart';
 part 'switcher.dart';
 part 'tabs.dart';
-part 'text_area.dart';
 part 'text_input.dart';

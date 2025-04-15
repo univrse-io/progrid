@@ -7,6 +7,8 @@ class CarbonTextInput extends StatefulWidget {
   final String? labelText;
   final String? helperText;
   final String? placeholderText;
+  final int? maxCharacters;
+  final int? maxWords;
   final int? maxLines;
   final bool autoFocus;
   final bool obscureText;
@@ -20,29 +22,31 @@ class CarbonTextInput extends StatefulWidget {
   final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onFieldSubmitted;
   final List<TextInputFormatter>? textInputFormatters;
-  final Widget? Function(TextEditingController? controller)? counter;
 
-  const CarbonTextInput(
-      {super.key,
-      this.controller,
-      this.focusNode,
-      this.labelText,
-      this.helperText,
-      this.placeholderText,
-      this.maxLines = 1,
-      this.autoFocus = false,
-      this.obscureText = false,
-      this.readOnly = false,
-      this.hideUnderline = false,
-      this.fillColor,
-      this.prefixIcon,
-      this.suffixIcon,
-      this.keyboardType,
-      this.textDirection,
-      this.validator,
-      this.onFieldSubmitted,
-      this.textInputFormatters,
-      this.counter});
+  const CarbonTextInput({
+    super.key,
+    this.controller,
+    this.focusNode,
+    this.labelText,
+    this.helperText,
+    this.placeholderText,
+    this.maxCharacters,
+    this.maxWords,
+    this.maxLines = 1,
+    this.autoFocus = false,
+    this.obscureText = false,
+    this.readOnly = false,
+    this.hideUnderline = false,
+    this.fillColor,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.keyboardType,
+    this.textDirection,
+    this.validator,
+    this.onFieldSubmitted,
+    this.textInputFormatters,
+  }) : assert(maxCharacters == null || maxWords == null,
+            'Cannot limit the number of characters and words simultaneously.');
 
   CarbonTextInput.search(
       {super.key,
@@ -50,6 +54,8 @@ class CarbonTextInput extends StatefulWidget {
       this.focusNode,
       this.helperText,
       this.placeholderText,
+      this.maxCharacters,
+      this.maxWords,
       this.autoFocus = false,
       this.hideUnderline = false,
       this.fillColor,
@@ -57,8 +63,7 @@ class CarbonTextInput extends StatefulWidget {
       this.textDirection,
       this.validator,
       this.onFieldSubmitted,
-      this.textInputFormatters,
-      this.counter})
+      this.textInputFormatters})
       : labelText = null,
         maxLines = 1,
         obscureText = false,
@@ -98,9 +103,13 @@ class _CarbonTextInputState extends State<CarbonTextInput> {
           Row(children: [
             Text('${widget.labelText}', style: CarbonTextStyle.label01),
             const Spacer(),
-            if (widget.counter != null &&
-                widget.counter!(widget.controller) != null)
-              widget.counter!(widget.controller)!,
+            if (widget.maxCharacters != null)
+              Text('${widget.controller?.text.length}/${widget.maxCharacters}',
+                  style: CarbonTextStyle.label01),
+            if (widget.maxWords != null)
+              Text(
+                  '${RegExp(r'\b\w+\b').allMatches(widget.controller!.text).length}/${widget.maxWords}',
+                  style: CarbonTextStyle.label01),
           ]),
           const Spacing.$3(),
         ],
@@ -113,8 +122,16 @@ class _CarbonTextInputState extends State<CarbonTextInput> {
             style: CarbonTextStyle.bodyCompact01,
             keyboardType: widget.keyboardType,
             textDirection: widget.textDirection,
-            maxLines: widget.obscureText ? 1 : widget.maxLines,
-            inputFormatters: widget.textInputFormatters,
+            maxLines: widget.keyboardType == TextInputType.multiline
+                ? null
+                : widget.obscureText
+                    ? 1
+                    : widget.maxLines,
+            inputFormatters: [
+              ...?widget.textInputFormatters,
+              LengthLimitingTextInputFormatter(widget.maxCharacters),
+              WordLimitingTextInputFormatter(widget.maxWords),
+            ],
             textAlignVertical: TextAlignVertical.center,
             decoration: InputDecoration(
                 fillColor:
@@ -157,4 +174,20 @@ class _CarbonTextInputState extends State<CarbonTextInput> {
                       : carbonToken?.textHelper)),
         ],
       ]);
+}
+
+class WordLimitingTextInputFormatter extends TextInputFormatter {
+  final int? maxWord;
+
+  const WordLimitingTextInputFormatter(this.maxWord)
+      : assert(maxWord == null || maxWord > 0);
+
+  @override
+  TextEditingValue formatEditUpdate(
+          TextEditingValue oldValue, TextEditingValue newValue) =>
+      maxWord == null
+          ? newValue
+          : RegExp(r'\b\w+\b').allMatches(newValue.text).length > maxWord!
+              ? oldValue
+              : newValue;
 }

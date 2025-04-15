@@ -35,7 +35,7 @@ sealed class CarbonTheme {
             centerTitle: false,
             backgroundColor: token.background,
             shape: Border(bottom: BorderSide(color: token.borderSubtle00)),
-            iconTheme: const IconThemeData(size: kIconSize),
+            iconTheme: IconThemeData(size: kIconSize, color: token.iconPrimary),
             actionsIconTheme: const IconThemeData(size: kIconSize),
             toolbarHeight: kHeaderHeight + 1, // Add bottom border width.
             titleTextStyle: CarbonTextStyle.bodyCompact02

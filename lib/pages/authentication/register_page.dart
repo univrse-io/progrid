@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,171 +14,114 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final emailController = TextEditingController();
+  late final carbonToken = Theme.of(context).extension<CarbonToken>();
   final nameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    body: SafeArea(
-      minimum: const EdgeInsets.all(20),
-      child: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset('assets/images/progrid_black.png', width: 300),
-              const SizedBox(height: 15),
-              Container(
-                width: 350,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black26,
-                      offset: Offset(0, 4),
-                      blurRadius: 10,
-                    ),
-                  ],
+    appBar: AppBar(
+      automaticallyImplyLeading: false,
+      title: Image.asset('assets/images/progrid_black.png', height: 35),
+    ),
+    body: Form(
+      key: formKey,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Spacing.$7(),
+            Text('Hello there!', style: CarbonTextStyle.heading05),
+            const Spacing.$2(),
+            Row(
+              children: [
+                const Text('Have an account? '),
+                CarbonLink(
+                  onPressed: Navigator.of(context).pop,
+                  label: 'Login',
+                  isInline: true,
                 ),
-                child: Form(
-                  key: formKey,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Welcome!\nCreate an Account.',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: emailController,
-                          decoration: InputDecoration(
-                            hintText: 'Email',
-                            hintStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: nameController,
-                          decoration: InputDecoration(
-                            hintText: 'Full Name',
-                            hintStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                          ),
-                          maxLength: 20,
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: passwordController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                            hintStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: 'Confirm Password',
-                            hintStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                          ),
-                          controller: confirmPasswordController,
-                          validator:
-                              (value) =>
-                                  passwordController.text != value
-                                      ? "Passwords don't match"
-                                      : null,
-                        ),
-                        const SizedBox(height: 24),
-                        FilledButton(
-                          onPressed: () {
-                            if (!formKey.currentState!.validate()) return;
+              ],
+            ),
+            const Spacing.$7(),
+            const Divider(),
+            const Spacing.$5(),
+            CarbonTextInput(
+              controller: nameController,
+              labelText: 'Full Name',
+              maxCharacters: 20,
+            ),
+            const Spacing.$3(),
+            // TODO: Validate email input.
+            CarbonTextInput(controller: emailController, labelText: 'Email'),
+            const Spacing.$3(),
+            CarbonTextInput(
+              controller: passwordController,
+              labelText: 'Password',
+              obscureText: true,
+            ),
+            const Spacing.$3(),
+            CarbonTextInput(
+              controller: passwordController,
+              labelText: 'Confirm Password',
+              obscureText: true,
+              validator:
+                  (value) =>
+                      passwordController.text != value
+                          ? "Passwords don't match"
+                          : null,
+            ),
+            const Spacing.$5(),
+            FilledButton(
+              onPressed: () {
+                if (!formKey.currentState!.validate()) return;
 
-                            FirebaseAuthService()
-                                .register(
-                                  nameController.text.trim(),
-                                  emailController.text.trim(),
-                                  passwordController.text.trim(),
-                                )
-                                .onError<FirebaseAuthException>((e, _) {
-                                  if (context.mounted) {
-                                    unawaited(
-                                      showDialog(
-                                        context: context,
-                                        builder:
-                                            (_) => AlertDialog(
-                                              title: Text(e.message ?? e.code),
-                                            ),
-                                      ),
-                                    );
-                                  }
-                                })
-                                .then((_) {
-                                  if (context.mounted) Navigator.pop(context);
-                                });
-                          },
-                          child: const Text('Register'),
-                        ),
-                        const SizedBox(height: 14),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Have an account? ',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: Navigator.of(context).pop,
-                              child: Text(
-                                'Login Now',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
+                FirebaseAuthService()
+                    .register(
+                      nameController.text.trim(),
+                      emailController.text.trim(),
+                      passwordController.text.trim(),
+                    )
+                    .onError<FirebaseAuthException>((e, _) {
+                      if (context.mounted) {
+                        unawaited(
+                          showDialog(
+                            context: context,
+                            builder:
+                                (_) => AlertDialog(
+                                  title: Text(e.message ?? e.code),
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Powered by '),
-                  Text(
-                    'UniVRse',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                          ),
+                        );
+                      }
+                    })
+                    .then((_) {
+                      if (context.mounted) Navigator.pop(context);
+                    });
+              },
+              child: const Text('Register'),
+            ),
+          ],
+        ),
+      ),
+    ),
+    bottomNavigationBar: ListTile(
+      tileColor: carbonToken?.backgroundInverse,
+      textColor: carbonToken?.textInverse,
+      title: const Text.rich(
+        TextSpan(
+          text: 'Powered by ',
+          children: [
+            TextSpan(
+              text: 'UniVRse',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
     ),
