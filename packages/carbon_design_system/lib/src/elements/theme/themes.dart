@@ -104,6 +104,7 @@ sealed class CarbonTheme {
         listTileTheme: ListTileThemeData(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             tileColor: token.layer01,
+            textColor: token.textPrimary,
             titleTextStyle: CarbonTextStyle.body01),
         popupMenuTheme: PopupMenuThemeData(
             color: token.layer01,

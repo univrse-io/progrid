@@ -1,4 +1,4 @@
-// import 'dart:html' as html;
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -85,11 +85,10 @@ class _DashboardPageState extends State<DashboardPage> {
           const SizedBox(width: 5),
           IconButton(
             onPressed:
-                () => Navigator.push(
-                  context,
+                () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const ProfilePage()),
                 ),
-            icon: const Icon(Icons.person),
+            icon: const Icon(CarbonIcon.user),
           ),
           const SizedBox(width: 5),
         ],

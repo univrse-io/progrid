@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/firebase_auth.dart';
@@ -32,7 +33,7 @@ class _RegisterPageState extends State<RegisterPage>
     return Form(
       key: formKey,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(kIsWeb ? 24 : 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
