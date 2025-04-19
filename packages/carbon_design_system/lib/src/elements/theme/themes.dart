@@ -41,7 +41,8 @@ sealed class CarbonTheme {
             titleTextStyle: CarbonTextStyle.bodyCompact02
                 .copyWith(color: token.textPrimary)),
         cardTheme: CardTheme(
-            color: token.layer01,
+            margin: EdgeInsets.zero,
+            color: token.layer02,
             surfaceTintColor: Colors.transparent,
             shape: const RoundedRectangleBorder()),
         checkboxTheme: CheckboxThemeData(
@@ -69,6 +70,8 @@ sealed class CarbonTheme {
             surfaceTintColor: Colors.transparent,
             shape: const RoundedRectangleBorder(),
             endShape: const RoundedRectangleBorder()),
+        dropdownMenuTheme:
+            DropdownMenuThemeData(textStyle: CarbonTextStyle.bodyCompact01),
         expansionTileTheme: ExpansionTileThemeData(
             iconColor: token.iconPrimary,
             collapsedIconColor: token.iconSecondary),
@@ -103,7 +106,6 @@ sealed class CarbonTheme {
         ),
         listTileTheme: ListTileThemeData(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            tileColor: token.layer01,
             textColor: token.textPrimary,
             titleTextStyle: CarbonTextStyle.body01),
         popupMenuTheme: PopupMenuThemeData(
@@ -118,6 +120,18 @@ sealed class CarbonTheme {
             color: token.interactive, circularTrackColor: token.layerAccent01),
         radioTheme: RadioThemeData(
             fillColor: WidgetStatePropertyAll<Color>(token.iconPrimary)),
+        tabBarTheme: TabBarTheme(
+          unselectedLabelStyle: CarbonTextStyle.bodyCompact01,
+          unselectedLabelColor: token.textSecondary,
+          labelStyle: CarbonTextStyle.headingCompact01,
+          labelColor: token.textPrimary,
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicator: BoxDecoration(
+              border: Border(
+                  bottom:
+                      BorderSide(color: token.borderInteractive, width: 3))),
+          dividerHeight: 0,
+        ),
         tooltipTheme: TooltipThemeData(
           textStyle: CarbonTextStyle.body01.copyWith(color: token.textInverse),
           decoration: BoxDecoration(

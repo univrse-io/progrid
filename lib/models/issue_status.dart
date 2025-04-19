@@ -1,11 +1,10 @@
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../utils/themes.dart';
-
 enum IssueStatus {
-  unresolved(AppColors.red),
-  resolved(AppColors.green);
+  unresolved(CarbonColor.red60),
+  resolved(CarbonColor.green60);
 
   final Color color;
 

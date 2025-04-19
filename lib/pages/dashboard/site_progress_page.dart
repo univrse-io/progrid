@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:excel/excel.dart' hide Border;
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
@@ -822,7 +823,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
             .toList();
 
     return Padding(
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -834,11 +835,8 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'Date',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 10),
+                      Text('Date', style: CarbonTextStyle.heading01),
+                      const Spacing.$3(),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -912,12 +910,9 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                         ],
                       ),
                       const SizedBox(height: 15),
-                      const Text(
-                        'Filters',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text('On-Site Audit'),
+                      Text('Filters', style: CarbonTextStyle.heading01),
+                      const Spacing.$3(),
+                      Text('On-Site Audit', style: CarbonTextStyle.label02),
                       ...SurveyStatus.values.map(
                         (status) => CheckboxListTile(
                           dense: true,
@@ -934,8 +929,8 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                               ),
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      const Text('As-Built Drawing'),
+                      const Spacing.$3(),
+                      Text('As-Built Drawing', style: CarbonTextStyle.label02),
                       ...DrawingStatus.values.map(
                         (status) => CheckboxListTile(
                           dense: true,
@@ -952,8 +947,8 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                               ),
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      const Text('Region'),
+                      const Spacing.$3(),
+                      Text('Region', style: CarbonTextStyle.label02),
                       ...Region.values.map(
                         (region) => CheckboxListTile(
                           dense: true,
@@ -973,7 +968,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                       const SizedBox(height: 20),
                       MenuAnchor(
                         builder:
-                            (context, controller, child) => OutlinedButton(
+                            (context, controller, child) => FilledButton(
                               onPressed:
                                   () =>
                                       controller.isOpen
@@ -1002,12 +997,12 @@ class _SiteProgressPageState extends State<SiteProgressPage>
               ),
             ),
           ),
+          const Spacing.$2(),
           Expanded(
             flex: 4,
             child: Column(
               children: [
                 Card(
-                  margin: const EdgeInsets.fromLTRB(5, 0, 0, 5),
                   elevation: 0,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -1033,7 +1028,6 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                   ),
                 ),
                 const Card(
-                  margin: EdgeInsets.fromLTRB(5, 0, 0, 0),
                   elevation: 0,
                   child: Padding(
                     padding: EdgeInsets.all(5),
@@ -1053,140 +1047,128 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                 Expanded(
                   child: ListView.builder(
                     itemCount: towers.length,
-                    itemBuilder: (context, index) {
-                      final tower = towers[index];
-
-                      return Container(
-                        margin: const EdgeInsets.only(left: 5),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          border: Border(
-                            top: BorderSide(color: Colors.black12),
+                    itemBuilder:
+                        (context, index) => DecoratedBox(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            border: Border(
+                              top: BorderSide(color: Colors.black12),
+                            ),
+                          ),
+                          child: ListTile(
+                            onTap:
+                                () => DialogUtils.showTowerDialog(
+                                  context,
+                                  towers[index].id,
+                                ),
+                            title: Row(
+                              children: [
+                                Spacing.$3(
+                                  color: towers[index].surveyStatus.color,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(towers[index].name),
+                              ],
+                            ),
+                            subtitle: Text(towers[index].id),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                DropdownMenu<SurveyStatus>(
+                                  requestFocusOnTap: false,
+                                  initialSelection: towers[index].surveyStatus,
+                                  inputDecorationTheme: InputDecorationTheme(
+                                    filled: true,
+                                    fillColor: towers[index].surveyStatus.color
+                                        .withValues(alpha: 0.1),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: towers[index].surveyStatus.color
+                                            .withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                    disabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: towers[index].surveyStatus.color
+                                            .withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  ),
+                                  enabled: context.watch<bool>(),
+                                  onSelected: (value) {
+                                    if (value != null) {
+                                      FirebaseFirestoreService().updateTower(
+                                        towers[index].id,
+                                        data: {'surveyStatus': value.name},
+                                      );
+                                    }
+                                  },
+                                  trailingIcon:
+                                      context.watch<bool>()
+                                          ? null
+                                          : const SizedBox(),
+                                  dropdownMenuEntries: [
+                                    ...SurveyStatus.values.map(
+                                      (status) => DropdownMenuEntry(
+                                        value: status,
+                                        label: status.toString(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 20),
+                                DropdownMenu<DrawingStatus>(
+                                  requestFocusOnTap: false,
+                                  initialSelection: towers[index].drawingStatus,
+                                  inputDecorationTheme: InputDecorationTheme(
+                                    filled: true,
+                                    fillColor: towers[index]
+                                        .drawingStatus
+                                        ?.color
+                                        .withValues(alpha: 0.1),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            towers[index].drawingStatus?.color
+                                                .withValues(alpha: 0.5) ??
+                                            Colors.black12,
+                                      ),
+                                    ),
+                                    disabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            towers[index].drawingStatus?.color
+                                                .withValues(alpha: 0.5) ??
+                                            Colors.black12,
+                                      ),
+                                    ),
+                                  ),
+                                  enabled: context.watch<bool>(),
+                                  onSelected: (value) {
+                                    if (value != null) {
+                                      FirebaseFirestoreService().updateTower(
+                                        towers[index].id,
+                                        data: {'drawingStatus': value.name},
+                                      );
+                                    }
+                                  },
+                                  trailingIcon:
+                                      context.watch<bool>()
+                                          ? null
+                                          : const SizedBox(),
+                                  dropdownMenuEntries: [
+                                    ...DrawingStatus.values.map(
+                                      (status) => DropdownMenuEntry(
+                                        value: status,
+                                        label: status.toString(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        child: ListTile(
-                          onTap:
-                              () => DialogUtils.showTowerDialog(
-                                context,
-                                tower.id,
-                              ),
-                          title: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 5,
-                                backgroundColor: tower.surveyStatus.color,
-                              ),
-                              const SizedBox(width: 10),
-                              Text(tower.name),
-                            ],
-                          ),
-                          subtitle: Text(tower.id),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              DropdownMenu<SurveyStatus>(
-                                requestFocusOnTap: false,
-                                textAlign: TextAlign.center,
-                                initialSelection: tower.surveyStatus,
-                                inputDecorationTheme: InputDecorationTheme(
-                                  filled: true,
-                                  fillColor: tower.surveyStatus.color
-                                      .withValues(alpha: 0.1),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: tower.surveyStatus.color
-                                          .withValues(alpha: 0.5),
-                                    ),
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                  disabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: tower.surveyStatus.color
-                                          .withValues(alpha: 0.5),
-                                    ),
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                ),
-                                textStyle:
-                                    Theme.of(context).textTheme.bodyMedium,
-                                enabled: context.watch<bool>(),
-                                onSelected: (value) {
-                                  if (value != null) {
-                                    FirebaseFirestoreService().updateTower(
-                                      tower.id,
-                                      data: {'surveyStatus': value.name},
-                                    );
-                                  }
-                                },
-                                trailingIcon:
-                                    context.watch<bool>()
-                                        ? null
-                                        : const SizedBox(),
-                                dropdownMenuEntries: [
-                                  ...SurveyStatus.values.map(
-                                    (status) => DropdownMenuEntry(
-                                      value: status,
-                                      label: status.toString(),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(width: 20),
-                              DropdownMenu<DrawingStatus>(
-                                requestFocusOnTap: false,
-                                textAlign: TextAlign.center,
-                                initialSelection: tower.drawingStatus,
-                                inputDecorationTheme: InputDecorationTheme(
-                                  filled: true,
-                                  fillColor: tower.drawingStatus?.color
-                                      .withValues(alpha: 0.1),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color:
-                                          tower.drawingStatus?.color.withValues(
-                                            alpha: 0.5,
-                                          ) ??
-                                          Colors.black12,
-                                    ),
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                  disabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: tower.surveyStatus.color
-                                          .withValues(alpha: 0.5),
-                                    ),
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                ),
-                                textStyle:
-                                    Theme.of(context).textTheme.bodyMedium,
-                                enabled: context.watch<bool>(),
-                                onSelected: (value) {
-                                  if (value != null) {
-                                    FirebaseFirestoreService().updateTower(
-                                      tower.id,
-                                      data: {'drawingStatus': value.name},
-                                    );
-                                  }
-                                },
-                                trailingIcon:
-                                    context.watch<bool>()
-                                        ? null
-                                        : const SizedBox(),
-                                dropdownMenuEntries: [
-                                  ...DrawingStatus.values.map(
-                                    (status) => DropdownMenuEntry(
-                                      value: status,
-                                      label: status.toString(),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
                   ),
                 ),
               ],

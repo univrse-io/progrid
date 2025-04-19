@@ -1,11 +1,10 @@
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/themes.dart';
-
 enum SurveyStatus {
-  unsurveyed(AppColors.red, 'Unsurveyed'),
-  inprogress(AppColors.yellow, 'In Progress'),
-  surveyed(AppColors.green, 'Surveyed');
+  surveyed(CarbonColor.green60, 'Surveyed'),
+  inprogress(CarbonColor.yellow, 'In Progress'),
+  unsurveyed(CarbonColor.red60, 'Unsurveyed');
 
   final Color color;
   final String _text;

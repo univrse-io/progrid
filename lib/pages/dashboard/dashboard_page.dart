@@ -14,8 +14,7 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  late final pageController =
-      PageController()..addListener(() => Navigator.pop(context));
+  late final carbonToken = Theme.of(context).extension<CarbonToken>();
 
   Stream<DateTime> currentUpdatedTime() async* {
     while (true) {
@@ -28,29 +27,16 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) => DefaultTabController(
     length: 2,
     child: Scaffold(
-      backgroundColor: Colors.grey.shade200,
+      backgroundColor: carbonToken?.layer01,
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/images/uos.png', height: 45),
-            const SizedBox(width: 20),
-            const Text(
-              'PROJECT MONITORING REPORT SYSTEM',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Expanded(
+            Image.asset('assets/images/progrid_black.png', height: 35),
+            const Expanded(
               child: TabBar(
                 isScrollable: true,
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicatorColor: Colors.blueAccent.shade700,
-                labelStyle: Theme.of(
-                  context,
-                ).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
-                unselectedLabelStyle: const TextStyle(color: Colors.black45),
-                indicatorWeight: 3,
-                dividerHeight: 0,
-                tabs: const [
+                tabs: [
                   Tab(icon: Text('Home')),
                   Tab(icon: Text('Site Progress')),
                 ],
@@ -62,35 +48,35 @@ class _DashboardPageState extends State<DashboardPage> {
           Card.filled(
             color: Colors.black12,
             child: Padding(
-              padding: const EdgeInsets.all(5),
+              padding: const EdgeInsets.all(4),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.schedule),
-                  const SizedBox(width: 5),
+                  const Icon(CarbonIcon.calendar),
+                  const Spacing.$3(),
                   StreamBuilder<DateTime>(
                     stream: currentUpdatedTime(),
                     builder:
                         (context, snapshot) => Text(
                           DateFormat(
-                            'd/M/y h:m a',
+                            'dd/MM/y  hh:mm a',
                           ).format(snapshot.data ?? DateTime.now()),
                         ),
                   ),
-                  const SizedBox(width: 5),
+                  const Spacing.$3(),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 5),
+          const Spacing.$2(),
           IconButton(
             onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const ProfilePage()),
-                ),
+                () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const ProfilePage())),
             icon: const Icon(CarbonIcon.user),
           ),
-          const SizedBox(width: 5),
+          const Spacing.$2(),
         ],
       ),
       body: const TabBarView(children: [HomePage(), SiteProgressPage()]),

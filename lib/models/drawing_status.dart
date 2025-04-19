@@ -1,10 +1,9 @@
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/themes.dart';
-
 enum DrawingStatus {
-  inprogress(AppColors.yellow, 'In Progress'),
-  submitted(AppColors.green, 'Submitted');
+  inprogress(CarbonColor.yellow, 'In Progress'),
+  submitted(CarbonColor.green60, 'Submitted');
 
   final Color color;
   final String _text;
