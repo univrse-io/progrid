@@ -46,6 +46,8 @@ sealed class CarbonTheme {
             surfaceTintColor: Colors.transparent,
             shape: const RoundedRectangleBorder()),
         checkboxTheme: CheckboxThemeData(
+            side: const BorderSide(),
+            shape: const BeveledRectangleBorder(),
             fillColor: WidgetStateColor.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
                 return token.iconPrimary;
@@ -70,8 +72,9 @@ sealed class CarbonTheme {
             surfaceTintColor: Colors.transparent,
             shape: const RoundedRectangleBorder(),
             endShape: const RoundedRectangleBorder()),
-        dropdownMenuTheme:
-            DropdownMenuThemeData(textStyle: CarbonTextStyle.bodyCompact01),
+        dropdownMenuTheme: DropdownMenuThemeData(
+            inputDecorationTheme: const InputDecorationTheme(filled: true),
+            textStyle: CarbonTextStyle.bodyCompact01),
         expansionTileTheme: ExpansionTileThemeData(
             iconColor: token.iconPrimary,
             collapsedIconColor: token.iconSecondary),

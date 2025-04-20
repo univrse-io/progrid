@@ -785,6 +785,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isAdmin = context.watch<bool>();
     final towers =
         Provider.of<List<Tower>>(context)
             .where(
@@ -1074,27 +1075,15 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                DropdownMenu<SurveyStatus>(
+                                CarbonDropdown<SurveyStatus>(
                                   requestFocusOnTap: false,
                                   initialSelection: towers[index].surveyStatus,
                                   inputDecorationTheme: InputDecorationTheme(
                                     filled: true,
                                     fillColor: towers[index].surveyStatus.color
                                         .withValues(alpha: 0.1),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: towers[index].surveyStatus.color
-                                            .withValues(alpha: 0.5),
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: towers[index].surveyStatus.color
-                                            .withValues(alpha: 0.5),
-                                      ),
-                                    ),
                                   ),
-                                  enabled: context.watch<bool>(),
+                                  enabled: isAdmin,
                                   onSelected: (value) {
                                     if (value != null) {
                                       FirebaseFirestoreService().updateTower(
@@ -1104,8 +1093,11 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                     }
                                   },
                                   trailingIcon:
-                                      context.watch<bool>()
-                                          ? null
+                                      isAdmin
+                                          ? const Icon(
+                                            CarbonIcon.chevron_down,
+                                            size: kIconSize,
+                                          )
                                           : const SizedBox(),
                                   dropdownMenuEntries: [
                                     ...SurveyStatus.values.map(
@@ -1117,7 +1109,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                   ],
                                 ),
                                 const SizedBox(width: 20),
-                                DropdownMenu<DrawingStatus>(
+                                CarbonDropdown<DrawingStatus>(
                                   requestFocusOnTap: false,
                                   initialSelection: towers[index].drawingStatus,
                                   inputDecorationTheme: InputDecorationTheme(
@@ -1126,24 +1118,8 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                         .drawingStatus
                                         ?.color
                                         .withValues(alpha: 0.1),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            towers[index].drawingStatus?.color
-                                                .withValues(alpha: 0.5) ??
-                                            Colors.black12,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            towers[index].drawingStatus?.color
-                                                .withValues(alpha: 0.5) ??
-                                            Colors.black12,
-                                      ),
-                                    ),
                                   ),
-                                  enabled: context.watch<bool>(),
+                                  enabled: isAdmin,
                                   onSelected: (value) {
                                     if (value != null) {
                                       FirebaseFirestoreService().updateTower(
@@ -1153,8 +1129,11 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                     }
                                   },
                                   trailingIcon:
-                                      context.watch<bool>()
-                                          ? null
+                                      isAdmin
+                                          ? const Icon(
+                                            CarbonIcon.chevron_down,
+                                            size: kIconSize,
+                                          )
                                           : const SizedBox(),
                                   dropdownMenuEntries: [
                                     ...DrawingStatus.values.map(

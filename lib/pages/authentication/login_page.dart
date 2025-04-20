@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final pageController = PageController();
+  bool rememberMe = false;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -69,7 +70,14 @@ class _LoginPageState extends State<LoginPage> {
                 const Spacing.$3(),
                 Row(
                   children: [
-                    // TODO: Implement 'Remember me' functionality.
+                    // Checkbox(
+                    //   value: rememberMe,
+                    //   onChanged: (val) {
+                    //     if (val != null) setState(() => rememberMe = val);
+                    //   },
+                    // ),
+                    // const Spacing.$2(),
+                    // const Text('Remember Me'),
                     const Spacer(),
                     CarbonLink(
                       onPressed: () => pageController.jumpToPage(2),
