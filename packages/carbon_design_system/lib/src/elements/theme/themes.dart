@@ -88,6 +88,10 @@ sealed class CarbonTheme {
                 shape: const RoundedRectangleBorder(),
                 backgroundColor: token.buttonPrimary,
                 disabledForegroundColor: token.buttonDisabled)),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+            shape: const RoundedRectangleBorder(),
+            backgroundColor: token.layer01,
+            foregroundColor: token.textPrimary),
         iconTheme: IconThemeData(size: kIconSize, color: token.iconOnColor),
         iconButtonTheme: IconButtonThemeData(
             style: IconButton.styleFrom(
