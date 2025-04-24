@@ -70,8 +70,7 @@ class _MapPageState extends State<MapPage> {
                                 onTap:
                                     () => Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder:
-                                            (_) => TowerPage(towerId: tower.id),
+                                        builder: (_) => TowerPage(tower),
                                       ),
                                     ),
                                 child: Column(

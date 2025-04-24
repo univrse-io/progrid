@@ -220,7 +220,8 @@ sealed class DialogUtils {
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Theme.of(context).colorScheme.tertiary,
+                            color:
+                                Theme.of(context).colorScheme.onInverseSurface,
                           ),
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,

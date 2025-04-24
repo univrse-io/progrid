@@ -20,6 +20,7 @@ class CarbonTextInput extends StatefulWidget {
   final TextInputType? keyboardType;
   final TextDirection? textDirection;
   final FormFieldValidator<String>? validator;
+  final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onFieldSubmitted;
   final List<TextInputFormatter>? textInputFormatters;
 
@@ -43,6 +44,7 @@ class CarbonTextInput extends StatefulWidget {
     this.keyboardType,
     this.textDirection,
     this.validator,
+    this.onChanged,
     this.onFieldSubmitted,
     this.textInputFormatters,
   }) : assert(maxCharacters == null || maxWords == null,
@@ -62,6 +64,7 @@ class CarbonTextInput extends StatefulWidget {
       this.keyboardType,
       this.textDirection,
       this.validator,
+      this.onChanged,
       this.onFieldSubmitted,
       this.textInputFormatters})
       : labelText = null,
@@ -97,84 +100,90 @@ class _CarbonTextInputState extends State<CarbonTextInput> {
   String? errorText;
 
   @override
-  Widget build(BuildContext context) =>
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        if (widget.labelText != null) ...[
-          Row(children: [
-            Text('${widget.labelText}', style: CarbonTextStyle.label01),
-            const Spacer(),
-            if (widget.maxCharacters != null)
-              Text('${widget.controller?.text.length}/${widget.maxCharacters}',
-                  style: CarbonTextStyle.label01),
-            if (widget.maxWords != null)
-              Text(
-                  '${RegExp(r'\b\w+\b').allMatches(widget.controller!.text).length}/${widget.maxWords}',
-                  style: CarbonTextStyle.label01),
-          ]),
-          const Spacing.$3(),
-        ],
-        TextFormField(
-            controller: widget.controller,
-            focusNode: widget.focusNode,
-            autofocus: widget.autoFocus,
-            obscureText: !isVisible,
-            readOnly: widget.readOnly,
-            style: CarbonTextStyle.bodyCompact01,
-            keyboardType: widget.keyboardType,
-            textDirection: widget.textDirection,
-            maxLines: widget.keyboardType == TextInputType.multiline
-                ? null
-                : widget.obscureText
-                    ? 1
-                    : widget.maxLines,
-            inputFormatters: [
-              ...?widget.textInputFormatters,
-              LengthLimitingTextInputFormatter(widget.maxCharacters),
-              WordLimitingTextInputFormatter(widget.maxWords),
-            ],
-            textAlignVertical:
-                widget.obscureText ? TextAlignVertical.center : null,
-            decoration: InputDecoration(
-                fillColor:
-                    widget.readOnly ? Colors.transparent : widget.fillColor,
-                prefixIcon: widget.prefixIcon,
-                suffixIcon: widget.suffixIcon ??
-                    (widget.obscureText
-                        ? IconButton(
-                            tooltip:
-                                isVisible ? 'Hide Password' : 'Show Password',
-                            onPressed: () =>
-                                setState(() => isVisible = !isVisible),
-                            icon: Icon(isVisible
-                                ? CarbonIcon.view_off
-                                : CarbonIcon.view))
-                        : errorText != null
-                            ? Icon(CarbonIcon.warning_filled,
-                                color: carbonToken?.supportError)
-                            : null),
-                hintText: widget.placeholderText,
-                enabledBorder: errorText != null
-                    ? Theme.of(context).inputDecorationTheme.errorBorder
-                    : widget.hideUnderline
-                        ? const OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.zero)
-                        : null),
-            onChanged: (input) =>
-                setState(() => errorText = widget.validator?.call(input)),
-            onTapOutside: (_) =>
-                (widget.focusNode ?? FocusManager.instance.primaryFocus)
-                    ?.unfocus(),
-            onFieldSubmitted: widget.onFieldSubmitted),
-        if (errorText != null || widget.helperText != null) ...[
-          const Spacing.$2(),
-          Text('${errorText ?? widget.helperText}',
-              style: CarbonTextStyle.helperText01.copyWith(
-                  color: errorText != null
-                      ? carbonToken?.textError
-                      : carbonToken?.textHelper)),
-        ],
-      ]);
+  Widget build(BuildContext context) => SingleChildScrollView(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (widget.labelText != null) ...[
+            Row(children: [
+              Text('${widget.labelText}', style: CarbonTextStyle.label01),
+              const Spacer(),
+              if (widget.maxCharacters != null)
+                Text(
+                    '${widget.controller?.text.length}/${widget.maxCharacters}',
+                    style: CarbonTextStyle.label01),
+              if (widget.maxWords != null)
+                Text(
+                    '${RegExp(r'\b\w+\b').allMatches(widget.controller!.text).length}/${widget.maxWords}',
+                    style: CarbonTextStyle.label01),
+            ]),
+            const Spacing.$3(),
+          ],
+          TextFormField(
+              controller: widget.controller,
+              focusNode: widget.focusNode,
+              autofocus: widget.autoFocus,
+              obscureText: !isVisible,
+              readOnly: widget.readOnly,
+              style: CarbonTextStyle.bodyCompact01,
+              keyboardType: widget.keyboardType,
+              textDirection: widget.textDirection,
+              maxLines: widget.keyboardType == TextInputType.multiline
+                  ? null
+                  : widget.obscureText
+                      ? 1
+                      : widget.maxLines,
+              inputFormatters: [
+                ...?widget.textInputFormatters,
+                LengthLimitingTextInputFormatter(widget.maxCharacters),
+                WordLimitingTextInputFormatter(widget.maxWords),
+              ],
+              textAlignVertical:
+                  widget.obscureText || widget.placeholderText != null
+                      ? TextAlignVertical.center
+                      : null,
+              decoration: InputDecoration(
+                  fillColor:
+                      widget.readOnly ? Colors.transparent : widget.fillColor,
+                  prefixIcon: widget.prefixIcon,
+                  suffixIcon: widget.suffixIcon ??
+                      (widget.obscureText
+                          ? IconButton(
+                              tooltip:
+                                  isVisible ? 'Hide Password' : 'Show Password',
+                              onPressed: () =>
+                                  setState(() => isVisible = !isVisible),
+                              icon: Icon(isVisible
+                                  ? CarbonIcon.view_off
+                                  : CarbonIcon.view))
+                          : errorText != null
+                              ? Icon(CarbonIcon.warning_filled,
+                                  color: carbonToken?.supportError)
+                              : null),
+                  hintText: widget.placeholderText,
+                  enabledBorder: errorText != null
+                      ? Theme.of(context).inputDecorationTheme.errorBorder
+                      : widget.hideUnderline
+                          ? const OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.zero)
+                          : null),
+              onChanged: (input) {
+                setState(() => errorText = widget.validator?.call(input));
+                widget.onChanged?.call(input);
+              },
+              onTapOutside: (_) =>
+                  (widget.focusNode ?? FocusManager.instance.primaryFocus)
+                      ?.unfocus(),
+              onFieldSubmitted: widget.onFieldSubmitted),
+          if (errorText != null || widget.helperText != null) ...[
+            const Spacing.$2(),
+            Text('${errorText ?? widget.helperText}',
+                style: CarbonTextStyle.helperText01.copyWith(
+                    color: errorText != null
+                        ? carbonToken?.textError
+                        : carbonToken?.textHelper)),
+          ],
+        ]),
+      );
 }
 
 class WordLimitingTextInputFormatter extends TextInputFormatter {
