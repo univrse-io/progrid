@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/issue.dart';
-import '../../models/tower.dart';
-import 'issue_creation_page.dart';
-import 'issue_page.dart';
+import '../models/issue.dart';
+import '../models/tower.dart';
+import 'create_issue_page.dart';
+import 'issue_details.dart';
 
 class ViewIssuesPage extends StatelessWidget {
   final Tower tower;
@@ -43,7 +43,9 @@ class ViewIssuesPage extends StatelessWidget {
                           onTap:
                               () => Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => IssuePage(issue: issue),
+                                  builder:
+                                      (context) =>
+                                          IssueDetailsPage(issue: issue),
                                 ),
                               ),
                           title: Row(
@@ -95,10 +97,10 @@ class ViewIssuesPage extends StatelessWidget {
               onPressed:
                   () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => IssueCreationPage(tower: tower),
+                      builder: (context) => CreateIssuePage(tower: tower),
                     ),
                   ),
-              child: const Text('Create Ticket'),
+              child: const Text('Create Issue'),
             ),
           ),
         ],

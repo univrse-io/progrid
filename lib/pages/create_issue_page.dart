@@ -3,21 +3,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/issue.dart';
-import '../../models/issue_status.dart';
-import '../../models/tower.dart';
-import '../../services/firebase_firestore.dart';
+import '../models/issue.dart';
+import '../models/issue_status.dart';
+import '../models/tower.dart';
+import '../services/firebase_firestore.dart';
 
-class IssueCreationPage extends StatefulWidget {
+class CreateIssuePage extends StatefulWidget {
   final Tower tower;
 
-  const IssueCreationPage({required this.tower, super.key});
+  const CreateIssuePage({required this.tower, super.key});
 
   @override
-  State<IssueCreationPage> createState() => _IssueCreationPageState();
+  State<CreateIssuePage> createState() => _CreateIssuePageState();
 }
 
-class _IssueCreationPageState extends State<IssueCreationPage> {
+class _CreateIssuePageState extends State<CreateIssuePage> {
   final List<String> _availableTags = [
     'Permit',
     'Logistics',
@@ -90,14 +90,9 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(
-        widget.tower.id,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-      ),
-    ),
-    body: SafeArea(
-      minimum: const EdgeInsets.symmetric(horizontal: 25),
+    appBar: AppBar(title: const Text('Create Issue')),
+    body: Padding(
+      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
           // Tags section (Dropdown)
@@ -200,11 +195,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
             ),
           ),
           const SizedBox(height: 20),
-          FilledButton(
-            onPressed: _createIssue,
-            child: const Text('Create Issue'),
-          ),
-          const SizedBox(height: 20),
+          FilledButton(onPressed: _createIssue, child: const Text('Submit')),
         ],
       ),
     ),

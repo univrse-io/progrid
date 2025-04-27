@@ -24,7 +24,7 @@ import '../models/tower.dart';
 import '../services/firebase_firestore.dart';
 import '../utils/dialog_utils.dart';
 import '../utils/themes.dart';
-import 'issues/view_issues_page.dart';
+import 'view_issues_page.dart';
 
 class TowerPage extends StatefulWidget {
   final Tower tower;

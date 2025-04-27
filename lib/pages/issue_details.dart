@@ -2,34 +2,28 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/issue.dart';
-import '../../models/issue_status.dart';
-import '../../services/firebase_firestore.dart';
+import '../models/issue.dart';
+import '../models/issue_status.dart';
+import '../services/firebase_firestore.dart';
 
-class IssuePage extends StatefulWidget {
+class IssueDetailsPage extends StatefulWidget {
   final Issue issue;
 
-  const IssuePage({required this.issue, super.key});
+  const IssueDetailsPage({required this.issue, super.key});
 
   @override
-  State<IssuePage> createState() => _IssuePageState();
+  State<IssueDetailsPage> createState() => _IssueDetailsPageState();
 }
 
-class _IssuePageState extends State<IssuePage> {
+class _IssueDetailsPageState extends State<IssueDetailsPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(
-        widget.issue.id,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-      ),
-    ),
-    body: SafeArea(
-      minimum: const EdgeInsets.symmetric(horizontal: 25),
+    appBar: AppBar(title: const Text('Issue Details')),
+    body: Padding(
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 5),
           const Text(
             'Tags',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
