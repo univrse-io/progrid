@@ -28,9 +28,14 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    foregroundImage: NetworkImage(
-                      user?.photoURL ??
-                          'https://api.dicebear.com/9.x/dylan/png?seed=${user?.displayName}&scale=80',
+                    backgroundColor:
+                        Colors.primaries[user?.displayName?.length ?? 0],
+                    foregroundImage:
+                        user?.photoURL != null
+                            ? NetworkImage(user!.photoURL!)
+                            : null,
+                    child: Text(
+                      '${user?.displayName?.splitMapJoin(' ', onMatch: (_) => '', onNonMatch: (n) => n[0])}',
                     ),
                   ),
                   const Spacing.$6(),
