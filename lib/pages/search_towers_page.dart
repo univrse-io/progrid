@@ -5,21 +5,21 @@ import 'package:provider/provider.dart';
 import '../models/tower.dart';
 import 'tower_page.dart';
 
-class TowersListPage extends StatefulWidget {
-  const TowersListPage({super.key});
+class SearchTowersPage extends StatefulWidget {
+  const SearchTowersPage({super.key});
 
   @override
-  State<TowersListPage> createState() => _TowersListPageState();
+  State<SearchTowersPage> createState() => _SearchTowersPageState();
 }
 
-class _TowersListPageState extends State<TowersListPage> {
+class _SearchTowersPageState extends State<SearchTowersPage> {
   late final towers = Provider.of<List<Tower>>(context);
   late final searchController = TextEditingController();
   late List<Tower> queriedTowers = towers;
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Search Database')),
+    appBar: AppBar(title: const Text('Search Towers')),
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

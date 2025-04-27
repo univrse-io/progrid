@@ -5,7 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import '../models/region.dart';
 import '../widgets/open_street_map.dart';
 import 'profile_page.dart';
-import 'towers_list_page.dart';
+import 'search_towers_page.dart';
 
 // TODO: Implement map marker filter.
 class MapPage extends StatefulWidget {
@@ -27,6 +27,7 @@ class _MapPageState extends State<MapPage> {
           top: 25,
           left: 14,
           child: FloatingActionButton(
+            tooltip: 'View Regions',
             onPressed: () async {
               final selectedRegion = await showMenu<Region>(
                 elevation: 0,
@@ -62,6 +63,7 @@ class _MapPageState extends State<MapPage> {
           child: Row(
             children: [
               FloatingActionButton(
+                tooltip: 'Search Towers',
                 heroTag: 'searchbar',
                 onPressed: () {
                   Navigator.push(
@@ -69,7 +71,7 @@ class _MapPageState extends State<MapPage> {
                     PageRouteBuilder(
                       pageBuilder:
                           (context, animation, secondaryAnimation) =>
-                              const TowersListPage(),
+                              const SearchTowersPage(),
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) =>
                               FadeTransition(opacity: animation, child: child),
@@ -80,6 +82,7 @@ class _MapPageState extends State<MapPage> {
                 child: const Icon(CarbonIcon.search),
               ),
               FloatingActionButton(
+                tooltip: 'User Profile',
                 heroTag: 'profile',
                 onPressed: () {
                   Navigator.push(
