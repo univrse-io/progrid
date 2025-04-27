@@ -1,9 +1,7 @@
 import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:intl/intl.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -14,7 +12,7 @@ import '../../models/region.dart';
 import '../../models/survey_status.dart';
 import '../../models/tower.dart';
 import '../../utils/dialog_utils.dart';
-import '../../utils/themes.dart';
+import '../../widgets/open_street_map.dart';
 
 final screenshotController1 = ScreenshotController();
 final screenshotController2 = ScreenshotController();
@@ -492,137 +490,7 @@ class _HomePageState extends State<HomePage>
               Expanded(
                 child: Screenshot(
                   controller: screenshotController3,
-                  child: FlutterMap(
-                    options: const MapOptions(
-                      initialCenter: LatLng(3.1408, 101.6932),
-                      initialZoom: 11,
-                      interactionOptions: InteractionOptions(
-                        flags: ~InteractiveFlag.doubleTapZoom,
-                      ),
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName:
-                            'dev.fleaflet.flutter_map.example',
-                      ),
-                      MarkerLayer(
-                        markers: [
-                          ...towers.map(
-                            (tower) => Marker(
-                              point: LatLng(
-                                tower.position.latitude,
-                                tower.position.longitude,
-                              ),
-                              width: 80,
-                              // key: ValueKey(tower.id),
-                              child: GestureDetector(
-                                onTap: () {
-                                  // TODO: implement map dialog here
-                                  DialogUtils.showTowerDialog(
-                                    context,
-                                    tower.id,
-                                  );
-                                },
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    // marker icon
-                                    Icon(
-                                      Icons.cell_tower,
-                                      color: switch (tower.region.name) {
-                                        'southern' => const Color.fromARGB(
-                                          255,
-                                          82,
-                                          114,
-                                          76,
-                                        ),
-                                        'northern' => const Color.fromARGB(
-                                          255,
-                                          100,
-                                          68,
-                                          68,
-                                        ),
-                                        'eastern' => const Color.fromARGB(
-                                          255,
-                                          134,
-                                          124,
-                                          79,
-                                        ),
-                                        'central' => const Color.fromARGB(
-                                          255,
-                                          63,
-                                          81,
-                                          100,
-                                        ),
-                                        'western' => const Color.fromARGB(
-                                          255,
-                                          104,
-                                          71,
-                                          104,
-                                        ),
-                                        'sabah' => const Color.fromARGB(
-                                          255,
-                                          62,
-                                          88,
-                                          88,
-                                        ),
-                                        'sarawak' => const Color.fromARGB(
-                                          255,
-                                          163,
-                                          110,
-                                          90,
-                                        ),
-                                        _ => Colors.grey,
-                                      },
-                                      size: 36,
-                                    ),
-                                    // information box
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 5,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.onSurface.withValues(
-                                          alpha: 0.7,
-                                        ),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Container(
-                                            width: 8,
-                                            height: 8,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: tower.surveyStatus.color,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            tower.id,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10,
-                                            ),
-                                            maxLines: 1,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  child: const OpenStreetMap(),
                 ),
               ),
               const Spacing.$2(),
