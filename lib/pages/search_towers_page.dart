@@ -23,8 +23,9 @@ class _SearchTowersPageState extends State<SearchTowersPage> {
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
+        Container(
+          padding: const EdgeInsets.all(24),
+          color: Theme.of(context).scaffoldBackgroundColor,
           child: Hero(
             tag: 'searchbar',
             child: Material(
@@ -58,59 +59,52 @@ class _SearchTowersPageState extends State<SearchTowersPage> {
               towers.isEmpty
                   ? const Center(child: CircularProgressIndicator())
                   : ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    separatorBuilder: (_, __) => const Spacing.$3(),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    separatorBuilder: (_, __) => const Divider(),
                     itemCount: queriedTowers.length,
                     itemBuilder: (context, index) {
                       final tower = queriedTowers[index];
 
-                      return InkWell(
+                      return ListTile(
+                        isThreeLine: true,
                         onTap:
                             () => Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (_) => TowerPage(tower),
                               ),
                             ),
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
+                        title: Row(
+                          children: [
+                            Spacing.$4(color: tower.surveyStatus.color),
+                            const Spacing.$3(),
+                            Text(tower.id),
+                          ],
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              tower.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: CarbonTextStyle.heading03,
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Spacing.$4(color: tower.surveyStatus.color),
-                                    const Spacing.$3(),
-                                    Text(tower.id),
-                                  ],
-                                ),
                                 Text(
-                                  tower.name,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: CarbonTextStyle.heading03,
+                                  '${tower.type},',
+                                  style: CarbonTextStyle.headingCompact01,
                                 ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '${tower.type},',
-                                      style: CarbonTextStyle.headingCompact01,
-                                    ),
-                                    const Spacing.$2(),
-                                    Text(
-                                      tower.region.toString(),
-                                      style: const TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                  ],
+                                const Spacing.$2(),
+                                Text(
+                                  tower.region.toString(),
+                                  style: const TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                  ),
                                 ),
                               ],
                             ),
-                          ),
+                          ],
                         ),
                       );
                     },

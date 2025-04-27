@@ -24,7 +24,7 @@ import '../models/tower.dart';
 import '../services/firebase_firestore.dart';
 import '../utils/dialog_utils.dart';
 import '../utils/themes.dart';
-import 'issues/issues_list_page.dart';
+import 'issues/view_issues_page.dart';
 
 class TowerPage extends StatefulWidget {
   final Tower tower;
@@ -361,15 +361,12 @@ class _TowerPageState extends State<TowerPage> {
               ),
               const Spacing.$2(),
               FilledButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => IssuesListPage(towerId: widget.tower.id),
+                onPressed:
+                    () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ViewIssuesPage(tower: widget.tower),
+                      ),
                     ),
-                  );
-                },
                 child: const Text('View Issues'),
               ),
               const Spacing.$5(),

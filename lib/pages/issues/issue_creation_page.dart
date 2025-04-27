@@ -5,12 +5,13 @@ import 'package:provider/provider.dart';
 
 import '../../models/issue.dart';
 import '../../models/issue_status.dart';
+import '../../models/tower.dart';
 import '../../services/firebase_firestore.dart';
 
 class IssueCreationPage extends StatefulWidget {
-  final String towerId;
+  final Tower tower;
 
-  const IssueCreationPage({required this.towerId, super.key});
+  const IssueCreationPage({required this.tower, super.key});
 
   @override
   State<IssueCreationPage> createState() => _IssueCreationPageState();
@@ -50,7 +51,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
     final issues = Provider.of<List<Issue>>(context, listen: false);
     var i = 1;
 
-    String uniqueId() => '${widget.towerId}-I${i.toString().padLeft(3, '0')}';
+    String uniqueId() => '${widget.tower.id}-I${i.toString().padLeft(3, '0')}';
 
     while (true) {
       if (issues.where((issue) => issue.id == uniqueId()).isEmpty) break;
@@ -91,7 +92,7 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: Text(
-        widget.towerId,
+        widget.tower.id,
         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
       ),
     ),
@@ -164,8 +165,6 @@ class _IssueCreationPageState extends State<IssueCreationPage> {
               ),
             ),
           const SizedBox(height: 17),
-
-          // Description box
           Expanded(
             child: TextField(
               controller: _descriptionController,
