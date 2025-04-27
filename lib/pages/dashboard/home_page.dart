@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage>
     final towers = Provider.of<List<Tower>>(context);
     final issues =
         Provider.of<List<Issue>>(context)
-          ..sort((a, b) => b.dateTime.compareTo(a.dateTime))
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt))
           ..removeWhere((issue) => issue.status == IssueStatus.resolved);
 
     return Row(
@@ -245,7 +245,7 @@ class _HomePageState extends State<HomePage>
                                                     DateFormat(
                                                       'dd/MM/yy HH:mm a',
                                                     ).format(
-                                                      issues[index].dateTime
+                                                      issues[index].createdAt
                                                           .toDate(),
                                                     ),
                                                     style: const TextStyle(
@@ -302,7 +302,7 @@ class _HomePageState extends State<HomePage>
                                   trailing: Text(
                                     DateFormat(
                                       'dd/MM/yy HH:mm a',
-                                    ).format(issues[index].dateTime.toDate()),
+                                    ).format(issues[index].createdAt.toDate()),
                                   ),
                                   title: Row(
                                     children: [

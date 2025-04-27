@@ -60,11 +60,12 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
 
     final issue = Issue(
       id: uniqueId(),
-      dateTime: Timestamp.now(),
-      authorId: user!.uid,
-      tags: _selectedTags,
-      description: _descriptionController.text,
       status: IssueStatus.unresolved,
+      authorId: user!.uid,
+      createdAt: Timestamp.now(),
+      authorName: user.displayName,
+      description: _descriptionController.text,
+      tags: _selectedTags,
     );
 
     try {

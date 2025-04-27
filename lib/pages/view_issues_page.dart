@@ -1,6 +1,5 @@
 import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/issue.dart';
@@ -22,6 +21,7 @@ class ViewIssuesPage extends StatelessWidget {
             .toList();
 
     return Scaffold(
+      // TODO: Implement search functionality.
       appBar: AppBar(title: const Text('View Issues')),
       body: Column(
         children: [
@@ -35,8 +35,6 @@ class ViewIssuesPage extends StatelessWidget {
                       itemCount: issues.length,
                       itemBuilder: (context, index) {
                         final issue = issues[index];
-                        // FIXME: Save author name inside database.
-                        const authorName = 'Unknown Author';
 
                         return ListTile(
                           isThreeLine: true,
@@ -53,12 +51,6 @@ class ViewIssuesPage extends StatelessWidget {
                               Spacing.$4(color: issue.status.color),
                               const Spacing.$3(),
                               Text(issue.id),
-                              const Spacer(),
-                              Text(
-                                DateFormat(
-                                  'MMM d, y',
-                                ).format(issue.dateTime.toDate()),
-                              ),
                             ],
                           ),
                           subtitle: Column(
@@ -70,20 +62,11 @@ class ViewIssuesPage extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: CarbonTextStyle.heading03,
                               ),
-                              Row(
-                                children: [
-                                  Text(
-                                    '$authorName,',
-                                    style: CarbonTextStyle.headingCompact01,
-                                  ),
-                                  const Spacing.$2(),
-                                  Text(
-                                    issue.status.toString(),
-                                    style: const TextStyle(
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                issue.context,
+                                style: const TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                ),
                               ),
                             ],
                           ),

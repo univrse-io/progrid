@@ -16,6 +16,8 @@ class IssueDetailsPage extends StatefulWidget {
 }
 
 class _IssueDetailsPageState extends State<IssueDetailsPage> {
+  late IssueStatus currentStatus = widget.issue.status;
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Issue Details')),
@@ -82,18 +84,18 @@ class _IssueDetailsPageState extends State<IssueDetailsPage> {
               padding: const EdgeInsets.only(left: 14, right: 10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
-                color: widget.issue.status.color,
+                color: currentStatus.color,
               ),
               child: DropdownButton<IssueStatus>(
                 isDense: true,
-                value: widget.issue.status,
+                value: currentStatus,
                 onChanged: (value) {
-                  if (value != null && value != widget.issue.status) {
+                  if (value != null && value != currentStatus) {
                     FirebaseFirestoreService().updateIssue(
                       widget.issue.id,
                       data: {'status': value.name},
                     );
-                    widget.issue.status = value;
+                    setState(() => currentStatus = value);
                   }
                 },
                 items: const [
@@ -108,7 +110,7 @@ class _IssueDetailsPageState extends State<IssueDetailsPage> {
                 ],
                 iconEnabledColor: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(24),
-                dropdownColor: widget.issue.status.color,
+                dropdownColor: currentStatus.color,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.surface,
                   fontWeight: FontWeight.bold,
@@ -120,10 +122,10 @@ class _IssueDetailsPageState extends State<IssueDetailsPage> {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
-                color: widget.issue.status.color,
+                color: currentStatus.color,
               ),
               child: Text(
-                widget.issue.status.toString(),
+                currentStatus.toString(),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.surface,
                   fontSize: 15,
