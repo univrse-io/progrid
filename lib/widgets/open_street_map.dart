@@ -11,7 +11,6 @@ import '../models/tower.dart';
 import '../pages/tower_page.dart';
 import '../utils/dialog_utils.dart';
 import '../utils/pie_chart_painter.dart';
-import '../utils/themes.dart';
 
 class OpenStreetMap extends StatelessWidget {
   final MapController? controller;
@@ -23,9 +22,10 @@ class OpenStreetMap extends StatelessWidget {
     // TODO: Get the position of the current user.
     const defaultPosition = LatLng(3.140493, 101.700068);
     final towers = Provider.of<List<Tower>>(context);
+    final mapController = controller ?? MapController();
 
     return FlutterMap(
-      mapController: controller,
+      mapController: mapController,
       options: const MapOptions(
         initialCenter: defaultPosition,
         initialZoom: 11,
@@ -39,106 +39,84 @@ class OpenStreetMap extends StatelessWidget {
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          // TODO: Set retina mode in the settings page.
           // retinaMode: RetinaMode.isHighDensity(context),
         ),
         MarkerClusterLayerWidget(
           options: MarkerClusterLayerOptions(
-            polygonOptions: const PolygonOptions(color: Colors.black12),
+            polygonOptions: PolygonOptions(
+              color: CarbonColor.purple60.withValues(alpha: 0.25),
+            ),
             maxClusterRadius: 50,
             maxZoom: 13,
-            markers:
-                towers
-                    .map(
-                      (tower) => Marker(
-                        key: ValueKey(tower.id),
-                        point: LatLng(
-                          tower.position.latitude,
-                          tower.position.longitude,
-                        ),
-                        width: 80,
-                        height: 80,
-                        child: GestureDetector(
-                          onTap:
-                              kIsWeb
-                                  ? () {
-                                    DialogUtils.showTowerDialog(
-                                      context,
-                                      tower.id,
-                                    );
-                                  }
-                                  : () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => TowerPage(tower),
-                                    ),
-                                  ),
-                          child: Column(
+            markers: [
+              ...towers.map(
+                (tower) => Marker(
+                  key: ValueKey(tower.id),
+                  width: 80,
+                  height: 80,
+                  point: LatLng(
+                    tower.position.latitude,
+                    tower.position.longitude,
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      kIsWeb
+                          ? DialogUtils.showTowerDialog(context, tower.id)
+                          : Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => TowerPage(tower)),
+                          );
+                    },
+                    child: Column(
+                      children: [
+                        ColoredBox(
+                          color: Colors.black54,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              ColoredBox(
-                                color: Colors.black54,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Spacing.$2(),
-                                    Spacing.$3(color: tower.surveyStatus.color),
-                                    const Spacing.$2(),
-                                    Text(
-                                      tower.id,
-                                      style:
-                                          Theme.of(
-                                            context,
-                                          ).primaryTextTheme.labelSmall,
-                                    ),
-                                    const Spacing.$2(),
-                                  ],
-                                ),
+                              const Spacing.$2(),
+                              Spacing.$3(color: tower.surveyStatus.color),
+                              const Spacing.$2(),
+                              Text(
+                                tower.id,
+                                style:
+                                    Theme.of(
+                                      context,
+                                    ).primaryTextTheme.labelSmall,
                               ),
-                              const Spacing.$1(),
-                              Icon(
-                                CarbonIcon.transmission_lte,
-                                color: tower.region.color,
-                              ),
+                              const Spacing.$2(),
                             ],
                           ),
                         ),
-                      ),
-                    )
-                    .toList(),
+                        const Spacing.$1(),
+                        Icon(
+                          CarbonIcon.transmission_lte,
+                          color: tower.region.color,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
             builder: (context, markers) {
-              final statusCounts = <String, int>{
-                'surveyed': 0,
-                'inprogress': 0,
-                'unsurveyed': 0,
+              final statusCounts = <SurveyStatus, int>{
+                SurveyStatus.surveyed: 0,
+                SurveyStatus.inprogress: 0,
+                SurveyStatus.unsurveyed: 0,
               };
 
               for (final marker in markers) {
-                final tower = towers.firstWhere((tower) {
-                  // grab the tower id from marker's key
-                  // ensure type safety
+                final tower = towers.singleWhere((tower) {
                   final markerId = (marker.key! as ValueKey<String>).value;
                   return tower.id == markerId;
                 });
 
-                // increment the status counts based on the tower's status
-                if (tower.surveyStatus == SurveyStatus.surveyed) {
-                  statusCounts['surveyed'] = statusCounts['surveyed']! + 1;
-                } else if (tower.surveyStatus == SurveyStatus.inprogress) {
-                  statusCounts['inprogress'] = statusCounts['inprogress']! + 1;
-                } else {
-                  statusCounts['unsurveyed'] = statusCounts['unsurveyed']! + 1;
-                }
+                statusCounts[tower.surveyStatus] =
+                    statusCounts[tower.surveyStatus]! + 1;
               }
 
-              final total = statusCounts.values.reduce((a, b) => a + b);
-              final statusColors = {
-                'surveyed': AppColors.green,
-                'inprogress': AppColors.yellow,
-                'unsurveyed': AppColors.red,
-              };
-
-              return CustomPaint(
-                size: const Size(40, 40),
-                painter: PieChartPainter(statusCounts, total, statusColors),
-              );
+              return CustomPaint(painter: PieChartPainter(statusCounts));
             },
           ),
         ),

@@ -2,61 +2,48 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-// paints a pie chart, used specifically for map marker clusters
-class PieChartPainter extends CustomPainter {
-  final Map<String, int> statusCounts; // counts of each category in pie chart
-  final int total; // sum of all values
-  final Map<String, Color> statusColors; // colors associated with each status
+import '../models/survey_status.dart';
 
-  PieChartPainter(this.statusCounts, this.total, this.statusColors);
+class PieChartPainter extends CustomPainter {
+  final Map<SurveyStatus, int> statusCounts;
+
+  PieChartPainter(this.statusCounts);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint =
+    final total = statusCounts.values.reduce((a, b) => a + b);
+    final arcPaint =
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 4; // pie chart edge size
+          ..strokeWidth = 4;
+    final circlePaint = Paint()..color = Colors.black54;
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = min(size.width / 2, size.height / 2);
+    var startAngle = -pi / 2;
 
-    final center = Offset(size.width / 2, size.height / 2); // get center
-    final radius = min(size.width / 2, size.height / 2); // get radius
-
-    var startAngle = -pi / 2; // start at the top of the circle, -π/2 radians
-
-    // center (circle)
-    final centerPaint = Paint()..color = Colors.black.withValues(alpha: 0.7);
-    canvas.drawCircle(center, radius, centerPaint); // Fill center with grey
+    canvas.drawCircle(center, radius, circlePaint);
 
     for (final entry in statusCounts.entries) {
       if (entry.value > 0) {
-        // sweep angle is the portion of the circle this segment will cover
-        // wherein (value / total) gives the proportion, multiplied by 2π to scale to full circle
         final sweepAngle = (entry.value / total) * 2 * pi;
-        paint.color = statusColors[entry.key]!;
+        arcPaint.color = entry.key.color;
 
-        // draw slice using arc method (edges only)
         canvas.drawArc(
           Rect.fromCircle(center: center, radius: radius),
-          startAngle, // slice start
-          sweepAngle, // slice size
-          false, // No fill, just the edge
-          paint, // color
+          startAngle,
+          sweepAngle,
+          false,
+          arcPaint,
         );
-
-        // move the start angle for the next slice to the end of previous slice
         startAngle += sweepAngle;
       }
     }
 
-    // show cluster text count in the middle
     final textPainter = TextPainter(
-      text: TextSpan(
-        text: total.toString(),
-        style: const TextStyle(color: Colors.white, fontSize: 12),
-      ),
-      textAlign: TextAlign.center,
+      text: TextSpan(text: total.toString()),
       textDirection: TextDirection.ltr,
-    );
-    textPainter.layout();
+    )..layout();
+
     textPainter.paint(
       canvas,
       Offset(
@@ -67,5 +54,5 @@ class PieChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false; // set to true if data changes dynamically
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
