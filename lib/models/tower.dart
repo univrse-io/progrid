@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 import 'drawing_status.dart';
 import 'region.dart';
 import 'survey_status.dart';
 
+// TODO: Restructure the tower model.
 class Tower {
   String id;
   String name;
@@ -41,7 +43,6 @@ class Tower {
     // this.equipmentShelter
   });
 
-  /// Creates a [Tower] instance from a JSON object.
   factory Tower.fromJson(Map<String, dynamic> json) => Tower(
     id: json['id'] as String,
     name: json['name'] as String,
@@ -54,7 +55,7 @@ class Tower {
       (json['surveyStatus'] as String)
           .replaceAll(RegExp(r'[\s-]'), '')
           .toLowerCase(),
-    ), // removes all whitespaces and hyphens, for backwards compatibility
+    ),
     drawingStatus:
         json['drawingStatus'] != null
             ? DrawingStatus.values.byName(
@@ -72,11 +73,18 @@ class Tower {
     // equipmentShelter: json['equipmentShelter'] as String?,
   );
 
-  /// Creates a [Tower] instance from a Firestore document.
   factory Tower.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data()! as Map<String, dynamic>;
     data['id'] = doc.id;
 
     return Tower.fromJson(data);
   }
+
+  String get context => switch (surveyStatus) {
+    SurveyStatus.surveyed =>
+      'Signed-out${signOut != null ? ' at ${DateFormat('MMM d, y').format(signOut!.toDate())}' : ''}',
+    SurveyStatus.inprogress =>
+      'Signed-in${signIn != null ? ' at ${DateFormat('MMM d, y').format(signIn!.toDate())}' : ''}',
+    _ => 'To be surveyed',
+  };
 }

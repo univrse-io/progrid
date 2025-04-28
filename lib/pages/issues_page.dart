@@ -5,12 +5,12 @@ import 'package:provider/provider.dart';
 import '../models/issue.dart';
 import '../models/tower.dart';
 import 'create_issue_page.dart';
-import 'issue_details.dart';
+import 'issue_details_page.dart';
 
-class ViewIssuesPage extends StatelessWidget {
+class IssuesPage extends StatelessWidget {
   final Tower tower;
 
-  const ViewIssuesPage({required this.tower, super.key});
+  const IssuesPage({required this.tower, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class ViewIssuesPage extends StatelessWidget {
 
     return Scaffold(
       // TODO: Implement search functionality.
-      appBar: AppBar(title: const Text('View Issues')),
+      appBar: AppBar(title: const Text('Issues')),
       body: Column(
         children: [
           Expanded(
@@ -37,6 +37,7 @@ class ViewIssuesPage extends StatelessWidget {
                         final issue = issues[index];
 
                         return ListTile(
+                          dense: true,
                           isThreeLine: true,
                           onTap:
                               () => Navigator.of(context).push(
@@ -60,7 +61,7 @@ class ViewIssuesPage extends StatelessWidget {
                                 issue.tags.join(', '),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: CarbonTextStyle.heading03,
+                                style: CarbonTextStyle.heading02,
                               ),
                               Text(
                                 issue.context,

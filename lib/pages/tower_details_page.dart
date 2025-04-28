@@ -24,18 +24,18 @@ import '../models/tower.dart';
 import '../services/firebase_firestore.dart';
 import '../utils/dialog_utils.dart';
 import '../utils/themes.dart';
-import 'view_issues_page.dart';
+import 'issues_page.dart';
 
-class TowerPage extends StatefulWidget {
+class TowerDetailsPage extends StatefulWidget {
   final Tower tower;
 
-  const TowerPage(this.tower, {super.key});
+  const TowerDetailsPage(this.tower, {super.key});
 
   @override
-  State<TowerPage> createState() => _TowerPageState();
+  State<TowerDetailsPage> createState() => _TowerDetailsPageState();
 }
 
-class _TowerPageState extends State<TowerPage> {
+class _TowerDetailsPageState extends State<TowerDetailsPage> {
   final _notesController = TextEditingController();
 
   Timer? _debounceTimer;
@@ -241,11 +241,7 @@ class _TowerPageState extends State<TowerPage> {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    widget.tower.images.isEmpty
-                        ? 'Unsurveyed' // No images
-                        : widget.tower.images.length == 1
-                        ? 'Signed-in' // Exactly 1 image
-                        : 'Signed-out', // More than 1 image
+                    widget.tower.context,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.secondary,
                       fontStyle: FontStyle.italic,
@@ -364,7 +360,7 @@ class _TowerPageState extends State<TowerPage> {
                 onPressed:
                     () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => ViewIssuesPage(tower: widget.tower),
+                        builder: (_) => IssuesPage(tower: widget.tower),
                       ),
                     ),
                 child: const Text('View Issues'),

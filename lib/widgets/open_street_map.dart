@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../models/survey_status.dart';
 import '../models/tower.dart';
-import '../pages/tower_page.dart';
+import '../pages/tower_details_page.dart';
 import '../utils/dialog_utils.dart';
 
 final _textStyle = CarbonTextStyle.label01.copyWith(color: Colors.white);
@@ -67,7 +67,9 @@ class OpenStreetMap extends StatelessWidget {
                       kIsWeb
                           ? DialogUtils.showTowerDialog(context, tower.id)
                           : Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => TowerPage(tower)),
+                            MaterialPageRoute(
+                              builder: (_) => TowerDetailsPage(tower),
+                            ),
                           );
                     },
                     child: Column(

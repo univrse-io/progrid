@@ -5,7 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import '../models/region.dart';
 import '../widgets/open_street_map.dart';
 import 'profile_page.dart';
-import 'search_towers_page.dart';
+import 'towers_page.dart';
 
 // TODO: Implement map marker filter.
 class MapPage extends StatefulWidget {
@@ -20,6 +20,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    resizeToAvoidBottomInset: false,
     body: Stack(
       children: [
         OpenStreetMap(controller: mapController),
@@ -69,11 +70,9 @@ class _MapPageState extends State<MapPage> {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder:
-                          (context, animation, secondaryAnimation) =>
-                              const SearchTowersPage(),
+                      pageBuilder: (_, _, __) => const TowersPage(),
                       transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) =>
+                          (_, animation, __, child) =>
                               FadeTransition(opacity: animation, child: child),
                     ),
                   );

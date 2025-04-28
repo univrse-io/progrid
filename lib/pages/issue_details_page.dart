@@ -20,7 +20,7 @@ class _IssueDetailsPageState extends State<IssueDetailsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Issue Details')),
+    appBar: AppBar(title: Text(widget.issue.id)),
     body: Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
