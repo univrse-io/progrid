@@ -83,12 +83,13 @@ class CarbonTextInput extends StatefulWidget {
         valueListenable: controller,
         builder: (context, snapshot, child) =>
             Visibility(visible: snapshot.text.isNotEmpty, child: child!),
-        child: GestureDetector(
-            onTap: controller.clear,
-            child: const Icon(CarbonIcon.close, size: 20)),
+        child: IconButton(
+            onPressed: controller.clear,
+            icon: const Icon(CarbonIcon.close, size: kIconSize)),
       );
 
-  static Widget _searchButton() => const Icon(CarbonIcon.search, size: 20);
+  static Widget _searchButton() =>
+      const Icon(CarbonIcon.search, size: kIconSize);
 
   @override
   State<CarbonTextInput> createState() => _CarbonTextInputState();

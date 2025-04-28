@@ -18,18 +18,18 @@ class _TowersPageState extends State<TowersPage> {
       TextEditingController()..addListener(() => setState(() {}));
 
   List<Tower> get result {
-    final query = searchController.text.trim().toLowerCase();
+    final keyword = searchController.text.trim().toLowerCase();
 
-    return query.isEmpty
+    return keyword.isEmpty
         ? towers
         : towers
             .where(
               (tower) =>
-                  tower.name.toLowerCase().contains(query) ||
-                  tower.id.toLowerCase().contains(query) ||
-                  tower.address.toLowerCase().contains(query) ||
-                  tower.region.name.contains(query) ||
-                  tower.type.contains(query),
+                  tower.name.toLowerCase().contains(keyword) ||
+                  tower.id.toLowerCase().contains(keyword) ||
+                  tower.address.toLowerCase().contains(keyword) ||
+                  tower.region.name.contains(keyword) ||
+                  tower.type.contains(keyword),
             )
             .toList();
   }
@@ -63,7 +63,7 @@ class _TowersPageState extends State<TowersPage> {
         Expanded(
           child:
               result.isEmpty
-                  ? const Center(child: Text('No towers found.'))
+                  ? const Center(child: Text('No Towers Found'))
                   : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     separatorBuilder: (_, __) => const Divider(),
