@@ -98,9 +98,6 @@ sealed class DialogUtils {
           (tower) => tower.id == towerId,
           orElse: () => throw Exception('Tower not found'),
         );
-        final notesController = TextEditingController(
-          text: selectedTower.notes,
-        );
         Timer? debounceTimer;
 
         return Dialog(
@@ -305,7 +302,9 @@ sealed class DialogUtils {
                         SizedBox(
                           height: 120,
                           child: TextField(
-                            controller: notesController,
+                            controller: TextEditingController(
+                              text: selectedTower.notes,
+                            ),
                             maxLines: null,
                             expands: true,
                             textAlignVertical: TextAlignVertical.top,

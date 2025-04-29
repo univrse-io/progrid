@@ -41,6 +41,14 @@ class _SiteProgressPageState extends State<SiteProgressPage>
   @override
   bool get wantKeepAlive => true;
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    fromController.dispose();
+    toController.dispose();
+    super.dispose();
+  }
+
   Future<void> dailyProgressReportPdf() async {
     final towers = Provider.of<List<Tower>>(context, listen: false);
     final issues =

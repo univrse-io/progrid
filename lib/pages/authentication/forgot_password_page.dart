@@ -18,6 +18,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
   final emailController = TextEditingController();
 
   @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
+
+  @override
   bool get wantKeepAlive => true;
 
   @override

@@ -29,7 +29,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
   ];
   final List<String> _selectedTags = [];
   String? _selectedTag;
-  final _descriptionController = TextEditingController();
+  final descriptionController = TextEditingController();
   final int _maxDescriptionLength = 750;
 
   Future<void> _createIssue() async {
@@ -40,7 +40,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
       return;
     }
 
-    if (_descriptionController.text.isEmpty) {
+    if (descriptionController.text.isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Please add a description')));
@@ -64,7 +64,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
       authorId: user!.uid,
       createdAt: Timestamp.now(),
       authorName: user.displayName,
-      description: _descriptionController.text,
+      description: descriptionController.text,
       tags: _selectedTags,
     );
 
@@ -87,6 +87,12 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
         ).showSnackBar(SnackBar(content: Text('Error creating Issue: $e')));
       }
     }
+  }
+
+  @override
+  void dispose() {
+    descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -163,7 +169,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
           const SizedBox(height: 17),
           Expanded(
             child: TextField(
-              controller: _descriptionController,
+              controller: descriptionController,
               keyboardType: TextInputType.multiline,
               maxLines: null,
               expands: true,

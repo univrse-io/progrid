@@ -36,17 +36,23 @@ class TowerDetailsPage extends StatefulWidget {
 }
 
 class _TowerDetailsPageState extends State<TowerDetailsPage> {
-  final _notesController = TextEditingController();
+  final notesController = TextEditingController();
 
   Timer? _debounceTimer;
   final int _maxNotesLength = 500;
   final _picker = ImagePicker();
 
   @override
+  void dispose() {
+    notesController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final issues = Provider.of<List<Issue>>(context);
 
-    _notesController.text = widget.tower.notes ?? ''; // get tower notes
+    notesController.text = widget.tower.notes ?? ''; // get tower notes
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.tower.id)),
@@ -257,7 +263,7 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
               SizedBox(
                 height: 120, // control text box height here
                 child: TextField(
-                  controller: _notesController,
+                  controller: notesController,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                   expands: true,

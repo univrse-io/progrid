@@ -28,6 +28,12 @@ class _TowersPageState extends State<TowersPage> {
   }
 
   @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Towers')),
     body: Column(

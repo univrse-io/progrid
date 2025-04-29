@@ -26,6 +26,14 @@ class _RegisterPageState extends State<RegisterPage>
   bool get wantKeepAlive => true;
 
   @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
 

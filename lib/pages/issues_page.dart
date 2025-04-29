@@ -36,6 +36,12 @@ class _IssuesPageState extends State<IssuesPage> {
   }
 
   @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Issues')),
     body: Column(

@@ -101,12 +101,6 @@ class _CarbonTextInputState extends State<CarbonTextInput> {
   String? errorText;
 
   @override
-  void dispose() {
-    widget.controller?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) => SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           if (widget.labelText != null) ...[
