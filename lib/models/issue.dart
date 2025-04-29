@@ -57,4 +57,10 @@ class Issue {
     'description': description,
     'tags': tags,
   };
+
+  @override
+  String toString() =>
+      'Issue(id=$id, status=$status, authorId=$authorId, createdAt=$createdAt, '
+      'updatedAt=$updatedAt, authorName=$authorName, description=$description, '
+      'tags=$tags)';
 }

@@ -30,12 +30,7 @@ class _IssuesPageState extends State<IssuesPage> {
             .where(
               (issue) =>
                   issue.id.startsWith(widget.tower.id) &&
-                  issue.id.toLowerCase().contains(keyword),
-              // tower.name.toLowerCase().contains(query) ||
-              // tower.id.toLowerCase().contains(query) ||
-              // tower.address.toLowerCase().contains(query) ||
-              // tower.region.name.contains(query) ||
-              // tower.type.contains(query),
+                  issue.toString().toLowerCase().contains(keyword),
             )
             .toList();
   }

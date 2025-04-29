@@ -87,4 +87,13 @@ class Tower {
               '${DateFormat('MMM d, y').format(updatedAt!.toDate())}'
           : 'To be surveyed',
   };
+
+  @override
+  String toString() =>
+      'Tower(id=$id, name=$name, region=$region, type=$type, address=$address '
+      'position=Geopoint(latitude=${position.latitude}, '
+      'longitude=${position.longitude}), surveyStatus=$surveyStatus, '
+      'drawingStatus=$drawingStatus, images=$images, authorId=$authorId, '
+      'authorName=$authorName, owner=$owner, notes=$notes, signIn=$signIn, '
+      'signOut=$signOut, updatedAt=$updatedAt)';
 }

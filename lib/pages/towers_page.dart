@@ -23,14 +23,7 @@ class _TowersPageState extends State<TowersPage> {
     return keyword.isEmpty
         ? towers
         : towers
-            .where(
-              (tower) =>
-                  tower.name.toLowerCase().contains(keyword) ||
-                  tower.id.toLowerCase().contains(keyword) ||
-                  tower.address.toLowerCase().contains(keyword) ||
-                  tower.region.name.contains(keyword) ||
-                  tower.type.contains(keyword),
-            )
+            .where((tower) => tower.toString().toLowerCase().contains(keyword))
             .toList();
   }
 
