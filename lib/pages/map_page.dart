@@ -27,7 +27,7 @@ class _MapPageState extends State<MapPage> {
         Positioned(
           top: 25,
           left: 14,
-          child: FloatingActionButton(
+          child: FloatingActionButton.small(
             tooltip: 'View Regions',
             onPressed: () async {
               final selectedRegion = await showMenu<Region>(
@@ -43,7 +43,6 @@ class _MapPageState extends State<MapPage> {
                             child: Chip(
                               side: BorderSide.none,
                               shape: const RoundedRectangleBorder(),
-                              elevation: 0,
                               label: Text('$region'),
                             ),
                           ),
@@ -54,7 +53,7 @@ class _MapPageState extends State<MapPage> {
                 mapController.move(selectedRegion.latlng, 8);
               }
             },
-            mini: true,
+            elevation: 0,
             child: const Icon(CarbonIcon.plan),
           ),
         ),
@@ -63,7 +62,7 @@ class _MapPageState extends State<MapPage> {
           right: 14,
           child: Row(
             children: [
-              FloatingActionButton(
+              FloatingActionButton.small(
                 tooltip: 'Search Towers',
                 heroTag: 'searchbar',
                 onPressed: () {
@@ -77,10 +76,10 @@ class _MapPageState extends State<MapPage> {
                     ),
                   );
                 },
-                mini: true,
+                elevation: 0,
                 child: const Icon(CarbonIcon.search),
               ),
-              FloatingActionButton(
+              FloatingActionButton.small(
                 tooltip: 'User Profile',
                 heroTag: 'profile',
                 onPressed: () {
@@ -114,7 +113,7 @@ class _MapPageState extends State<MapPage> {
                     ),
                   );
                 },
-                mini: true,
+                elevation: 0,
                 child: const Icon(CarbonIcon.user),
               ),
             ],

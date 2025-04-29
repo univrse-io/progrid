@@ -52,26 +52,18 @@ sealed class DialogUtils {
                             child: Icon(Icons.error, color: AppColors.red),
                           ),
                     ),
-
                     Positioned(
                       bottom: 5,
                       left: 5,
                       child: Row(
                         children: [
-                          // download button
-                          FloatingActionButton(
-                            // onPressed: () => onDownload(context, imageUrl),
+                          FloatingActionButton.small(
                             onPressed: () => _downloadImage(context, imageUrl),
-                            mini: true,
                             child: const Icon(Icons.download),
                           ),
                           const SizedBox(width: 2),
-
-                          // delete button
-                          FloatingActionButton(
-                            // onPressed: () => onDelete(context, imageUrl),
+                          FloatingActionButton.small(
                             onPressed: () => _deleteImage(context, imageUrl),
-                            mini: true,
                             child: const Icon(
                               Icons.delete,
                               color: AppColors.red,
