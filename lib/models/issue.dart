@@ -19,21 +19,17 @@ class Issue {
     required this.authorId,
     required this.createdAt,
     this.updatedAt,
-    this.authorName = 'Unknown User',
+    this.authorName,
     this.description = '',
     this.tags = const [],
   });
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'status': status.name,
-    'authorId': authorId,
-    'createdAt': createdAt,
-    'updatedAt': updatedAt,
-    'authorName': authorName,
-    'description': description,
-    'tags': tags,
-  };
+  factory Issue.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data()! as Map<String, dynamic>;
+    data['id'] = doc.id;
+
+    return Issue.fromJson(data);
+  }
 
   factory Issue.fromJson(Map<String, dynamic> json) => Issue(
     id: json['id'] as String,
@@ -46,14 +42,19 @@ class Issue {
     tags: (json['tags'] as List?)?.cast<String>() ?? [],
   );
 
-  factory Issue.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data()! as Map<String, dynamic>;
-    data['id'] = doc.id;
-
-    return Issue.fromJson(data);
-  }
-
   String get context =>
-      'Created${authorName != null ? ' by $authorName' : ''} at '
-      '${DateFormat('MMM d, y').format(createdAt.toDate())}';
+      '${updatedAt != null ? 'Updated' : 'Created'}'
+      '${authorName != null ? ' by $authorName' : ''} at '
+      '${DateFormat('MMM d, y').format(updatedAt != null ? updatedAt!.toDate() : createdAt.toDate())}';
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'status': status.name,
+    'authorId': authorId,
+    'createdAt': createdAt,
+    'updatedAt': updatedAt,
+    'authorName': authorName,
+    'description': description,
+    'tags': tags,
+  };
 }

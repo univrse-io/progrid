@@ -148,14 +148,11 @@ class _HomePageState extends State<HomePage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          'Recent Issues Tickets',
-                          style: CarbonTextStyle.heading02,
-                        ),
+                        Text('Recent Issues', style: CarbonTextStyle.heading02),
                         const Spacing.$3(),
                         Expanded(
                           child: ListView.separated(
-                            separatorBuilder: (_, _) => const Spacing.$2(),
+                            separatorBuilder: (_, _) => const Divider(),
                             itemCount: issues.length,
                             itemBuilder:
                                 (context, index) => ListTile(
