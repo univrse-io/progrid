@@ -91,6 +91,8 @@ class _TowersPageState extends State<TowersPage> {
                             ),
                             Text(
                               tower.context,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontStyle: FontStyle.italic,
                               ),

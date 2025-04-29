@@ -24,6 +24,11 @@ class _IssuesPageState extends State<IssuesPage> {
     final issues = Provider.of<List<Issue>>(context, listen: false);
     final keyword = searchController.text.trim().toLowerCase();
 
+    issues.sort(
+      (a, b) =>
+          (b.updatedAt ?? b.createdAt).compareTo(a.updatedAt ?? a.createdAt),
+    );
+
     return keyword.isEmpty
         ? issues.where((issue) => issue.id.startsWith(widget.tower.id)).toList()
         : issues
@@ -100,6 +105,8 @@ class _IssuesPageState extends State<IssuesPage> {
                             ),
                             Text(
                               issue.context,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontStyle: FontStyle.italic,
                               ),

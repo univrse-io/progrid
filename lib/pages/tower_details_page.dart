@@ -248,6 +248,8 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                   const SizedBox(width: 5),
                   Text(
                     widget.tower.context,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.secondary,
                       fontStyle: FontStyle.italic,

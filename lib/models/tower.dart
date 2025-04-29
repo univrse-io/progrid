@@ -73,18 +73,18 @@ class Tower {
 
   String get context => switch (surveyStatus) {
     SurveyStatus.surveyed =>
-      'Signed-out'
+      'Signed out'
           '${authorName != null ? ' by $authorName' : ''}'
-          '${signOut != null ? ' at ${DateFormat('MMM d, y').format(signOut!.toDate())}' : ''}',
+          '${signOut != null ? ' at ${DateFormat().format(signOut!.toDate())}' : ''}',
     SurveyStatus.inprogress =>
-      'Signed-in'
+      'Signed in'
           '${authorName != null ? ' by $authorName' : ''}'
-          '${signIn != null ? ' at ${DateFormat('MMM d, y').format(signIn!.toDate())}' : ''}',
+          '${signIn != null ? ' at ${DateFormat().format(signIn!.toDate())}' : ''}',
     _ =>
       updatedAt != null
           ? 'Updated'
               '${authorName != null ? ' by $authorName' : ''} at '
-              '${DateFormat('MMM d, y').format(updatedAt!.toDate())}'
+              '${DateFormat().format(updatedAt!.toDate())}'
           : 'To be surveyed',
   };
 

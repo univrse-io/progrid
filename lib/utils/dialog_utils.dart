@@ -281,6 +281,8 @@ sealed class DialogUtils {
                             const SizedBox(width: 5),
                             Text(
                               selectedTower.context,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.secondary,
                                 fontStyle: FontStyle.italic,

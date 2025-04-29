@@ -45,7 +45,7 @@ class Issue {
   String get context =>
       '${updatedAt != null ? 'Updated' : 'Created'}'
       '${authorName != null ? ' by $authorName' : ''} at '
-      '${DateFormat('MMM d, y').format(updatedAt != null ? updatedAt!.toDate() : createdAt.toDate())}';
+      '${DateFormat().format(updatedAt != null ? updatedAt!.toDate() : createdAt.toDate())}';
 
   Map<String, dynamic> toJson() => {
     'id': id,
