@@ -406,7 +406,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                             decoration: pw.BoxDecoration(
                                               shape: pw.BoxShape.circle,
                                               color: PdfColor.fromInt(
-                                                region.color.value,
+                                                region.color.toARGB32(),
                                               ),
                                             ),
                                           ),
@@ -473,7 +473,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                             decoration: pw.BoxDecoration(
                                               shape: pw.BoxShape.circle,
                                               color: PdfColor.fromInt(
-                                                region.color.value,
+                                                region.color.toARGB32(),
                                               ),
                                             ),
                                           ),
