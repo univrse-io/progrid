@@ -15,7 +15,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
 import '../services/firebase_firestore.dart';
-import 'themes.dart';
 
 sealed class DialogUtils {
   static void showLoadingDialog(BuildContext context) {
@@ -49,7 +48,7 @@ sealed class DialogUtils {
                       fit: BoxFit.cover,
                       errorBuilder:
                           (context, error, stackTrace) => const Center(
-                            child: Icon(Icons.error, color: AppColors.red),
+                            child: Icon(Icons.error, color: Colors.red),
                           ),
                     ),
                     Positioned(
@@ -64,10 +63,7 @@ sealed class DialogUtils {
                           const SizedBox(width: 2),
                           FloatingActionButton.small(
                             onPressed: () => _deleteImage(context, imageUrl),
-                            child: const Icon(
-                              Icons.delete,
-                              color: AppColors.red,
-                            ),
+                            child: const Icon(Icons.delete, color: Colors.red),
                           ),
                         ],
                       ),
@@ -255,7 +251,7 @@ sealed class DialogUtils {
                                                     color: Colors.grey,
                                                     child: Icon(
                                                       Icons.error,
-                                                      color: AppColors.red,
+                                                      color: Colors.red,
                                                     ),
                                                   ),
                                             ),
@@ -423,7 +419,7 @@ sealed class DialogUtils {
                   child: const Text(
                     'Delete',
                     style: TextStyle(
-                      color: AppColors.red,
+                      color: Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

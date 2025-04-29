@@ -23,7 +23,6 @@ import '../models/survey_status.dart';
 import '../models/tower.dart';
 import '../services/firebase_firestore.dart';
 import '../utils/dialog_utils.dart';
-import '../utils/themes.dart';
 import 'issues_page.dart';
 
 class TowerDetailsPage extends StatefulWidget {
@@ -97,9 +96,9 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                       '${widget.tower.position.latitude.toStringAsFixed(6)}, ${widget.tower.position.longitude.toStringAsFixed(6)}',
                       style: const TextStyle(
                         fontSize: 16,
-                        color: AppColors.blue,
+                        color: Colors.blue,
                         decoration: TextDecoration.underline,
-                        decorationColor: AppColors.blue,
+                        decorationColor: Colors.blue,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -222,7 +221,7 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                                               color: Colors.grey,
                                               child: Icon(
                                                 Icons.error,
-                                                color: AppColors.red,
+                                                color: Colors.red,
                                               ),
                                             ),
                                   ),
