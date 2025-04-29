@@ -23,6 +23,12 @@ class _LoginPageState extends State<LoginPage> {
   bool rememberMe = false;
 
   @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => Scaffold(
     /// TODO: Insert background image.
     appBar: AppBar(
