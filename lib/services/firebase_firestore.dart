@@ -56,11 +56,15 @@ class FirebaseFirestoreService {
   Future<void> updateTower(
     String id, {
     required Map<String, dynamic> data,
-  }) async => _towersCollection
-      .doc(id)
-      .update(data)
-      .then((_) => log('Successfully updated tower.'))
-      .catchError((e) => log('Failed to update tower.', error: e));
+  }) async {
+    data['updatedAt'] = DateTime.now();
+
+    return _towersCollection
+        .doc(id)
+        .update(data)
+        .then((_) => log('Successfully updated tower.'))
+        .catchError((e) => log('Failed to update tower.', error: e));
+  }
 
   Future<void> updateUser(
     String id, {

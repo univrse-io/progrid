@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -292,11 +291,7 @@ sealed class DialogUtils {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              selectedTower.images.isEmpty
-                                  ? 'Unsurveyed' // No images
-                                  : selectedTower.images.length == 1
-                                  ? 'Signed in at ${DateFormat('hh:mm a, d MMM y').format(selectedTower.signIn!.toDate())}' // Exactly 1 image
-                                  : 'Signed out at ${DateFormat('hh:mm a, d MMM y').format(selectedTower.signOut!.toDate())}', // More than 1 image
+                              selectedTower.context,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.secondary,
                                 fontStyle: FontStyle.italic,
