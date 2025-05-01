@@ -6,7 +6,7 @@ part of 'index.dart';
 /// page.
 class CarbonLink extends StatelessWidget {
   final String label;
-  final Widget? icon;
+  final IconData? icon;
   final VoidCallback? onPressed;
   final TextStyle? style;
   final bool isInline;
@@ -22,18 +22,23 @@ class CarbonLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final carbonToken = Theme.of(context).extension<CarbonToken>();
-    final textStyle = style ?? TextStyle(color: carbonToken?.linkPrimary);
 
-    return GestureDetector(
+    return InkWell(
       onTap: onPressed,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(label,
-              style: textStyle.copyWith(
+              style: (style ?? CarbonTextStyle.bodyCompact01).copyWith(
+                  color: carbonToken?.linkPrimary,
                   decoration: isInline ? TextDecoration.underline : null,
-                  decorationColor: textStyle.color)),
-          if (icon != null) icon!,
+                  decorationColor: carbonToken?.linkPrimary)),
+          if (icon != null) const Spacing.$3(),
+          Icon(
+            icon,
+            size: 16,
+            color: carbonToken?.linkPrimary,
+          ),
         ],
       ),
     );

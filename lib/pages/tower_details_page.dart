@@ -35,7 +35,8 @@ class TowerDetailsPage extends StatefulWidget {
 }
 
 class _TowerDetailsPageState extends State<TowerDetailsPage> {
-  final notesController = TextEditingController();
+  late final noteController = TextEditingController(text: widget.tower.notes);
+  late final issues = Provider.of<List<Issue>>(context);
 
   Timer? _debounceTimer;
   final int _maxNotesLength = 500;
@@ -43,342 +44,239 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
 
   @override
   void dispose() {
-    notesController.dispose();
+    noteController.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    final issues = Provider.of<List<Issue>>(context);
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Row(
+        children: [
+          Spacing.$4(color: widget.tower.surveyStatus.color),
+          const Spacing.$3(),
+          Text(widget.tower.id),
+        ],
+      ),
+    ),
+    body: SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            widget.tower.name,
+            textAlign: TextAlign.center,
+            style: CarbonTextStyle.heading04,
+          ),
+          const Spacing.$2(),
+          Text(widget.tower.context, textAlign: TextAlign.center),
+          const Spacing.$6(),
+          const Divider(),
+          const Spacing.$3(),
+          Text('Address', style: CarbonTextStyle.headingCompact01),
+          const Spacing.$3(),
+          Text(widget.tower.address),
+          const Spacing.$3(),
+          Text('Region', style: CarbonTextStyle.headingCompact01),
+          const Spacing.$3(),
+          Text(widget.tower.region.toString()),
+          const Spacing.$3(),
+          Text('Type', style: CarbonTextStyle.headingCompact01),
+          const Spacing.$3(),
+          Text(widget.tower.type),
+          const Spacing.$3(),
+          Text('LatLong', style: CarbonTextStyle.headingCompact01),
+          const Spacing.$3(),
+          CarbonLink(
+            onPressed: () async {
+              final latlng =
+                  '${widget.tower.position.latitude},${widget.tower.position.longitude}';
+              final googleMaps =
+                  'https://www.google.com/maps/search/?api=1&query=$latlng';
+              final appleMaps = 'https://maps.apple.com/?q=$latlng';
+              final url = Platform.isAndroid ? googleMaps : appleMaps;
 
-    notesController.text = widget.tower.notes ?? ''; // get tower notes
-
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.tower.id)),
-      body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 25),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacing.$5(),
-              Text(
-                widget.tower.name,
-                textAlign: TextAlign.center,
-                style: CarbonTextStyle.heading05,
-              ),
-              const Spacing.$3(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'LatLong:',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: 5),
-                  GestureDetector(
-                    onTap: () async {
-                      // TODO: implement apple maps
-                      final uri = Uri(
-                        scheme: 'google.navigation',
-                        queryParameters: {
-                          'q':
-                              '${widget.tower.position.latitude}, ${widget.tower.position.longitude}',
-                        },
-                      );
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri);
-                      } else {
-                        log('unable to launch google maps');
-                      }
-                    },
-                    child: Text(
-                      '${widget.tower.position.latitude.toStringAsFixed(6)}, ${widget.tower.position.longitude.toStringAsFixed(6)}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                        decorationColor: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                      ),
+              if (!await launchUrl(Uri.parse(url))) {
+                throw Exception('Could not launch $url');
+              }
+            },
+            label:
+                '${widget.tower.position.latitude.toStringAsFixed(4)}, '
+                '${widget.tower.position.longitude.toStringAsFixed(4)}',
+            icon: CarbonIcon.arrow_up_right,
+          ),
+          const Spacing.$3(),
+          Text('Pictures', style: CarbonTextStyle.headingCompact01),
+          const Spacing.$3(),
+          Container(
+            height: 130,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.tower.images.length,
+              itemBuilder:
+                  (context, index) => Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 5,
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Survey:',
-                    style: TextStyle(fontStyle: FontStyle.italic, fontSize: 17),
-                  ),
-                  const SizedBox(width: 5),
-                  Container(
-                    padding: const EdgeInsets.only(left: 14, right: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      color: widget.tower.surveyStatus.color,
-                    ),
-                    child: DropdownButton<SurveyStatus>(
-                      // type specifics required
-                      isDense: true,
-                      value: widget.tower.surveyStatus,
-                      onChanged: (value) {
-                        if (value != null &&
-                            value != widget.tower.surveyStatus) {
-                          FirebaseFirestoreService().updateTower(
-                            widget.tower.id,
-                            data: {'surveyStatus': value.name},
-                          );
-                          widget.tower.surveyStatus = value;
-                        }
-                      },
-                      items:
-                          SurveyStatus.values
-                              .map(
-                                (status) => DropdownMenuItem(
-                                  value: status,
-                                  child: Text(status.toString()),
-                                ),
-                              )
-                              .toList(),
-                      iconEnabledColor: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(24),
-                      dropdownColor: widget.tower.surveyStatus.color,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.surface,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              const Divider(),
-              const SizedBox(height: 14),
-              const Row(
-                children: [
-                  Text(
-                    'Site Details',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(width: 5),
-                  Icon(Icons.list, size: 27),
-                ],
-              ),
-              const SizedBox(height: 4),
-              _buildDetailRow('Address:', widget.tower.address),
-              _buildDetailRow('Region:', widget.tower.region.toString()),
-              _buildDetailRow('Type:', widget.tower.type),
-              const SizedBox(height: 10),
-              const Text(
-                'Pictures',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Container(
-                height: 130,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: widget.tower.images.length,
-                  itemBuilder:
-                      (context, index) => Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 5,
-                        ),
-                        child: Stack(
-                          children: [
-                            GestureDetector(
-                              onTap:
-                                  () => DialogUtils.showImageDialog(
-                                    context,
-                                    widget.tower.images[index],
-                                    widget.tower.id,
-                                  ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxHeight: 400,
-                                  ),
-                                  child: Image.network(
-                                    widget.tower.images[index],
-                                    fit: BoxFit.cover,
-                                    height: 120,
-                                    width: 120,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const ColoredBox(
-                                              color: Colors.grey,
-                                              child: Icon(
-                                                Icons.error,
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                  ),
-                                ),
+                    child: Stack(
+                      children: [
+                        GestureDetector(
+                          onTap:
+                              () => DialogUtils.showImageDialog(
+                                context,
+                                widget.tower.images[index],
+                                widget.tower.id,
+                              ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 400),
+                              child: Image.network(
+                                widget.tower.images[index],
+                                fit: BoxFit.cover,
+                                height: 120,
+                                width: 120,
+                                errorBuilder:
+                                    (context, error, stackTrace) =>
+                                        const ColoredBox(
+                                          color: Colors.grey,
+                                          child: Icon(
+                                            Icons.error,
+                                            color: Colors.red,
+                                          ),
+                                        ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                ),
-              ),
-              const SizedBox(height: 2),
-              Row(
-                children: [
-                  Text(
-                    ' Status:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    widget.tower.context,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Additional Notes',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 120, // control text box height here
-                child: TextField(
-                  controller: notesController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  expands: true,
-                  textAlignVertical: TextAlignVertical.top,
-                  maxLength: _maxNotesLength,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 14,
-                  ),
-                  buildCounter:
-                      (
-                        context, {
-                        required currentLength,
-                        required isFocused,
-                        maxLength,
-                      }) => Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          '$currentLength/$maxLength',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                  decoration: InputDecoration(
-                    hintText: 'Enter notes here...',
-                    alignLabelWithHint: true,
-                    hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 14,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 7,
+                      ],
                     ),
                   ),
-                  onChanged: (text) async {
-                    // cancel any previous debounce timer
-                    if (_debounceTimer?.isActive ?? false) {
-                      _debounceTimer?.cancel();
-                    }
-
-                    _debounceTimer = Timer(
-                      const Duration(milliseconds: 2000),
-                      () {
-                        // update notes every one second of changes
-                        FirebaseFirestoreService().updateTower(
-                          widget.tower.id,
-                          data: {'notes': text},
-                        );
-                      },
-                    );
-                  },
+            ),
+          ),
+          const Spacing.$3(),
+          Text('Notes', style: CarbonTextStyle.headingCompact01),
+          const Spacing.$3(),
+          SizedBox(
+            height: 120, // control text box height here
+            child: TextField(
+              controller: noteController,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              expands: true,
+              textAlignVertical: TextAlignVertical.top,
+              maxLength: _maxNotesLength,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 14,
+              ),
+              buildCounter:
+                  (
+                    context, {
+                    required currentLength,
+                    required isFocused,
+                    maxLength,
+                  }) => Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      '$currentLength/$maxLength',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              decoration: InputDecoration(
+                hintText: 'Enter notes here...',
+                alignLabelWithHint: true,
+                hintStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontSize: 14,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 7,
                 ),
               ),
-              const SizedBox(height: 15),
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton(
-                      onPressed:
-                          widget.tower.images.isNotEmpty
-                              ? null
-                              : () async {
-                                await _signIn();
-                              },
-                      style: FilledButton.styleFrom(
-                        textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                        minimumSize: const Size.fromHeight(45),
-                      ),
-                      child: const Text('Sign-In'),
-                    ),
+              onChanged: (text) async {
+                // cancel any previous debounce timer
+                if (_debounceTimer?.isActive ?? false) {
+                  _debounceTimer?.cancel();
+                }
+
+                _debounceTimer = Timer(const Duration(milliseconds: 2000), () {
+                  // update notes every one second of changes
+                  FirebaseFirestoreService().updateTower(
+                    widget.tower.id,
+                    data: {'notes': text},
+                  );
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 15),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton(
+                  onPressed:
+                      widget.tower.images.isNotEmpty
+                          ? null
+                          : () async {
+                            await _signIn();
+                          },
+                  style: FilledButton.styleFrom(
+                    textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                    minimumSize: const Size.fromHeight(45),
                   ),
-                  const SizedBox(width: 2),
-                  Expanded(
-                    child: FilledButton(
-                      // added condition to check if there are any unresolved issues
-                      onPressed:
-                          widget.tower.images.length != 1 ||
-                                  issues.any(
-                                    (issue) =>
-                                        issue.status == IssueStatus.unresolved,
-                                  )
-                              ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
-                              : () async {
-                                await _signOut();
-                              },
-                      style: FilledButton.styleFrom(
-                        textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                        minimumSize: const Size.fromHeight(45),
-                      ),
-                      child: const Text('Sign-Out'),
-                    ),
+                  child: const Text('Sign-In'),
+                ),
+              ),
+              const SizedBox(width: 2),
+              Expanded(
+                child: FilledButton(
+                  // added condition to check if there are any unresolved issues
+                  onPressed:
+                      widget.tower.images.length != 1 ||
+                              issues.any(
+                                (issue) =>
+                                    issue.status == IssueStatus.unresolved,
+                              )
+                          ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
+                          : () async {
+                            await _signOut();
+                          },
+                  style: FilledButton.styleFrom(
+                    textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                    minimumSize: const Size.fromHeight(45),
                   ),
-                ],
+                  child: const Text('Sign-Out'),
+                ),
               ),
-              const Spacing.$2(),
-              FilledButton(
-                onPressed:
-                    () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => IssuesPage(tower: widget.tower),
-                      ),
-                    ),
-                child: const Text('View Issues'),
-              ),
-              const Spacing.$5(),
             ],
           ),
-        ),
+          const Spacing.$2(),
+          FilledButton(
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => IssuesPage(tower: widget.tower),
+                  ),
+                ),
+            child: const Text('View Issues'),
+          ),
+          const Spacing.$5(),
+        ],
       ),
-    );
-  }
+    ),
+  );
 
   Future<void> _signIn() async {
     try {
@@ -896,23 +794,4 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
   //     if (mounted) Navigator.pop(context); // pop out of image
   //   }
   // }
-
-  Widget _buildDetailRow(String label, String content) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 2),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 90,
-          child: Text(
-            label,
-            textAlign: TextAlign.right,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(child: Text(content, style: const TextStyle(fontSize: 16))),
-      ],
-    ),
-  );
 }

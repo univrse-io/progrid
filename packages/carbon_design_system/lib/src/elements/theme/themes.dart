@@ -92,7 +92,7 @@ sealed class CarbonTheme {
             shape: const RoundedRectangleBorder(),
             backgroundColor: token.layer01,
             foregroundColor: token.textPrimary),
-        iconTheme: IconThemeData(size: kIconSize, color: token.iconOnColor),
+        iconTheme: IconThemeData(size: kIconSize, color: token.iconPrimary),
         iconButtonTheme: IconButtonThemeData(
             style: IconButton.styleFrom(
                 padding: EdgeInsets.zero,
@@ -139,6 +139,7 @@ sealed class CarbonTheme {
                       BorderSide(color: token.borderInteractive, width: 3))),
           dividerHeight: 0,
         ),
+        textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom()),
         tooltipTheme: TooltipThemeData(
           textStyle: CarbonTextStyle.body01.copyWith(color: token.textInverse),
           decoration: BoxDecoration(
