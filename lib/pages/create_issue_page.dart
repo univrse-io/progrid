@@ -136,7 +136,7 @@ class _NewIssuePageState extends State<NewIssuePage> {
                         id: uniqueId(),
                         status: IssueStatus.unresolved,
                         authorId: user!.uid,
-                        description:
+                        notes:
                             '[${DateFormat('y-m-d HH:mm').format(DateTime.now())}] ${descriptionController.text}',
                         createdAt: Timestamp.now(),
                         authorName: user.displayName,

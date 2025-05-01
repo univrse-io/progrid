@@ -70,7 +70,7 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
             style: CarbonTextStyle.heading04,
           ),
           const Spacing.$2(),
-          Text(widget.tower.context, textAlign: TextAlign.center),
+          Text(widget.tower.description, textAlign: TextAlign.center),
           const Spacing.$6(),
           const Divider(),
           const Spacing.$3(),

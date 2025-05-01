@@ -7,7 +7,7 @@ class Issue {
   String id;
   IssueStatus status;
   String authorId;
-  String description;
+  String notes;
   Timestamp createdAt;
   Timestamp? updatedAt;
   String? authorName;
@@ -17,7 +17,7 @@ class Issue {
     required this.id,
     required this.status,
     required this.authorId,
-    required this.description,
+    required this.notes,
     required this.createdAt,
     this.updatedAt,
     this.authorName,
@@ -35,14 +35,14 @@ class Issue {
     id: json['id'] as String,
     status: IssueStatus.values.byName((json['status'] as String).toLowerCase()),
     authorId: json['authorId'] as String,
-    description: json['description'] as String,
+    notes: json['notes'] as String? ?? json['description'] as String,
     createdAt: json['createdAt'] as Timestamp? ?? json['dateTime'] as Timestamp,
     updatedAt: json['updatedAt'] as Timestamp?,
     authorName: json['authorName'] as String?,
     tags: (json['tags'] as List?)?.cast<String>() ?? [],
   );
 
-  String get context =>
+  String get description =>
       '${updatedAt != null ? 'Updated' : 'Created'}'
       '${authorName != null ? ' by $authorName' : ''} at '
       '${DateFormat().format(updatedAt != null ? updatedAt!.toDate() : createdAt.toDate())}';
@@ -51,7 +51,7 @@ class Issue {
     'id': id,
     'status': status.name,
     'authorId': authorId,
-    'description': description,
+    'notes': notes,
     'createdAt': createdAt,
     'updatedAt': updatedAt,
     'authorName': authorName,
@@ -60,7 +60,7 @@ class Issue {
 
   @override
   String toString() =>
-      'Issue(id=$id, status=$status, authorId=$authorId, '
-      'description=$description, createdAt=$createdAt, updatedAt=$updatedAt, '
-      'authorName=$authorName, tags=$tags)';
+      'Issue(id=$id, status=$status, authorId=$authorId, notes=$notes, '
+      'createdAt=$createdAt, updatedAt=$updatedAt, authorName=$authorName, '
+      'tags=$tags)';
 }

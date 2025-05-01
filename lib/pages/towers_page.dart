@@ -90,7 +90,7 @@ class _TowersPageState extends State<TowersPage> {
                               style: CarbonTextStyle.heading02,
                             ),
                             Text(
-                              tower.context,
+                              tower.description,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(

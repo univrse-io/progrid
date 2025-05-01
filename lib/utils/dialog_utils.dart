@@ -276,7 +276,7 @@ sealed class DialogUtils {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              selectedTower.context,
+                              selectedTower.description,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(

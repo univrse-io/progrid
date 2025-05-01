@@ -102,7 +102,7 @@ class _IssuesPageState extends State<IssuesPage> {
                               style: CarbonTextStyle.heading02,
                             ),
                             Text(
-                              issue.context,
+                              issue.description,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(

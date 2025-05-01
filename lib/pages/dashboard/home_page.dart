@@ -213,7 +213,7 @@ class _HomePageState extends State<HomePage>
                                                   ),
                                                   const SizedBox(width: 10),
                                                   Text(
-                                                    issues[index].description,
+                                                    issues[index].notes,
                                                     style: const TextStyle(
                                                       fontSize: 16,
                                                     ),

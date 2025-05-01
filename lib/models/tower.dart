@@ -71,7 +71,7 @@ class Tower {
     updatedAt: json['updatedAt'] as Timestamp?,
   );
 
-  String get context => switch (surveyStatus) {
+  String get description => switch (surveyStatus) {
     SurveyStatus.surveyed =>
       'Signed out'
           '${authorName != null ? ' by $authorName' : ''}'
