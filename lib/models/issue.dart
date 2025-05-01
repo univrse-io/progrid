@@ -7,20 +7,20 @@ class Issue {
   String id;
   IssueStatus status;
   String authorId;
+  String description;
   Timestamp createdAt;
   Timestamp? updatedAt;
   String? authorName;
-  String description;
   List<String> tags;
 
   Issue({
     required this.id,
     required this.status,
     required this.authorId,
+    required this.description,
     required this.createdAt,
     this.updatedAt,
     this.authorName,
-    this.description = '',
     this.tags = const [],
   });
 
@@ -35,10 +35,10 @@ class Issue {
     id: json['id'] as String,
     status: IssueStatus.values.byName((json['status'] as String).toLowerCase()),
     authorId: json['authorId'] as String,
+    description: json['description'] as String,
     createdAt: json['createdAt'] as Timestamp? ?? json['dateTime'] as Timestamp,
     updatedAt: json['updatedAt'] as Timestamp?,
     authorName: json['authorName'] as String?,
-    description: json['description'] as String,
     tags: (json['tags'] as List?)?.cast<String>() ?? [],
   );
 
@@ -51,16 +51,16 @@ class Issue {
     'id': id,
     'status': status.name,
     'authorId': authorId,
+    'description': description,
     'createdAt': createdAt,
     'updatedAt': updatedAt,
     'authorName': authorName,
-    'description': description,
     'tags': tags,
   };
 
   @override
   String toString() =>
-      'Issue(id=$id, status=$status, authorId=$authorId, createdAt=$createdAt, '
-      'updatedAt=$updatedAt, authorName=$authorName, description=$description, '
-      'tags=$tags)';
+      'Issue(id=$id, status=$status, authorId=$authorId, '
+      'description=$description, createdAt=$createdAt, updatedAt=$updatedAt, '
+      'authorName=$authorName, tags=$tags)';
 }

@@ -1,3 +1,4 @@
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,125 +17,66 @@ class IssueDetailsPage extends StatefulWidget {
 }
 
 class _IssueDetailsPageState extends State<IssueDetailsPage> {
-  late IssueStatus currentStatus = widget.issue.status;
+  late final user = Provider.of<User?>(context);
+  late final isAdmin = Provider.of<bool>(context);
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(widget.issue.id)),
-    body: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    appBar: AppBar(
+      title: Row(
         children: [
-          const Text(
-            'Tags',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 7),
-          if (widget.issue.tags.isNotEmpty)
-            Wrap(
-              spacing: 5,
-              runSpacing: 5,
-              children:
-                  widget.issue.tags
-                      .map(
-                        (tag) => Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.secondary,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            tag,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.surface,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-            ),
-          const SizedBox(height: 10),
-          const Text(
-            'Description',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 7),
-          Text(
-            widget.issue.description,
-            style: TextStyle(
-              fontSize: 16,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-            textAlign: TextAlign.justify,
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            'Status',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 7),
-          if (widget.issue.authorId == Provider.of<User?>(context)!.uid)
-            Container(
-              padding: const EdgeInsets.only(left: 14, right: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                color: currentStatus.color,
-              ),
-              child: DropdownButton<IssueStatus>(
-                isDense: true,
-                value: currentStatus,
-                onChanged: (value) {
-                  if (value != null && value != currentStatus) {
-                    FirebaseFirestoreService().updateIssue(
-                      widget.issue.id,
-                      data: {'status': value.name},
-                    );
-                    setState(() => currentStatus = value);
-                  }
-                },
-                items: const [
-                  DropdownMenuItem(
-                    value: IssueStatus.unresolved,
-                    child: Text('Unresolved'),
-                  ),
-                  DropdownMenuItem(
-                    value: IssueStatus.resolved,
-                    child: Text('Resolved'),
-                  ),
-                ],
-                iconEnabledColor: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(24),
-                dropdownColor: currentStatus.color,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.surface,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            )
-          else
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                color: currentStatus.color,
-              ),
-              child: Text(
-                currentStatus.toString(),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.surface,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+          Spacing.$4(color: widget.issue.status.color),
+          const Spacing.$3(),
+          Text(widget.issue.id),
         ],
       ),
+    ),
+    body: Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('Tags', style: CarbonTextStyle.headingCompact01),
+                const Spacing.$3(),
+                Text(widget.issue.tags.join(', ')),
+                const Spacing.$3(),
+                Text('Description', style: CarbonTextStyle.headingCompact01),
+                const Spacing.$3(),
+                SelectableText(widget.issue.description),
+                const Spacing.$3(),
+                Text('Status', style: CarbonTextStyle.headingCompact01),
+                const Spacing.$3(),
+                Text(widget.issue.status.toString()),
+                const Spacing.$3(),
+              ],
+            ),
+          ),
+        ),
+        Visibility(
+          visible: widget.issue.authorId == user!.uid || isAdmin,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: FilledButton(
+              onPressed: () async {
+                await FirebaseFirestoreService().updateIssue(
+                  widget.issue.id,
+                  data: {
+                    'status': IssueStatus.resolved.name,
+                    'authorId': user!.uid,
+                    'authorName': user!.displayName,
+                  },
+                );
+                setState(() => widget.issue.status = IssueStatus.resolved);
+              },
+              child: const Text('Update Issue'),
+            ),
+          ),
+        ),
+      ],
     ),
   );
 }
