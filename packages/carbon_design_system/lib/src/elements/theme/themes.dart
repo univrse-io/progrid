@@ -98,7 +98,8 @@ sealed class CarbonTheme {
                 padding: EdgeInsets.zero,
                 shape: const RoundedRectangleBorder())),
         inputDecorationTheme: InputDecorationTheme(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
           filled: true,
           fillColor: token.field01,
           enabledBorder: UnderlineInputBorder(

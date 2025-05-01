@@ -122,7 +122,8 @@ class _IssuesPageState extends State<IssuesPage> {
             onPressed:
                 () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => CreateIssuePage(tower: widget.tower),
+                    builder:
+                        (context) => NewIssuePage.create(tower: widget.tower),
                   ),
                 ),
             child: const Text('Create Issue'),

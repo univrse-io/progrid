@@ -25,11 +25,15 @@ class FirebaseFirestoreService {
   Future<void> createIssue(
     String id, {
     required Map<String, dynamic> data,
-  }) async => _issuesCollection
-      .doc(id)
-      .set(data)
-      .then((_) => log('Successfully created issue.'))
-      .catchError((e) => log('Failed to create issue.', error: e));
+  }) async {
+    data.putIfAbsent('createdAt', DateTime.now);
+
+    return _issuesCollection
+        .doc(id)
+        .set(data)
+        .then((_) => log('Successfully created issue.'))
+        .catchError((e) => log('Failed to create issue.', error: e));
+  }
 
   Future<void> createUser(
     String id, {
@@ -44,7 +48,7 @@ class FirebaseFirestoreService {
     String id, {
     required Map<String, dynamic> data,
   }) async {
-    data['updatedAt'] = DateTime.now();
+    data.putIfAbsent('updatedAt', DateTime.now);
 
     return _issuesCollection
         .doc(id)
@@ -57,7 +61,7 @@ class FirebaseFirestoreService {
     String id, {
     required Map<String, dynamic> data,
   }) async {
-    data['updatedAt'] = DateTime.now();
+    data.putIfAbsent('updatedAt', DateTime.now);
 
     return _towersCollection
         .doc(id)

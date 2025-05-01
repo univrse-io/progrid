@@ -1,6 +1,8 @@
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/issue.dart';
@@ -8,17 +10,22 @@ import '../models/issue_status.dart';
 import '../models/tower.dart';
 import '../services/firebase_firestore.dart';
 
-class CreateIssuePage extends StatefulWidget {
-  final Tower tower;
+class NewIssuePage extends StatefulWidget {
+  final Tower? tower;
+  final Tower? issue;
 
-  const CreateIssuePage({required this.tower, super.key});
+  /// Create a new issue ticket for the selected tower.
+  const NewIssuePage.create({required this.tower, super.key}) : issue = null;
+
+  /// Update the selected issue ticket details.
+  const NewIssuePage.update({required this.issue, super.key}) : tower = null;
 
   @override
-  State<CreateIssuePage> createState() => _CreateIssuePageState();
+  State<NewIssuePage> createState() => _NewIssuePageState();
 }
 
-class _CreateIssuePageState extends State<CreateIssuePage> {
-  final List<String> _availableTags = [
+class _NewIssuePageState extends State<NewIssuePage> {
+  final tags = <String>[
     'Permit',
     'Logistics',
     'Key',
@@ -27,67 +34,9 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
     'FSC',
     'Other(s)',
   ];
-  final List<String> _selectedTags = [];
-  String? _selectedTag;
-  final descriptionController = TextEditingController();
-  final int _maxDescriptionLength = 750;
-
-  Future<void> _createIssue() async {
-    if (_selectedTags.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one tag')),
-      );
-      return;
-    }
-
-    if (descriptionController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please add a description')));
-      return;
-    }
-
-    final user = Provider.of<User?>(context, listen: false);
-    final issues = Provider.of<List<Issue>>(context, listen: false);
-    var i = 1;
-
-    String uniqueId() => '${widget.tower.id}-I${i.toString().padLeft(3, '0')}';
-
-    while (true) {
-      if (issues.where((issue) => issue.id == uniqueId()).isEmpty) break;
-      i++;
-    }
-
-    final issue = Issue(
-      id: uniqueId(),
-      status: IssueStatus.unresolved,
-      authorId: user!.uid,
-      createdAt: Timestamp.now(),
-      authorName: user.displayName,
-      description: descriptionController.text,
-      tags: _selectedTags,
-    );
-
-    try {
-      await FirebaseFirestoreService().createIssue(
-        issue.id,
-        data: issue.toJson(),
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Issue Created Successfully!')),
-        );
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error creating Issue: $e')));
-      }
-    }
-  }
+  final selectedTags = <String>[];
+  late final descriptionController =
+      TextEditingController()..addListener(() => setState(() {}));
 
   @override
   void dispose() {
@@ -98,113 +47,120 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Create Issue')),
-    body: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        children: [
-          // Tags section (Dropdown)
-          DropdownButton<String>(
-            isExpanded: true,
-            value: _selectedTag,
-            hint: const Text('Tags*'),
-            items:
-                _availableTags
-                    .map(
-                      (tag) => DropdownMenuItem(value: tag, child: Text(tag)),
-                    )
-                    .toList(),
-            onChanged: (newTag) {
-              if (newTag != null && !_selectedTags.contains(newTag)) {
-                setState(() {
-                  _selectedTags.add(newTag);
-                  _selectedTag = null; // Reset selection
-                });
-              }
-            },
-            dropdownColor: Theme.of(context).colorScheme.surface,
-          ),
-          const SizedBox(height: 3),
-
-          // Display selected tags
-          if (_selectedTags.isNotEmpty)
-            SizedBox(
-              width: double.infinity,
-              child: Wrap(
-                spacing: 5,
-                runSpacing: 5,
-                children:
-                    _selectedTags
-                        .map(
-                          (tag) => GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedTags.remove(
-                                  tag,
-                                ); // Remove tag on click
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.secondary,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                tag,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.surface,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-              ),
-            ),
-          const SizedBox(height: 17),
-          Expanded(
-            child: TextField(
-              controller: descriptionController,
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              expands: true,
-              textAlignVertical: TextAlignVertical.top,
-              maxLength: _maxDescriptionLength,
-              buildCounter:
-                  (
-                    context, {
-                    required currentLength,
-                    required isFocused,
-                    maxLength,
-                  }) => Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      '$currentLength/$maxLength',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontWeight: FontWeight.bold,
+    body: Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Tags', style: CarbonTextStyle.headingCompact01),
+                const Spacing.$3(),
+                Wrap(
+                  children: [
+                    ...tags.map(
+                      (tag) => SizedBox(
+                        width: 160,
+                        child: CheckboxListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          value: selectedTags.contains(tag),
+                          onChanged: (isSelected) {
+                            isSelected ?? false
+                                ? selectedTags.add(tag)
+                                : selectedTags.remove(tag);
+                            setState(() {});
+                          },
+                          title: Text(tag, style: CarbonTextStyle.body01),
+                        ),
                       ),
                     ),
-                  ),
-              decoration: InputDecoration(
-                hintText: 'Description*',
-                alignLabelWithHint: true,
-                hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
+                  ],
                 ),
-                contentPadding: const EdgeInsets.all(12),
-              ),
+                const Spacing.$3(),
+                Text('Description', style: CarbonTextStyle.headingCompact01),
+                const Spacing.$3(),
+                CarbonTextInput(
+                  controller: descriptionController,
+                  maxCharacters: 200,
+                  keyboardType: TextInputType.multiline,
+                ),
+                const Spacing.$3(),
+                // Text('Status', style: CarbonTextStyle.headingCompact01),
+                // const Spacing.$3(),
+                // CarbonDropdown<IssueStatus>(
+                //   inputDecorationTheme: const InputDecorationTheme(
+                //     filled: true,
+                //     fillColor: Colors.amber,
+                //   ),
+                //   dropdownMenuEntries: [
+                //     ...IssueStatus.values.map(
+                //       (status) => DropdownMenuEntry(
+                //         value: status,
+                //         label: status.toString(),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+              ],
             ),
           ),
-          const SizedBox(height: 20),
-          FilledButton(onPressed: _createIssue, child: const Text('Submit')),
-        ],
-      ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(24),
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: FilledButton(
+            onPressed:
+                selectedTags.isEmpty || descriptionController.text.isEmpty
+                    ? null
+                    : () async {
+                      final user = context.read<User?>();
+                      final issues = context.read<List<Issue>>();
+                      var i = 1;
+
+                      String uniqueId() =>
+                          '${widget.tower?.id}-I${i.toString().padLeft(3, '0')}';
+
+                      while (true) {
+                        if (issues
+                            .where((issue) => issue.id == uniqueId())
+                            .isEmpty) {
+                          break;
+                        }
+                        i++;
+                      }
+
+                      final issue = Issue(
+                        id: uniqueId(),
+                        status: IssueStatus.unresolved,
+                        authorId: user!.uid,
+                        description:
+                            '[${DateFormat('y-m-d HH:mm').format(DateTime.now())}] ${descriptionController.text}',
+                        createdAt: Timestamp.now(),
+                        authorName: user.displayName,
+                        tags: selectedTags,
+                      );
+
+                      await FirebaseFirestoreService().createIssue(
+                        issue.id,
+                        data: issue.toJson(),
+                      );
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Issue Created Successfully!'),
+                          ),
+                        );
+                        Navigator.pop(context);
+                      }
+                    },
+            child: const Text('Submit'),
+          ),
+        ),
+      ],
     ),
   );
 }
