@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/issue.dart';
-import '../models/issue_status.dart';
-import '../services/firebase_firestore.dart';
+import 'edit_issue_page.dart';
 
 class IssueDetailsPage extends StatefulWidget {
   final Issue issue;
@@ -49,7 +48,10 @@ class _IssueDetailsPageState extends State<IssueDetailsPage> {
                 const Spacing.$3(),
                 Text('Status', style: CarbonTextStyle.headingCompact01),
                 const Spacing.$3(),
-                Text(widget.issue.status.toString()),
+                Text(
+                  widget.issue.status.toString(),
+                  style: TextStyle(color: widget.issue.status.color),
+                ),
                 const Spacing.$3(),
               ],
             ),
@@ -61,17 +63,12 @@ class _IssueDetailsPageState extends State<IssueDetailsPage> {
             padding: const EdgeInsets.all(24),
             color: Theme.of(context).scaffoldBackgroundColor,
             child: FilledButton(
-              onPressed: () async {
-                await FirebaseFirestoreService().updateIssue(
-                  widget.issue.id,
-                  data: {
-                    'status': IssueStatus.resolved.name,
-                    'authorId': user!.uid,
-                    'authorName': user!.displayName,
-                  },
-                );
-                setState(() => widget.issue.status = IssueStatus.resolved);
-              },
+              onPressed:
+                  () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => EditIssuePage.update(issue: widget.issue),
+                    ),
+                  ),
               child: const Text('Update Issue'),
             ),
           ),

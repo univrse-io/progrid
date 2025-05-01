@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../models/issue.dart';
 import '../models/tower.dart';
-import 'create_issue_page.dart';
+import 'edit_issue_page.dart';
 import 'issue_details_page.dart';
 
 class IssuesPage extends StatefulWidget {
@@ -123,7 +123,7 @@ class _IssuesPageState extends State<IssuesPage> {
                 () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder:
-                        (context) => NewIssuePage.create(tower: widget.tower),
+                        (context) => EditIssuePage.create(tower: widget.tower),
                   ),
                 ),
             child: const Text('Create Issue'),
