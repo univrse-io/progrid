@@ -24,20 +24,18 @@ class _IssuesPageState extends State<IssuesPage> {
     final issues = Provider.of<List<Issue>>(context, listen: false);
     final keyword = searchController.text.trim().toLowerCase();
 
-    issues.sort(
-      (a, b) =>
-          (b.updatedAt ?? b.createdAt).compareTo(a.updatedAt ?? a.createdAt),
-    );
-
-    return keyword.isEmpty
-        ? issues.where((issue) => issue.id.startsWith(widget.tower.id)).toList()
-        : issues
-            .where(
-              (issue) =>
-                  issue.id.startsWith(widget.tower.id) &&
-                  issue.toString().toLowerCase().contains(keyword),
-            )
-            .toList();
+    return issues
+        .where(
+          (issue) =>
+              issue.id.startsWith(widget.tower.id) &&
+              (keyword.isEmpty ||
+                  issue.toString().toLowerCase().contains(keyword)),
+        )
+        .toList()
+      ..sort(
+        (a, b) =>
+            (b.updatedAt ?? b.createdAt).compareTo(a.updatedAt ?? a.createdAt),
+      );
   }
 
   @override
