@@ -36,26 +36,25 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Spacing.$7(),
+          const Spacing.$6(),
           Text('Reset password', style: CarbonTextStyle.heading05),
           const Spacing.$2(),
           Row(
             children: [
               const Text('Now you remember? '),
-              CarbonLink(
+              CarbonLink.inline(
                 onPressed: () => widget.pageController.jumpToPage(0),
                 label: 'Return',
-                isInline: true,
               ),
             ],
           ),
-          const Spacing.$7(),
+          const Spacing.$6(),
           const Divider(),
-          const Spacing.$5(),
-          // TODO: Validate email input.
+          const Spacing.$6(),
+          // TODO: Validate email address input.
           CarbonTextInput(controller: emailController, labelText: 'Email'),
-          const Spacing.$5(),
-          FilledButton(
+          const Spacing.$6(),
+          CarbonPrimaryButton(
             // TODO: Restructure forgot password function.
             onPressed: () async {
               final email = emailController.text.trim();
@@ -102,7 +101,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                 }
               }
             },
-            child: const Text('Confirm'),
+            label: 'Confirm',
+            icon: CarbonIcon.arrow_right,
           ),
         ],
       ),

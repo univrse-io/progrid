@@ -9,16 +9,23 @@ class CarbonLink extends StatelessWidget {
   final IconData? icon;
   final VoidCallback? onPressed;
   final TextStyle? style;
-  final bool isInline;
+  final TextDecoration? _decoration;
 
   const CarbonLink({
     required this.label,
-    this.onPressed,
     this.icon,
+    this.onPressed,
     this.style,
-    this.isInline = false,
     super.key,
-  });
+  }) : _decoration = null;
+
+  const CarbonLink.inline({
+    required this.label,
+    this.onPressed,
+    this.style,
+    super.key,
+  })  : icon = null,
+        _decoration = TextDecoration.underline;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +40,7 @@ class CarbonLink extends StatelessWidget {
             label,
             style: (style ?? CarbonTextStyle.bodyCompact01).copyWith(
               color: carbonToken?.linkPrimary,
-              decoration: isInline ? TextDecoration.underline : null,
+              decoration: _decoration,
               decorationColor: carbonToken?.linkPrimary,
             ),
           ),

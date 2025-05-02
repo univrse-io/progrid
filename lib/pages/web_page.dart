@@ -32,7 +32,7 @@ class _WebPageState extends State<WebPage> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/images/progrid_black.png', height: 35),
+            Image.asset('assets/images/progrid.png', height: 35),
             const Expanded(
               child: TabBar(
                 isScrollable: true,

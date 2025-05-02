@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// TODO: Customize UI to fit large screen like webpages.
 class EmailVerificationPage extends StatefulWidget {
   const EmailVerificationPage({super.key});
 

@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/user.dart';
-import 'firebase_firestore.dart';
+import 'firebase_firestore_service.dart';
 
 class FirebaseAuthService {
   Future<void> login(String email, String password) async {

@@ -7,7 +7,7 @@ import '../widgets/open_street_map.dart';
 import 'profile_page.dart';
 import 'towers_page.dart';
 
-// TODO: Implement map marker filter.
+// TODO: Filter tower markers by regions, surveyStatus and drawingStatus.
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 

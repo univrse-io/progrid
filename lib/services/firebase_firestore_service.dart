@@ -25,15 +25,11 @@ class FirebaseFirestoreService {
   Future<void> createIssue(
     String id, {
     required Map<String, dynamic> data,
-  }) async {
-    data.putIfAbsent('createdAt', DateTime.now);
-
-    return _issuesCollection
-        .doc(id)
-        .set(data)
-        .then((_) => log('Successfully created issue.'))
-        .catchError((e) => log('Failed to create issue.', error: e));
-  }
+  }) async => _issuesCollection
+      .doc(id)
+      .set(data..putIfAbsent('createdAt', DateTime.now))
+      .then((_) => log('Successfully created issue.'))
+      .catchError((e) => log('Failed to create issue.', error: e));
 
   Future<void> createUser(
     String id, {
@@ -47,28 +43,20 @@ class FirebaseFirestoreService {
   Future<void> updateIssue(
     String id, {
     required Map<String, dynamic> data,
-  }) async {
-    data.putIfAbsent('updatedAt', DateTime.now);
-
-    return _issuesCollection
-        .doc(id)
-        .update(data)
-        .then((_) => log('Successfully updated issue.'))
-        .catchError((e) => log('Failed to update issue.', error: e));
-  }
+  }) async => _issuesCollection
+      .doc(id)
+      .update(data..putIfAbsent('updatedAt', DateTime.now))
+      .then((_) => log('Successfully updated issue.'))
+      .catchError((e) => log('Failed to update issue.', error: e));
 
   Future<void> updateTower(
     String id, {
     required Map<String, dynamic> data,
-  }) async {
-    data.putIfAbsent('updatedAt', DateTime.now);
-
-    return _towersCollection
-        .doc(id)
-        .update(data)
-        .then((_) => log('Successfully updated tower.'))
-        .catchError((e) => log('Failed to update tower.', error: e));
-  }
+  }) async => _towersCollection
+      .doc(id)
+      .update(data..putIfAbsent('updatedAt', DateTime.now))
+      .then((_) => log('Successfully updated tower.'))
+      .catchError((e) => log('Failed to update tower.', error: e));
 
   Future<void> updateUser(
     String id, {

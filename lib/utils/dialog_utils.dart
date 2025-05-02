@@ -14,7 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/survey_status.dart';
 import '../models/tower.dart';
-import '../services/firebase_firestore.dart';
+import '../services/firebase_firestore_service.dart';
 
 sealed class DialogUtils {
   static void showLoadingDialog(BuildContext context) {

@@ -18,6 +18,7 @@ class CarbonTextInput extends StatefulWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
   final TextDirection? textDirection;
   final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onChanged;
@@ -42,6 +43,7 @@ class CarbonTextInput extends StatefulWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.keyboardType,
+    this.textInputAction,
     this.textDirection,
     this.validator,
     this.onChanged,
@@ -64,6 +66,7 @@ class CarbonTextInput extends StatefulWidget {
     this.hideUnderline = false,
     this.fillColor,
     this.keyboardType,
+    this.textInputAction,
     this.textDirection,
     this.validator,
     this.onChanged,
@@ -135,6 +138,7 @@ class _CarbonTextInputState extends State<CarbonTextInput> {
               readOnly: widget.readOnly,
               style: CarbonTextStyle.bodyCompact01,
               keyboardType: widget.keyboardType,
+              textInputAction: widget.textInputAction,
               textDirection: widget.textDirection,
               maxLines: widget.keyboardType == TextInputType.multiline
                   ? null

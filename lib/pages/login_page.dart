@@ -4,7 +4,7 @@ import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../services/firebase_auth.dart';
+import '../services/firebase_auth_service.dart';
 import 'forgot_password_page.dart';
 import 'register_page.dart';
 
@@ -32,10 +32,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    /// TODO: Insert background image.
-    appBar: AppBar(
-      title: Image.asset('assets/images/progrid_black.png', height: 35),
-    ),
+    /// TODO: Insert company related image on the background.
+    appBar: AppBar(title: Image.asset('assets/images/progrid.png', height: 35)),
     body: SizedBox(
       width: 480,
       child: PageView(
@@ -47,26 +45,26 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Spacing.$7(),
+                const Spacing.$6(),
                 Text('Welcome back!', style: CarbonTextStyle.heading05),
                 const Spacing.$2(),
                 Row(
                   children: [
                     const Text('Not a member? '),
-                    CarbonLink(
+                    CarbonLink.inline(
                       onPressed: () => pageController.jumpToPage(1),
                       label: 'Register',
-                      isInline: true,
                     ),
                   ],
                 ),
-                const Spacing.$7(),
+                const Spacing.$6(),
                 const Divider(),
-                const Spacing.$5(),
-                // TODO: Validate email input.
+                const Spacing.$6(),
+                // TODO: Validate email address input.
                 CarbonTextInput(
                   controller: emailController,
                   labelText: 'Email',
+                  textInputAction: TextInputAction.next,
                 ),
                 const Spacing.$3(),
                 CarbonTextInput(
@@ -75,16 +73,17 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: true,
                 ),
                 const Spacing.$3(),
+                // TODO: Implement remember me functionality.
                 Row(
                   children: [
-                    // Checkbox(
-                    //   value: rememberMe,
-                    //   onChanged: (val) {
-                    //     if (val != null) setState(() => rememberMe = val);
-                    //   },
-                    // ),
-                    // const Spacing.$2(),
-                    // const Text('Remember Me'),
+                    Checkbox(
+                      value: rememberMe,
+                      visualDensity: VisualDensity.compact,
+                      onChanged: (val) {
+                        if (val != null) setState(() => rememberMe = val);
+                      },
+                    ),
+                    const Text('Remember Me'),
                     const Spacer(),
                     CarbonLink(
                       onPressed: () => pageController.jumpToPage(2),
@@ -92,8 +91,8 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                const Spacing.$5(),
-                FilledButton(
+                const Spacing.$6(),
+                CarbonPrimaryButton(
                   onPressed:
                       () => FirebaseAuthService()
                           .login(
@@ -112,7 +111,8 @@ class _LoginPageState extends State<LoginPage> {
                             }
                             passwordController.clear();
                           }),
-                  child: const Text('Login'),
+                  label: 'Login',
+                  icon: CarbonIcon.arrow_right,
                 ),
               ],
             ),

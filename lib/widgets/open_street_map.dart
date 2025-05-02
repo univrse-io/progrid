@@ -22,7 +22,7 @@ class OpenStreetMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Get the position of the current user.
+    // TODO: Set the current user's position as the initial position.
     const defaultPosition = LatLng(3.140493, 101.700068);
     final towers = Provider.of<List<Tower>>(context);
     final mapController = controller ?? MapController();
@@ -41,6 +41,7 @@ class OpenStreetMap extends StatelessWidget {
       ),
       children: [
         TileLayer(
+          // TODO: Set map styles in the settings page.
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           // TODO: Set retina mode in the settings page.
           // retinaMode: RetinaMode.isHighDensity(context),

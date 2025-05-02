@@ -21,7 +21,7 @@ import '../models/issue.dart';
 import '../models/issue_status.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
-import '../services/firebase_firestore.dart';
+import '../services/firebase_firestore_service.dart';
 import '../utils/dialog_utils.dart';
 import 'issues_page.dart';
 

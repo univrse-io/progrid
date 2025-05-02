@@ -13,7 +13,7 @@ import 'pages/email_verification_page.dart';
 import 'pages/home_page.dart';
 import 'pages/login_page.dart';
 import 'pages/web_page.dart';
-import 'services/firebase_firestore.dart';
+import 'services/firebase_firestore_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,6 +58,7 @@ class Progrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
     title: 'Progrid',
+    // TODO: Set themes in the settings page.
     theme: CarbonTheme.white,
     home: Consumer<User?>(
       builder:

@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import '../models/issue.dart';
 import '../models/issue_status.dart';
 import '../models/tower.dart';
-import '../services/firebase_firestore.dart';
+import '../services/firebase_firestore_service.dart';
 
 class EditIssuePage extends StatefulWidget {
   final Tower? tower;
