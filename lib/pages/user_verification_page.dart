@@ -1,5 +1,9 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UserVerificationPage extends StatefulWidget {
   const UserVerificationPage({super.key});
@@ -9,47 +13,19 @@ class UserVerificationPage extends StatefulWidget {
 }
 
 class _UserVerificationPageState extends State<UserVerificationPage> {
-  late User _user;
-  bool _isResending = false;
+  late final user = Provider.of<User?>(context, listen: false);
+  late Timer timer;
 
   @override
   void initState() {
+    timer = Timer.periodic(const Duration(seconds: 5), (_) => user?.reload());
     super.initState();
-    _user = FirebaseAuth.instance.currentUser!;
-    _checkIfVerifiedPeriodically();
   }
 
-  void _checkIfVerifiedPeriodically() {
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 5));
-      await _user.reload();
-      if (_user.emailVerified) return false;
-      return true;
-    });
-  }
-
-  Future<void> _resendVerificationEmail() async {
-    setState(() {
-      _isResending = true;
-    });
-    try {
-      await _user.sendEmailVerification();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Verification email has been sent!')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error sending email: $e')));
-      }
-    } finally {
-      setState(() {
-        _isResending = false;
-      });
-    }
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -65,18 +41,30 @@ class _UserVerificationPageState extends State<UserVerificationPage> {
             style: TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 10),
-          if (_isResending)
-            const CircularProgressIndicator()
-          else
-            FilledButton(
-              onPressed: _resendVerificationEmail,
-              child: const Text('Resend Verification Email'),
-            ),
-          const SizedBox(height: 0),
-          TextButton(
+          FilledButton(
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
+              try {
+                await user?.sendEmailVerification();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Verification email has been sent!'),
+                    ),
+                  );
+                }
+              } on FirebaseAuthException catch (e) {
+                log('Failed to resend verification email. $e', error: e);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Oops, sorry! ${e.message}')),
+                  );
+                }
+              }
             },
+            child: const Text('Resend Verification Email'),
+          ),
+          TextButton(
+            onPressed: FirebaseAuth.instance.signOut,
             child: const Text(
               'Back to Log In',
               style: TextStyle(fontStyle: FontStyle.italic),

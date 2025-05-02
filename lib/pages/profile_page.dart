@@ -66,7 +66,7 @@ class ProfilePage extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(CarbonIcon.user_role),
-                title: Text(context.watch<bool>() ? 'Admin' : 'N/A'),
+                title: Text(context.watch<bool>() ? 'Admin' : 'Engineer'),
               ),
               const Spacing.$9(),
               FilledButton(

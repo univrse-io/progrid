@@ -108,8 +108,7 @@ class _RegisterPageState extends State<RegisterPage>
                           ),
                         );
                       }
-                    })
-                    .then((_) => widget.pageController.jumpTo(0));
+                    });
               },
               child: const Text('Register'),
             ),
