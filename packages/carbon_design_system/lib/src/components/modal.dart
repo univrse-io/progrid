@@ -1,8 +1,13 @@
 part of 'index.dart';
 
 class CarbonModal extends StatelessWidget {
-  const CarbonModal(
-      {super.key, this.label, this.title, this.body, this.actions});
+  const CarbonModal({
+    this.label,
+    this.title,
+    this.body,
+    this.actions,
+    super.key,
+  });
 
   final Widget? label;
   final Widget? title;
@@ -13,40 +18,51 @@ class CarbonModal extends StatelessWidget {
   Widget build(BuildContext context) => AlertDialog(
         titlePadding: EdgeInsets.zero,
         contentPadding: EdgeInsets.zero,
-        title: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (label != null)
                       DefaultTextStyle(
-                          style: CarbonTextStyle.body01, child: label!),
+                        style: CarbonTextStyle.body01,
+                        child: label!,
+                      ),
                     if (title != null)
                       DefaultTextStyle(
-                          style: CarbonTextStyle.heading03, child: title!),
-                  ]),
+                        style: CarbonTextStyle.heading03,
+                        child: title!,
+                      ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          IconButton(
+            IconButton(
               onPressed: Navigator.of(context).pop,
-              icon: const Icon(CarbonIcon.close)),
-        ]),
+              icon: const Icon(CarbonIcon.close),
+            ),
+          ],
+        ),
         content: DefaultTextStyle(
           style: CarbonTextStyle.body01,
           child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (body != null)
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: body!),
-                const Spacing.$9(),
-                Row(children: [if (actions != null) ...actions!]),
-              ]),
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (body != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: body!,
+                ),
+              const Spacing.$9(),
+              Row(children: [if (actions != null) ...actions!]),
+            ],
+          ),
         ),
       );
 }

@@ -6,12 +6,13 @@ class CarbonCheckbox extends StatelessWidget {
   final String? label;
   final bool tristate;
 
-  const CarbonCheckbox(
-      {super.key,
-      required this.value,
-      required this.onChanged,
-      this.label,
-      this.tristate = false});
+  const CarbonCheckbox({
+    required this.value,
+    required this.onChanged,
+    this.label,
+    this.tristate = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) => GestureDetector(
@@ -27,17 +28,21 @@ class CarbonCheckbox extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Transform.scale(
-              scale: 0.85,
-              child: Checkbox(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Transform.scale(
+                scale: 0.85,
+                child: Checkbox(
                   value: value,
                   onChanged: onChanged,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap),
-            ),
-            if (label != null)
-              Text('$label', style: CarbonTextStyle.bodyCompact01)
-          ]),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+              if (label != null)
+                Text('$label', style: CarbonTextStyle.bodyCompact01),
+            ],
+          ),
         ),
       );
 }

@@ -4,7 +4,7 @@ class Spacing extends StatelessWidget {
   final double rem;
   final Color? color;
 
-  const Spacing({super.key, required this.rem, this.color});
+  const Spacing({required this.rem, super.key, this.color});
   const Spacing.$1({super.key, this.color}) : rem = 0.125;
   const Spacing.$2({super.key, this.color}) : rem = 0.25;
   const Spacing.$3({super.key, this.color}) : rem = 0.5;
@@ -23,5 +23,7 @@ class Spacing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox.square(
-      dimension: px, child: ColoredBox(color: color ?? Colors.transparent));
+        dimension: px,
+        child: ColoredBox(color: color ?? Colors.transparent),
+      );
 }

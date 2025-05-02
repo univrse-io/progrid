@@ -11,8 +11,8 @@ import 'models/issue.dart';
 import 'models/tower.dart';
 import 'pages/authentication/login_page.dart';
 import 'pages/dashboard/dashboard_page.dart';
+import 'pages/email_verification_page.dart';
 import 'pages/map_page.dart';
-import 'pages/user_verification_page.dart';
 import 'services/firebase_firestore.dart';
 
 void main() async {
@@ -65,7 +65,7 @@ class Progrid extends StatelessWidget {
               user == null
                   ? const LoginPage()
                   : !user.emailVerified
-                  ? const UserVerificationPage()
+                  ? const EmailVerificationPage()
                   : kIsWeb
                   ? const DashboardPage()
                   : const MapPage(),

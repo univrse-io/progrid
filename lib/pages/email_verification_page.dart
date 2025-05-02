@@ -1,18 +1,19 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class UserVerificationPage extends StatefulWidget {
-  const UserVerificationPage({super.key});
+class EmailVerificationPage extends StatefulWidget {
+  const EmailVerificationPage({super.key});
 
   @override
-  State<UserVerificationPage> createState() => _UserVerificationPageState();
+  State<EmailVerificationPage> createState() => _EmailVerificationPageState();
 }
 
-class _UserVerificationPageState extends State<UserVerificationPage> {
+class _EmailVerificationPageState extends State<EmailVerificationPage> {
   late final user = Provider.of<User?>(context, listen: false);
   late Timer timer;
 
@@ -30,18 +31,18 @@ class _UserVerificationPageState extends State<UserVerificationPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
-      minimum: const EdgeInsets.symmetric(horizontal: 25),
+    body: Padding(
+      padding: const EdgeInsets.all(24),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const Spacer(),
           const Text(
-            'We have sent a verification email to your registered email address. Please verify your email to proceed.',
+            'We have sent a verification email to your registered email address. '
+            'Please verify your email to proceed.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16),
           ),
-          const SizedBox(height: 10),
-          FilledButton(
+          const Spacer(),
+          CarbonPrimaryButton(
             onPressed: () async {
               try {
                 await user?.sendEmailVerification();
@@ -61,14 +62,12 @@ class _UserVerificationPageState extends State<UserVerificationPage> {
                 }
               }
             },
-            child: const Text('Resend Verification Email'),
+            label: 'Resend verification email',
           ),
-          TextButton(
+          const Spacing.$5(),
+          CarbonSecondaryButton(
             onPressed: FirebaseAuth.instance.signOut,
-            child: const Text(
-              'Back to Log In',
-              style: TextStyle(fontStyle: FontStyle.italic),
-            ),
+            label: 'Back to login',
           ),
         ],
       ),

@@ -47,27 +47,29 @@ class CarbonTextInput extends StatefulWidget {
     this.onChanged,
     this.onFieldSubmitted,
     this.textInputFormatters,
-  }) : assert(maxCharacters == null || maxWords == null,
-            'Cannot limit the number of characters and words simultaneously.');
+  }) : assert(
+          maxCharacters == null || maxWords == null,
+          'Cannot limit the number of characters and words simultaneously.',
+        );
 
-  CarbonTextInput.search(
-      {super.key,
-      required this.controller,
-      this.focusNode,
-      this.helperText,
-      this.placeholderText,
-      this.maxCharacters,
-      this.maxWords,
-      this.autoFocus = false,
-      this.hideUnderline = false,
-      this.fillColor,
-      this.keyboardType,
-      this.textDirection,
-      this.validator,
-      this.onChanged,
-      this.onFieldSubmitted,
-      this.textInputFormatters})
-      : labelText = null,
+  CarbonTextInput.search({
+    required this.controller,
+    super.key,
+    this.focusNode,
+    this.helperText,
+    this.placeholderText,
+    this.maxCharacters,
+    this.maxWords,
+    this.autoFocus = false,
+    this.hideUnderline = false,
+    this.fillColor,
+    this.keyboardType,
+    this.textDirection,
+    this.validator,
+    this.onChanged,
+    this.onFieldSubmitted,
+    this.textInputFormatters,
+  })  : labelText = null,
         maxLines = 1,
         obscureText = false,
         readOnly = false,
@@ -84,8 +86,9 @@ class CarbonTextInput extends StatefulWidget {
         builder: (context, snapshot, child) =>
             Visibility(visible: snapshot.text.isNotEmpty, child: child!),
         child: IconButton(
-            onPressed: controller.clear,
-            icon: const Icon(CarbonIcon.close, size: kIconSize)),
+          onPressed: controller.clear,
+          icon: const Icon(CarbonIcon.close, size: kIconSize),
+        ),
       );
 
   static Widget _searchButton() =>
@@ -97,28 +100,34 @@ class CarbonTextInput extends StatefulWidget {
 
 class _CarbonTextInputState extends State<CarbonTextInput> {
   late final carbonToken = Theme.of(context).extension<CarbonToken>();
-  late var isVisible = !widget.obscureText;
+  late bool isVisible = !widget.obscureText;
   String? errorText;
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          if (widget.labelText != null) ...[
-            Row(children: [
-              Text('${widget.labelText}', style: CarbonTextStyle.label01),
-              const Spacer(),
-              if (widget.maxCharacters != null)
-                Text(
-                    '${widget.controller?.text.length}/${widget.maxCharacters}',
-                    style: CarbonTextStyle.label01),
-              if (widget.maxWords != null)
-                Text(
-                    '${RegExp(r'\b\w+\b').allMatches(widget.controller!.text).length}/${widget.maxWords}',
-                    style: CarbonTextStyle.label01),
-            ]),
-            const Spacing.$3(),
-          ],
-          TextFormField(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.labelText != null) ...[
+              Row(
+                children: [
+                  Text('${widget.labelText}', style: CarbonTextStyle.label01),
+                  const Spacer(),
+                  if (widget.maxCharacters != null)
+                    Text(
+                      '${widget.controller?.text.length}/${widget.maxCharacters}',
+                      style: CarbonTextStyle.label01,
+                    ),
+                  if (widget.maxWords != null)
+                    Text(
+                      '${RegExp(r'\b\w+\b').allMatches(widget.controller!.text).length}/${widget.maxWords}',
+                      style: CarbonTextStyle.label01,
+                    ),
+                ],
+              ),
+              const Spacing.$3(),
+            ],
+            TextFormField(
               controller: widget.controller,
               focusNode: widget.focusNode,
               autofocus: widget.autoFocus,
@@ -142,31 +151,36 @@ class _CarbonTextInputState extends State<CarbonTextInput> {
                       ? TextAlignVertical.center
                       : null,
               decoration: InputDecoration(
-                  fillColor:
-                      widget.readOnly ? Colors.transparent : widget.fillColor,
-                  prefixIcon: widget.prefixIcon,
-                  suffixIcon: widget.suffixIcon ??
-                      (widget.obscureText
-                          ? IconButton(
-                              tooltip:
-                                  isVisible ? 'Hide Password' : 'Show Password',
-                              onPressed: () =>
-                                  setState(() => isVisible = !isVisible),
-                              icon: Icon(isVisible
-                                  ? CarbonIcon.view_off
-                                  : CarbonIcon.view))
-                          : errorText != null
-                              ? Icon(CarbonIcon.warning_filled,
-                                  color: carbonToken?.supportError)
-                              : null),
-                  hintText: widget.placeholderText,
-                  enabledBorder: errorText != null
-                      ? Theme.of(context).inputDecorationTheme.errorBorder
-                      : widget.hideUnderline
-                          ? const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.zero)
-                          : null),
+                fillColor:
+                    widget.readOnly ? Colors.transparent : widget.fillColor,
+                prefixIcon: widget.prefixIcon,
+                suffixIcon: widget.suffixIcon ??
+                    (widget.obscureText
+                        ? IconButton(
+                            tooltip:
+                                isVisible ? 'Hide Password' : 'Show Password',
+                            onPressed: () =>
+                                setState(() => isVisible = !isVisible),
+                            icon: Icon(
+                              isVisible ? CarbonIcon.view_off : CarbonIcon.view,
+                            ),
+                          )
+                        : errorText != null
+                            ? Icon(
+                                CarbonIcon.warning_filled,
+                                color: carbonToken?.supportError,
+                              )
+                            : null),
+                hintText: widget.placeholderText,
+                enabledBorder: errorText != null
+                    ? Theme.of(context).inputDecorationTheme.errorBorder
+                    : widget.hideUnderline
+                        ? const OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.zero,
+                          )
+                        : null,
+              ),
               onChanged: (input) {
                 setState(() => errorText = widget.validator?.call(input));
                 widget.onChanged?.call(input);
@@ -174,16 +188,21 @@ class _CarbonTextInputState extends State<CarbonTextInput> {
               onTapOutside: (_) =>
                   (widget.focusNode ?? FocusManager.instance.primaryFocus)
                       ?.unfocus(),
-              onFieldSubmitted: widget.onFieldSubmitted),
-          if (errorText != null || widget.helperText != null) ...[
-            const Spacing.$2(),
-            Text('${errorText ?? widget.helperText}',
+              onFieldSubmitted: widget.onFieldSubmitted,
+            ),
+            if (errorText != null || widget.helperText != null) ...[
+              const Spacing.$2(),
+              Text(
+                '${errorText ?? widget.helperText}',
                 style: CarbonTextStyle.helperText01.copyWith(
-                    color: errorText != null
-                        ? carbonToken?.textError
-                        : carbonToken?.textHelper)),
+                  color: errorText != null
+                      ? carbonToken?.textError
+                      : carbonToken?.textHelper,
+                ),
+              ),
+            ],
           ],
-        ]),
+        ),
       );
 }
 
@@ -195,7 +214,9 @@ class WordLimitingTextInputFormatter extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(
-          TextEditingValue oldValue, TextEditingValue newValue) =>
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) =>
       maxWord == null
           ? newValue
           : RegExp(r'\b\w+\b').allMatches(newValue.text).length > maxWord!

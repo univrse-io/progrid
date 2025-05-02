@@ -1,8 +1,11 @@
-import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-part 'button.dart';
+import '../../carbon_design_system.dart';
+
+part 'buttons/danger_primary_button.dart';
+part 'buttons/primary_button.dart';
+part 'buttons/secondary_button.dart';
 part 'checkbox.dart';
 part 'dropdown.dart';
 part 'link.dart';
