@@ -8,14 +8,14 @@ import 'profile_page.dart';
 import 'towers_page.dart';
 
 // TODO: Implement map marker filter.
-class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MapPage> createState() => _MapPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _HomePageState extends State<HomePage> {
   final mapController = MapController();
 
   @override

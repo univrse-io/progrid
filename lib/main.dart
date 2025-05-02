@@ -9,10 +9,10 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'models/issue.dart';
 import 'models/tower.dart';
-import 'pages/authentication/login_page.dart';
-import 'pages/dashboard/dashboard_page.dart';
 import 'pages/email_verification_page.dart';
-import 'pages/map_page.dart';
+import 'pages/home_page.dart';
+import 'pages/login_page.dart';
+import 'pages/web_page.dart';
 import 'services/firebase_firestore.dart';
 
 void main() async {
@@ -67,8 +67,8 @@ class Progrid extends StatelessWidget {
                   : !user.emailVerified
                   ? const EmailVerificationPage()
                   : kIsWeb
-                  ? const DashboardPage()
-                  : const MapPage(),
+                  ? const WebPage()
+                  : const HomePage(),
     ),
   );
 }

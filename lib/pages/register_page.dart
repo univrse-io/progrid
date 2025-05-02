@@ -4,7 +4,7 @@ import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../services/firebase_auth.dart';
+import '../services/firebase_auth.dart';
 
 class RegisterPage extends StatefulWidget {
   final PageController pageController;

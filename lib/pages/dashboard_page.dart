@@ -5,28 +5,28 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
-import '../../models/drawing_status.dart';
-import '../../models/issue.dart';
-import '../../models/issue_status.dart';
-import '../../models/region.dart';
-import '../../models/survey_status.dart';
-import '../../models/tower.dart';
-import '../../utils/dialog_utils.dart';
-import '../../widgets/open_street_map.dart';
+import '../models/drawing_status.dart';
+import '../models/issue.dart';
+import '../models/issue_status.dart';
+import '../models/region.dart';
+import '../models/survey_status.dart';
+import '../models/tower.dart';
+import '../utils/dialog_utils.dart';
+import '../widgets/open_street_map.dart';
 
 final screenshotController1 = ScreenshotController();
 final screenshotController2 = ScreenshotController();
 final screenshotController3 = ScreenshotController();
 final screenshotController4 = ScreenshotController();
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _HomePageState extends State<HomePage>
+class _DashboardPageState extends State<DashboardPage>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;

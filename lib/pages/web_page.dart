@@ -2,18 +2,18 @@ import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../profile_page.dart';
-import 'home_page.dart';
+import 'dashboard_page.dart';
+import 'profile_page.dart';
 import 'site_progress_page.dart';
 
-class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+class WebPage extends StatefulWidget {
+  const WebPage({super.key});
 
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  State<WebPage> createState() => _WebPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _WebPageState extends State<WebPage> {
   late final carbonToken = Theme.of(context).extension<CarbonToken>();
 
   Stream<DateTime> currentUpdatedTime() async* {
@@ -37,7 +37,7 @@ class _DashboardPageState extends State<DashboardPage> {
               child: TabBar(
                 isScrollable: true,
                 tabs: [
-                  Tab(icon: Text('Home')),
+                  Tab(icon: Text('Dashboard')),
                   Tab(icon: Text('Site Progress')),
                 ],
               ),
@@ -79,7 +79,7 @@ class _DashboardPageState extends State<DashboardPage> {
           const Spacing.$2(),
         ],
       ),
-      body: const TabBarView(children: [HomePage(), SiteProgressPage()]),
+      body: const TabBarView(children: [DashboardPage(), SiteProgressPage()]),
     ),
   );
 }
