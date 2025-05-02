@@ -36,11 +36,8 @@ class TowerDetailsPage extends StatefulWidget {
 
 class _TowerDetailsPageState extends State<TowerDetailsPage> {
   late final noteController = TextEditingController(text: widget.tower.notes);
-  late final issues = Provider.of<List<Issue>>(context);
-
-  Timer? _debounceTimer;
-  final int _maxNotesLength = 500;
-  final _picker = ImagePicker();
+  late final issues = Provider.of<List<Issue>>(context, listen: false);
+  late final isAdmin = Provider.of<bool>(context, listen: false);
 
   @override
   void dispose() {
@@ -73,10 +70,10 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
           Text(widget.tower.description, textAlign: TextAlign.center),
           const Spacing.$6(),
           const Divider(),
-          const Spacing.$3(),
+          const Spacing.$6(),
           Text('Address', style: CarbonTextStyle.headingCompact01),
           const Spacing.$3(),
-          Text(widget.tower.address),
+          SelectableText(widget.tower.address),
           const Spacing.$3(),
           Text('Region', style: CarbonTextStyle.headingCompact01),
           const Spacing.$3(),
@@ -107,162 +104,107 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
             icon: CarbonIcon.arrow_up_right,
           ),
           const Spacing.$3(),
-          Text('Pictures', style: CarbonTextStyle.headingCompact01),
+          Text('Survey Status', style: CarbonTextStyle.headingCompact01),
           const Spacing.$3(),
-          Container(
-            height: 130,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Theme.of(context).colorScheme.onInverseSurface,
+          Text(
+            widget.tower.surveyStatus.toString(),
+            style: TextStyle(color: widget.tower.surveyStatus.color),
+          ),
+          const Spacing.$3(),
+          if (widget.tower.drawingStatus != null) ...[
+            Text('Drawing Status', style: CarbonTextStyle.headingCompact01),
+            const Spacing.$3(),
+            Text(
+              widget.tower.drawingStatus.toString(),
+              style: TextStyle(color: widget.tower.drawingStatus?.color),
             ),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: widget.tower.images.length,
-              itemBuilder:
-                  (context, index) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 5,
-                      horizontal: 5,
-                    ),
-                    child: Stack(
-                      children: [
-                        GestureDetector(
-                          onTap:
-                              () => DialogUtils.showImageDialog(
-                                context,
-                                widget.tower.images[index],
-                                widget.tower.id,
+            const Spacing.$3(),
+          ],
+          if (widget.tower.images.isNotEmpty) ...[
+            Text('Photos', style: CarbonTextStyle.headingCompact01),
+            const Spacing.$3(),
+            SizedBox(
+              height: 120,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                separatorBuilder: (_, __) => const Spacing.$2(),
+                itemCount: widget.tower.images.length,
+                itemBuilder:
+                    (context, index) => GestureDetector(
+                      onTap: () {
+                        final imageUrl = widget.tower.images[index];
+
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => Container(
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(24),
+                                child: Stack(
+                                  children: [
+                                    Image.network(imageUrl),
+                                    Positioned(
+                                      bottom: 5,
+                                      left: 5,
+                                      // TODO: Implement download image functionality.
+                                      child: FloatingActionButton.small(
+                                        tooltip: 'Download',
+                                        elevation: 0,
+                                        onPressed: () {},
+                                        child: const Icon(CarbonIcon.download),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxHeight: 400),
-                              child: Image.network(
-                                widget.tower.images[index],
-                                fit: BoxFit.cover,
-                                height: 120,
+                        );
+                      },
+                      child: Image.network(
+                        widget.tower.images[index],
+                        fit: BoxFit.cover,
+                        width: 120,
+                        errorBuilder:
+                            (_, __, ___) => IgnorePointer(
+                              child: Container(
                                 width: 120,
-                                errorBuilder:
-                                    (context, error, stackTrace) =>
-                                        const ColoredBox(
-                                          color: Colors.grey,
-                                          child: Icon(
-                                            Icons.error,
-                                            color: Colors.red,
-                                          ),
-                                        ),
+                                color: Colors.black12,
+                                padding: const EdgeInsets.all(8),
+                                child: const Text('Image not available.'),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-            ),
-          ),
-          const Spacing.$3(),
-          Text('Notes', style: CarbonTextStyle.headingCompact01),
-          const Spacing.$3(),
-          SizedBox(
-            height: 120, // control text box height here
-            child: TextField(
-              controller: noteController,
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              expands: true,
-              textAlignVertical: TextAlignVertical.top,
-              maxLength: _maxNotesLength,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 14,
-              ),
-              buildCounter:
-                  (
-                    context, {
-                    required currentLength,
-                    required isFocused,
-                    maxLength,
-                  }) => Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      '$currentLength/$maxLength',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-              decoration: InputDecoration(
-                hintText: 'Enter notes here...',
-                alignLabelWithHint: true,
-                hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
-                  fontSize: 14,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 7,
-                ),
               ),
-              onChanged: (text) async {
-                // cancel any previous debounce timer
-                if (_debounceTimer?.isActive ?? false) {
-                  _debounceTimer?.cancel();
-                }
-
-                _debounceTimer = Timer(const Duration(milliseconds: 2000), () {
-                  // update notes every one second of changes
-                  FirebaseFirestoreService().updateTower(
-                    widget.tower.id,
-                    data: {'notes': text},
-                  );
-                });
-              },
             ),
-          ),
-          const SizedBox(height: 15),
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton(
-                  onPressed:
-                      widget.tower.images.isNotEmpty
-                          ? null
-                          : () async {
-                            await _signIn();
-                          },
-                  style: FilledButton.styleFrom(
-                    textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                    minimumSize: const Size.fromHeight(45),
-                  ),
-                  child: const Text('Sign-In'),
-                ),
-              ),
-              const SizedBox(width: 2),
-              Expanded(
-                child: FilledButton(
-                  // added condition to check if there are any unresolved issues
-                  onPressed:
-                      widget.tower.images.length != 1 ||
-                              issues.any(
-                                (issue) =>
-                                    issue.status == IssueStatus.unresolved,
-                              )
-                          ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
-                          : () async {
-                            await _signOut();
-                          },
-                  style: FilledButton.styleFrom(
-                    textStyle: const TextStyle(fontWeight: FontWeight.w600),
-                    minimumSize: const Size.fromHeight(45),
-                  ),
-                  child: const Text('Sign-Out'),
-                ),
-              ),
-            ],
-          ),
-          const Spacing.$2(),
+            const Spacing.$3(),
+          ],
+          if (widget.tower.notes != null) ...[
+            Text('Notes', style: CarbonTextStyle.headingCompact01),
+            const Spacing.$3(),
+            SelectableText(widget.tower.notes!),
+            const Spacing.$3(),
+          ],
+          const Spacing.$6(),
+          if (isAdmin)
+            FilledButton(onPressed: () {}, child: const Text('Update Tower'))
+          else if (widget.tower.surveyStatus == SurveyStatus.unsurveyed)
+            FilledButton(onPressed: _signIn, child: const Text('Sign In'))
+          else if (widget.tower.surveyStatus == SurveyStatus.inprogress)
+            FilledButton(
+              // added condition to check if there are any unresolved issues
+              onPressed:
+                  widget.tower.images.length != 1 ||
+                          issues.any(
+                            (issue) => issue.status == IssueStatus.unresolved,
+                          )
+                      ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
+                      : () async {
+                        await _signOut();
+                      },
+              child: const Text('Sign Out'),
+            ),
+          if (isAdmin || widget.tower.surveyStatus != SurveyStatus.surveyed)
+            const Spacing.$5(),
           FilledButton(
             onPressed:
                 () => Navigator.of(context).push(
@@ -272,7 +214,6 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                 ),
             child: const Text('View Issues'),
           ),
-          const Spacing.$5(),
         ],
       ),
     ),
@@ -289,7 +230,6 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
         return;
       }
 
-      // do image upload stuff here
       unawaited(
         showDialog(
           context: context,
@@ -441,7 +381,8 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
   }
 
   Future<void> _pickImage(ImageSource source, bool isSignOut) async {
-    final pickedFile = await _picker.pickImage(source: source);
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
     if (pickedFile == null) return;
 
     if (mounted) Navigator.pop(context);
