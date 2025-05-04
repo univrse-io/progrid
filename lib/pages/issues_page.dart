@@ -118,7 +118,7 @@ class _IssuesPageState extends State<IssuesPage> {
         Container(
           padding: const EdgeInsets.all(24),
           color: Theme.of(context).scaffoldBackgroundColor,
-          child: FilledButton(
+          child: CarbonPrimaryButton(
             onPressed:
                 () => Navigator.of(context).push(
                   MaterialPageRoute(
@@ -126,7 +126,8 @@ class _IssuesPageState extends State<IssuesPage> {
                         (context) => EditIssuePage.create(tower: widget.tower),
                   ),
                 ),
-            child: const Text('Create Issue'),
+            label: 'Create Issue',
+            icon: CarbonIcon.document_add,
           ),
         ),
       ],

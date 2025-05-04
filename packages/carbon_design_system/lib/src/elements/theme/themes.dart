@@ -73,7 +73,8 @@ sealed class CarbonTheme {
       contentTextStyle: CarbonTextStyle.body01.copyWith(
         color: token.textPrimary,
       ),
-      shape: Border.all(),
+      shape: const RoundedRectangleBorder(),
+      actionsPadding: EdgeInsets.zero,
     ),
     drawerTheme: DrawerThemeData(
       backgroundColor: token.layer01,
@@ -92,7 +93,6 @@ sealed class CarbonTheme {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         minimumSize: const Size.fromHeight(32),
         fixedSize: const Size.fromHeight(48),
         maximumSize: const Size.fromHeight(80),
@@ -118,7 +118,7 @@ sealed class CarbonTheme {
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       filled: true,
       fillColor: token.field01,
       enabledBorder: UnderlineInputBorder(

@@ -47,8 +47,8 @@ class CarbonPrimaryButton extends StatelessWidget {
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (label != null) Text(label!, overflow: TextOverflow.ellipsis),
-        const Spacer(),
+        if (label != null)
+          Expanded(child: Text(label!, overflow: TextOverflow.ellipsis)),
         Icon(icon),
       ],
     ),

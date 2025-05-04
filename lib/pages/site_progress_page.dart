@@ -977,13 +977,14 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                       const SizedBox(height: 20),
                       MenuAnchor(
                         builder:
-                            (context, controller, child) => FilledButton(
+                            (context, controller, child) => CarbonPrimaryButton(
                               onPressed:
                                   () =>
                                       controller.isOpen
                                           ? controller.close()
                                           : controller.open(),
-                              child: const Text('Download Report'),
+                              label: 'Download Report',
+                              icon: CarbonIcon.download,
                             ),
                         menuChildren: [
                           MenuItemButton(

@@ -27,6 +27,7 @@ import '../models/issue_status.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
 import '../services/firebase_firestore_service.dart';
+import 'edit_tower_page.dart';
 import 'issues_page.dart';
 
 class TowerDetailsPage extends StatefulWidget {
@@ -40,6 +41,7 @@ class TowerDetailsPage extends StatefulWidget {
 
 class _TowerDetailsPageState extends State<TowerDetailsPage> {
   late final noteController = TextEditingController(text: widget.tower.notes);
+  late final carbonToken = Theme.of(context).extension<CarbonToken>();
   late final issues = Provider.of<List<Issue>>(context, listen: false);
   late final isAdmin = Provider.of<bool>(context, listen: false);
 
@@ -254,7 +256,7 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                             (_, __, ___) => IgnorePointer(
                               child: Container(
                                 width: 120,
-                                color: Colors.black12,
+                                color: carbonToken?.field01,
                                 padding: const EdgeInsets.all(8),
                                 child: const Text('Image not available.'),
                               ),
@@ -273,11 +275,29 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
           ],
           const Spacing.$6(),
           if (isAdmin)
-            FilledButton(onPressed: () {}, child: const Text('Update Tower'))
+            CarbonPrimaryButton(
+              onPressed:
+                  () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => EditTowerPage(widget.tower),
+                    ),
+                  ),
+              label: 'Update Tower',
+              icon: CarbonIcon.edit,
+            )
           else if (widget.tower.surveyStatus == SurveyStatus.unsurveyed)
-            FilledButton(onPressed: _signIn, child: const Text('Sign In'))
+            CarbonPrimaryButton(
+              onPressed:
+                  () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => EditTowerPage(widget.tower),
+                    ),
+                  ),
+              label: 'Sign In',
+              icon: CarbonIcon.login,
+            )
           else if (widget.tower.surveyStatus == SurveyStatus.inprogress)
-            FilledButton(
+            CarbonPrimaryButton(
               // added condition to check if there are any unresolved issues
               onPressed:
                   widget.tower.images.length != 1 ||
@@ -288,18 +308,20 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                       : () async {
                         await _signOut();
                       },
-              child: const Text('Sign Out'),
+              label: 'Sign Out',
+              icon: CarbonIcon.logout,
             ),
           if (isAdmin || widget.tower.surveyStatus != SurveyStatus.surveyed)
             const Spacing.$5(),
-          FilledButton(
+          CarbonSecondaryButton(
             onPressed:
                 () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => IssuesPage(tower: widget.tower),
                   ),
                 ),
-            child: const Text('View Issues'),
+            label: 'View Issues',
+            icon: CarbonIcon.document_multiple_01,
           ),
         ],
       ),
@@ -351,12 +373,6 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                           // Navigator.pop(context);
                           _pickImage(ImageSource.camera, false);
                         },
-                        style: FilledButton.styleFrom(
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                          minimumSize: const Size.fromHeight(120),
-                        ),
                         child: const Icon(Icons.camera_alt_outlined, size: 30),
                       ),
                     ),
@@ -367,12 +383,6 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                           // Navigator.pop(context);
                           _pickImage(ImageSource.gallery, false);
                         },
-                        style: FilledButton.styleFrom(
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                          minimumSize: const Size.fromHeight(120),
-                        ),
                         child: const Icon(Icons.file_upload_outlined, size: 30),
                       ),
                     ),
@@ -432,12 +442,6 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                           // Navigator.pop(context);
                           _pickImage(ImageSource.camera, true);
                         },
-                        style: FilledButton.styleFrom(
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                          minimumSize: const Size.fromHeight(120),
-                        ),
                         child: const Icon(Icons.camera_alt_outlined, size: 30),
                       ),
                     ),
@@ -448,12 +452,6 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                           // Navigator.pop(context);
                           _pickImage(ImageSource.gallery, true);
                         },
-                        style: FilledButton.styleFrom(
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                          minimumSize: const Size.fromHeight(120),
-                        ),
                         child: const Icon(Icons.file_upload_outlined, size: 30),
                       ),
                     ),

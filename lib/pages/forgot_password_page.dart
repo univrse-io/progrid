@@ -102,7 +102,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
               }
             },
             label: 'Confirm',
-            icon: CarbonIcon.arrow_right,
           ),
         ],
       ),

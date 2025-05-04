@@ -37,10 +37,10 @@ class _EditIssuePageState extends State<EditIssuePage> {
   late final selectedTags = widget.issue?.tags ?? <String>[];
   late final descriptionController =
       TextEditingController()..addListener(() => setState(() {}));
-  late IssueStatus selectedStatus =
-      widget.issue?.status ?? IssueStatus.unresolved;
   late final issues = Provider.of<List<Issue>>(context, listen: false);
   late final user = Provider.of<User?>(context, listen: false);
+  late IssueStatus selectedStatus =
+      widget.issue?.status ?? IssueStatus.unresolved;
 
   @override
   void dispose() {
@@ -100,6 +100,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
                   CarbonDropdown<IssueStatus>(
                     initialSelection: selectedStatus,
                     inputDecorationTheme: InputDecorationTheme(
+                      isCollapsed: true,
                       filled: true,
                       fillColor: selectedStatus.color.withValues(alpha: 0.1),
                     ),
@@ -124,7 +125,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
         Container(
           padding: const EdgeInsets.all(24),
           color: Theme.of(context).scaffoldBackgroundColor,
-          child: FilledButton(
+          child: CarbonPrimaryButton(
             onPressed:
                 selectedTags.isEmpty || descriptionController.text.isEmpty
                     ? null
@@ -192,7 +193,8 @@ class _EditIssuePageState extends State<EditIssuePage> {
                       }
                       if (context.mounted) Navigator.pop(context);
                     },
-            child: const Text('Submit'),
+            label: 'Submit',
+            icon: CarbonIcon.checkmark,
           ),
         ),
       ],

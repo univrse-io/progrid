@@ -62,14 +62,15 @@ class _IssueDetailsPageState extends State<IssueDetailsPage> {
           child: Container(
             padding: const EdgeInsets.all(24),
             color: Theme.of(context).scaffoldBackgroundColor,
-            child: FilledButton(
+            child: CarbonPrimaryButton(
               onPressed:
                   () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => EditIssuePage.update(issue: widget.issue),
                     ),
                   ),
-              child: const Text('Update Issue'),
+              label: 'Update Issue',
+              icon: CarbonIcon.edit,
             ),
           ),
         ),
