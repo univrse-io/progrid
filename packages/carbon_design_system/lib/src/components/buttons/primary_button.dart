@@ -9,12 +9,8 @@ class CarbonPrimaryButton extends StatelessWidget {
   final IconData? icon;
   final double _height;
 
-  const CarbonPrimaryButton({
-    this.onPressed,
-    this.label,
-    this.icon,
-    super.key,
-  }) : _height = 48;
+  const CarbonPrimaryButton({this.onPressed, this.label, this.icon, super.key})
+    : _height = 48;
 
   const CarbonPrimaryButton.small({
     this.onPressed,
@@ -46,14 +42,15 @@ class CarbonPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => FilledButton(
-        onPressed: onPressed,
-        style: FilledButton.styleFrom(fixedSize: Size.fromHeight(_height)),
-        child: Row(
-          children: [
-            if (label != null) Text(label!, overflow: TextOverflow.ellipsis),
-            if (label != null && icon != null) const Spacer(),
-            Icon(icon),
-          ],
-        ),
-      );
+    onPressed: onPressed,
+    style: FilledButton.styleFrom(maximumSize: Size.fromHeight(_height)),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (label != null) Text(label!, overflow: TextOverflow.ellipsis),
+        const Spacer(),
+        Icon(icon),
+      ],
+    ),
+  );
 }

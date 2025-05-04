@@ -23,7 +23,7 @@ class Spacing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox.square(
-        dimension: px,
-        child: ColoredBox(color: color ?? Colors.transparent),
-      );
+    dimension: px,
+    child: ColoredBox(color: color ?? Colors.transparent),
+  );
 }

@@ -24,8 +24,8 @@ class CarbonLink extends StatelessWidget {
     this.onPressed,
     this.style,
     super.key,
-  })  : icon = null,
-        _decoration = TextDecoration.underline;
+  }) : icon = null,
+       _decoration = TextDecoration.underline;
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +45,7 @@ class CarbonLink extends StatelessWidget {
             ),
           ),
           if (icon != null) const Spacing.$3(),
-          Icon(
-            icon,
-            size: 16,
-            color: carbonToken?.linkPrimary,
-          ),
+          Icon(icon, size: 16, color: carbonToken?.linkPrimary),
         ],
       ),
     );

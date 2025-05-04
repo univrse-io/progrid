@@ -53,13 +53,14 @@ class CarbonSecondaryButton extends StatelessWidget {
     return FilledButton(
       onPressed: onPressed,
       style: FilledButton.styleFrom(
-        fixedSize: Size.fromHeight(_height),
+        maximumSize: Size.fromHeight(_height),
         backgroundColor: carbonToken?.buttonSecondary,
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           if (label != null) Text(label!, overflow: TextOverflow.ellipsis),
-          if (label != null && icon != null) const Spacer(),
+          const Spacer(),
           Icon(icon),
         ],
       ),

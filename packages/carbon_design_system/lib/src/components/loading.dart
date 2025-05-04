@@ -19,9 +19,9 @@ class CarbonLoading extends StatefulWidget {
     this.valueColor,
     this.radius = 44,
     this.alignment = Alignment.center,
-  })  : backgroundColor = Colors.transparent,
-        label = null,
-        child = null;
+  }) : backgroundColor = Colors.transparent,
+       label = null,
+       child = null;
 
   const CarbonLoading.inline({
     super.key,
@@ -44,27 +44,28 @@ class _CarbonLoadingState extends State<CarbonLoading> {
 
   @override
   Widget build(BuildContext context) => Container(
-        color: widget.overlayColor ?? carbonToken?.overlay,
-        alignment: widget.alignment,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox.fromSize(
-              size: Size.fromRadius(widget.radius),
-              child: CircularProgressIndicator(
-                value: widget.value,
-                color: widget.color,
-                backgroundColor: widget.backgroundColor,
-                valueColor: widget.valueColor,
-              ),
-            ),
-            if (widget.child != null || widget.label != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: widget.child ??
-                    Text(widget.label!, style: CarbonTextStyle.label01),
-              ),
-          ],
+    color: widget.overlayColor ?? carbonToken?.overlay,
+    alignment: widget.alignment,
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox.fromSize(
+          size: Size.fromRadius(widget.radius),
+          child: CircularProgressIndicator(
+            value: widget.value,
+            color: widget.color,
+            backgroundColor: widget.backgroundColor,
+            valueColor: widget.valueColor,
+          ),
         ),
-      );
+        if (widget.child != null || widget.label != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child:
+                widget.child ??
+                Text(widget.label!, style: CarbonTextStyle.label01),
+          ),
+      ],
+    ),
+  );
 }

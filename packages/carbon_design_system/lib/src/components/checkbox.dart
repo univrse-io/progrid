@@ -16,33 +16,33 @@ class CarbonCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: () {
-          switch (value) {
-            case false:
-              onChanged(true);
-            case true:
-              onChanged(tristate ? null : false);
-            case null:
-              onChanged(false);
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Transform.scale(
-                scale: 0.85,
-                child: Checkbox(
-                  value: value,
-                  onChanged: onChanged,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-              ),
-              if (label != null)
-                Text('$label', style: CarbonTextStyle.bodyCompact01),
-            ],
+    onTap: () {
+      switch (value) {
+        case false:
+          onChanged(true);
+        case true:
+          onChanged(tristate ? null : false);
+        case null:
+          onChanged(false);
+      }
+    },
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Transform.scale(
+            scale: 0.85,
+            child: Checkbox(
+              value: value,
+              onChanged: onChanged,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
           ),
-        ),
-      );
+          if (label != null)
+            Text('$label', style: CarbonTextStyle.bodyCompact01),
+        ],
+      ),
+    ),
+  );
 }

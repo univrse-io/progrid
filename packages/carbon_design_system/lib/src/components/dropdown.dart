@@ -13,8 +13,10 @@ class CarbonDropdown<T> extends DropdownMenu<T> {
     super.hintText,
     super.helperText,
     super.errorText,
-    super.selectedTrailingIcon =
-        const Icon(CarbonIcon.chevron_up, size: kIconSize),
+    super.selectedTrailingIcon = const Icon(
+      CarbonIcon.chevron_up,
+      size: kIconSize,
+    ),
     super.enableFilter = false,
     super.enableSearch = true,
     super.keyboardType,

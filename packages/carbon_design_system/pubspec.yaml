@@ -4,7 +4,7 @@ version: 1.0.0
 repository: https://github.com/fa-fifi/carbon_design_system
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ^3.7.0
 
 dependencies:
   flutter:
