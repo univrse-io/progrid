@@ -176,6 +176,7 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
           const Spacing.$3(),
           CarbonLink(
             onPressed: () async {
+              if (kIsWeb) return;
               final latlng =
                   '${widget.tower.position.latitude},${widget.tower.position.longitude}';
               final googleMaps =

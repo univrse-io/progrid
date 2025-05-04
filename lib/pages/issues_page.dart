@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../models/issue.dart';
 import '../models/tower.dart';
+import '../widgets/custom_list_tile.dart';
 import 'edit_issue_page.dart';
 import 'issue_details_page.dart';
 
@@ -72,47 +73,21 @@ class _IssuesPageState extends State<IssuesPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     separatorBuilder: (_, __) => const Divider(),
                     itemCount: result.length,
-                    itemBuilder: (context, index) {
-                      final issue = result[index];
-
-                      return ListTile(
-                        dense: true,
-                        isThreeLine: true,
-                        onTap:
-                            () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => IssueDetailsPage(issue: issue),
+                    itemBuilder:
+                        (context, index) => CustomListTile(
+                          onPressed:
+                              () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          IssueDetailsPage(result[index]),
+                                ),
                               ),
-                            ),
-                        title: Row(
-                          children: [
-                            Spacing.$4(color: issue.status.color),
-                            const Spacing.$3(),
-                            Text(issue.id),
-                          ],
+                          indicatorColor: result[index].status.color,
+                          title: result[index].id,
+                          subtitle: result[index].tags.join(', '),
+                          body: result[index].description,
                         ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              issue.tags.join(', '),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: CarbonTextStyle.heading02,
-                            ),
-                            Text(
-                              issue.description,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
                   ),
         ),
         Container(

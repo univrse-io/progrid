@@ -17,6 +17,7 @@ import '../models/region.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
 import '../services/firebase_firestore_service.dart';
+import '../widgets/custom_list_tile.dart';
 import 'dashboard_page.dart';
 import 'tower_details_page.dart';
 
@@ -1065,24 +1066,18 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                               top: BorderSide(color: Colors.black12),
                             ),
                           ),
-                          child: ListTile(
-                            onTap:
+                          child: CustomListTile(
+                            title: towers[index].id,
+                            subtitle: towers[index].name,
+                            body: towers[index].description,
+                            indicatorColor: towers[index].surveyStatus.color,
+                            onPressed:
                                 () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder:
                                         (_) => TowerDetailsPage(towers[index]),
                                   ),
                                 ),
-                            title: Row(
-                              children: [
-                                Spacing.$3(
-                                  color: towers[index].surveyStatus.color,
-                                ),
-                                const SizedBox(width: 10),
-                                Text(towers[index].name),
-                              ],
-                            ),
-                            subtitle: Text(towers[index].id),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -1094,22 +1089,24 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                     fillColor: towers[index].surveyStatus.color
                                         .withValues(alpha: 0.1),
                                   ),
-                                  enabled: isAdmin,
                                   onSelected: (value) {
-                                    if (value != null) {
+                                    if (!isAdmin) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Only admins are able to update the survey status.',
+                                          ),
+                                        ),
+                                      );
+                                    } else if (value != null) {
                                       FirebaseFirestoreService().updateTower(
                                         towers[index].id,
                                         data: {'surveyStatus': value.name},
                                       );
                                     }
                                   },
-                                  trailingIcon:
-                                      isAdmin
-                                          ? const Icon(
-                                            CarbonIcon.chevron_down,
-                                            size: kIconSize,
-                                          )
-                                          : const SizedBox(),
                                   dropdownMenuEntries: [
                                     ...SurveyStatus.values.map(
                                       (status) => DropdownMenuEntry(
@@ -1130,22 +1127,24 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                         ?.color
                                         .withValues(alpha: 0.1),
                                   ),
-                                  enabled: isAdmin,
                                   onSelected: (value) {
-                                    if (value != null) {
+                                    if (!isAdmin) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Only admins are able to update the drawing status.',
+                                          ),
+                                        ),
+                                      );
+                                    } else if (value != null) {
                                       FirebaseFirestoreService().updateTower(
                                         towers[index].id,
                                         data: {'drawingStatus': value.name},
                                       );
                                     }
                                   },
-                                  trailingIcon:
-                                      isAdmin
-                                          ? const Icon(
-                                            CarbonIcon.chevron_down,
-                                            size: kIconSize,
-                                          )
-                                          : const SizedBox(),
                                   dropdownMenuEntries: [
                                     ...DrawingStatus.values.map(
                                       (status) => DropdownMenuEntry(

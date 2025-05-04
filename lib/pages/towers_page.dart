@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/tower.dart';
+import '../widgets/custom_list_tile.dart';
 import 'tower_details_page.dart';
 
 class TowersPage extends StatefulWidget {
@@ -61,46 +62,20 @@ class _TowersPageState extends State<TowersPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     separatorBuilder: (_, __) => const Divider(),
                     itemCount: result.length,
-                    itemBuilder: (context, index) {
-                      final tower = result[index];
-
-                      return ListTile(
-                        dense: true,
-                        isThreeLine: true,
-                        onTap:
-                            () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => TowerDetailsPage(tower),
+                    itemBuilder:
+                        (context, index) => CustomListTile(
+                          onPressed:
+                              () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => TowerDetailsPage(result[index]),
+                                ),
                               ),
-                            ),
-                        title: Row(
-                          children: [
-                            Spacing.$4(color: tower.surveyStatus.color),
-                            const Spacing.$3(),
-                            Text(tower.id),
-                          ],
+                          indicatorColor: result[index].surveyStatus.color,
+                          title: result[index].id,
+                          subtitle: result[index].name,
+                          body: result[index].description,
                         ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              tower.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: CarbonTextStyle.heading02,
-                            ),
-                            Text(
-                              tower.description,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
                   ),
         ),
       ],

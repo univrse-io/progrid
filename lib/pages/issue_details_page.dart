@@ -9,7 +9,7 @@ import 'edit_issue_page.dart';
 class IssueDetailsPage extends StatefulWidget {
   final Issue issue;
 
-  const IssueDetailsPage({required this.issue, super.key});
+  const IssueDetailsPage(this.issue, {super.key});
 
   @override
   State<IssueDetailsPage> createState() => _IssueDetailsPageState();

@@ -1,7 +1,6 @@
 import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -11,7 +10,9 @@ import '../models/issue_status.dart';
 import '../models/region.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
+import '../widgets/custom_list_tile.dart';
 import '../widgets/open_street_map.dart';
+import 'issue_details_page.dart';
 
 final screenshotController1 = ScreenshotController();
 final screenshotController2 = ScreenshotController();
@@ -63,6 +64,7 @@ class _DashboardPageState extends State<DashboardPage>
                       children: [
                         Text('On-Site Audit', style: CarbonTextStyle.heading02),
                         Expanded(
+                          // TODO: Follow pie chart guideline by Carbon design system.
                           child: PieChart(
                             PieChartData(
                               sectionsSpace: 0,
@@ -154,150 +156,20 @@ class _DashboardPageState extends State<DashboardPage>
                             separatorBuilder: (_, _) => const Divider(),
                             itemCount: issues.length,
                             itemBuilder:
-                                (context, index) => ListTile(
-                                  dense: true,
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (context) => SimpleDialog(
-                                            contentPadding:
-                                                const EdgeInsets.all(20),
-                                            title: Row(
-                                              children: [
-                                                Text(
-                                                  issues[index].id,
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 25,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Chip(
-                                                  padding: EdgeInsets.zero,
-                                                  shape: const StadiumBorder(),
-                                                  side: BorderSide.none,
-                                                  label: Text(
-                                                    issues[index].status
-                                                        .toString(),
-                                                    style:
-                                                        Theme.of(context)
-                                                            .primaryTextTheme
-                                                            .bodyMedium,
-                                                  ),
-                                                  backgroundColor:
-                                                      issues[index]
-                                                          .status
-                                                          .color,
-                                                ),
-                                              ],
-                                            ),
-                                            children: [
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  const SizedBox(
-                                                    width: 100,
-                                                    child: Text(
-                                                      'Description:',
-                                                      textAlign:
-                                                          TextAlign.right,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 16,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Text(
-                                                    issues[index].notes,
-                                                    style: const TextStyle(
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ],
+                                (context, index) => CustomListTile(
+                                  onPressed:
+                                      () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => IssueDetailsPage(
+                                                issues[index],
                                               ),
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  const SizedBox(
-                                                    width: 100,
-                                                    child: Text(
-                                                      'Issued At:',
-                                                      textAlign:
-                                                          TextAlign.right,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 16,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Text(
-                                                    DateFormat(
-                                                      'dd/MM/yy HH:mm a',
-                                                    ).format(
-                                                      issues[index].createdAt
-                                                          .toDate(),
-                                                    ),
-                                                    style: const TextStyle(
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  const SizedBox(
-                                                    width: 100,
-                                                    child: Text(
-                                                      'Tags:',
-                                                      textAlign:
-                                                          TextAlign.right,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 16,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Text(
-                                                    issues[index].tags.join(
-                                                      ', ',
-                                                    ),
-                                                    style: const TextStyle(
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 20),
-                                            ],
-                                          ),
-                                    );
-                                  },
-                                  trailing: Text(
-                                    DateFormat(
-                                      'dd/MM/yy HH:mm a',
-                                    ).format(issues[index].createdAt.toDate()),
-                                  ),
-                                  title: Row(
-                                    children: [
-                                      Spacing.$3(
-                                        color: issues[index].status.color,
+                                        ),
                                       ),
-                                      const SizedBox(width: 5),
-                                      Text(issues[index].id),
-                                    ],
-                                  ),
-                                  subtitle: Text(issues[index].tags.join(', ')),
+                                  indicatorColor: issues[index].status.color,
+                                  title: issues[index].id,
+                                  subtitle: issues[index].tags.join(', '),
+                                  body: issues[index].description,
                                 ),
                           ),
                         ),
