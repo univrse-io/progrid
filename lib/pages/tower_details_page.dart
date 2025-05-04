@@ -4,11 +4,16 @@ import 'dart:io';
 
 import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:gal/gal.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -22,7 +27,6 @@ import '../models/issue_status.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
 import '../services/firebase_firestore_service.dart';
-import '../utils/dialog_utils.dart';
 import 'issues_page.dart';
 
 class TowerDetailsPage extends StatefulWidget {
@@ -38,6 +42,89 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
   late final noteController = TextEditingController(text: widget.tower.notes);
   late final issues = Provider.of<List<Issue>>(context, listen: false);
   late final isAdmin = Provider.of<bool>(context, listen: false);
+
+  Future<void> downloadImage(String imageUrl) async {
+    try {
+      if (!kIsWeb) {
+        final permission =
+            Platform.isAndroid
+                ? (await DeviceInfoPlugin().androidInfo).version.sdkInt > 32
+                    ? Permission.photos
+                    : Permission.storage
+                : Permission.photos;
+
+        final status = await permission.request();
+
+        if (status.isDenied) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Storage permission is required to save the image.',
+                ),
+              ),
+            );
+          }
+          return;
+        }
+
+        if (status.isPermanentlyDenied) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Permission permanently denied. Please allow it from the settings.',
+                ),
+                action: SnackBarAction(
+                  label: 'Settings',
+                  onPressed: openAppSettings,
+                ),
+              ),
+            );
+          }
+          return;
+        }
+      }
+
+      final response = await http.get(Uri.parse(imageUrl));
+
+      if (response.statusCode != 200) {
+        throw Exception('Network error. Status code: ${response.statusCode}');
+      }
+
+      if (kIsWeb) {
+        await FileSaver.instance.saveFile(
+          name: 'test ${DateTime.now().millisecondsSinceEpoch}',
+          bytes: response.bodyBytes,
+          mimeType: MimeType.jpeg,
+          ext: 'jpg',
+        );
+        return;
+      } else {
+        final tempDir = await getTemporaryDirectory();
+        final path =
+            '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final file = await File(path).writeAsBytes(response.bodyBytes);
+
+        await Gal.putImage(file.path);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Image saved to the gallery.')),
+          );
+        }
+      }
+    } catch (e) {
+      log('Failed to download image.', error: e);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to download the image.')),
+        );
+      }
+    }
+    if (mounted) Navigator.pop(context);
+  }
 
   @override
   void dispose() {
@@ -146,11 +233,11 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
                                     Positioned(
                                       bottom: 5,
                                       left: 5,
-                                      // TODO: Implement download image functionality.
                                       child: FloatingActionButton.small(
                                         tooltip: 'Download',
                                         elevation: 0,
-                                        onPressed: () {},
+                                        onPressed:
+                                            () => downloadImage(imageUrl),
                                         child: const Icon(CarbonIcon.download),
                                       ),
                                     ),
@@ -386,7 +473,7 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
     if (pickedFile == null) return;
 
     if (mounted) Navigator.pop(context);
-    if (mounted) DialogUtils.showLoadingDialog(context);
+    // if (mounted) DialogUtils.showLoadingDialog(context);
 
     try {
       // request location permission
@@ -659,80 +746,6 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
   //     }
   //   } finally {
   //     if (mounted) Navigator.pop(context);
-  //   }
-  // }
-
-  // // download image from url
-  // Future<void> _downloadImage(BuildContext context, String url) async {
-  //   try {
-  //     if (mounted) DialogUtils.showLoadingDialog(context);
-
-  //     final permission = Platform.isAndroid
-  //         ? (await DeviceInfoPlugin().androidInfo).version.sdkInt > 32
-  //             ? Permission.photos
-  //             : Permission.storage
-  //         : Permission.photos;
-
-  //     final status = await permission.request();
-
-  //     if (status.isDenied) {
-  //       if (mounted) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('Storage permission is required to save the image.')),
-  //         );
-  //       }
-  //       return;
-  //     }
-
-  //     if (status.isPermanentlyDenied) {
-  //       if (mounted) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(
-  //             content: const Text(
-  //               'Permission permanently denied. Please allow it from settings.',
-  //             ),
-  //             action: SnackBarAction(
-  //               label: 'Settings',
-  //               onPressed: () {
-  //                 openAppSettings();
-  //               },
-  //             ),
-  //           ),
-  //         );
-  //       }
-  //       return;
-  //     }
-
-  //     // get image
-  //     final response = await http.get(Uri.parse(url));
-  //     if (response.statusCode != 200) {
-  //       throw Exception('Failed to download the image. Status code: ${response.statusCode}');
-  //     }
-
-  //     // get temp directory, save there
-  //     final tempDir = await getTemporaryDirectory();
-  //     final filePath = "${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
-
-  //     final file = File(filePath);
-  //     await file.writeAsBytes(response.bodyBytes);
-
-  //     // save to main gallery
-  //     await Gal.putImage(filePath);
-
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Image saved to Gallery')),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Failed to download image: $e')),
-  //       );
-  //     }
-  //   } finally {
-  //     if (mounted) Navigator.pop(context);
-  //     if (mounted) Navigator.pop(context); // pop out of image
   //   }
   // }
 }

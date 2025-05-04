@@ -11,7 +11,6 @@ import '../models/issue_status.dart';
 import '../models/region.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
-import '../utils/dialog_utils.dart';
 import '../widgets/open_street_map.dart';
 
 final screenshotController1 = ScreenshotController();
@@ -280,18 +279,6 @@ class _DashboardPageState extends State<DashboardPage>
                                                 ],
                                               ),
                                               const SizedBox(height: 20),
-                                              OutlinedButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  DialogUtils.showTowerDialog(
-                                                    context,
-                                                    issues[index].id
-                                                        .split('-')
-                                                        .first,
-                                                  );
-                                                },
-                                                child: const Text('View Tower'),
-                                              ),
                                             ],
                                           ),
                                     );

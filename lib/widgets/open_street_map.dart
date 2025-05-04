@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:carbon_design_system/carbon_design_system.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
@@ -11,7 +10,6 @@ import 'package:provider/provider.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
 import '../pages/tower_details_page.dart';
-import '../utils/dialog_utils.dart';
 
 final _textStyle = CarbonTextStyle.label01.copyWith(color: Colors.white);
 
@@ -64,15 +62,12 @@ class OpenStreetMap extends StatelessWidget {
                     tower.position.longitude,
                   ),
                   child: GestureDetector(
-                    onTap: () {
-                      kIsWeb
-                          ? DialogUtils.showTowerDialog(context, tower.id)
-                          : Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => TowerDetailsPage(tower),
-                            ),
-                          );
-                    },
+                    onTap:
+                        () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => TowerDetailsPage(tower),
+                          ),
+                        ),
                     child: Column(
                       children: [
                         ColoredBox(

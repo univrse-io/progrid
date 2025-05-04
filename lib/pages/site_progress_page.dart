@@ -17,8 +17,8 @@ import '../models/region.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
 import '../services/firebase_firestore_service.dart';
-import '../utils/dialog_utils.dart';
 import 'dashboard_page.dart';
+import 'tower_details_page.dart';
 
 class SiteProgressPage extends StatefulWidget {
   const SiteProgressPage({super.key});
@@ -1066,9 +1066,11 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                           ),
                           child: ListTile(
                             onTap:
-                                () => DialogUtils.showTowerDialog(
-                                  context,
-                                  towers[index].id,
+                                () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) => TowerDetailsPage(towers[index]),
+                                  ),
                                 ),
                             title: Row(
                               children: [
