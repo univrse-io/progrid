@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:excel/excel.dart' hide Border;
 import 'package:file_saver/file_saver.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -36,6 +37,7 @@ class _SiteProgressPageState extends State<SiteProgressPage>
   final surveyStatusFilter = <SurveyStatus>[SurveyStatus.surveyed];
   final drawingStatusFilter = <DrawingStatus>[];
   final regionFilter = <Region>[];
+  late final user = Provider.of<User?>(context, listen: false);
   DateTime? fromDateTime;
   DateTime? toDateTime;
 
@@ -1103,7 +1105,11 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                     } else if (value != null) {
                                       FirebaseFirestoreService().updateTower(
                                         towers[index].id,
-                                        data: {'surveyStatus': value.name},
+                                        data: {
+                                          'surveyStatus': value.name,
+                                          'authorId': user!.uid,
+                                          'authorName': user!.displayName,
+                                        },
                                       );
                                     }
                                   },
@@ -1141,7 +1147,11 @@ class _SiteProgressPageState extends State<SiteProgressPage>
                                     } else if (value != null) {
                                       FirebaseFirestoreService().updateTower(
                                         towers[index].id,
-                                        data: {'drawingStatus': value.name},
+                                        data: {
+                                          'drawingStatus': value.name,
+                                          'authorId': user!.uid,
+                                          'authorName': user!.displayName,
+                                        },
                                       );
                                     }
                                   },

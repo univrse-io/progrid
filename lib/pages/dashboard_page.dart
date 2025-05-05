@@ -35,10 +35,10 @@ class _DashboardPageState extends State<DashboardPage>
   Widget build(BuildContext context) {
     super.build(context);
     final towers = Provider.of<List<Tower>>(context);
-    final issues =
-        Provider.of<List<Issue>>(context)
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt))
-          ..removeWhere((issue) => issue.status == IssueStatus.resolved);
+    final issues = Provider.of<List<Issue>>(context);
+    final recentIssues =
+        issues.where((issue) => issue.status != IssueStatus.resolved).toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     return Row(
       children: [
@@ -154,23 +154,23 @@ class _DashboardPageState extends State<DashboardPage>
                         Expanded(
                           child: ListView.separated(
                             separatorBuilder: (_, _) => const Divider(),
-                            itemCount: issues.length,
-                            itemBuilder:
-                                (context, index) => CustomListTile(
-                                  onPressed:
-                                      () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder:
-                                              (context) => IssueDetailsPage(
-                                                issues[index],
-                                              ),
-                                        ),
+                            itemCount: recentIssues.length,
+                            itemBuilder: (context, index) {
+                              final issue = recentIssues[index];
+
+                              return CustomListTile(
+                                onPressed:
+                                    () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => IssueDetailsPage(issue),
                                       ),
-                                  indicatorColor: issues[index].status.color,
-                                  title: issues[index].id,
-                                  subtitle: issues[index].tags.join(', '),
-                                  body: issues[index].description,
-                                ),
+                                    ),
+                                indicatorColor: issue.status.color,
+                                title: issue.id,
+                                subtitle: issue.tags.join(', '),
+                                body: issue.description,
+                              );
+                            },
                           ),
                         ),
                       ],
