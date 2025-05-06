@@ -42,7 +42,10 @@ class TowerDetailsPage extends StatefulWidget {
 class _TowerDetailsPageState extends State<TowerDetailsPage> {
   late final noteController = TextEditingController(text: widget.tower.notes);
   late final carbonToken = Theme.of(context).extension<CarbonToken>();
-  late final issues = Provider.of<List<Issue>>(context, listen: false);
+  late final issues = Provider.of<List<Issue>>(
+    context,
+    listen: false,
+  ).where((issue) => issue.id.startsWith(widget.tower.id));
   late final isAdmin = Provider.of<bool>(context, listen: false);
 
   Future<void> downloadImage(String imageUrl) async {
@@ -275,18 +278,7 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
             const Spacing.$3(),
           ],
           const Spacing.$6(),
-          if (isAdmin)
-            CarbonPrimaryButton(
-              onPressed:
-                  () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => EditTowerPage(widget.tower),
-                    ),
-                  ),
-              label: 'Update Tower',
-              icon: CarbonIcon.edit,
-            )
-          else if (widget.tower.surveyStatus == SurveyStatus.unsurveyed)
+          if (widget.tower.surveyStatus == SurveyStatus.unsurveyed)
             CarbonPrimaryButton(
               onPressed:
                   () => Navigator.of(context).push(
@@ -301,18 +293,17 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
             CarbonPrimaryButton(
               // added condition to check if there are any unresolved issues
               onPressed:
-                  widget.tower.images.length != 1 ||
-                          issues.any(
-                            (issue) => issue.status == IssueStatus.unresolved,
-                          )
+                  issues.any((issue) => issue.status == IssueStatus.unresolved)
                       ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
-                      : () async {
-                        await _signOut();
-                      },
+                      : () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => EditTowerPage(widget.tower),
+                        ),
+                      ),
               label: 'Sign Out',
               icon: CarbonIcon.logout,
             ),
-          if (isAdmin || widget.tower.surveyStatus != SurveyStatus.surveyed)
+          if (widget.tower.surveyStatus != SurveyStatus.surveyed)
             const Spacing.$5(),
           CarbonSecondaryButton(
             onPressed:
@@ -610,7 +601,7 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
 
       final uploadTask = storageRef.putFile(File(watermarkedImagePath));
 
-      final snapshot = await uploadTask.whenComplete(() {});
+      final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
       if (mounted) {

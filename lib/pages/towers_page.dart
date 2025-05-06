@@ -14,19 +14,8 @@ class TowersPage extends StatefulWidget {
 }
 
 class _TowersPageState extends State<TowersPage> {
-  late final towers = Provider.of<List<Tower>>(context);
   late final searchController =
       TextEditingController()..addListener(() => setState(() {}));
-
-  List<Tower> get result {
-    final keyword = searchController.text.trim().toLowerCase();
-
-    return keyword.isEmpty
-        ? towers
-        : towers
-            .where((tower) => tower.toString().toLowerCase().contains(keyword))
-            .toList();
-  }
 
   @override
   void dispose() {
@@ -55,28 +44,45 @@ class _TowersPageState extends State<TowersPage> {
           ),
         ),
         Expanded(
-          child:
-              result.isEmpty
+          child: Consumer<List<Tower>>(
+            builder: (context, towers, _) {
+              final keyword = searchController.text.trim().toLowerCase();
+              final result =
+                  keyword.isEmpty
+                      ? towers
+                      : towers
+                          .where(
+                            (tower) => tower.toString().toLowerCase().contains(
+                              keyword,
+                            ),
+                          )
+                          .toList();
+
+              return result.isEmpty
                   ? const Center(child: Text('No Towers Found'))
                   : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     separatorBuilder: (_, __) => const Divider(),
                     itemCount: result.length,
-                    itemBuilder:
-                        (context, index) => CustomListTile(
-                          onPressed:
-                              () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) => TowerDetailsPage(result[index]),
-                                ),
+                    itemBuilder: (context, index) {
+                      final tower = result[index];
+
+                      return CustomListTile(
+                        onPressed:
+                            () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => TowerDetailsPage(tower),
                               ),
-                          indicatorColor: result[index].surveyStatus.color,
-                          title: result[index].id,
-                          subtitle: result[index].name,
-                          body: result[index].description,
-                        ),
-                  ),
+                            ),
+                        indicatorColor: tower.surveyStatus.color,
+                        title: tower.id,
+                        subtitle: tower.name,
+                        body: tower.description,
+                      );
+                    },
+                  );
+            },
+          ),
         ),
       ],
     ),

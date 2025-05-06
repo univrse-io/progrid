@@ -137,7 +137,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
                             'status': selectedStatus.name,
                             'notes':
                                 '${widget.issue!.notes}\n'
-                                '[${DateFormat('y-m-d HH:mm').format(DateTime.now())}] ${descriptionController.text}',
+                                '[${DateFormat('y-MM-dd HH:mm').format(DateTime.now())}] ${descriptionController.text}',
                             'tags': selectedTags,
                             'authorId': user!.uid,
                             'authorName': user!.displayName,
