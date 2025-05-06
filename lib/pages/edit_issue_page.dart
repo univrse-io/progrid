@@ -172,7 +172,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
                           status: selectedStatus,
                           authorId: user!.uid,
                           notes:
-                              '[${DateFormat('y-m-d HH:mm').format(DateTime.now())}] ${descriptionController.text}',
+                              '[${DateFormat('y-MM-dd HH:mm').format(DateTime.now())}] ${descriptionController.text}',
                           createdAt: Timestamp.now(),
                           authorName: user!.displayName,
                           tags: selectedTags,

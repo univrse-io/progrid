@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/issue.dart';
+import '../models/survey_status.dart';
 import '../models/tower.dart';
 import '../widgets/custom_list_tile.dart';
 import 'edit_issue_page.dart';
@@ -21,24 +22,6 @@ class _IssuesPageState extends State<IssuesPage> {
   late final searchController =
       TextEditingController()..addListener(() => setState(() {}));
 
-  List<Issue> get result {
-    final issues = Provider.of<List<Issue>>(context, listen: false);
-    final keyword = searchController.text.trim().toLowerCase();
-
-    return issues
-        .where(
-          (issue) =>
-              issue.id.startsWith(widget.tower.id) &&
-              (keyword.isEmpty ||
-                  issue.toString().toLowerCase().contains(keyword)),
-        )
-        .toList()
-      ..sort(
-        (a, b) =>
-            (b.updatedAt ?? b.createdAt).compareTo(a.updatedAt ?? a.createdAt),
-      );
-  }
-
   @override
   void dispose() {
     searchController.dispose();
@@ -48,64 +31,89 @@ class _IssuesPageState extends State<IssuesPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Issues')),
-    body: Column(
-      children: [
-        if (context
-                .watch<List<Issue>>()
-                .where((issue) => issue.id.startsWith(widget.tower.id))
-                .length >
-            1)
-          Container(
-            padding: const EdgeInsets.all(24),
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: CarbonTextInput.search(
-              controller: searchController,
-              placeholderText: 'Search',
-            ),
-          )
-        else
-          const Spacing.$6(),
-        Expanded(
-          child:
-              result.isEmpty
-                  ? const Center(child: Text('No Issues Found'))
-                  : ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    separatorBuilder: (_, __) => const Divider(),
-                    itemCount: result.length,
-                    itemBuilder:
-                        (context, index) => CustomListTile(
-                          onPressed:
-                              () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          IssueDetailsPage(result[index]),
-                                ),
-                              ),
-                          indicatorColor: result[index].status.color,
-                          title: result[index].id,
-                          subtitle: result[index].tags.join(', '),
-                          body: result[index].description,
-                        ),
-                  ),
-        ),
-        Container(
+    body: Consumer<List<Issue>>(
+      child: Visibility(
+        visible: widget.tower.surveyStatus != SurveyStatus.surveyed,
+        child: Container(
           padding: const EdgeInsets.all(24),
           color: Theme.of(context).scaffoldBackgroundColor,
           child: CarbonPrimaryButton(
             onPressed:
                 () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder:
-                        (context) => EditIssuePage.create(tower: widget.tower),
+                    builder: (_) => EditIssuePage.create(tower: widget.tower),
                   ),
                 ),
             label: 'Create Issue',
             icon: CarbonIcon.document_add,
           ),
         ),
-      ],
+      ),
+      builder: (context, issues, child) {
+        final relatedIssue =
+            issues
+                .where((issue) => issue.id.startsWith(widget.tower.id))
+                .toList();
+        final keyword = searchController.text.trim().toLowerCase();
+        final result =
+            keyword.isEmpty
+                  ? relatedIssue
+                  : relatedIssue
+                      .where(
+                        (tower) =>
+                            tower.toString().toLowerCase().contains(keyword),
+                      )
+                      .toList()
+              ..sort(
+                (a, b) => (b.updatedAt ?? b.createdAt).compareTo(
+                  a.updatedAt ?? a.createdAt,
+                ),
+              );
+
+        return Column(
+          children: [
+            if (relatedIssue.length > 1)
+              Container(
+                padding: const EdgeInsets.all(24),
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: CarbonTextInput.search(
+                  controller: searchController,
+                  placeholderText: 'Search',
+                ),
+              )
+            else
+              const Spacing.$6(),
+            Expanded(
+              child:
+                  result.isEmpty
+                      ? const Center(child: Text('No Issues Found'))
+                      : ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        separatorBuilder: (_, __) => const Divider(),
+                        itemCount: result.length,
+                        itemBuilder: (context, index) {
+                          final issue = result[index];
+
+                          return CustomListTile(
+                            onPressed:
+                                () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => IssueDetailsPage(issue),
+                                  ),
+                                ),
+                            indicatorColor: issue.status.color,
+                            title: issue.id,
+                            subtitle: issue.tags.join(', '),
+                            body: issue.description,
+                          );
+                        },
+                      ),
+            ),
+            child!,
+          ],
+        );
+      },
     ),
   );
 }
