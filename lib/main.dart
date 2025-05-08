@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,14 +29,26 @@ void main() async {
         StreamProvider<List<Issue>>(
           initialData: const [],
           create: (_) => FirebaseFirestoreService().issuesStream,
+          catchError: (context, error) {
+            log('Failed to listen to the list of issues stream.', error: error);
+            return [];
+          },
         ),
         StreamProvider<List<Tower>>(
           initialData: const [],
           create: (_) => FirebaseFirestoreService().towersStream,
+          catchError: (context, error) {
+            log('Failed to listen to the list of towers stream.', error: error);
+            return [];
+          },
         ),
         StreamProvider<User?>(
           initialData: null,
           create: (_) => FirebaseAuth.instance.userChanges(),
+          catchError: (context, error) {
+            log('Failed to listen to the user stream.', error: error);
+            return null;
+          },
         ),
         FutureProvider<bool>(
           initialData: false,
