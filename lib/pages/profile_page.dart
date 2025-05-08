@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +10,6 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
-
-    if (user != null) log(user.toString());
 
     return Scaffold(
       appBar: AppBar(title: const Text('User Profile')),
