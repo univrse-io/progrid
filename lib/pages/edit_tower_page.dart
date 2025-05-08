@@ -354,8 +354,7 @@ class _EditTowerPageState extends State<EditTowerPage> {
                                   ? [downloadUrl]
                                   : FieldValue.arrayUnion([downloadUrl]),
                           'notes':
-                              '${widget.tower.notes}\n'
-                              '[${DateFormat('y-MM-dd HH:mm').format(DateTime.now())}] ${descriptionController.text}',
+                              '${widget.tower.notes != null && widget.tower.notes!.isNotEmpty ? '${widget.tower.notes}\n' : ''}[${DateFormat('y-MM-dd HH:mm').format(DateTime.now())}] ${descriptionController.text}',
                           'authorId': user!.uid,
                           'authorName': user!.displayName,
                         },
