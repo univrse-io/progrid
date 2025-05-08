@@ -1,6 +1,7 @@
 import 'package:carbon_design_system/carbon_design_system.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -28,6 +29,8 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage>
     with AutomaticKeepAliveClientMixin {
+  final mapController = MapController();
+
   @override
   bool get wantKeepAlive => true;
 
@@ -346,7 +349,7 @@ class _DashboardPageState extends State<DashboardPage>
               Expanded(
                 child: Screenshot(
                   controller: screenshotController3,
-                  child: const OpenStreetMap(),
+                  child: OpenStreetMap(controller: mapController),
                 ),
               ),
               const Spacing.$2(),

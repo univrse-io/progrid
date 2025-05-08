@@ -14,19 +14,18 @@ import '../pages/tower_details_page.dart';
 final _textStyle = CarbonTextStyle.label01.copyWith(color: Colors.white);
 
 class OpenStreetMap extends StatelessWidget {
-  final MapController? controller;
+  final MapController controller;
 
-  const OpenStreetMap({this.controller, super.key});
+  const OpenStreetMap({required this.controller, super.key});
 
   @override
   Widget build(BuildContext context) {
     // TODO: Set the current user's position as the initial position.
     const defaultPosition = LatLng(3.140493, 101.700068);
     final towers = Provider.of<List<Tower>>(context);
-    final mapController = controller ?? MapController();
 
     return FlutterMap(
-      mapController: mapController,
+      mapController: controller,
       options: const MapOptions(
         initialCenter: defaultPosition,
         initialZoom: 11,
