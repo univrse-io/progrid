@@ -3,30 +3,21 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:carbon_design_system/carbon_design_system.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file_saver/file_saver.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:gal/gal.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:image/image.dart' as img;
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../models/drawing_status.dart';
 import '../models/issue.dart';
 import '../models/issue_status.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
-import '../services/firebase_firestore_service.dart';
 import 'edit_tower_page.dart';
 import 'issues_page.dart';
 
@@ -42,11 +33,6 @@ class TowerDetailsPage extends StatefulWidget {
 class _TowerDetailsPageState extends State<TowerDetailsPage> {
   late final noteController = TextEditingController(text: widget.tower.notes);
   late final carbonToken = Theme.of(context).extension<CarbonToken>();
-  late final issues = Provider.of<List<Issue>>(
-    context,
-    listen: false,
-  ).where((issue) => issue.id.startsWith(widget.tower.id));
-  late final isAdmin = Provider.of<bool>(context, listen: false);
 
   Future<void> downloadImage(String imageUrl) async {
     try {
@@ -291,15 +277,29 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
             )
           else if (widget.tower.surveyStatus == SurveyStatus.inprogress)
             CarbonPrimaryButton(
-              // added condition to check if there are any unresolved issues
-              onPressed:
-                  issues.any((issue) => issue.status == IssueStatus.unresolved)
-                      ? null // add text indicator to show what is missing? maybe move conditional logic to signout function itself
-                      : () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => EditTowerPage(widget.tower),
-                        ),
+              onPressed: () {
+                final unresolvedIssues = context.read<List<Issue>>().where(
+                  (issue) =>
+                      issue.id.startsWith(widget.tower.id) &&
+                      issue.status == IssueStatus.unresolved,
+                );
+
+                if (unresolvedIssues.isNotEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'You must resolve all the issues first before sign out.',
                       ),
+                    ),
+                  );
+                } else {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => EditTowerPage(widget.tower),
+                    ),
+                  );
+                }
+              },
               label: 'Sign Out',
               icon: CarbonIcon.logout,
             ),
@@ -319,423 +319,4 @@ class _TowerDetailsPageState extends State<TowerDetailsPage> {
       ),
     ),
   );
-
-  Future<void> _signIn() async {
-    try {
-      if (widget.tower.images.length == 1) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Tower has already been signed-in')),
-          );
-        }
-        return;
-      }
-
-      unawaited(
-        showDialog(
-          context: context,
-          builder:
-              (context) => AlertDialog(
-                title: const Text(
-                  'Select Image Source',
-                  textAlign: TextAlign.center,
-                ),
-                titleTextStyle: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                titlePadding: const EdgeInsets.only(
-                  top: 20,
-                  right: 20,
-                  left: 20,
-                ),
-                contentPadding: const EdgeInsets.only(
-                  top: 10,
-                  left: 20,
-                  right: 20,
-                  bottom: 20,
-                ),
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: FilledButton(
-                        onPressed: () {
-                          // Navigator.pop(context);
-                          _pickImage(ImageSource.camera, false);
-                        },
-                        child: const Icon(Icons.camera_alt_outlined, size: 30),
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: FilledButton(
-                        onPressed: () {
-                          // Navigator.pop(context);
-                          _pickImage(ImageSource.gallery, false);
-                        },
-                        child: const Icon(Icons.file_upload_outlined, size: 30),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-        ),
-      );
-    } catch (e) {
-      throw Exception('failed to call sign-in: $e');
-    }
-  }
-
-  Future<void> _signOut() async {
-    try {
-      if (widget.tower.images.length != 1) {
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Please sign-in first')));
-        }
-        return;
-      }
-
-      // do image upload stuff here
-      unawaited(
-        showDialog(
-          context: context,
-          builder:
-              (context) => AlertDialog(
-                title: const Text(
-                  'Select Image Source',
-                  textAlign: TextAlign.center,
-                ),
-                titleTextStyle: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                titlePadding: const EdgeInsets.only(
-                  top: 20,
-                  right: 20,
-                  left: 20,
-                ),
-                contentPadding: const EdgeInsets.only(
-                  top: 10,
-                  left: 20,
-                  right: 20,
-                  bottom: 20,
-                ),
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: FilledButton(
-                        onPressed: () {
-                          // Navigator.pop(context);
-                          _pickImage(ImageSource.camera, true);
-                        },
-                        child: const Icon(Icons.camera_alt_outlined, size: 30),
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: FilledButton(
-                        onPressed: () {
-                          // Navigator.pop(context);
-                          _pickImage(ImageSource.gallery, true);
-                        },
-                        child: const Icon(Icons.file_upload_outlined, size: 30),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-        ),
-      );
-    } catch (e) {
-      throw Exception('failed to call sign-out: $e');
-    }
-  }
-
-  Future<void> _pickImage(ImageSource source, bool isSignOut) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
-    if (pickedFile == null) return;
-
-    if (mounted) Navigator.pop(context);
-    // if (mounted) DialogUtils.showLoadingDialog(context);
-
-    try {
-      // request location permission
-      final status = await Permission.locationWhenInUse.request();
-      if (!status.isGranted) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                status.isPermanentlyDenied
-                    ? 'Location permission is permanently denied. Please enable it in settings.'
-                    : 'Location permission is required to add location data.',
-              ),
-              action:
-                  status.isPermanentlyDenied
-                      ? const SnackBarAction(
-                        label: 'Settings',
-                        onPressed: openAppSettings,
-                      )
-                      : null,
-            ),
-          );
-        }
-        return;
-      }
-
-      // load image
-      final imageFile = File(pickedFile.path);
-      final decodeImage = img.decodeImage(imageFile.readAsBytesSync());
-      if (decodeImage == null) {
-        throw Exception('Failed to decode image');
-      }
-
-      // scale image if too small or too big
-      const minWidth = 600; // min width
-      const maxWidth = 1080; // max width
-      const minHeight = 600; // min height
-      const maxHeight = 1920; // max height
-
-      var scaledImage = decodeImage;
-
-      if (decodeImage.width < minWidth || decodeImage.height < minHeight) {
-        // scale up
-        final aspectRatio = decodeImage.height / decodeImage.width;
-        scaledImage = img.copyResize(
-          decodeImage,
-          width: minWidth,
-          height: (minWidth * aspectRatio).toInt(),
-        );
-      } else if (decodeImage.width > maxWidth ||
-          decodeImage.height > maxHeight) {
-        // scale down
-        final aspectRatio = decodeImage.height / decodeImage.width;
-        scaledImage = img.copyResize(
-          decodeImage,
-          width: maxWidth,
-          height: (maxWidth * aspectRatio).toInt(),
-        );
-      }
-
-      // compress if image is larger than 10mb
-      final tempDir = await getTemporaryDirectory();
-      final tempImagePath = '${tempDir.path}/temp_${pickedFile.name}';
-      final tempImageFile = File(tempImagePath);
-      await tempImageFile.writeAsBytes(img.encodeJpg(scaledImage));
-
-      final scaledImageSize = await tempImageFile.length();
-      if (scaledImageSize > 10 * 1024 * 1024) {
-        final compressedBytes = await FlutterImageCompress.compressWithFile(
-          tempImageFile.path,
-          quality: 70,
-        );
-
-        if (compressedBytes != null) {
-          await tempImageFile.writeAsBytes(compressedBytes);
-        }
-      }
-
-      // reload image
-      final compressedImage = img.decodeImage(
-        await tempImageFile.readAsBytes(),
-      );
-      if (compressedImage == null) {
-        log('Failed to decode compressed image');
-        return;
-      }
-
-      // get current date/time
-      final now = DateTime.now();
-      final formattedDateTime =
-          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} '
-          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
-
-      // get current device location
-      final position = await Geolocator.getCurrentPosition();
-      final latitude = position.latitude.toStringAsFixed(6);
-      final longitude = position.longitude.toStringAsFixed(6);
-
-      // add watermark to image
-      final watermarkText =
-          '$formattedDateTime\nLat: $latitude, Lon: $longitude';
-      final x = compressedImage.width - 10;
-      final y = compressedImage.height - 50;
-
-      img.fillRect(
-        compressedImage,
-        x1: compressedImage.width - 400,
-        y1: compressedImage.height - 60,
-        x2: compressedImage.width,
-        y2: compressedImage.height,
-        color: img.ColorRgb8(0, 0, 0),
-      );
-      img.drawString(
-        compressedImage,
-        watermarkText,
-        font: img.arial24,
-        x: x,
-        y: y,
-        color: img.ColorRgb8(255, 255, 255),
-        rightJustify: true,
-      );
-
-      // save image locally
-      final watermarkedImagePath =
-          '${(await getTemporaryDirectory()).path}/watermarked_${pickedFile.name}';
-      await File(
-        watermarkedImagePath,
-      ).writeAsBytes(img.encodeJpg(compressedImage));
-
-      // upload image to firebase storage
-      final fileName = '${DateTime.now().microsecondsSinceEpoch}'; // unique
-      final storageRef = FirebaseStorage.instance.ref(
-        'towers/${widget.tower}/$fileName',
-      );
-
-      final uploadTask = storageRef.putFile(File(watermarkedImagePath));
-
-      final snapshot = await uploadTask;
-      final downloadUrl = await snapshot.ref.getDownloadURL();
-
-      if (mounted) {
-        final user = Provider.of<User?>(context, listen: false);
-        await FirebaseFirestoreService().updateTower(
-          widget.tower.id,
-          data: {'authorId': user?.uid ?? ''},
-        );
-        await FirebaseFirestoreService().updateTower(
-          widget.tower.id,
-          data: {
-            'images': FieldValue.arrayUnion([downloadUrl]),
-          },
-        );
-        if (isSignOut) {
-          await FirebaseFirestoreService().updateTower(
-            widget.tower.id,
-            data: {
-              'signOut': Timestamp.fromDate(DateTime.now()),
-              'surveyStatus': SurveyStatus.surveyed.name,
-            },
-          );
-        } else {
-          await FirebaseFirestoreService().updateTower(
-            widget.tower.id,
-            data: {
-              'drawingStatus': DrawingStatus.inprogress.name,
-              'signIn': Timestamp.fromDate(DateTime.now()),
-              'surveyStatus': SurveyStatus.inprogress.name,
-            },
-          );
-        }
-      } else {
-        throw Exception('provider addImage not mounted');
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error Adding Image: $e')));
-      }
-    } finally {
-      if (mounted) Navigator.pop(context);
-    }
-  }
-
-  // delete image from tower
-  // Future<void> _deleteImage(BuildContext context, String url) async {
-  //   try {
-  //     // confirmation dialog
-  //     final confirm = await showDialog<bool>(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           title: Text("Confirm Deletion"),
-  //           content: Text("Are you sure you want to delete this image? This action cannot be undone."),
-  //           actions: <Widget>[
-  //             TextButton(
-  //               onPressed: () => Navigator.pop(context, false), // cancel
-  //               child: Text(
-  //                 'Cancel',
-  //                 style: TextStyle(fontWeight: FontWeight.bold),
-  //               ),
-  //               style: TextButton.styleFrom(
-  //                 textStyle: Theme.of(context).textTheme.labelLarge,
-  //               ),
-  //             ),
-  //             TextButton(
-  //               onPressed: () => Navigator.pop(context, true), // confirm
-  //               child: Text(
-  //                 'Delete',
-  //                 style: TextStyle(color: AppColors.red, fontWeight: FontWeight.bold),
-  //               ),
-  //               style: TextButton.styleFrom(
-  //                 textStyle: Theme.of(context).textTheme.labelLarge,
-  //               ),
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     );
-
-  //     if (confirm != true) return;
-
-  //     if (mounted) {
-  //       DialogUtils.showLoadingDialog(context);
-
-  //       if (widget.tower.images.length == 1) {
-  //         // delete image reference, image file, signIn time, and authorId
-  //         await FirebaseStorage.instance.refFromURL(url).delete();
-  //         await FirestoreService.updateTower(widget.towerId, data: {
-  //           'images': FieldValue.delete(),
-  //           'signIn': FieldValue.delete(),
-  //           'authorId': FieldValue.delete(),
-  //         });
-
-  //         // reset tower status to unsurveyed
-  //         towers.updateSurveyStatus(widget.towerId, SurveyStatus.unsurveyed);
-  //       } else {
-  //         if (url == widget.tower.images.first) {
-  //           Navigator.pop(context);
-  //           throw Exception('Can only delete the latest image');
-  //         }
-
-  //         // delete image reference, image file, and signOut time
-  //         await FirebaseStorage.instance.refFromURL(url).delete();
-  //         final _updatedImages = List<String>.from(widget.tower.images)..remove(url);
-  //         await FirestoreService.updateTower(widget.towerId, data: {
-  //           'images': _updatedImages,
-  //           'signOut': FieldValue.delete(),
-  //         });
-
-  //         // set tower status to inprogress
-  //         towers.updateSurveyStatus(widget.towerId, SurveyStatus.inprogress);
-  //       }
-
-  //       if (mounted) {
-  //         Navigator.pop(context);
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('Image deleted successfully')),
-  //         );
-  //       }
-  //     }
-
-  //     // if tower has 1 image, delete image reference and signIn time
-  //     // else, check if url matches 1st image; if matching throw 'can only delete latest', else delete image reference and signOut time
-  //   } catch (e) {
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Failed to delete image: $e')),
-  //       );
-  //     }
-  //   } finally {
-  //     if (mounted) Navigator.pop(context);
-  //   }
-  // }
 }

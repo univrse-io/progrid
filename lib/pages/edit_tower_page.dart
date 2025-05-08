@@ -19,6 +19,7 @@ import '../models/issue.dart';
 import '../models/survey_status.dart';
 import '../models/tower.dart';
 import '../services/firebase_firestore_service.dart';
+import '../services/firebase_storage_service.dart';
 
 class EditTowerPage extends StatefulWidget {
   final Tower tower;
@@ -35,21 +36,22 @@ class _EditTowerPageState extends State<EditTowerPage> {
   late final carbonToken = Theme.of(context).extension<CarbonToken>();
   late final issues = Provider.of<List<Issue>>(context, listen: false);
   late final user = Provider.of<User?>(context, listen: false);
-  late final isAdmin = Provider.of<bool>(context, listen: false);
   late final isSignin = widget.tower.surveyStatus == SurveyStatus.unsurveyed;
   late SurveyStatus surveyStatus = widget.tower.surveyStatus;
   late DrawingStatus? drawingStatus = widget.tower.drawingStatus;
-  File? localFile;
+  bool isLoading = false;
+  File? uploadImage;
 
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> pickImage(ImageSource source) async {
     if (mounted) Navigator.pop(context);
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
     if (pickedFile == null) return;
+    setState(() => isLoading = true);
 
     try {
-      // request location permission
       final status = await Permission.locationWhenInUse.request();
+
       if (!status.isGranted) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -72,19 +74,15 @@ class _EditTowerPageState extends State<EditTowerPage> {
         return;
       }
 
-      // load image
       final imageFile = File(pickedFile.path);
       final decodeImage = img.decodeImage(imageFile.readAsBytesSync());
-      if (decodeImage == null) {
-        throw Exception('Failed to decode image');
-      }
 
-      // scale image if too small or too big
-      const minWidth = 600; // min width
-      const maxWidth = 1080; // max width
-      const minHeight = 600; // min height
-      const maxHeight = 1920; // max height
+      if (decodeImage == null) throw Exception('Failed to decode image.');
 
+      const minWidth = 600;
+      const maxWidth = 1080;
+      const minHeight = 600;
+      const maxHeight = 1920;
       var scaledImage = decodeImage;
 
       if (decodeImage.width < minWidth || decodeImage.height < minHeight) {
@@ -171,62 +169,18 @@ class _EditTowerPageState extends State<EditTowerPage> {
       // save image locally
       final watermarkedImagePath =
           '${(await getTemporaryDirectory()).path}/watermarked_${pickedFile.name}';
-      localFile = await File(
+      uploadImage = await File(
         watermarkedImagePath,
       ).writeAsBytes(img.encodeJpg(compressedImage));
-
-      setState(() {});
-
-      // upload image to firebase storage
-      // final fileName = '${DateTime.now().microsecondsSinceEpoch}';
-      // final storageRef = FirebaseStorage.instance.ref(
-      //   'towers/${widget.tower}/$fileName',
-      // );
-
-      // final uploadTask = storageRef.putFile(localFile);
-
-      // final snapshot = await uploadTask;
-      // final downloadUrl = await snapshot.ref.getDownloadURL();
-
-      // if (mounted) {
-      //   final user = Provider.of<User?>(context, listen: false);
-      //   await FirebaseFirestoreService().updateTower(
-      //     widget.tower.id,
-      //     data: {'authorId': user?.uid ?? ''},
-      //   );
-      //   await FirebaseFirestoreService().updateTower(
-      //     widget.tower.id,
-      //     data: {
-      //       'images': FieldValue.arrayUnion([downloadUrl]),
-      //     },
-      //   );
-      //   if (isSignOut) {
-      //     await FirebaseFirestoreService().updateTower(
-      //       widget.tower.id,
-      //       data: {
-      //         'signOut': Timestamp.fromDate(DateTime.now()),
-      //         'surveyStatus': SurveyStatus.surveyed.name,
-      //       },
-      //     );
-      //   } else {
-      //     await FirebaseFirestoreService().updateTower(
-      //       widget.tower.id,
-      //       data: {
-      //         'drawingStatus': DrawingStatus.inprogress.name,
-      //         'signIn': Timestamp.fromDate(DateTime.now()),
-      //         'surveyStatus': SurveyStatus.inprogress.name,
-      //       },
-      //     );
-      //   }
-      // } else {
-      //   throw Exception('provider addImage not mounted');
-      // }
     } catch (e) {
+      log('Failed to upload image.', error: e);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error Adding Image: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to upload image.')),
+        );
       }
+    } finally {
+      setState(() => isLoading = false);
     }
   }
 
@@ -238,13 +192,7 @@ class _EditTowerPageState extends State<EditTowerPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(
-        // isAdmin
-        //     ? 'Update Tower':
-        isSignin ? 'Sign In' : 'Sign Out',
-      ),
-    ),
+    appBar: AppBar(title: Text(isSignin ? 'Sign In' : 'Sign Out')),
     body: Column(
       children: [
         Expanded(
@@ -255,61 +203,61 @@ class _EditTowerPageState extends State<EditTowerPage> {
               children: [
                 Text('Photo', style: CarbonTextStyle.headingCompact01),
                 const Spacing.$3(),
-                if (localFile != null)
-                  Image.file(
-                    height: 120,
-                    width: 120,
-                    fit: BoxFit.cover,
-                    localFile!,
-                  )
-                else
-                  Material(
-                    child: InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: const Text('Upload image'),
-                                content: const Text(
-                                  'Which source do you want to upload from?',
-                                ),
-                                actions: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Expanded(
-                                        child: CarbonSecondaryButton(
-                                          onPressed:
-                                              () => _pickImage(
-                                                ImageSource.camera,
-                                              ),
-                                          label: 'Open Camera',
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: CarbonPrimaryButton(
-                                          onPressed:
-                                              () => _pickImage(
-                                                ImageSource.gallery,
-                                              ),
-                                          label: 'From Gallery',
-                                        ),
-                                      ),
-                                    ],
+                InkWell(
+                  onTap:
+                      isLoading
+                          ? null
+                          : () => showDialog(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: Text(
+                                    uploadImage != null
+                                        ? 'Replace image'
+                                        : 'Upload image',
                                   ),
-                                ],
-                              ),
-                        );
-                      },
-                      child: Ink(
-                        width: 120,
-                        height: 120,
-                        color: carbonToken?.field01,
-                        child: const Icon(CarbonIcon.add),
-                      ),
-                    ),
+                                  content: const Text(
+                                    'Which source do you want to upload from?',
+                                  ),
+                                  actions: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Expanded(
+                                          child: CarbonSecondaryButton(
+                                            onPressed:
+                                                () => pickImage(
+                                                  ImageSource.camera,
+                                                ),
+                                            label: 'Open Camera',
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: CarbonPrimaryButton(
+                                            onPressed:
+                                                () => pickImage(
+                                                  ImageSource.gallery,
+                                                ),
+                                            label: 'From Gallery',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                          ),
+                  child: Ink(
+                    width: 120,
+                    height: 120,
+                    color: carbonToken?.field01,
+                    child:
+                        isLoading
+                            ? const Center(child: CircularProgressIndicator())
+                            : uploadImage != null
+                            ? Image.file(fit: BoxFit.cover, uploadImage!)
+                            : const Icon(CarbonIcon.add),
                   ),
+                ),
                 const Spacing.$3(),
                 Text('Notes', style: CarbonTextStyle.headingCompact01),
                 const Spacing.$3(),
@@ -319,6 +267,7 @@ class _EditTowerPageState extends State<EditTowerPage> {
                   keyboardType: TextInputType.multiline,
                 ),
                 const Spacing.$3(),
+                // TODO: Admins able to update survey status, drawing status, and remove photos.
                 // if (isAdmin) ...[
                 //   Text(
                 //     'Survey Status',
@@ -380,9 +329,15 @@ class _EditTowerPageState extends State<EditTowerPage> {
           color: Theme.of(context).scaffoldBackgroundColor,
           child: CarbonPrimaryButton(
             onPressed:
-                descriptionController.text.isEmpty || localFile == null
+                descriptionController.text.isEmpty || uploadImage == null
                     ? null
                     : () async {
+                      final downloadUrl = await FirebaseStorageService()
+                          .uploadTowerImage(
+                            widget.tower.id,
+                            file: uploadImage!,
+                          );
+
                       await FirebaseFirestoreService().updateTower(
                         widget.tower.id,
                         data: {
@@ -394,6 +349,10 @@ class _EditTowerPageState extends State<EditTowerPage> {
                             'signIn': Timestamp.fromDate(DateTime.now()),
                           if (!isSignin)
                             'signOut': Timestamp.fromDate(DateTime.now()),
+                          'images':
+                              isSignin
+                                  ? [downloadUrl]
+                                  : FieldValue.arrayUnion([downloadUrl]),
                           'notes':
                               '${widget.tower.notes}\n'
                               '[${DateFormat('y-MM-dd HH:mm').format(DateTime.now())}] ${descriptionController.text}',
