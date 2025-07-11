@@ -40,6 +40,7 @@ class OpenStreetMap extends StatelessWidget {
         TileLayer(
           // TODO: Set map styles in the settings page.
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.univrse.progrid',
           // TODO: Set retina mode in the settings page.
           // retinaMode: RetinaMode.isHighDensity(context),
         ),
