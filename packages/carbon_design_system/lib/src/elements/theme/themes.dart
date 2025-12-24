@@ -39,7 +39,7 @@ sealed class CarbonTheme {
             toolbarHeight: kHeaderHeight + 1, // Add bottom border width.
             titleTextStyle: CarbonTextStyle.bodyCompact02
                 .copyWith(color: token.textPrimary)),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
             color: token.layer01,
             surfaceTintColor: Colors.transparent,
             shape: const RoundedRectangleBorder()),
@@ -54,7 +54,7 @@ sealed class CarbonTheme {
               }
             }),
             checkColor: WidgetStatePropertyAll<Color>(token.iconInverse)),
-        dialogTheme: DialogTheme(
+        dialogTheme: DialogThemeData(
             backgroundColor: token.layer01,
             surfaceTintColor: Colors.transparent,
             titleTextStyle:
