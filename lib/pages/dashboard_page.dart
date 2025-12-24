@@ -39,9 +39,10 @@ class _DashboardPageState extends State<DashboardPage>
     super.build(context);
     final towers = Provider.of<List<Tower>>(context);
     final issues = Provider.of<List<Issue>>(context);
-    final recentIssues =
-        issues.where((issue) => issue.status != IssueStatus.resolved).toList()
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final recentIssues = issues
+        .where((issue) => issue.status != IssueStatus.resolved)
+        .toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     return Row(
       children: [
@@ -77,21 +78,16 @@ class _DashboardPageState extends State<DashboardPage>
                                 ...SurveyStatus.values.map(
                                   (status) => PieChartSectionData(
                                     title:
-                                        '${status == SurveyStatus.surveyed
-                                            ? 'Balance'
-                                            : status == SurveyStatus.inprogress
-                                            ? 'In Progress'
-                                            : 'Completed'}\n${(towers.where((tower) => tower.surveyStatus == status).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
+                                        '${status == SurveyStatus.surveyed ? 'Balance' : status == SurveyStatus.inprogress ? 'In Progress' : 'Completed'}\n${(towers.where((tower) => tower.surveyStatus == status).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titleStyle: CarbonTextStyle.label01,
                                     titlePositionPercentageOffset: 2.5,
-                                    value:
-                                        towers
-                                            .where(
-                                              (tower) =>
-                                                  tower.surveyStatus == status,
-                                            )
-                                            .length
-                                            .toDouble(),
+                                    value: towers
+                                        .where(
+                                          (tower) =>
+                                              tower.surveyStatus == status,
+                                        )
+                                        .length
+                                        .toDouble(),
                                     radius: 25,
                                     color: status.color,
                                   ),
@@ -119,17 +115,16 @@ class _DashboardPageState extends State<DashboardPage>
                                           '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.surveyStatus == SurveyStatus.surveyed).length / towers.where((tower) => tower.surveyStatus == SurveyStatus.surveyed).length * 100).toStringAsFixed(2)}%',
                                       titleStyle: CarbonTextStyle.label01,
                                       titlePositionPercentageOffset: 2.5,
-                                      value:
-                                          towers
-                                              .where(
-                                                (tower) =>
-                                                    tower.region.name ==
-                                                        region.name &&
-                                                    tower.surveyStatus ==
-                                                        SurveyStatus.surveyed,
-                                              )
-                                              .length
-                                              .toDouble(),
+                                      value: towers
+                                          .where(
+                                            (tower) =>
+                                                tower.region.name ==
+                                                    region.name &&
+                                                tower.surveyStatus ==
+                                                    SurveyStatus.surveyed,
+                                          )
+                                          .length
+                                          .toDouble(),
                                       radius: 25,
                                       color: region.color,
                                     ),
@@ -156,18 +151,17 @@ class _DashboardPageState extends State<DashboardPage>
                         const Spacing.$3(),
                         Expanded(
                           child: ListView.separated(
-                            separatorBuilder: (_, _) => const Divider(),
+                            separatorBuilder: (_, __) => const Divider(),
                             itemCount: recentIssues.length,
                             itemBuilder: (context, index) {
                               final issue = recentIssues[index];
 
                               return CustomListTile(
-                                onPressed:
-                                    () => Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => IssueDetailsPage(issue),
-                                      ),
-                                    ),
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => IssueDetailsPage(issue),
+                                  ),
+                                ),
                                 indicatorColor: issue.status.color,
                                 title: issue.id,
                                 subtitle: issue.tags.join(', '),
@@ -391,14 +385,12 @@ class _DashboardPageState extends State<DashboardPage>
                                       'Balance\n${(towers.where((tower) => tower.drawingStatus == null).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                   titleStyle: CarbonTextStyle.label01,
                                   titlePositionPercentageOffset: 2.5,
-                                  value:
-                                      towers
-                                          .where(
-                                            (tower) =>
-                                                tower.drawingStatus == null,
-                                          )
-                                          .length
-                                          .toDouble(),
+                                  value: towers
+                                      .where(
+                                        (tower) => tower.drawingStatus == null,
+                                      )
+                                      .length
+                                      .toDouble(),
                                   radius: 25,
                                   color: CarbonColor.red60,
                                 ),
@@ -408,15 +400,14 @@ class _DashboardPageState extends State<DashboardPage>
                                         '$drawingStatus\n${(towers.where((tower) => tower.drawingStatus == drawingStatus).length.toDouble() / towers.length * 100).toStringAsFixed(2)}%',
                                     titleStyle: CarbonTextStyle.label01,
                                     titlePositionPercentageOffset: 2.5,
-                                    value:
-                                        towers
-                                            .where(
-                                              (tower) =>
-                                                  tower.drawingStatus ==
-                                                  drawingStatus,
-                                            )
-                                            .length
-                                            .toDouble(),
+                                    value: towers
+                                        .where(
+                                          (tower) =>
+                                              tower.drawingStatus ==
+                                              drawingStatus,
+                                        )
+                                        .length
+                                        .toDouble(),
                                     radius: 25,
                                     color: drawingStatus.color,
                                   ),
@@ -444,17 +435,16 @@ class _DashboardPageState extends State<DashboardPage>
                                           '$region\n${(towers.where((tower) => tower.region.name == region.name && tower.drawingStatus == DrawingStatus.submitted).length / towers.where((tower) => tower.drawingStatus == DrawingStatus.submitted).length * 100).toStringAsFixed(2)}%',
                                       titleStyle: CarbonTextStyle.label01,
                                       titlePositionPercentageOffset: 2.5,
-                                      value:
-                                          towers
-                                              .where(
-                                                (tower) =>
-                                                    tower.region.name ==
-                                                        region.name &&
-                                                    tower.drawingStatus ==
-                                                        DrawingStatus.submitted,
-                                              )
-                                              .length
-                                              .toDouble(),
+                                      value: towers
+                                          .where(
+                                            (tower) =>
+                                                tower.region.name ==
+                                                    region.name &&
+                                                tower.drawingStatus ==
+                                                    DrawingStatus.submitted,
+                                          )
+                                          .length
+                                          .toDouble(),
                                       radius: 25,
                                       color: region.color,
                                     ),
@@ -511,35 +501,33 @@ class _DashboardPageState extends State<DashboardPage>
                                           barRods: [
                                             BarChartRodData(
                                               borderRadius: BorderRadius.zero,
-                                              toY:
-                                                  towers
-                                                      .where(
-                                                        (tower) =>
-                                                            tower.surveyStatus ==
-                                                                SurveyStatus
-                                                                    .surveyed &&
-                                                            tower.type ==
-                                                                'Sharing/Co-locate',
-                                                      )
-                                                      .length
-                                                      .toDouble(),
+                                              toY: towers
+                                                  .where(
+                                                    (tower) =>
+                                                        tower.surveyStatus ==
+                                                            SurveyStatus
+                                                                .surveyed &&
+                                                        tower.type ==
+                                                            'Sharing/Co-locate',
+                                                  )
+                                                  .length
+                                                  .toDouble(),
                                               width: 20,
                                               color: Colors.purple,
                                             ),
                                             BarChartRodData(
                                               borderRadius: BorderRadius.zero,
-                                              toY:
-                                                  towers
-                                                      .where(
-                                                        (tower) =>
-                                                            tower.drawingStatus ==
-                                                                DrawingStatus
-                                                                    .submitted &&
-                                                            tower.type ==
-                                                                'Sharing/Co-locate',
-                                                      )
-                                                      .length
-                                                      .toDouble(),
+                                              toY: towers
+                                                  .where(
+                                                    (tower) =>
+                                                        tower.drawingStatus ==
+                                                            DrawingStatus
+                                                                .submitted &&
+                                                        tower.type ==
+                                                            'Sharing/Co-locate',
+                                                  )
+                                                  .length
+                                                  .toDouble(),
                                               width: 20,
                                               color: Colors.green,
                                             ),
@@ -550,35 +538,33 @@ class _DashboardPageState extends State<DashboardPage>
                                           barRods: [
                                             BarChartRodData(
                                               borderRadius: BorderRadius.zero,
-                                              toY:
-                                                  towers
-                                                      .where(
-                                                        (tower) =>
-                                                            tower.surveyStatus ==
-                                                                SurveyStatus
-                                                                    .surveyed &&
-                                                            tower.type ==
-                                                                'Greenfield',
-                                                      )
-                                                      .length
-                                                      .toDouble(),
+                                              toY: towers
+                                                  .where(
+                                                    (tower) =>
+                                                        tower.surveyStatus ==
+                                                            SurveyStatus
+                                                                .surveyed &&
+                                                        tower.type ==
+                                                            'Greenfield',
+                                                  )
+                                                  .length
+                                                  .toDouble(),
                                               width: 20,
                                               color: Colors.purple,
                                             ),
                                             BarChartRodData(
                                               borderRadius: BorderRadius.zero,
-                                              toY:
-                                                  towers
-                                                      .where(
-                                                        (tower) =>
-                                                            tower.drawingStatus ==
-                                                                DrawingStatus
-                                                                    .submitted &&
-                                                            tower.type ==
-                                                                'Greenfield',
-                                                      )
-                                                      .length
-                                                      .toDouble(),
+                                              toY: towers
+                                                  .where(
+                                                    (tower) =>
+                                                        tower.drawingStatus ==
+                                                            DrawingStatus
+                                                                .submitted &&
+                                                        tower.type ==
+                                                            'Greenfield',
+                                                  )
+                                                  .length
+                                                  .toDouble(),
                                               width: 20,
                                               color: Colors.green,
                                             ),
@@ -589,35 +575,33 @@ class _DashboardPageState extends State<DashboardPage>
                                           barRods: [
                                             BarChartRodData(
                                               borderRadius: BorderRadius.zero,
-                                              toY:
-                                                  towers
-                                                      .where(
-                                                        (tower) =>
-                                                            tower.surveyStatus ==
-                                                                SurveyStatus
-                                                                    .surveyed &&
-                                                            tower.type ==
-                                                                'Roof top',
-                                                      )
-                                                      .length
-                                                      .toDouble(),
+                                              toY: towers
+                                                  .where(
+                                                    (tower) =>
+                                                        tower.surveyStatus ==
+                                                            SurveyStatus
+                                                                .surveyed &&
+                                                        tower.type ==
+                                                            'Roof top',
+                                                  )
+                                                  .length
+                                                  .toDouble(),
                                               width: 20,
                                               color: Colors.purple,
                                             ),
                                             BarChartRodData(
                                               borderRadius: BorderRadius.zero,
-                                              toY:
-                                                  towers
-                                                      .where(
-                                                        (tower) =>
-                                                            tower.drawingStatus ==
-                                                                DrawingStatus
-                                                                    .submitted &&
-                                                            tower.type ==
-                                                                'Roof top',
-                                                      )
-                                                      .length
-                                                      .toDouble(),
+                                              toY: towers
+                                                  .where(
+                                                    (tower) =>
+                                                        tower.drawingStatus ==
+                                                            DrawingStatus
+                                                                .submitted &&
+                                                        tower.type ==
+                                                            'Roof top',
+                                                  )
+                                                  .length
+                                                  .toDouble(),
                                               width: 20,
                                               color: Colors.green,
                                             ),
@@ -630,20 +614,19 @@ class _DashboardPageState extends State<DashboardPage>
                                         bottomTitles: AxisTitles(
                                           sideTitles: SideTitles(
                                             showTitles: true,
-                                            getTitlesWidget:
-                                                (value, meta) =>
-                                                    SideTitleWidget(
-                                                      angle: -0.25,
-                                                      axisSide: meta.axisSide,
-                                                      space: 16,
-                                                      child: Text(
-                                                        [
-                                                          'Sharing/Co-locate',
-                                                          'Greenfield',
-                                                          'Rooftop',
-                                                        ][value.toInt()],
-                                                      ),
-                                                    ),
+                                            getTitlesWidget: (value, meta) =>
+                                                SideTitleWidget(
+                                              angle: -0.25,
+                                              axisSide: meta.axisSide,
+                                              space: 16,
+                                              child: Text(
+                                                [
+                                                  'Sharing/Co-locate',
+                                                  'Greenfield',
+                                                  'Rooftop',
+                                                ][value.toInt()],
+                                              ),
+                                            ),
                                             reservedSize: 42,
                                           ),
                                         ),
@@ -651,15 +634,14 @@ class _DashboardPageState extends State<DashboardPage>
                                           sideTitles: SideTitles(
                                             showTitles: true,
                                             reservedSize: 28,
-                                            getTitlesWidget:
-                                                (value, meta) =>
-                                                    SideTitleWidget(
-                                                      axisSide: meta.axisSide,
-                                                      space: 0,
-                                                      child: Text(
-                                                        value.toString(),
-                                                      ),
-                                                    ),
+                                            getTitlesWidget: (value, meta) =>
+                                                SideTitleWidget(
+                                              axisSide: meta.axisSide,
+                                              space: 0,
+                                              child: Text(
+                                                value.toString(),
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),

@@ -58,7 +58,7 @@ sealed class CarbonTheme {
           primaryContainer: token.backgroundHover,
           error: token.textError,
         ),
-        dialogTheme: DialogTheme(
+        dialogTheme: DialogThemeData(
           backgroundColor: token.layer01,
           surfaceTintColor: Colors.transparent,
           titleTextStyle: CarbonTextStyle.heading03.copyWith(
@@ -154,7 +154,7 @@ sealed class CarbonTheme {
           fillColor: WidgetStatePropertyAll<Color>(token.iconPrimary),
         ),
         scaffoldBackgroundColor: token.background,
-        tabBarTheme: TabBarTheme(
+        tabBarTheme: TabBarThemeData(
           unselectedLabelStyle: CarbonTextStyle.bodyCompact01,
           unselectedLabelColor: token.textSecondary,
           labelStyle: CarbonTextStyle.headingCompact01,

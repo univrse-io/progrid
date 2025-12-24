@@ -20,23 +20,22 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    resizeToAvoidBottomInset: false,
-    body: Stack(
-      children: [
-        OpenStreetMap(controller: mapController),
-        Positioned(
-          top: 25,
-          left: 14,
-          child: FloatingActionButton.small(
-            tooltip: 'View Regions',
-            onPressed: () async {
-              final selectedRegion = await showMenu<Region>(
-                elevation: 0,
-                color: Colors.transparent,
-                context: context,
-                position: const RelativeRect.fromLTRB(0, 70, 0, 0),
-                items:
-                    Region.values
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            OpenStreetMap(controller: mapController),
+            Positioned(
+              top: 25,
+              left: 14,
+              child: FloatingActionButton.small(
+                tooltip: 'View Regions',
+                onPressed: () async {
+                  final selectedRegion = await showMenu<Region>(
+                    elevation: 0,
+                    color: Colors.transparent,
+                    context: context,
+                    position: const RelativeRect.fromLTRB(0, 70, 0, 0),
+                    items: Region.values
                         .map(
                           (region) => PopupMenuItem(
                             value: region,
@@ -48,78 +47,77 @@ class _HomePageState extends State<HomePage> {
                           ),
                         )
                         .toList(),
-              );
-              if (selectedRegion != null) {
-                mapController.move(selectedRegion.latlng, 8);
-              }
-            },
-            elevation: 0,
-            child: const Icon(CarbonIcon.plan),
-          ),
-        ),
-        Positioned(
-          top: 25,
-          right: 14,
-          child: Row(
-            children: [
-              FloatingActionButton.small(
-                tooltip: 'Search Towers',
-                heroTag: 'searchbar',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (_, _, __) => const TowersPage(),
-                      transitionsBuilder:
-                          (_, animation, __, child) =>
-                              FadeTransition(opacity: animation, child: child),
-                    ),
                   );
+                  if (selectedRegion != null) {
+                    mapController.move(selectedRegion.latlng, 8);
+                  }
                 },
                 elevation: 0,
-                child: const Icon(CarbonIcon.search),
+                child: const Icon(CarbonIcon.plan),
               ),
-              FloatingActionButton.small(
-                tooltip: 'User Profile',
-                heroTag: 'profile',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder:
-                          (context, animation, secondaryAnimation) =>
-                              const ProfilePage(),
-                      transitionsBuilder: (
+            ),
+            Positioned(
+              top: 25,
+              right: 14,
+              child: Row(
+                children: [
+                  FloatingActionButton.small(
+                    tooltip: 'Search Towers',
+                    heroTag: 'searchbar',
+                    onPressed: () {
+                      Navigator.push(
                         context,
-                        animation,
-                        secondaryAnimation,
-                        child,
-                      ) {
-                        const begin = Offset(0, 1);
-                        const end = Offset.zero;
-                        const curve = Curves.easeInOut;
+                        PageRouteBuilder(
+                          pageBuilder: (_, __, ___) => const TowersPage(),
+                          transitionsBuilder: (_, animation, __, child) =>
+                              FadeTransition(opacity: animation, child: child),
+                        ),
+                      );
+                    },
+                    elevation: 0,
+                    child: const Icon(CarbonIcon.search),
+                  ),
+                  FloatingActionButton.small(
+                    tooltip: 'User Profile',
+                    heroTag: 'profile',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const ProfilePage(),
+                          transitionsBuilder: (
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                          ) {
+                            const begin = Offset(0, 1);
+                            const end = Offset.zero;
+                            const curve = Curves.easeInOut;
 
-                        final offsetAnimation = animation.drive(
-                          Tween(
-                            begin: begin,
-                            end: end,
-                          ).chain(CurveTween(curve: curve)),
-                        );
-                        return SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
-                },
-                elevation: 0,
-                child: const Icon(CarbonIcon.user),
+                            final offsetAnimation = animation.drive(
+                              Tween(
+                                begin: begin,
+                                end: end,
+                              ).chain(CurveTween(curve: curve)),
+                            );
+                            return SlideTransition(
+                              position: offsetAnimation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    elevation: 0,
+                    child: const Icon(CarbonIcon.user),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }
